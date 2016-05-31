@@ -1,0 +1,13 @@
+{
+  "name": "strophe.bookmarks",
+  "_cacheHeaders": {
+    "ETag": "\"f8f6b240495b272a45383e54da8f9b6a50463692\"",
+    "Content-Length": "1056",
+    "Content-Type": "text/plain; charset=utf-8"
+  },
+  "_release": "e-tag:f8f6b2404",
+  "main": "index.js",
+  "_source": "https://raw.githubusercontent.com/sualko/strophejs-plugins/bookmarks/bookmarks/strophe.bookmarks.js",
+  "_target": "*",
+  "_originalSource": "https://raw.githubusercontent.com/sualko/strophejs-plugins/bookmarks/bookmarks/strophe.bookmarks.js"
+}

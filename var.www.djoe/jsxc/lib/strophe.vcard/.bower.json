@@ -1,0 +1,13 @@
+{
+  "name": "strophe.vcard",
+  "_cacheHeaders": {
+    "ETag": "\"94307105badbda8c8c44308c2a2d9e0a771f40ba\"",
+    "Content-Length": "829",
+    "Content-Type": "text/plain; charset=utf-8"
+  },
+  "_release": "e-tag:94307105b",
+  "main": "index.js",
+  "_source": "https://raw.githubusercontent.com/strophe/strophejs-plugins/2f07137ad2cbeaed41650ee46373c2f44e0f263a/vcard/strophe.vcard.js",
+  "_target": "*",
+  "_originalSource": "https://raw.githubusercontent.com/strophe/strophejs-plugins/2f07137ad2cbeaed41650ee46373c2f44e0f263a/vcard/strophe.vcard.js"
+}

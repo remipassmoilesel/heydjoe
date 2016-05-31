@@ -1,0 +1,17 @@
+
+h1{
+    width: 80%;
+    margin: auto;
+}
+
+div{
+    width: 80%;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.logElement{
+    max-height: 200px;
+    overflow: auto;
+}

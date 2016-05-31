@@ -1,0 +1,16 @@
+
+Le roster est controlé dans l'espace de nom:
+    jsxc.gui.roster
+
+Tous les templates sont accessible dans:
+    jsxc.gui.template.get("roster") // pour roster.html
+
+L'état du GUI et enregistré dans:
+    jsxc.storage.getUserItem('roster') // pour le roster
+    .....
+
+Template de barre de coté avec menus, contacts, ...:
+    templates/roster.html
+
+Les clics sur le menu sont écoutés de cette manière:
+    $('#jsxc_menu .jsxc_hideOffline').click(function() {

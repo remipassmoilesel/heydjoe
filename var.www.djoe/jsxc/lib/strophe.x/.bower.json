@@ -1,0 +1,13 @@
+{
+  "name": "strophe.x",
+  "_cacheHeaders": {
+    "ETag": "\"063509630cb7326b35d68e06d3c62fb91faeaebd\"",
+    "Content-Length": "4456",
+    "Content-Type": "text/plain; charset=utf-8"
+  },
+  "_release": "e-tag:063509630",
+  "main": "index.js",
+  "_source": "https://raw.githubusercontent.com/strophe/strophejs-plugins/master/dataforms/src/strophe.x.js",
+  "_target": "*",
+  "_originalSource": "https://raw.githubusercontent.com/strophe/strophejs-plugins/master/dataforms/src/strophe.x.js"
+}

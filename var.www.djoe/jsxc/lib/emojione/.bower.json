@@ -1,0 +1,37 @@
+{
+  "name": "emojione",
+  "version": "2.0.1",
+  "main": [
+    "assets/css/emojione.css",
+    "lib/js/emojione.js"
+  ],
+  "ignore": [
+    "demos/",
+    "lib/php/",
+    ".gitignore",
+    ".npmignore",
+    "composer.json",
+    "package.json"
+  ],
+  "keywords": [
+    "emojione",
+    "Emoji One",
+    "emoji",
+    "emojis",
+    "emoticons",
+    "smileys",
+    "smilies",
+    "unicode",
+    "emoji set"
+  ],
+  "homepage": "https://github.com/Ranks/emojione",
+  "_release": "2.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v2.0.1",
+    "commit": "311d3b37f561407ca87684b4a5de134ba9f30561"
+  },
+  "_source": "https://github.com/Ranks/emojione.git",
+  "_target": "~2.0.1",
+  "_originalSource": "emojione"
+}

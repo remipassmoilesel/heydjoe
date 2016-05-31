@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <title>Console XMPP</title>
+
+    <link rel='stylesheet' href='bower_components/jquery-ui/themes/black-tie/jquery-ui.css'>
+    <script src='bower_components/jquery/dist/jquery.js'></script>
+    <script src='bower_components/jquery-ui/jquery-ui.js'></script>
+    <script src='bower_components/Strophe.js/strophe.js'></script>
+    <link rel='stylesheet' type='text/css' href='peek.css'>
+    <script src='peek.js'></script>
+
+</head>
+<body>
+<h1>Console XMPP</h1>
+
+<table class="contentTable">
+
+    <!-- Espace d'affichage -->
+    <tr><td>
+        <div id='console'></div>
+    </td></tr>
+
+    <!-- Espace de saisie -->
+    <tr><td>
+        <textarea id='input' class='disabled'
+                  disabled='disabled'></textarea>
+
+        <div id='buttonbar'>
+            <input id='send_button' type='button' value='Send Data'
+                   disabled='disabled' class='button'>
+            <input id='disconnect_button' type='button' value='Disconnect'
+                   disabled='disabled' class='button'>
+        </div>
+
+    </td></tr>
+
+    <tr><td>&nbsp;</td></tr>
+
+    <tr><td>
+        Essayez par exemple: <br>
+        <pre>
+            $iq({type:'get',id: 'version1',to: 'lesurvivantdelamort'})
+                .c('query',{xmlns: 'jabber:iq:version'});
+        </pre>
+
+    </td></tr>
+
+    <!-- Crédits -->
+    <tr><td>
+        <p>Créé à partir de: <a href="https://github.com/metajack/profxmpp.git">https://github.com/metajack/profxmpp.git</a></p>
+    </td></tr>
+
+</table>
+
+<!-- Boite de dialogue de connexion-->
+<table id='login_dialog' class='hidden'>
+    <tr>
+        <td>JID complet (ex: jjlabringue@xmpp.test-messagerie.ddns.net):</td></tr>
+
+        <tr><td><input type='text' id='jid'/></td>
+
+    </tr>
+    <tr>
+
+        <td>Mot de passe:</td></tr>
+
+        <tr><td><input type='password' id='password'/></td>
+
+    </tr>
+</table>
+
+</body>
+</html>
