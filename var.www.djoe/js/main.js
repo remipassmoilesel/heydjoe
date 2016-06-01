@@ -15,7 +15,7 @@ var xmppResource = "heyDjoe";
 var webAdminUrl = "http://" + domain + ":9090/";
 var consoleAdminUrl = "http://" + domain + ":9091/";
 var etherpadUrl = "http://" + domain + ":9001/";
-var consoleUrl = "http://" + domain + "/console/";
+var consoleUrl = "http://" + domain + "/xmpp-console/";
 
 /**
     Logins disponibles
