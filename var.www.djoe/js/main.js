@@ -17,12 +17,30 @@ var consoleAdminUrl = "http://" + domain + ":9091/";
 var etherpadUrl = "http://" + domain + ":9001/";
 var consoleUrl = "http://" + domain + "/console/";
 
+/**
+    Logins disponibles
+*/
+var availablesLogins = [
+    "admin",
+    "remi",
+    "yohann",
+    "miguel",
+    "aurore",
+    "nicolas",
+    "jean",
+    "julescesar",
+    "companioncube"
+];
+
 $(function() {
 
     console.log("Initialisation");
 
     // activer les panneau Jquery UI du fichier index
     $( "#tabs" ).tabs();
+
+    // afficher les comptes dispos etc ...
+    constructGui();
 
     // initialisation de JSXC
     // l'option off the record est désactivée
@@ -39,8 +57,9 @@ $(function() {
       },
       root: '/jsxc.git/build/',
 
-      /** RTCPeerConfiguration used for audio/video calls. */
+        /** RTCPeerConfiguration used for audio/video calls. */
         RTCPeerConfig: {
+
         /** Time-to-live for config from url */
         ttl: 3600,
 
@@ -73,59 +92,28 @@ $(function() {
             ]
         }
 
-/** ICE servers like defined in http://www.w3.org/TR/webrtc/#idl-def-RTCIceServer */
-//             iceServers: [
-//            {urls: 'stun:stun.l.google.com:19302'},
-//            {urls: 'stun:stun1.l.google.com:19302'},
-//            {urls: 'stun:stun2.l.google.com:19302'},
-//            {urls: 'stun:stun3.l.google.com:19302'},
-//            {urls: 'stun:stun4.l.google.com:19302'},
-//            {urls: 'stun:stun01.sipphone.com'},
-//            {urls: 'stun:stun.ekiga.net'},
-//            {urls: 'stun:stun.fwdnet.net'},
-//            {urls: 'stun:stun.ideasip.com'},
-//            {urls: 'stun:stun.iptel.org'},
-//            {urls: 'stun:stun.rixtelecom.se'},
-//            {urls: 'stun:stun.schlund.de'},
-//            {urls: 'stun:stunserver.org'},
-//            {urls: 'stun:stun.xten.com'},
-//            {urls: 'stun:stun.softjoys.com'},
-//            {urls: 'stun:stun.voiparound.com'},
-//            {urls: 'stun:stun.voipbuster.com'},
-//            {urls: 'stun:stun.voipstunt.com'},
-//            {urls: 'stun:stun.voxgratia.org'}
-//
-//            ]
-
-
     });
 
-    // Connexion à partir d'un identifiant saisi et d'un mot de passe déterminé
-    $('#connexionButton').click(function(){
+    // Bouton de connexion à partir d'un identifiant sélectionné et d'un mot de passe déterminé
+    $('#connectButton').click(function(){
 
-//        console.log($("#jidTextInput").val());
+        var id = $("#jidTextInput").val() + "@" + xmppDomain;
 
-        // verifier si l'identifiant est complet
-        var id = $("#jidTextInput").val().trim();
-
-        if(id.indexOf("@") === -1){
-            id += "@" + xmppDomain;
-        }
+        console.log(id);
 
         // activer le mode debuggage
         //jsxc.storage.setItem('debug', true)
         jsxc.storage.setItem('debug', false)
 
-//        console.log(id);
-
         // connexion et lancement du GUI
         jsxc.start(id, "azerty");
 
-        // afficher les serveurs RTS
-//        setTimeout(function(){
-//            console.log("Serveurs RTC disponibles: ");
-//            console.log(jsxc.options.get('RTCPeerConfig').iceServers);
-//        }, 2000);
+    });
+
+    // déconnexion
+    $('#disconnectButton').click(function(){
+
+        jsxc.xmpp.logout(true);
 
     });
 
@@ -138,29 +126,21 @@ $(function() {
         window.open(etherpadUrl + "p/" + $("#newPadName").val(), '_blank');
     });
 
-    // afficher les comptes dispos etc ...
-    showInformations();
 });
 
-function showInformations(){
 
-  // afficher les comptes disponibles
-    var appendToAccounts = function(name, elmt){
-        $('#availablesAccounts').append("<tr><td>" + (name || '') + "</td><td>" + elmt + "</td><tr/>");
-    };
+/**
 
-    appendToAccounts('admin', '*');
-    appendToAccounts('yohann', '*');
-    appendToAccounts('miguel', '*');
-    appendToAccounts('aurore', '*');
-    appendToAccounts('nicolas', '*');
-    appendToAccounts('david', '*');
-    appendToAccounts('jean', '*');
-    appendToAccounts('julescesar', '*');
-    appendToAccounts('kazoi', '*');
-    appendToAccounts('paul', '*');
-    appendToAccounts('zezette', '*');
-    appendToAccounts('companioncube', '*');
+*/
+function constructGui(){
+
+    // ajouter les comptes dispo à la liste de sélection
+    for(var i = 0; i < availablesLogins.length; i++){
+        var lg = availablesLogins[i];
+
+        // les ajouter à la liste de sélection de pseudo
+        $("#jidTextInput").append("<option value='" + lg + "'>" + lg + "</option>");
+    }
 
     // afficher des infos utiles
     var appendToUtilsInfo = function(name, elmt){

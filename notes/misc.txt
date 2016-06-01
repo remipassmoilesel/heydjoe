@@ -1,0 +1,3 @@
+
+Déconnexion:
+    jsxc.xmpp.logout(true); // true enlève l'interface, false la laisse

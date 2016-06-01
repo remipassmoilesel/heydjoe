@@ -54,37 +54,10 @@
 
         <ul>
             <li><a href="#tabs-3">Client JSXC</a></li>
-            <li><a href="#tabs-1">Comptes XMPP</a></li>
             <li><a href="#tabs-4">Etherpad</a></li>
             <li><a href="#tabs-2">Informations utiles</a></li>
         </ul>
 
-
-        <!--
-        *
-        *
-        *
-        *
-        *
-        Comptes disponibles
-        *
-        *
-        *
-        *
-        *
-        -->
-        <div id="tabs-1">
-            <table class="table-striped" id="availablesAccounts">
-
-                <tr>
-                    <th>Login</th>
-                    <th>Mot de passe</th>
-                </tr>
-
-                <!-- voir dans le script js/main.js -->
-
-            </table>
-        </div>
 
         <!--
         *
@@ -144,11 +117,16 @@
         <div id="tabs-3">
 
             <!-- bouton de connexion -->
-            <div>
-                <input type="text" id="jidTextInput" placeholder="Login"/>
-                <button id="connexionButton">
+            <div style="margin: 15px">
+
+                <select id="jidTextInput"></select>
+                <button id="connectButton">
                     Connexion au client JSXC
                 </button>
+                <button id="disconnectButton">
+                    Déconnexion
+                </button>
+
             </div>
 
             <p>
@@ -158,8 +136,7 @@
             <h2>Connexion</h2>
             <div>
                 <ol>
-                    <li>Choisissez un compte dans l'onglet "Comptes XMPP disponibles"</li>
-                    <li>Entrez le login ci-dessus</li>
+                    <li>Choisissez un compte</li>
                     <li>Cliquez sur le bouton "Connexion au client JSXC"</li>
                     <li>Ouvrez et refermez JSXC en cliquant sur la barre de fermeture transparente à la droite de
                         l'écran
