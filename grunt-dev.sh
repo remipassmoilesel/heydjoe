@@ -4,7 +4,7 @@
 
 export PATH=$PATH:/home/remipassmoilesel/nodejs4/bin
 
-cd var.www.djoe/jsxc.git/
+cd var.www.djoe/jsxc/
 
 grunt
 

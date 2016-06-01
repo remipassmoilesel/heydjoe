@@ -1,4 +1,4 @@
 # Hey Djoe !
 
-Instant communication system using JSXC.
+Instant communication system using JSXC and Etherpad.
 

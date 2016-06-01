@@ -1,4 +1,8 @@
 
+L'affichage et le msaquage des menus se fait grâce à jsxc.gui.togglelist.
+La fonction ajoute une fonctionnalité de masquage avec animation à un élement
+   toggleList: function(el) {
+
 Le roster est controlé dans l'espace de nom:
     jsxc.gui.roster
 

@@ -368,6 +368,7 @@ jsxc.gui = {
     * @returns {jquery} jQuery object of the window element
     */
    getWindow: function(bid) {
+
       jsxc.warn('jsxc.gui.getWindow is deprecated!');
 
       return jsxc.gui.window.get(bid);
@@ -375,7 +376,7 @@ jsxc.gui = {
 
    /**
     * Toggle list with timeout, like menu or settings
-    * 
+    *
     * @memberof jsxc.gui
     */
    toggleList: function(el) {
@@ -398,6 +399,8 @@ jsxc.gui = {
 
       $(this).click(function() {
 
+          //console.log("Onclick, please toggle my friend !");
+
          if (!self.hasClass('jsxc_opened')) {
             // hide other lists
             $('body').click();
@@ -411,6 +414,7 @@ jsxc.gui = {
          self.toggleClass('jsxc_opened');
 
          return false;
+
       }).mouseleave(function() {
          ul.data('timer', window.setTimeout(slideUp, 2000));
       }).mouseenter(function() {
@@ -1498,6 +1502,7 @@ jsxc.gui.roster = {
       });
 
       $('#jsxc_menu .jsxc_hideOffline').click(function() {
+
          var hideOffline = !jsxc.options.get('hideOffline');
 
          if (hideOffline) {
@@ -1566,8 +1571,11 @@ jsxc.gui.roster = {
          opacity: '0.5'
       });
 
+      // select all bottom elements and transform them in menu
       $('#jsxc_roster > .jsxc_bottom > div').each(function() {
-         jsxc.gui.toggleList.call($(this));
+//        console.log("roster init");
+//        console.log($(this));
+          jsxc.gui.toggleList.call($(this));
       });
 
       var rosterState = jsxc.storage.getUserItem('roster') || (jsxc.options.get('loginForm').startMinimized ? 'hidden' : 'shown');
@@ -1584,6 +1592,7 @@ jsxc.gui.roster = {
       jsxc.notice.load();
 
       jsxc.gui.roster.ready = true;
+
       $(document).trigger('ready.roster.jsxc');
    },
 
