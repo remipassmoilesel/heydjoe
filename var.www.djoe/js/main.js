@@ -4,10 +4,10 @@ var domain =  document.location.host;
 
 // service XMPP / HTTP
 //var boshUrl =  'http://' + domain + ':7070/http-bind/';
-var boshUrl = "https://test-messagerie.ddns.net:7443/http-bind/";
+var boshUrl = "https://" + domain + ":7443/http-bind/";
 
 // domaine xmpp (différent du domaine de la page)
-var xmppDomain = "test-messagerie.ddns.net";
+var xmppDomain = "im.silverpeas.net";
 
 // nom du client
 var xmppResource = "heyDjoe";
