@@ -72,24 +72,16 @@ $(function() {
 
         /** ICE servers like defined in http://www.w3.org/TR/webrtc/#idl-def-RTCIceServer */
         iceServers: [
-            { urls: "turn:test-messagerie.ddns.net:3478",
+            { urls: "turn:im.silverpeas.net:3478",
                 credential: "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
                 credentialType: "password",
                 username: "djoe"
                 },
-            { urls: "turns:test-messagerie.ddns.net:5349",
+            { urls: "turn:im.silverpeas.net:5349",
                 credential: "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
                 credentialType: "password",
                 username: "djoe"
                 },
-            {urls: 'stun:stun.l.google.com:19302'},
-            {urls: 'stun:stun1.l.google.com:19302'},
-            {urls: 'stun:stun2.l.google.com:19302'},
-            {urls: 'stun:stun3.l.google.com:19302'},
-            {urls: 'stun:stun.voiparound.com'},
-            {urls: 'stun:stun.voipbuster.com'},
-            {urls: 'stun:stun.voipstunt.com'},
-            {urls: 'stun:stun.voxgratia.org'}
             ]
         }
 
