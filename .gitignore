@@ -4,4 +4,7 @@ memos/
 node_modules
 bower_components
 srvstage
+var.www.djoe/jsxc/dev/*
+var.www.djoe/jsxc/build/*
+
 

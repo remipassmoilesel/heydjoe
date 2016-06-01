@@ -450,6 +450,56 @@ jsxc.gui.template['rosterBuddy'] = '<li class="jsxc_rosteritem">\n' +
 '</li>\n' +
 '';
 
+jsxc.gui.template['rosterMenu'] = '<!-- en cours -->\n' +
+'<h3>Section 1</h3>\n' +
+'<div>\n' +
+'    <p>\n' +
+'        Mauris mauris ante, blandit et, ultrices a, suscipit eget, quam. Integer\n' +
+'        ut neque. Vivamus nisi metus, molestie vel, gravida in, condimentum sit\n' +
+'        amet, nunc. Nam a nibh. Donec suscipit eros. Nam mi. Proin viverra leo ut\n' +
+'        odio. Curabitur malesuada. Vestibulum a velit eu ante scelerisque vulputate.\n' +
+'    </p>\n' +
+'</div>\n' +
+'<h3>Section 2</h3>\n' +
+'<div>\n' +
+'    <p>\n' +
+'        Sed non urna. Donec et ante. Phasellus eu ligula. Vestibulum sit amet\n' +
+'        purus. Vivamus hendrerit, dolor at aliquet laoreet, mauris turpis porttitor\n' +
+'        velit, faucibus interdum tellus libero ac justo. Vivamus non quam. In\n' +
+'        suscipit faucibus urna.\n' +
+'    </p>\n' +
+'</div>\n' +
+'<h3>Section 3</h3>\n' +
+'<div>\n' +
+'    <p>\n' +
+'        Nam enim risus, molestie et, porta ac, aliquam ac, risus. Quisque lobortis.\n' +
+'        Phasellus pellentesque purus in massa. Aenean in pede. Phasellus ac libero\n' +
+'        ac tellus pellentesque semper. Sed ac felis. Sed commodo, magna quis\n' +
+'        lacinia ornare, quam ante aliquam nisi, eu iaculis leo purus venenatis dui.\n' +
+'    </p>\n' +
+'    <ul>\n' +
+'        <li>List item one</li>\n' +
+'        <li>List item two</li>\n' +
+'        <li>List item three</li>\n' +
+'    </ul>\n' +
+'</div>\n' +
+'<h3>Section 4</h3>\n' +
+'<div>\n' +
+'    <p>\n' +
+'        Cras dictum. Pellentesque habitant morbi tristique senectus et netus\n' +
+'        et malesuada fames ac turpis egestas. Vestibulum ante ipsum primis in\n' +
+'        faucibus orci luctus et ultrices posuere cubilia Curae; Aenean lacinia\n' +
+'        mauris vel est.\n' +
+'    </p>\n' +
+'    <p>\n' +
+'        Suspendisse eu nisl. Nullam ut libero. Integer dignissim consequat lectus.\n' +
+'        Class aptent taciti sociosqu ad litora torquent per conubia nostra, per\n' +
+'        inceptos himenaeos.\n' +
+'    </p>\n' +
+'</div>\n' +
+'</div>\n' +
+'';
+
 jsxc.gui.template['selectionDialog'] = '<h3></h3>\n' +
 '<p></p>\n' +
 '\n' +
