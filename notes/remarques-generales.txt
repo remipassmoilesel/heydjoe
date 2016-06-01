@@ -1,0 +1,6 @@
+
+Dépendances, images, son:
+    Tous ces fichiers (jsxc/lib, jsxc/img, ...) sont copiés par Grunt dans le dossier de destination.
+
+Déconnexion:
+    jsxc.xmpp.logout(true); // true enlève l'interface, false la laisse sur la page
