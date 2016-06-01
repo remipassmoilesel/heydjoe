@@ -149,7 +149,7 @@ function constructGui(){
     };
 
     appendToUtilsInfo('Feuille de route',
-        '<a target="_blank" href="http://' + domain + ':9001/p/feuille-de-route">http://test-messagerie.ddns.net:9001/p/feuille-de-route</a>');
+        '<a target="_blank" href="http://' + domain + ':9001/p/feuille-de-route">http://' + domain + ':9001/p/feuille-de-route</a>');
 
     appendToUtilsInfo('Console XMPP',
         '<a target="_blank" href="' + consoleUrl + '">' + consoleUrl + '</a>');
