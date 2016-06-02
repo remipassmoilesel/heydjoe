@@ -4,3 +4,4 @@ Dépendances, images, son:
 
 Déconnexion:
     jsxc.xmpp.logout(true); // true enlève l'interface, false la laisse sur la page
+

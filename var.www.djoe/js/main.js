@@ -46,17 +46,22 @@ $(function() {
     // initialisation de JSXC
     // l'option off the record est désactivée
     jsxc.init({
-      xmpp: {
-        url: boshUrl,
-        domain: xmppDomain,
-        resource: xmppResource,
-        overwrite: true,
-        onlogin: true
-      },
-      otr: {
+
+        xmpp: {
+            url: boshUrl,
+            domain: xmppDomain,
+            resource: xmppResource,
+            overwrite: true,
+            onlogin: true
+        },
+
+        /** Off the record désactivé car inutile et source d'erreurs */
+        otr: {
           enable: false
-      },
-      root: 'jsxc/dev/',
+        },
+
+        /** Si des erreurs 404 apparaissent dans la console, il faut adapter cette variable */
+        root: 'jsxc/',
 
         /** RTCPeerConfiguration used for audio/video calls. */
         RTCPeerConfig: {
