@@ -77,12 +77,12 @@ $(function() {
 
         /** ICE servers like defined in http://www.w3.org/TR/webrtc/#idl-def-RTCIceServer */
         iceServers: [
-            { urls: "turn:im.silverpeas.net:3478",
+            { urls: "turn:turn1.silverpeas.net:80",
                 credential: "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
                 credentialType: "password",
                 username: "djoe"
                 },
-            { urls: "turn:im.silverpeas.net:5349",
+            { urls: "turns:turn1.silverpeas.net:443",
                 credential: "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
                 credentialType: "password",
                 username: "djoe"
