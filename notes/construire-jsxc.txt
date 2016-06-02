@@ -23,6 +23,10 @@ Installer JSXC et ses dépendances:
     $ npm install
     $ bower install
 
+    Si ce message d'erreur apparait:
+    gyp: /home/remipassmoilesel/.node-gyp/4.4.4/common.gypi not found
+        >>> supprimer le dossier ~/.node-gyp et recommencer le build
+
     # Lancement de la chaine de compilation
     $ grunt
 
@@ -37,10 +41,10 @@ Commandes Grunt:
     $ grunt
 
     # construire dans build/ mais sans maj de la documentation
-    $ grunt build:prerelease *
+    $ grunt build:prerelease
 
     # construire dans build/
-    $ grunt build:release*
+    $ grunt build:release
 
 
 
