@@ -78,7 +78,7 @@ gyp: /home/remipassmoilesel/.node-gyp/4.4.4/common.gypi not found
     >>> supprimer le dossier ~/.node-gyp et recommencer le build
 
 
-
+Nécéssite la modification des systèmes de pare feu pour autoriser le trafic UDP par les ports utilisés (reTurn)
 
 
 

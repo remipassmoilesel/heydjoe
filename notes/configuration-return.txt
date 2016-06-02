@@ -1,0 +1,5 @@
+
+Le redémarrage du service reTurn ne fonctionne pas correctement, il vaut souvent mieux tuer le processus
+    $ sudo netstat -lntp
+    $ sudo kill ####
+

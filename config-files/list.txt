@@ -1,0 +1,8 @@
+etc/apache2/sites-available/im.silverpeas.net.conf
+etc/reTurn/reTurnServer.config
+opt/openfire/conf/openfire.xml
+etc/init.d/firewall
+etc/init.d/firewall.activate
+etc/init.d/firewall.deactivate
+etc/init/djoe.conf
+

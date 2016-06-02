@@ -76,12 +76,16 @@ $(function() {
         withCredentials: false,
 
         /** ICE servers like defined in http://www.w3.org/TR/webrtc/#idl-def-RTCIceServer */
+        /**
+            Le serveur STUN est accessible en HTTP et en HTTPS, mais seul le HTTPS et laissé.
+            Le serveur TURN n'est accessible qu'en HTTPS
+
+            Mettre des crédential variable, une fois toutes les heures ?
+        */
         iceServers: [
-            { urls: "turn:turn1.silverpeas.net:80",
-                credential: "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
-                credentialType: "password",
-                username: "djoe"
-                },
+
+            { urls: "stun:turn1.silverpeas.net:80"},
+
             { urls: "turns:turn1.silverpeas.net:443",
                 credential: "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
                 credentialType: "password",
