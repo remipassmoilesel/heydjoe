@@ -56,7 +56,26 @@ Installer et configurer Apache 2:
     $ sudo a2ensite im.silverpeas.net.conf
     $ sudo apache2 restart
 
+Installer node4:
+    $ cd /opt/
+    $ wget .... -O nodejs4.tar.gz
+    $ tar -xf nodejs4.tar.gz
+
 Cloner djoe dans /var/www/
+    $ cd /var/www
+    $ git clone http://github.com/remipassmoilesel/djoe
+    $ sudo chown -R www-data:www-data djoe/
+    $ sudo chmod -R g+rw djoe/
+    $ sudo usermod -aG www-data user
+
+    $ cd djoe/var.www.djoe/
+    $ export PATH=$PATH:/opt/nodejs4/bin
+    $ npm install
+    $ bower install
+
+Si ce message d'erreur apparait:
+gyp: /home/remipassmoilesel/.node-gyp/4.4.4/common.gypi not found
+    >>> supprimer le dossier ~/.node-gyp et recommencer le build
 
 
 

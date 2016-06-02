@@ -87,6 +87,20 @@ $(function() {
 
     });
 
+    /*
+
+             {urls: 'stun:stun.l.google.com:19302'},
+                {urls: 'stun:stun1.l.google.com:19302'},
+                {urls: 'stun:stun2.l.google.com:19302'},
+                {urls: 'stun:stun3.l.google.com:19302'},
+                {urls: 'stun:stun.voiparound.com'},
+                {urls: 'stun:stun.voipbuster.com'},
+                {urls: 'stun:stun.voipstunt.com'},
+                {urls: 'stun:stun.voxgratia.org'}
+
+
+    */
+
     // Bouton de connexion à partir d'un identifiant sélectionné et d'un mot de passe déterminé
     $('#connectButton').click(function(){
 
