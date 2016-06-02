@@ -56,7 +56,7 @@ $(function() {
       otr: {
           enable: false
       },
-      root: 'jsxc/build/',
+      root: 'jsxc/dev/',
 
         /** RTCPeerConfiguration used for audio/video calls. */
         RTCPeerConfig: {
