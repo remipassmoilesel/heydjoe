@@ -180,6 +180,8 @@ module.exports = function(grunt) {
          }
       },
       search: {
+
+         // arreter le build si une occurence de console.log est trouvée dans les sources
          console: {
             files: {
                src: ['src/*.js']
@@ -190,6 +192,8 @@ module.exports = function(grunt) {
                failOnMatch: true
             }
          },
+
+         // arreter le build si aucune entrée n'est trouvée dans le CHNAGELOG.md
          changelog: {
             files: {
                src: ['CHANGELOG.md']
@@ -376,7 +380,9 @@ module.exports = function(grunt) {
    grunt.registerTask('build:prerelease', 'Build a new pre-release', function() {
       grunt.config.set('target', 'build');
 
-      grunt.task.run(['search:console', 'build', 'usebanner', 'replace:version', 'replace:libraries', 'replace:todo', 'uglify', 'compress']);
+      // Ne pas empecher le build si des occurences de console sont trouvées.
+      //grunt.task.run(['search:console', 'build', 'usebanner', 'replace:version', 'replace:libraries', 'replace:todo', 'uglify', 'compress']);
+      grunt.task.run(['build', 'usebanner', 'replace:version', 'replace:libraries', 'replace:todo', 'uglify', 'compress']);
    });
 
    grunt.registerTask('build:release', 'Build a new release', function() {
