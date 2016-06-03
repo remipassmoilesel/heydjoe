@@ -5,4 +5,6 @@ etc/init.d/firewall
 etc/init.d/firewall.activate
 etc/init.d/firewall.deactivate
 etc/init/djoe.conf
-
+etc/turnserver.conf
+etc/ssl/
+opt/openfire/resources/security/

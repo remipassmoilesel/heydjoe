@@ -97,6 +97,7 @@ $(function() {
     });
 
     /*
+            // Serveurs STUN publics
 
              {urls: 'stun:stun.l.google.com:19302'},
                 {urls: 'stun:stun1.l.google.com:19302'},
@@ -166,6 +167,9 @@ function constructGui(){
     appendToUtilsInfo('Feuille de route',
         '<a target="_blank" href="http://' + domain + ':9001/p/feuille-de-route">http://' + domain + ':9001/p/feuille-de-route</a>');
 
+    appendToUtilsInfo('Activité du serveur',
+        '<a target="_blank" href="http://im.silverpeas.net:8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1day&color=black">http://im.silverpeas.net:8080/monitorix-cgi/...</a>');
+
     appendToUtilsInfo('Console XMPP',
         '<a target="_blank" href="' + consoleUrl + '">' + consoleUrl + '</a>');
 
@@ -192,6 +196,7 @@ function constructGui(){
 
     appendToUtilsInfo('Liste de ressources',
         '<a target="_blank" href="https://docs.google.com/spreadsheets/d/1qDF4yB3Tpd9Red2sYfCgnISfMBvddke5pYTrwUThyN8/edit#gid=365481387">https://docs.google.com/spreadsheets/...</a>');
+
 
 
 }

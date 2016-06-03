@@ -56,6 +56,8 @@ Installer et configurer Apache 2:
     $ sudo a2ensite im.silverpeas.net.conf
     $ sudo apache2 restart
 
+    Ajouter des notes sur l'installation des certificats intermédiaires
+
 Installer node4:
     $ cd /opt/
     $ wget .... -O nodejs4.tar.gz
