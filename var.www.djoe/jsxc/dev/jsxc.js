@@ -2811,8 +2811,6 @@ jsxc.gui = {
 
       $(this).click(function() {
 
-          //console.log("Onclick, please toggle my friend !");
-
          if (!self.hasClass('jsxc_opened')) {
             // hide other lists
             $('body').click();
@@ -3901,6 +3899,8 @@ jsxc.gui.roster = {
     */
    init: function() {
 
+      // initialiser le menu
+      jsxc.gui.menu.init();
 
       $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('roster')));
 
@@ -3985,8 +3985,6 @@ jsxc.gui.roster = {
 
       // select all bottom elements and transform them in menu
       $('#jsxc_roster > .jsxc_bottom > div').each(function() {
-//        console.log("roster init");
-//        console.log($(this));
           jsxc.gui.toggleList.call($(this));
       });
 
@@ -5511,6 +5509,78 @@ jsxc.gui.template.get = function(name, bid, msg) {
    return name;
 };
 
+/**
+
+Main menu. This menu is included in roster.
+
+All templates are stored in templates/menu*.html
+
+Call init() to build the menu. First init call is done in jsxc.roster.init()
+
+*/
+jsxc.gui.menu = {
+
+    /**
+        Menu elements. Each menu element has a label, a template name and an optionnal init function.
+    */
+    elements: {
+
+        welcomePanel: {
+            label: "Menu",
+            template: "menuWelcome",
+            init: function(){
+                console.log("welcomePanel");
+                console.log(this);
+
+
+            }
+        },
+
+        roomsPanel: {
+            label: "Salons et cannaux",
+            template: "menuRooms",
+            init: function(){
+                console.log("roomsPanel");
+                console.log(this);
+
+            }
+        },
+
+        settingsPanel: {
+            label: "Paramètres",
+            template: "menuSettings",
+            init: function(){
+                console.log("settingsPanel");
+                console.log(this);
+            }
+        }
+     },
+
+    /**
+        Initialise menu and menu elements
+    */
+    init: function(){
+
+        var self = jsxc.gui.menu;
+
+        // initializing elements
+        for(var prop in this.elements){
+            var elmt = this.elements[prop];
+
+            // load template
+            if(typeof elmt.template !== "undefined"){
+                elmt.template = jsxc.gui.template.get(elmt.template);
+            }
+
+            // launch init
+            if(typeof elmt.init !== "undefined"){
+                elmt.init.call(elmt);
+            }
+        }
+
+    }
+
+};
 /**
  * Implements Multi-User Chat (XEP-0045).
  * 
@@ -10739,6 +10809,63 @@ jsxc.gui.template['loginBox'] = '<h3 data-i18n="Login"></h3>\n' +
 '   </div>\n' +
 '</form>\n' +
 '';
+
+jsxc.gui.template['menuRooms'] = '\n' +
+'<p>menuRooms.html</p>\n' +
+'\n' +
+'<p>\n' +
+'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sed erat eu leo bibendum vestibulum. Donec aliquam, augue sit amet suscipit facilisis, ex elit interdum nisl, at commodo sem mi fermentum dolor. Curabitur ac faucibus arcu. Mauris elementum in magna ut aliquet. Phasellus sit amet elit quis dolor tincidunt rhoncus scelerisque id velit. Donec ut nunc id ante varius consectetur et et ex. Suspendisse tempus feugiat sem vel tempus. Etiam orci erat, sagittis et nisi sit amet, tincidunt tristique justo. Proin vitae leo at nisi pellentesque rutrum. Donec turpis mauris, eleifend a ornare eu, dignissim non quam. Pellentesque at odio libero. In sapien lorem, auctor ut vulputate non, sollicitudin et ipsum. Integer ac arcu lacus. In enim arcu, posuere nec metus ac, fermentum lacinia lacus. Cras dignissim molestie lacus pulvinar efficitur. Praesent molestie purus orci, pulvinar sollicitudin velit pulvinar vitae.\n' +
+'</p>\n' +
+'\n' +
+'<p>\n' +
+'Nulla facilisi. Pellentesque ac euismod felis. Sed tempor nisi in euismod dapibus. Fusce posuere lectus id lacus imperdiet cursus. Maecenas id diam nisl. Maecenas volutpat feugiat tellus, sit amet elementum neque finibus placerat. Suspendisse potenti. Etiam massa mi, hendrerit id odio nec, efficitur luctus enim. Sed felis quam, aliquam nec facilisis iaculis, ornare at sapien. Cras ut lorem pellentesque, interdum libero vitae, facilisis erat. Sed in luctus est. Duis arcu mi, tempor eu iaculis vel, malesuada vitae lorem. Nulla est enim, porttitor quis suscipit vitae, sodales vel leo.\n' +
+'</p>\n' +
+'\n' +
+'<p>\n' +
+'Suspendisse potenti. Quisque mattis cursus metus, sed rhoncus nunc condimentum sit amet. Vivamus ultrices turpis massa, quis vestibulum magna pharetra quis. Pellentesque posuere consectetur arcu et dignissim. Aliquam a eros quis mi ultrices porta. Morbi sed condimentum quam, in faucibus ex. Curabitur id bibendum mauris, eget pellentesque ex. Curabitur eget lacus urna. Donec interdum velit a metus varius vulputate. Curabitur accumsan mattis rhoncus. Morbi vehicula viverra nisl, ut venenatis urna tempor sit amet. Sed blandit commodo arcu nec ullamcorper. Aliquam ornare luctus pharetra.\n' +
+'</p>\n' +
+'\n' +
+'<p>\n' +
+'Duis maximus elit non enim tempor finibus. Sed accumsan suscipit ipsum, at varius nisi hendrerit in. Sed eu massa neque. Praesent a aliquam nunc, nec suscipit tellus. Sed odio diam, molestie nec tincidunt vitae, blandit a risus. Aenean laoreet, justo ut tristique pretium, velit libero porta mi, a venenatis dolor massa vitae risus. Donec dapibus, massa a pharetra auctor, augue ipsum tempor sapien, id auctor urna velit vel justo. Maecenas elementum porttitor imperdiet.\n' +
+'</p>';
+
+jsxc.gui.template['menuSettings'] = '\n' +
+'<p>menuSettings.html</p>\n' +
+'\n' +
+'<p>\n' +
+'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sed erat eu leo bibendum vestibulum. Donec aliquam, augue sit amet suscipit facilisis, ex elit interdum nisl, at commodo sem mi fermentum dolor. Curabitur ac faucibus arcu. Mauris elementum in magna ut aliquet. Phasellus sit amet elit quis dolor tincidunt rhoncus scelerisque id velit. Donec ut nunc id ante varius consectetur et et ex. Suspendisse tempus feugiat sem vel tempus. Etiam orci erat, sagittis et nisi sit amet, tincidunt tristique justo. Proin vitae leo at nisi pellentesque rutrum. Donec turpis mauris, eleifend a ornare eu, dignissim non quam. Pellentesque at odio libero. In sapien lorem, auctor ut vulputate non, sollicitudin et ipsum. Integer ac arcu lacus. In enim arcu, posuere nec metus ac, fermentum lacinia lacus. Cras dignissim molestie lacus pulvinar efficitur. Praesent molestie purus orci, pulvinar sollicitudin velit pulvinar vitae.\n' +
+'</p>\n' +
+'\n' +
+'<p>\n' +
+'Nulla facilisi. Pellentesque ac euismod felis. Sed tempor nisi in euismod dapibus. Fusce posuere lectus id lacus imperdiet cursus. Maecenas id diam nisl. Maecenas volutpat feugiat tellus, sit amet elementum neque finibus placerat. Suspendisse potenti. Etiam massa mi, hendrerit id odio nec, efficitur luctus enim. Sed felis quam, aliquam nec facilisis iaculis, ornare at sapien. Cras ut lorem pellentesque, interdum libero vitae, facilisis erat. Sed in luctus est. Duis arcu mi, tempor eu iaculis vel, malesuada vitae lorem. Nulla est enim, porttitor quis suscipit vitae, sodales vel leo.\n' +
+'</p>\n' +
+'\n' +
+'<p>\n' +
+'Suspendisse potenti. Quisque mattis cursus metus, sed rhoncus nunc condimentum sit amet. Vivamus ultrices turpis massa, quis vestibulum magna pharetra quis. Pellentesque posuere consectetur arcu et dignissim. Aliquam a eros quis mi ultrices porta. Morbi sed condimentum quam, in faucibus ex. Curabitur id bibendum mauris, eget pellentesque ex. Curabitur eget lacus urna. Donec interdum velit a metus varius vulputate. Curabitur accumsan mattis rhoncus. Morbi vehicula viverra nisl, ut venenatis urna tempor sit amet. Sed blandit commodo arcu nec ullamcorper. Aliquam ornare luctus pharetra.\n' +
+'</p>\n' +
+'\n' +
+'<p>\n' +
+'Duis maximus elit non enim tempor finibus. Sed accumsan suscipit ipsum, at varius nisi hendrerit in. Sed eu massa neque. Praesent a aliquam nunc, nec suscipit tellus. Sed odio diam, molestie nec tincidunt vitae, blandit a risus. Aenean laoreet, justo ut tristique pretium, velit libero porta mi, a venenatis dolor massa vitae risus. Donec dapibus, massa a pharetra auctor, augue ipsum tempor sapien, id auctor urna velit vel justo. Maecenas elementum porttitor imperdiet.\n' +
+'</p>';
+
+jsxc.gui.template['menuWelcome'] = '\n' +
+'<p>menuWelcome.html</p>\n' +
+'\n' +
+'<p>\n' +
+'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sed erat eu leo bibendum vestibulum. Donec aliquam, augue sit amet suscipit facilisis, ex elit interdum nisl, at commodo sem mi fermentum dolor. Curabitur ac faucibus arcu. Mauris elementum in magna ut aliquet. Phasellus sit amet elit quis dolor tincidunt rhoncus scelerisque id velit. Donec ut nunc id ante varius consectetur et et ex. Suspendisse tempus feugiat sem vel tempus. Etiam orci erat, sagittis et nisi sit amet, tincidunt tristique justo. Proin vitae leo at nisi pellentesque rutrum. Donec turpis mauris, eleifend a ornare eu, dignissim non quam. Pellentesque at odio libero. In sapien lorem, auctor ut vulputate non, sollicitudin et ipsum. Integer ac arcu lacus. In enim arcu, posuere nec metus ac, fermentum lacinia lacus. Cras dignissim molestie lacus pulvinar efficitur. Praesent molestie purus orci, pulvinar sollicitudin velit pulvinar vitae.\n' +
+'</p>\n' +
+'\n' +
+'<p>\n' +
+'Nulla facilisi. Pellentesque ac euismod felis. Sed tempor nisi in euismod dapibus. Fusce posuere lectus id lacus imperdiet cursus. Maecenas id diam nisl. Maecenas volutpat feugiat tellus, sit amet elementum neque finibus placerat. Suspendisse potenti. Etiam massa mi, hendrerit id odio nec, efficitur luctus enim. Sed felis quam, aliquam nec facilisis iaculis, ornare at sapien. Cras ut lorem pellentesque, interdum libero vitae, facilisis erat. Sed in luctus est. Duis arcu mi, tempor eu iaculis vel, malesuada vitae lorem. Nulla est enim, porttitor quis suscipit vitae, sodales vel leo.\n' +
+'</p>\n' +
+'\n' +
+'<p>\n' +
+'Suspendisse potenti. Quisque mattis cursus metus, sed rhoncus nunc condimentum sit amet. Vivamus ultrices turpis massa, quis vestibulum magna pharetra quis. Pellentesque posuere consectetur arcu et dignissim. Aliquam a eros quis mi ultrices porta. Morbi sed condimentum quam, in faucibus ex. Curabitur id bibendum mauris, eget pellentesque ex. Curabitur eget lacus urna. Donec interdum velit a metus varius vulputate. Curabitur accumsan mattis rhoncus. Morbi vehicula viverra nisl, ut venenatis urna tempor sit amet. Sed blandit commodo arcu nec ullamcorper. Aliquam ornare luctus pharetra.\n' +
+'</p>\n' +
+'\n' +
+'<p>\n' +
+'Duis maximus elit non enim tempor finibus. Sed accumsan suscipit ipsum, at varius nisi hendrerit in. Sed eu massa neque. Praesent a aliquam nunc, nec suscipit tellus. Sed odio diam, molestie nec tincidunt vitae, blandit a risus. Aenean laoreet, justo ut tristique pretium, velit libero porta mi, a venenatis dolor massa vitae risus. Donec dapibus, massa a pharetra auctor, augue ipsum tempor sapien, id auctor urna velit vel justo. Maecenas elementum porttitor imperdiet.\n' +
+'</p>';
 
 jsxc.gui.template['pleaseAccept'] = '<p data-i18n="Please_accept_"></p>\n' +
 '';

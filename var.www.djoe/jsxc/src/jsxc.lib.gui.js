@@ -399,8 +399,6 @@ jsxc.gui = {
 
       $(this).click(function() {
 
-          //console.log("Onclick, please toggle my friend !");
-
          if (!self.hasClass('jsxc_opened')) {
             // hide other lists
             $('body').click();
@@ -1489,6 +1487,8 @@ jsxc.gui.roster = {
     */
    init: function() {
 
+      // initialiser le menu
+      jsxc.gui.menu.init();
 
       $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('roster')));
 
@@ -1573,8 +1573,6 @@ jsxc.gui.roster = {
 
       // select all bottom elements and transform them in menu
       $('#jsxc_roster > .jsxc_bottom > div').each(function() {
-//        console.log("roster init");
-//        console.log($(this));
           jsxc.gui.toggleList.call($(this));
       });
 

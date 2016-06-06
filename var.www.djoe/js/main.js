@@ -1,6 +1,7 @@
 
 // le domaine de la page
-var domain =  document.location.host;
+// var domain =  document.location.host;
+var domain =  "im.silverpeas.net";
 
 // service XMPP / HTTP
 //var boshUrl =  'http://' + domain + ':7070/http-bind/';
@@ -28,6 +29,7 @@ var availablesLogins = [
     "miguel",
     "aurore",
     "nicolas",
+    "sebastien",
     "jean",
     "julescesar",
     "companioncube"
