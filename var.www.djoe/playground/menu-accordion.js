@@ -15,6 +15,13 @@ var djoeMenu = {
     */
     currentResults: [],
 
+    searchTitleMark: "<span class='djoeMenuSearchTitleMark'> &lt;!&gt;</span>",
+
+    highlightSettings:  {
+                   caseSensitive: false,
+                   className: 'djoeMenuSearchResults'
+               },
+
     /**
         Initialisation du menu
     */
@@ -47,9 +54,20 @@ var djoeMenu = {
             // termes à rechercher
             var rawTerms = $(this).val().trim();
 
+            // reinitialiser les indicateurs
+            djoeMenu.currentResults = [];
+            djoeMenu.currentSearchResultIndex = 0;
+            $("#djoeMenuCtn span.djoeMenuSearchTitleMark").remove();
+
             // champs vide, arret
             if(rawTerms.length < 1){
-                djoeMenu.feedback(" ");
+
+                djoeMenu.feedback();
+
+                djoeMenu.resetHighlights();
+
+                $( "#djoeMenuCtn > h1.ui-accordion-header" ).eq(0).trigger("click");
+
                 return;
             }
 
@@ -59,11 +77,10 @@ var djoeMenu = {
             // surligner les résultats
             djoeMenu.highlightTerms(rawTerms);
 
+            //console.log($(".djoeMenuSearchResults"));
+
             // lister les résultats
             djoeMenu.currentResults = $(".djoeMenuSearchResults");
-
-            // reinitialiser la valeur courante
-            djoeMenu.currentSearchResultIndex = 0;
 
             //console.log("djoeMenu.currentResults");
             //console.log(djoeMenu.currentResults.length);
@@ -73,16 +90,33 @@ var djoeMenu = {
 
                 djoeMenu.feedback("Aucun résultat");
 
-                djoeMenu.currentResults = [];
-
-                $("#djoeMenuCtn h1:first-child").trigger("click");
+                $("#djoeMenuCtn > h1.ui-accordion-header").eq(0).trigger("click");
 
             }
 
             // un ou plusieurs résultats, afficher l'onglet du premier resultat correspondant
             else {
 
-                djoeMenu.feedback( djoeMenu.currentResults.length + " résultats");
+                //djoeMenu.feedback(djoeMenu.currentResults.length + " résultats");
+
+                // ajouter les marques aux titres correspondants
+                djoeMenu.currentResults.each(function(index, element){
+
+                    var title;
+                    var titleSearch = $(this).parents("h1.ui-accordion-header");
+                    if(titleSearch.length > 0){
+                        title = titleSearch.eq(0);
+                    } else {
+                        title = djoeMenu.currentResults.eq(index).parents("div.ui-accordion-content").prev("h1.ui-accordion-header");
+                    }
+
+                    var mark = $(djoeMenu.searchTitleMark);
+
+                    if(title.find("span.djoeMenuSearchTitleMark").length < 1){
+                        title.append(mark);
+                    }
+
+                });
 
                 djoeMenu.selectResult(0);
 
@@ -93,7 +127,7 @@ var djoeMenu = {
         Afficher un retour
     */
     feedback: function(text){
-        $("#djoeMenuFeedback").text(text);
+        $("#djoeMenuFeedback").html(text || "&nbsp;");
     },
 
     /**
@@ -101,17 +135,24 @@ var djoeMenu = {
     */
     highlightTerms: function(terms){
 
-        var highlightSettings = {
-            caseSensitive: false,
-            className: 'djoeMenuSearchResults'
-        };
-
-        // enlever le surlignage de tous les elements
-        $("#djoeMenuCtn").unhighlight(highlightSettings);
+        djoeMenu.resetHighlights();
 
         // surligner tous les élements
-        $("#djoeMenuCtn").highlight(terms, highlightSettings);
+        $("#djoeMenuCtn").highlight(terms, djoeMenu.highlightSettings);
 
+    },
+
+    /**
+        Enlever le surlignage
+    */
+    resetHighlights: function(){
+
+        $("#djoeMenuCtn").unhighlight(djoeMenu.highlightSettings);
+
+        // retirer les précédents résultats actifs
+        $("#djoeMenuCtn.djoeMenuActiveResult").each(function(){
+            $(this).removeClass("djoeMenuActiveResult");
+        });
     },
 
     /**
@@ -151,21 +192,17 @@ var djoeMenu = {
     */
     selectResult: function(index){
 
-        // retirer le précédent résultat actif
-        $("#djoeMenuCtn .djoeMenuActiveResult").each(function(){
-            $(this).removeClass("djoeMenuActiveResult");
-        });
-
         // ajouter la classe au résultat actif
-        $(djoeMenu.currentResults[djoeMenu.currentSearchResultIndex]).addClass("djoeMenuActiveResult");
+        djoeMenu.currentResults.eq(djoeMenu.currentSearchResultIndex).addClass("djoeMenuActiveResult");
 
         // activer l'accordéon correspondant
-        $(djoeMenu.currentResults[0]).parents("div .ui-accordion-content").prev("h1").trigger("click");
+        var titleSearch = djoeMenu.currentResults.eq(index).parents("h1");
+        if(titleSearch.length > 0){
+            titleSearch.eq(0).trigger("click");
+        } else {
+            djoeMenu.currentResults.eq(index).parents("div.ui-accordion-content").prev("h1.ui-accordion-header").trigger("click");
+        }
 
     }
 
 };
-
-$(function() {
-
-});
