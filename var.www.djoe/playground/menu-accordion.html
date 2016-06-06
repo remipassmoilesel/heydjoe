@@ -4,27 +4,35 @@
     <meta charset="utf-8">
     <title>jQuery UI Accordion - Default functionality</title>
 
-    <link rel="stylesheet" href="../jsxc/build/css/jquery-ui.min.css">
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/base/jquery-ui.css">
 
-    <script src="../jsxc/dev/lib/jquery-2.2.4.js"></script>
-    <script src="../jsxc/dev/lib/jquery.ui.min.js"></script>
-    <script src="../jsxc/dev/lib/jquery.highlight.js"></script>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+    <script src="jquery.highlight.js"></script>
 
     <script src="menu-accordion.js"></script>
 
     <style type="text/css">
 
-        #menu{
+        #djoeMenu{
             width: 30%;
             magin: auto;
 
             font-size: 12px;
         }
 
-        #menu > div{
+        #djoeMenu > div{
             padding: 5px;
         }
 
+        .djoeMenuSearchResults{
+            background: #FFFF88;
+        }
+
+        .djoeMenuActiveResult{
+            color: blue;
+            font-weight: bolder;
+        }
 
 
     </style>
@@ -32,117 +40,120 @@
 </head>
 <body>
 
-<div id="searchBar" style="margin: 20px">
-    Rechercher un terme:
-    <input type="text" id="searchTextField" placeholder="Rechercher..."/>
-</div>
+<div id="djoeMenu" style="margin: 20px">
 
-<div id="menu">
-
-    <!-- Panneau par défaut -->
-    <h1>Menu</h1>
     <div>
-        <p>
-            Recherchez un fonctionnalité à l'aide du champs ci-dessus ou explorez
-            les fonctionnalités disponibles :)
-        </p>
+        <input type="text" id="djoeMenuSearchTextField" placeholder="Rechercher..."/>
+        <input type="button" id="djoeMenuPreviousButton" value="Précédent"/>
+        <input type="button" id="djoeMenuNextButton" value="Suivant"/>
+    </div>
 
-        <p>
-            Fil d'actualité:
+    <div id="djoeMenuFeedback">&nbsp;</div>
+
+    <div id="djoeMenuCtn">
+
+        <!-- Panneau par défaut -->
+        <h1>Menu</h1>
+        <div>
+            <p>
+                Recherchez un fonctionnalité à l'aide du champs ci-dessus ou explorez
+                les fonctionnalités disponibles :)
+            </p>
+
+            <p>
+                Fil d'actualité:
             <ul>
                 <li>Nouvel utilisateur enregistré: Maurice Incognito</li>
                 <li>Nouveau message: Claudette: Hey hey ça va ti eu l'Claude ?</li>
                 <li>Appel manqué: Bernard Directeurpascontent à appelé 17 fois</li>
             </ul>
-        </p>
+            </p>
 
-        <p>
-            Muet
-        </p>
+            <p>
+                Muet
+            </p>
 
-    </div>
+        </div>
 
+        <h1>Contacts</h1>
+        <div>
+            <p>
+                Liste de contacts
+            </p>
 
-    <h1>Contacts</h1>
-    <div>
-        <p>
-            Liste de contacts
-        </p>
+            <div>Jean</div>
+            <div>Paul</div>
+            <div>Pascal</div>
 
-        <div>Jean</div>
-        <div>Paul</div>
-        <div>Pascal</div>
+        </div>
 
-    </div>
+        <h1>Salons et canaux</h1>
+        <div>
+            <p>
+                Gérer les salons et canaux de conversation
+            </p>
+            <div>Liste des salons</div>
+            <div>Ouvrir un nouveau salon</div>
+            <div>Liste des canaux</div>
+            <div>Ouvrir un nouveau canal</div>
+            <div></div>
+        </div>
 
+        <h1>Outils collaboratifs</h1>
+        <div>
+            <p>
+                Utiliser et gérer les outils collaboratifs
+            </p>
+            <div>Liste des pads</div>
+            <div>Créer un pad</div>
+            <div></div>
+        </div>
 
-    <h1>Salons et canaux</h1>
-    <div>
-        <p>
-            Gérer les salons et canaux de conversation
-        </p>
-        <div>Liste des salons</div>
-        <div>Ouvrir un nouveau salon</div>
-        <div>Liste des canaux</div>
-        <div>Ouvrir un nouveau canal</div>
-        <div></div>
-    </div>
+        <h1>Disponibilité</h1>
+        <div>
+            <p>
+                Options de disponibilité.
+            </p>
 
+            <div>Disponible</div>
+            <div>Occupé</div>
+            <div>Absent</div>
 
-    <h1>Outils collaboratifs</h1>
-    <div>
-        <p>
-            Utiliser et gérer les outils collaboratifs
-        </p>
-        <div>Liste des pads</div>
-        <div>Créer un pad</div>
-        <div></div>
-    </div>
+        </div>
 
-    <h1>Disponibilité</h1>
-    <div>
-        <p>
-            Options de disponibilité.
-        </p>
+        <h1>Notification</h1>
+        <div>
+            <p>
+                Gérer les types de notification
+            </p>
+            <div>Sonores: on | off</div>
+            <div>De bureau: on | off</div>
+            <div>Autoriser les appels vidéo: on | off</div>
+        </div>
 
-        <div>Disponible</div>
-        <div>Occupé</div>
-        <div>Absent</div>
+        <h1>Réglages</h1>
+        <div>
+            <p>
+                Gérer les types de notification
+            </p>
+            <div>Sonores: on | off</div>
+            <div>De bureau: on | off</div>
+            <div>Autoriser les appels vidéo: on | off</div>
+        </div>
 
-    </div>
+        <h1>Informations</h1>
+        <div>
+            <p>
 
-    <h1>Notification</h1>
-    <div>
-        <p>
-            Gérer les types de notification
-        </p>
-        <div>Sonores: on | off</div>
-        <div>De bureau: on | off</div>
-        <div>Autoriser les appels vidéo: on | off</div>
-    </div>
+            </p>
+            <div>Console XMPP</div>
+            <div>Console d'événements Jquery</div>
+            <div>A propos</div>
+        </div>
 
-    <h1>Réglages</h1>
-    <div>
-        <p>
-            Gérer les types de notification
-        </p>
-        <div>Sonores: on | off</div>
-        <div>De bureau: on | off</div>
-        <div>Autoriser les appels vidéo: on | off</div>
-    </div>
-
-    <h1>Informations</h1>
-    <div>
-        <p>
-
-        </p>
-        <div>Console XMPP</div>
-        <div>Console d'événements Jquery</div>
-        <div>A propos</div>
     </div>
 
 </div>
-
 
 
 </body>

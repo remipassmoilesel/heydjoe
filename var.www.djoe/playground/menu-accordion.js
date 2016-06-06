@@ -1,111 +1,171 @@
-$(function() {
 
-    // créer l'accordéon
-    $( "#menu" ).accordion({
-      header: "h1"
-    });
-
-    // rechercher dans l'accordéon
-    $("#searchTextField").keyup(function(event){
-
-
-        var rawTerms = $(this).val().trim();
-
-        /*
-            Surligner les termes qui correspondent
-        */
-        var highlightSettings = {className: 'menuHighlighted'};
-
-        // enlever le surlignage de tous les elements
-        $("#menu div").unhighlight(highlightSettings);
-
-        // surligner tous les élements
-        $("#menu div").highlight(rawTerms, highlightSettings);
-
-        $(".menuHighlighted").css({ backgroundColor: "#FFFF88" });
-
-        /*
-            Ouvrir l'onglet correspondant
-        */
-
-        // parcourir les élements enfants
-        var childs =$("#menu").children();
-        childs.each(function(index){
-
-//            console.log("            if(index === childs.length){");
-//            console.log(index);
-//            console.log(childs.length);
-
-            // rechercher le terme, recherche basique pour exemple
-            if($(this).text().toLowerCase().indexOf(rawTerms.toLowerCase()) !== -1){
-
-                // si l'element est un titre, l'activer
-                if($(this).prop("tagName") === "H1"){
-                    $(this).trigger("click");
-                }
-
-                // sinon activer l'element précédent. index n'est pas décrémenter puisqu'avec nth-child le compte commence à 1
-                else{
-                    $("#menu *:nth-child(" + (index) +")" ).trigger("click");
-                }
-
-            }
-
-            // fin de la boucle, afficher le premier panneau, avec une petite note "Pas de résultats ..."
-            if(index + 1  === childs.length){
-                $("#menu *:nth-child(1)").trigger("click");
-            }
-
-         });
-
-    });
-
-
+$(function(){
+    djoeMenu.init();
 });
 
- $(function() {
-  var $context = $(".context");
-  var $form = $("form");
-  var $button = $form.find("button[name='perform']");
-  var $input = $form.find("input[name='keyword']");
+var djoeMenu = {
 
-  $button.on("click.perform", function() {
+    /**
+        Index du résultat courant
+    */
+    currentSearchResultIndex: 0,
+    
+    /**
+        Liste des élements de résultat
+    */
+    currentResults: [],
 
-    // Determine search term
-    var searchTerm = $input.val();
+    /**
+        Initialisation du menu
+    */
+    init: function (){
 
-    // Determine options
-    var options = {};
-    var values = $form.serializeArray();
-    /* Because serializeArray() ignores unset checkboxes */
-    values = values.concat(
-      $form.find("input[type='checkbox']:not(:checked)").map(
-        function() {
-          return {
-            "name": this.name,
-            "value": "false"
-          }
-        }).get()
-    );
-    $.each(values, function(i, opt){
-      var key = opt.name;
-      var val = opt.value;
-      if(key === "keyword" || !val){
-        return;
-      }
-      if(val === "false"){
-        val = false;
-      } else if(val === "true"){
-        val = true;
-      }
-      options[key] = val;
-    });
+        // créer le menu accordéon
+        $( "#djoeMenuCtn" ).accordion({
+          header: "h1"
+        });
 
-    // Remove old highlights and highlight
-    // new search term afterwards
-    $context.unmark();
-    $context.mark(searchTerm, options);
+        // rechercher dans l'accordéon
+        $("#djoeMenuSearchTextField").keyup(djoeMenu.onSearchKeyUp);
 
-  });
-  $button.trigger("click.perform");
+        // afficher le résultat suivant
+        $("#djoeMenuNextButton").click(function(){
+            djoeMenu.showNextResult();
+        });
+
+        // afficher le résultat suivant
+        $("#djoeMenuPreviousButton").click(function(){
+            djoeMenu.showPreviousResult();
+        });
+    },
+
+    /**
+        Fonction appelée lorsque l'utilisateur saisi dans le champs de recherche
+    */
+    onSearchKeyUp: function (event){
+
+            // termes à rechercher
+            var rawTerms = $(this).val().trim();
+
+            // champs vide, arret
+            if(rawTerms.length < 1){
+                djoeMenu.feedback(" ");
+                return;
+            }
+
+            // console.log("rawTerms");
+            // console.log(rawTerms);
+
+            // surligner les résultats
+            djoeMenu.highlightTerms(rawTerms);
+
+            // lister les résultats
+            djoeMenu.currentResults = $(".djoeMenuSearchResults");
+
+            // reinitialiser la valeur courante
+            djoeMenu.currentSearchResultIndex = 0;
+
+            //console.log("djoeMenu.currentResults");
+            //console.log(djoeMenu.currentResults.length);
+
+            // pas de résultats, activer le premier onglet
+            if(djoeMenu.currentResults.length < 1){
+
+                djoeMenu.feedback("Aucun résultat");
+
+                djoeMenu.currentResults = [];
+
+                $("#djoeMenuCtn h1:first-child").trigger("click");
+
+            }
+
+            // un ou plusieurs résultats, afficher l'onglet du premier resultat correspondant
+            else {
+
+                djoeMenu.feedback( djoeMenu.currentResults.length + " résultats");
+
+                djoeMenu.selectResult(0);
+
+            }
+    },
+
+    /**
+        Afficher un retour
+    */
+    feedback: function(text){
+        $("#djoeMenuFeedback").text(text);
+    },
+
+    /**
+        Surligner tous les mots du menu correspondant aux termes spécifiés
+    */
+    highlightTerms: function(terms){
+
+        var highlightSettings = {
+            caseSensitive: false,
+            className: 'djoeMenuSearchResults'
+        };
+
+        // enlever le surlignage de tous les elements
+        $("#djoeMenuCtn").unhighlight(highlightSettings);
+
+        // surligner tous les élements
+        $("#djoeMenuCtn").highlight(terms, highlightSettings);
+
+    },
+
+    /**
+        Surligner d'une couleur différente le prochain résultat
+    */
+    showNextResult: function(){
+
+        djoeMenu.currentSearchResultIndex ++;
+
+        if(djoeMenu.currentSearchResultIndex > djoeMenu.currentResults.length - 1){
+            djoeMenu.feedback("Dernier résultat atteint");
+            djoeMenu.currentSearchResultIndex = djoeMenu.currentResults.length - 1;
+        }
+
+        djoeMenu.selectResult(djoeMenu.currentSearchResultIndex);
+
+    },
+
+    /**
+        Surligner d'une couleur différente le précédent résultat
+    */
+    showPreviousResult: function(){
+
+        djoeMenu.currentSearchResultIndex --;
+
+        if(djoeMenu.currentSearchResultIndex <= 0){
+            djoeMenu.feedback("Premier résultat atteint");
+            djoeMenu.currentSearchResultIndex = 0;
+        }
+
+        djoeMenu.selectResult(djoeMenu.currentSearchResultIndex);
+
+    },
+
+    /**
+        Affiche l'onglet d'un resultat et le surligne d'une autre couleur
+    */
+    selectResult: function(index){
+
+        // retirer le précédent résultat actif
+        $("#djoeMenuCtn .djoeMenuActiveResult").each(function(){
+            $(this).removeClass("djoeMenuActiveResult");
+        });
+
+        // ajouter la classe au résultat actif
+        $(djoeMenu.currentResults[djoeMenu.currentSearchResultIndex]).addClass("djoeMenuActiveResult");
+
+        // activer l'accordéon correspondant
+        $(djoeMenu.currentResults[0]).parents("div .ui-accordion-content").prev("h1").trigger("click");
+
+    }
+
+};
+
+$(function() {
+
 });
