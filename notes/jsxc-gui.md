@@ -1,4 +1,6 @@
 
+
+
 Internationalisation: utilisation de Jquery / i18n
     $.i18n( 'message_hello' ); // obtenir le message
     <li class="jsxc_settings jsxc_settingsicon" data-i18n="Settings"></li> // insérer du texte dans du HTML

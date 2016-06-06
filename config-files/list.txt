@@ -8,3 +8,4 @@ etc/init/djoe.conf
 etc/turnserver.conf
 etc/ssl/
 opt/openfire/resources/security/
+etc/monitorix/monitorix.conf

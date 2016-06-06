@@ -28,8 +28,13 @@ $(function() {
             Ouvrir l'onglet correspondant
         */
 
-        // parcourir les élements
-        $("#menu").children().each(function(index){
+        // parcourir les élements enfants
+        var childs =$("#menu").children();
+        childs.each(function(index){
+
+//            console.log("            if(index === childs.length){");
+//            console.log(index);
+//            console.log(childs.length);
 
             // rechercher le terme, recherche basique pour exemple
             if($(this).text().toLowerCase().indexOf(rawTerms.toLowerCase()) !== -1){
@@ -41,13 +46,16 @@ $(function() {
 
                 // sinon activer l'element précédent. index n'est pas décrémenter puisqu'avec nth-child le compte commence à 1
                 else{
-
-                    console.log($( "#menu *:nth-child(" + (index) +")" ));
-                    $( "#menu *:nth-child(" + (index) +")" ).trigger("click");
-
+                    $("#menu *:nth-child(" + (index) +")" ).trigger("click");
                 }
 
             }
+
+            // fin de la boucle, afficher le premier panneau, avec une petite note "Pas de résultats ..."
+            if(index + 1  === childs.length){
+                $("#menu *:nth-child(1)").trigger("click");
+            }
+
          });
 
     });

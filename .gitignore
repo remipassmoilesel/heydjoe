@@ -5,6 +5,6 @@ node_modules
 bower_components
 var.www.djoe/jsxc/build/*
 config-files/opt/openfire/resources/security/*
-config-files/etc/ssl/*    
+config-files/etc/ssl/*
 
 

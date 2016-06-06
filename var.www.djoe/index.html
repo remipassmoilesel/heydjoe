@@ -24,6 +24,7 @@
     <script src="jsxc/dev/lib/jquery.ui.min.js"></script>
     <script src="jsxc/dev/lib/jquery.slimscroll.js"></script>
     <script src="jsxc/dev/lib/jquery.fullscreen.js"></script>
+    <script src="jsxc/dev/lib/jquery.eventconsole.js/jquery.eventconsole.js"></script>
     <script src="jsxc/dev/lib/jsxc.dep.js"></script>
     <!--  endrequire -->
 
@@ -33,9 +34,6 @@
     <!-- init script -->
     <script src="js/bootstrap.min.js"></script>
     <script src="js/main.js"></script>
-
-    <!-- Console d'évènements JQuery -->
-    <script src="js/jqueryEventsConsole.js"></script>
 
     <!-- Console pour stockage -->
     <script src="js/storageConsole.js"></script>
@@ -88,7 +86,7 @@
             <!-- console JQuery -->
             <p>&nbsp;</p>
             <div id="eventsConsole"></div>
-            <script>new JQueryEventsConsole("eventsConsole");</script>
+            <script>$("#eventsConsole").eventConsole();</script>
 
             <!-- console Storage-->
             <p>&nbsp;</p>

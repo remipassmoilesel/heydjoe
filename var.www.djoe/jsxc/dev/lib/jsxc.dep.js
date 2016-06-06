@@ -1,5 +1,5 @@
 /*!
- * jsxc v3.0.1-nightly.20160504 - 2016-06-01
+ * jsxc v3.0.1-nightly.20160504 - 2016-06-03
  * 
  * This file concatenates all dependencies of jsxc.
  * 
