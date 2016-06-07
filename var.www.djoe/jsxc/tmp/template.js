@@ -359,62 +359,131 @@ jsxc.gui.template['loginBox'] = '<h3 data-i18n="Login"></h3>\n' +
 '</form>\n' +
 '';
 
-jsxc.gui.template['menuRooms'] = '\n' +
-'<p>menuRooms.html</p>\n' +
+jsxc.gui.template['menuRooms'] = '<div>\n' +
+'    <p>menuRooms.html</p>\n' +
 '\n' +
-'<p>\n' +
-'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sed erat eu leo bibendum vestibulum. Donec aliquam, augue sit amet suscipit facilisis, ex elit interdum nisl, at commodo sem mi fermentum dolor. Curabitur ac faucibus arcu. Mauris elementum in magna ut aliquet. Phasellus sit amet elit quis dolor tincidunt rhoncus scelerisque id velit. Donec ut nunc id ante varius consectetur et et ex. Suspendisse tempus feugiat sem vel tempus. Etiam orci erat, sagittis et nisi sit amet, tincidunt tristique justo. Proin vitae leo at nisi pellentesque rutrum. Donec turpis mauris, eleifend a ornare eu, dignissim non quam. Pellentesque at odio libero. In sapien lorem, auctor ut vulputate non, sollicitudin et ipsum. Integer ac arcu lacus. In enim arcu, posuere nec metus ac, fermentum lacinia lacus. Cras dignissim molestie lacus pulvinar efficitur. Praesent molestie purus orci, pulvinar sollicitudin velit pulvinar vitae.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sed erat eu leo bibendum vestibulum. Donec\n' +
+'        aliquam, augue sit amet suscipit facilisis, ex elit interdum nisl, at commodo sem mi fermentum dolor. Curabitur\n' +
+'        ac faucibus arcu. Mauris elementum in magna ut aliquet. Phasellus sit amet elit quis dolor tincidunt rhoncus\n' +
+'        scelerisque id velit. Donec ut nunc id ante varius consectetur et et ex. Suspendisse tempus feugiat sem vel\n' +
+'        tempus. Etiam orci erat, sagittis et nisi sit amet, tincidunt tristique justo. Proin vitae leo at nisi\n' +
+'        pellentesque rutrum. Donec turpis mauris, eleifend a ornare eu, dignissim non quam. Pellentesque at odio libero.\n' +
+'        In sapien lorem, auctor ut vulputate non, sollicitudin et ipsum. Integer ac arcu lacus. In enim arcu, posuere\n' +
+'        nec metus ac, fermentum lacinia lacus. Cras dignissim molestie lacus pulvinar efficitur. Praesent molestie purus\n' +
+'        orci, pulvinar sollicitudin velit pulvinar vitae.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Nulla facilisi. Pellentesque ac euismod felis. Sed tempor nisi in euismod dapibus. Fusce posuere lectus id lacus imperdiet cursus. Maecenas id diam nisl. Maecenas volutpat feugiat tellus, sit amet elementum neque finibus placerat. Suspendisse potenti. Etiam massa mi, hendrerit id odio nec, efficitur luctus enim. Sed felis quam, aliquam nec facilisis iaculis, ornare at sapien. Cras ut lorem pellentesque, interdum libero vitae, facilisis erat. Sed in luctus est. Duis arcu mi, tempor eu iaculis vel, malesuada vitae lorem. Nulla est enim, porttitor quis suscipit vitae, sodales vel leo.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Nulla facilisi. Pellentesque ac euismod felis. Sed tempor nisi in euismod dapibus. Fusce posuere lectus id lacus\n' +
+'        imperdiet cursus. Maecenas id diam nisl. Maecenas volutpat feugiat tellus, sit amet elementum neque finibus\n' +
+'        placerat. Suspendisse potenti. Etiam massa mi, hendrerit id odio nec, efficitur luctus enim. Sed felis quam,\n' +
+'        aliquam nec facilisis iaculis, ornare at sapien. Cras ut lorem pellentesque, interdum libero vitae, facilisis\n' +
+'        erat. Sed in luctus est. Duis arcu mi, tempor eu iaculis vel, malesuada vitae lorem. Nulla est enim, porttitor\n' +
+'        quis suscipit vitae, sodales vel leo.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Suspendisse potenti. Quisque mattis cursus metus, sed rhoncus nunc condimentum sit amet. Vivamus ultrices turpis massa, quis vestibulum magna pharetra quis. Pellentesque posuere consectetur arcu et dignissim. Aliquam a eros quis mi ultrices porta. Morbi sed condimentum quam, in faucibus ex. Curabitur id bibendum mauris, eget pellentesque ex. Curabitur eget lacus urna. Donec interdum velit a metus varius vulputate. Curabitur accumsan mattis rhoncus. Morbi vehicula viverra nisl, ut venenatis urna tempor sit amet. Sed blandit commodo arcu nec ullamcorper. Aliquam ornare luctus pharetra.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Suspendisse potenti. Quisque mattis cursus metus, sed rhoncus nunc condimentum sit amet. Vivamus ultrices turpis\n' +
+'        massa, quis vestibulum magna pharetra quis. Pellentesque posuere consectetur arcu et dignissim. Aliquam a eros\n' +
+'        quis mi ultrices porta. Morbi sed condimentum quam, in faucibus ex. Curabitur id bibendum mauris, eget\n' +
+'        pellentesque ex. Curabitur eget lacus urna. Donec interdum velit a metus varius vulputate. Curabitur accumsan\n' +
+'        mattis rhoncus. Morbi vehicula viverra nisl, ut venenatis urna tempor sit amet. Sed blandit commodo arcu nec\n' +
+'        ullamcorper. Aliquam ornare luctus pharetra.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Duis maximus elit non enim tempor finibus. Sed accumsan suscipit ipsum, at varius nisi hendrerit in. Sed eu massa neque. Praesent a aliquam nunc, nec suscipit tellus. Sed odio diam, molestie nec tincidunt vitae, blandit a risus. Aenean laoreet, justo ut tristique pretium, velit libero porta mi, a venenatis dolor massa vitae risus. Donec dapibus, massa a pharetra auctor, augue ipsum tempor sapien, id auctor urna velit vel justo. Maecenas elementum porttitor imperdiet.\n' +
-'</p>';
+'    <p>\n' +
+'        Duis maximus elit non enim tempor finibus. Sed accumsan suscipit ipsum, at varius nisi hendrerit in. Sed eu\n' +
+'        massa neque. Praesent a aliquam nunc, nec suscipit tellus. Sed odio diam, molestie nec tincidunt vitae, blandit\n' +
+'        a risus. Aenean laoreet, justo ut tristique pretium, velit libero porta mi, a venenatis dolor massa vitae risus.\n' +
+'        Donec dapibus, massa a pharetra auctor, augue ipsum tempor sapien, id auctor urna velit vel justo. Maecenas\n' +
+'        elementum porttitor imperdiet.\n' +
+'    </p>\n' +
+'</div>';
 
-jsxc.gui.template['menuSettings'] = '\n' +
-'<p>menuSettings.html</p>\n' +
+jsxc.gui.template['menuSettings'] = '<div>\n' +
+'    <p>menuSettings.html</p>\n' +
 '\n' +
-'<p>\n' +
-'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sed erat eu leo bibendum vestibulum. Donec aliquam, augue sit amet suscipit facilisis, ex elit interdum nisl, at commodo sem mi fermentum dolor. Curabitur ac faucibus arcu. Mauris elementum in magna ut aliquet. Phasellus sit amet elit quis dolor tincidunt rhoncus scelerisque id velit. Donec ut nunc id ante varius consectetur et et ex. Suspendisse tempus feugiat sem vel tempus. Etiam orci erat, sagittis et nisi sit amet, tincidunt tristique justo. Proin vitae leo at nisi pellentesque rutrum. Donec turpis mauris, eleifend a ornare eu, dignissim non quam. Pellentesque at odio libero. In sapien lorem, auctor ut vulputate non, sollicitudin et ipsum. Integer ac arcu lacus. In enim arcu, posuere nec metus ac, fermentum lacinia lacus. Cras dignissim molestie lacus pulvinar efficitur. Praesent molestie purus orci, pulvinar sollicitudin velit pulvinar vitae.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sed erat eu leo bibendum vestibulum. Donec\n' +
+'        aliquam, augue sit amet suscipit facilisis, ex elit interdum nisl, at commodo sem mi fermentum dolor. Curabitur\n' +
+'        ac faucibus arcu. Mauris elementum in magna ut aliquet. Phasellus sit amet elit quis dolor tincidunt rhoncus\n' +
+'        scelerisque id velit. Donec ut nunc id ante varius consectetur et et ex. Suspendisse tempus feugiat sem vel\n' +
+'        tempus. Etiam orci erat, sagittis et nisi sit amet, tincidunt tristique justo. Proin vitae leo at nisi\n' +
+'        pellentesque rutrum. Donec turpis mauris, eleifend a ornare eu, dignissim non quam. Pellentesque at odio libero.\n' +
+'        In sapien lorem, auctor ut vulputate non, sollicitudin et ipsum. Integer ac arcu lacus. In enim arcu, posuere\n' +
+'        nec metus ac, fermentum lacinia lacus. Cras dignissim molestie lacus pulvinar efficitur. Praesent molestie purus\n' +
+'        orci, pulvinar sollicitudin velit pulvinar vitae.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Nulla facilisi. Pellentesque ac euismod felis. Sed tempor nisi in euismod dapibus. Fusce posuere lectus id lacus imperdiet cursus. Maecenas id diam nisl. Maecenas volutpat feugiat tellus, sit amet elementum neque finibus placerat. Suspendisse potenti. Etiam massa mi, hendrerit id odio nec, efficitur luctus enim. Sed felis quam, aliquam nec facilisis iaculis, ornare at sapien. Cras ut lorem pellentesque, interdum libero vitae, facilisis erat. Sed in luctus est. Duis arcu mi, tempor eu iaculis vel, malesuada vitae lorem. Nulla est enim, porttitor quis suscipit vitae, sodales vel leo.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Nulla facilisi. Pellentesque ac euismod felis. Sed tempor nisi in euismod dapibus. Fusce posuere lectus id lacus\n' +
+'        imperdiet cursus. Maecenas id diam nisl. Maecenas volutpat feugiat tellus, sit amet elementum neque finibus\n' +
+'        placerat. Suspendisse potenti. Etiam massa mi, hendrerit id odio nec, efficitur luctus enim. Sed felis quam,\n' +
+'        aliquam nec facilisis iaculis, ornare at sapien. Cras ut lorem pellentesque, interdum libero vitae, facilisis\n' +
+'        erat. Sed in luctus est. Duis arcu mi, tempor eu iaculis vel, malesuada vitae lorem. Nulla est enim, porttitor\n' +
+'        quis suscipit vitae, sodales vel leo.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Suspendisse potenti. Quisque mattis cursus metus, sed rhoncus nunc condimentum sit amet. Vivamus ultrices turpis massa, quis vestibulum magna pharetra quis. Pellentesque posuere consectetur arcu et dignissim. Aliquam a eros quis mi ultrices porta. Morbi sed condimentum quam, in faucibus ex. Curabitur id bibendum mauris, eget pellentesque ex. Curabitur eget lacus urna. Donec interdum velit a metus varius vulputate. Curabitur accumsan mattis rhoncus. Morbi vehicula viverra nisl, ut venenatis urna tempor sit amet. Sed blandit commodo arcu nec ullamcorper. Aliquam ornare luctus pharetra.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Suspendisse potenti. Quisque mattis cursus metus, sed rhoncus nunc condimentum sit amet. Vivamus ultrices turpis\n' +
+'        massa, quis vestibulum magna pharetra quis. Pellentesque posuere consectetur arcu et dignissim. Aliquam a eros\n' +
+'        quis mi ultrices porta. Morbi sed condimentum quam, in faucibus ex. Curabitur id bibendum mauris, eget\n' +
+'        pellentesque ex. Curabitur eget lacus urna. Donec interdum velit a metus varius vulputate. Curabitur accumsan\n' +
+'        mattis rhoncus. Morbi vehicula viverra nisl, ut venenatis urna tempor sit amet. Sed blandit commodo arcu nec\n' +
+'        ullamcorper. Aliquam ornare luctus pharetra.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Duis maximus elit non enim tempor finibus. Sed accumsan suscipit ipsum, at varius nisi hendrerit in. Sed eu massa neque. Praesent a aliquam nunc, nec suscipit tellus. Sed odio diam, molestie nec tincidunt vitae, blandit a risus. Aenean laoreet, justo ut tristique pretium, velit libero porta mi, a venenatis dolor massa vitae risus. Donec dapibus, massa a pharetra auctor, augue ipsum tempor sapien, id auctor urna velit vel justo. Maecenas elementum porttitor imperdiet.\n' +
-'</p>';
+'    <p>\n' +
+'        Duis maximus elit non enim tempor finibus. Sed accumsan suscipit ipsum, at varius nisi hendrerit in. Sed eu\n' +
+'        massa neque. Praesent a aliquam nunc, nec suscipit tellus. Sed odio diam, molestie nec tincidunt vitae, blandit\n' +
+'        a risus. Aenean laoreet, justo ut tristique pretium, velit libero porta mi, a venenatis dolor massa vitae risus.\n' +
+'        Donec dapibus, massa a pharetra auctor, augue ipsum tempor sapien, id auctor urna velit vel justo. Maecenas\n' +
+'        elementum porttitor imperdiet.\n' +
+'    </p>\n' +
+'</div>';
 
-jsxc.gui.template['menuWelcome'] = '\n' +
-'<p>menuWelcome.html</p>\n' +
+jsxc.gui.template['menuWelcome'] = '<div>\n' +
+'    <p>menuWelcome.html</p>\n' +
 '\n' +
-'<p>\n' +
-'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sed erat eu leo bibendum vestibulum. Donec aliquam, augue sit amet suscipit facilisis, ex elit interdum nisl, at commodo sem mi fermentum dolor. Curabitur ac faucibus arcu. Mauris elementum in magna ut aliquet. Phasellus sit amet elit quis dolor tincidunt rhoncus scelerisque id velit. Donec ut nunc id ante varius consectetur et et ex. Suspendisse tempus feugiat sem vel tempus. Etiam orci erat, sagittis et nisi sit amet, tincidunt tristique justo. Proin vitae leo at nisi pellentesque rutrum. Donec turpis mauris, eleifend a ornare eu, dignissim non quam. Pellentesque at odio libero. In sapien lorem, auctor ut vulputate non, sollicitudin et ipsum. Integer ac arcu lacus. In enim arcu, posuere nec metus ac, fermentum lacinia lacus. Cras dignissim molestie lacus pulvinar efficitur. Praesent molestie purus orci, pulvinar sollicitudin velit pulvinar vitae.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sed erat eu leo bibendum vestibulum. Donec\n' +
+'        aliquam, augue sit amet suscipit facilisis, ex elit interdum nisl, at commodo sem mi fermentum dolor. Curabitur\n' +
+'        ac faucibus arcu. Mauris elementum in magna ut aliquet. Phasellus sit amet elit quis dolor tincidunt rhoncus\n' +
+'        scelerisque id velit. Donec ut nunc id ante varius consectetur et et ex. Suspendisse tempus feugiat sem vel\n' +
+'        tempus. Etiam orci erat, sagittis et nisi sit amet, tincidunt tristique justo. Proin vitae leo at nisi\n' +
+'        pellentesque rutrum. Donec turpis mauris, eleifend a ornare eu, dignissim non quam. Pellentesque at odio libero.\n' +
+'        In sapien lorem, auctor ut vulputate non, sollicitudin et ipsum. Integer ac arcu lacus. In enim arcu, posuere\n' +
+'        nec metus ac, fermentum lacinia lacus. Cras dignissim molestie lacus pulvinar efficitur. Praesent molestie purus\n' +
+'        orci, pulvinar sollicitudin velit pulvinar vitae.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Nulla facilisi. Pellentesque ac euismod felis. Sed tempor nisi in euismod dapibus. Fusce posuere lectus id lacus imperdiet cursus. Maecenas id diam nisl. Maecenas volutpat feugiat tellus, sit amet elementum neque finibus placerat. Suspendisse potenti. Etiam massa mi, hendrerit id odio nec, efficitur luctus enim. Sed felis quam, aliquam nec facilisis iaculis, ornare at sapien. Cras ut lorem pellentesque, interdum libero vitae, facilisis erat. Sed in luctus est. Duis arcu mi, tempor eu iaculis vel, malesuada vitae lorem. Nulla est enim, porttitor quis suscipit vitae, sodales vel leo.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Nulla facilisi. Pellentesque ac euismod felis. Sed tempor nisi in euismod dapibus. Fusce posuere lectus id lacus\n' +
+'        imperdiet cursus. Maecenas id diam nisl. Maecenas volutpat feugiat tellus, sit amet elementum neque finibus\n' +
+'        placerat. Suspendisse potenti. Etiam massa mi, hendrerit id odio nec, efficitur luctus enim. Sed felis quam,\n' +
+'        aliquam nec facilisis iaculis, ornare at sapien. Cras ut lorem pellentesque, interdum libero vitae, facilisis\n' +
+'        erat. Sed in luctus est. Duis arcu mi, tempor eu iaculis vel, malesuada vitae lorem. Nulla est enim, porttitor\n' +
+'        quis suscipit vitae, sodales vel leo.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Suspendisse potenti. Quisque mattis cursus metus, sed rhoncus nunc condimentum sit amet. Vivamus ultrices turpis massa, quis vestibulum magna pharetra quis. Pellentesque posuere consectetur arcu et dignissim. Aliquam a eros quis mi ultrices porta. Morbi sed condimentum quam, in faucibus ex. Curabitur id bibendum mauris, eget pellentesque ex. Curabitur eget lacus urna. Donec interdum velit a metus varius vulputate. Curabitur accumsan mattis rhoncus. Morbi vehicula viverra nisl, ut venenatis urna tempor sit amet. Sed blandit commodo arcu nec ullamcorper. Aliquam ornare luctus pharetra.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Suspendisse potenti. Quisque mattis cursus metus, sed rhoncus nunc condimentum sit amet. Vivamus ultrices turpis\n' +
+'        massa, quis vestibulum magna pharetra quis. Pellentesque posuere consectetur arcu et dignissim. Aliquam a eros\n' +
+'        quis mi ultrices porta. Morbi sed condimentum quam, in faucibus ex. Curabitur id bibendum mauris, eget\n' +
+'        pellentesque ex. Curabitur eget lacus urna. Donec interdum velit a metus varius vulputate. Curabitur accumsan\n' +
+'        mattis rhoncus. Morbi vehicula viverra nisl, ut venenatis urna tempor sit amet. Sed blandit commodo arcu nec\n' +
+'        ullamcorper. Aliquam ornare luctus pharetra.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Duis maximus elit non enim tempor finibus. Sed accumsan suscipit ipsum, at varius nisi hendrerit in. Sed eu massa neque. Praesent a aliquam nunc, nec suscipit tellus. Sed odio diam, molestie nec tincidunt vitae, blandit a risus. Aenean laoreet, justo ut tristique pretium, velit libero porta mi, a venenatis dolor massa vitae risus. Donec dapibus, massa a pharetra auctor, augue ipsum tempor sapien, id auctor urna velit vel justo. Maecenas elementum porttitor imperdiet.\n' +
-'</p>';
+'    <p>\n' +
+'        Duis maximus elit non enim tempor finibus. Sed accumsan suscipit ipsum, at varius nisi hendrerit in. Sed eu\n' +
+'        massa neque. Praesent a aliquam nunc, nec suscipit tellus. Sed odio diam, molestie nec tincidunt vitae, blandit\n' +
+'        a risus. Aenean laoreet, justo ut tristique pretium, velit libero porta mi, a venenatis dolor massa vitae risus.\n' +
+'        Donec dapibus, massa a pharetra auctor, augue ipsum tempor sapien, id auctor urna velit vel justo. Maecenas\n' +
+'        elementum porttitor imperdiet.\n' +
+'    </p>\n' +
+'</div>';
 
 jsxc.gui.template['pleaseAccept'] = '<p data-i18n="Please_accept_"></p>\n' +
 '';
@@ -426,36 +495,40 @@ jsxc.gui.template['removeDialog'] = '<h3 data-i18n="Remove_buddy"></h3>\n' +
 '<button class="btn btn-default jsxc_cancel jsxc_close pull-right" data-i18n="Cancel"></button>\n' +
 '';
 
-jsxc.gui.template['roster'] = '<!-- Barre latérale avec listes des contacts et menu -->\n' +
+jsxc.gui.template['roster'] = '<!-- Side bar with buddy list and menu -->\n' +
 '<div id="jsxc_roster">\n' +
 '\n' +
-'    <!-- Liste des contacts -->\n' +
+'    <div id="side_menu">\n' +
+'        Hey hey !\n' +
+'    </div>\n' +
+'\n' +
+'    <!-- buddy list -->\n' +
 '    <ul id="jsxc_buddylist"></ul>\n' +
 '\n' +
-'    <!-- Barre de menu au bas de la liste -->\n' +
+'    <!-- Menu bar on bottom of roster -->\n' +
 '    <div class="jsxc_bottom jsxc_presence jsxc_rosteritem" data-bid="own">\n' +
 '\n' +
 '        <!-- Avatar -->\n' +
 '        <div id="jsxc_avatar" class="jsxc_avatar"/>\n' +
 '\n' +
-'        <!-- Le menu -->\n' +
+'        <!-- Menu container -->\n' +
 '        <div id="jsxc_menu">\n' +
 '\n' +
-'            <!-- Bouton d\'ouverture du menu -->\n' +
+'            <!-- Button for menu openning, image added with scss/_jsxc.scss -->\n' +
 '            <span></span>\n' +
 '\n' +
-'            <div class="jsxc_inner">\n' +
-'                <ul>\n' +
-'                    <li class="jsxc_settings jsxc_settingsicon" data-i18n="Settings"></li>\n' +
-'                    <li class="jsxc_muteNotification" data-i18n="Mute"></li>\n' +
-'                    <li class="jsxc_hideOffline" data-i18n="Hide_offline"></li>\n' +
-'                    <li class="jsxc_addBuddy jsxc_contacticon" data-i18n="Add_buddy"></li>\n' +
-'                    <li class="jsxc_onlineHelp jsxc_helpicon" data-i18n="Online_help"></li>\n' +
-'                    <li class="jsxc_about" data-i18n="About"></li>\n' +
-'                </ul>\n' +
-'            </div>\n' +
-'        </div>\n' +
+'            <!--<div class="jsxc_inner">-->\n' +
+'                <!--<ul>-->\n' +
+'                    <!--<li class="jsxc_settings jsxc_settingsicon" data-i18n="Settings"></li>-->\n' +
+'                    <!--<li class="jsxc_muteNotification" data-i18n="Mute"></li>-->\n' +
+'                    <!--<li class="jsxc_hideOffline" data-i18n="Hide_offline"></li>-->\n' +
+'                    <!--<li class="jsxc_addBuddy jsxc_contacticon" data-i18n="Add_buddy"></li>-->\n' +
+'                    <!--<li class="jsxc_onlineHelp jsxc_helpicon" data-i18n="Online_help"></li>-->\n' +
+'                    <!--<li class="jsxc_about" data-i18n="About"></li>-->\n' +
+'                <!--</ul>-->\n' +
+'            <!--</div>-->\n' +
 '\n' +
+'        </div>\n' +
 '\n' +
 '        <div id="jsxc_notice">\n' +
 '            <span></span>\n' +
@@ -463,7 +536,6 @@ jsxc.gui.template['roster'] = '<!-- Barre latérale avec listes des contacts et 
 '                <ul></ul>\n' +
 '            </div>\n' +
 '        </div>\n' +
-'\n' +
 '\n' +
 '        <div id="jsxc_presence">\n' +
 '            <span data-i18n="Offline">Offline</span>\n' +

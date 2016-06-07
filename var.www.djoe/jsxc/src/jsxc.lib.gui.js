@@ -375,8 +375,17 @@ jsxc.gui = {
    },
 
    /**
-    * Toggle list with timeout, like menu or settings
-    *
+        Transform list in menu. Structure must be like that:
+            <container id="idToPass">
+                <ul>
+                    <li>Menu elements 1</li>
+                    <li>Menu elements 2</li>
+                    <li>Menu elements ...</li>
+                </ul>
+            </container>
+
+        With timeout for closing
+
     * @memberof jsxc.gui
     */
    toggleList: function(el) {
@@ -1487,20 +1496,21 @@ jsxc.gui.roster = {
     */
    init: function() {
 
-      // initialiser le menu
-      jsxc.gui.menu.init();
-
+      // adding roster skeleton to body, or other choosen element
       $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('roster')));
 
+      // display or hide offline buddies
       if (jsxc.options.get('hideOffline')) {
          $('#jsxc_menu .jsxc_hideOffline').text($.t('Show_offline'));
          $('#jsxc_buddylist').addClass('jsxc_hideOffline');
       }
 
+      // show settings
       $('#jsxc_menu .jsxc_settings').click(function() {
          jsxc.gui.showSettings();
       });
 
+      // display or hide offline buddies
       $('#jsxc_menu .jsxc_hideOffline').click(function() {
 
          var hideOffline = !jsxc.options.get('hideOffline');
@@ -1516,6 +1526,7 @@ jsxc.gui.roster = {
          jsxc.options.set('hideOffline', hideOffline);
       });
 
+      // mute sounds
       if (jsxc.options.get('muteNotification')) {
          jsxc.notification.muteSound();
       }
@@ -1548,10 +1559,12 @@ jsxc.gui.roster = {
          jsxc.gui.showAboutDialog();
       });
 
+      // hide show roster
       $('#jsxc_toggleRoster').click(function() {
          jsxc.gui.roster.toggle();
       });
 
+      // change presence or logout
       $('#jsxc_presence li').click(function() {
          var self = $(this);
          var pres = self.data('pres');
@@ -1571,10 +1584,15 @@ jsxc.gui.roster = {
          opacity: '0.5'
       });
 
-      // select all bottom elements and transform them in menu
-      $('#jsxc_roster > .jsxc_bottom > div').each(function() {
-          jsxc.gui.toggleList.call($(this));
-      });
+    // original menu code
+    // select all bottom elements and transform them in menu
+    // $('#jsxc_roster > .jsxc_bottom > div').each(function() {
+    //  jsxc.gui.toggleList.call($(this));
+    // });
+
+        // initialize main menu
+        jsxc.gui.menu.init();
+
 
       var rosterState = jsxc.storage.getUserItem('roster') || (jsxc.options.get('loginForm').startMinimized ? 'hidden' : 'shown');
 

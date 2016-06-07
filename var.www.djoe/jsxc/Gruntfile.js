@@ -28,11 +28,40 @@ module.exports = function(grunt) {
       copy: {
          main: {
              /**
-              Copier les dépendances, les images et les sons dans le dossier de destination.
+              Copy dependencies, images, ... to dev/ or build/
               */
             files: [{
                expand: true,
-               src: ['lib/i18next/release/i18next-latest.min.js', 'lib/jquery.eventconsole.js/*.js', 'lib/magnific-popup/dist/*.js', 'lib/favico.js/favico.js', 'lib/emojione/lib/js/*.js', 'lib/emojione/assets/svg/*.svg', 'lib/strophe.js/strophe.js', 'lib/strophe.x/*.js', 'lib/strophe.bookmarks/*.js', 'lib/strophe.vcard/*.js', 'lib/strophe.jinglejs/*-bundle.js', 'lib/otr/build/**', 'lib/otr/lib/dsa-webworker.js', 'lib/otr/lib/sm-webworker.js', 'lib/otr/lib/const.js', 'lib/otr/lib/helpers.js', 'lib/otr/lib/dsa.js', 'lib/otr/vendor/*.js', 'lib/*.js', 'LICENSE', 'img/**', 'sound/**'],
+               src: [
+                        'lib/jquery/dist/*.js',
+                        'lib/jquery-ui/*.js',
+                        'lib/jquery-ui/themes/base/*.css',
+                        'lib/jquery-ui/themes/base/images/*.png',
+                        'lib/perfect-scrollbar/js/*.js',
+                        'lib/perfect-scrollbar/css/*.css',
+                        'lib/i18next/release/i18next-latest.min.js',
+                        'lib/jquery.eventconsole.js/*.js',
+                        'lib/magnific-popup/dist/*.js',
+                        'lib/favico.js/favico.js',
+                        'lib/emojione/lib/js/*.js',
+                        'lib/emojione/assets/svg/*.svg',
+                        'lib/strophe.js/strophe.js',
+                        'lib/strophe.x/*.js',
+                        'lib/strophe.bookmarks/*.js',
+                        'lib/strophe.vcard/*.js',
+                        'lib/strophe.jinglejs/*-bundle.js',
+                        'lib/otr/build/**',
+                        'lib/otr/lib/dsa-webworker.js',
+                        'lib/otr/lib/sm-webworker.js',
+                        'lib/otr/lib/const.js',
+                        'lib/otr/lib/helpers.js',
+                        'lib/otr/lib/dsa.js',
+                        'lib/otr/vendor/*.js',
+                        'lib/*.js',
+                        'LICENSE',
+                        'img/**',
+                        'sound/**'
+                        ],
                dest: '<%= target %>/'
             }, {
                expand: true,
@@ -181,7 +210,7 @@ module.exports = function(grunt) {
       },
       search: {
 
-         // arreter le build si une occurence de console.log est trouvée dans les sources
+         // Stop build if console.log is found
          console: {
             files: {
                src: ['src/*.js']
@@ -193,7 +222,7 @@ module.exports = function(grunt) {
             }
          },
 
-         // arreter le build si aucune entrée n'est trouvée dans le CHNAGELOG.md
+         // Stop build if no entry is found in CHANGELOG.md
          changelog: {
             files: {
                src: ['CHANGELOG.md']
@@ -279,7 +308,13 @@ module.exports = function(grunt) {
          }
       },
       jsbeautifier: {
-         files: ['Gruntfile.js', 'src/jsxc.lib.*', 'template/*.html', 'example/*.html', 'example/js/dev.js', 'example/js/example.js', 'example/css/example.css'],
+         files: ['Gruntfile.js',
+                 'src/jsxc.lib.*',
+                 'template/*.html',
+                 'example/*.html',
+                 'example/js/dev.js',
+                 'example/js/example.js',
+                 'example/css/example.css'],
          options: {
             config: '.jsbeautifyrc'
          }

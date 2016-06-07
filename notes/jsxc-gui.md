@@ -1,5 +1,10 @@
 # JSXC: notes sur l'interface
 
+* Il est possible d'jaouter le roster à autre chose que body grâce à l'option:
+
+
+    jsxc.options.rosterAppend
+
 * Tous les templates sont accessible dans:
 
 

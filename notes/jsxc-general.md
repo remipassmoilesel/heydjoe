@@ -1,5 +1,10 @@
 # Remarques générales sur JSXC
 
+* De la documentation est disponible dans jsxc/doc. La doc est générée
+à l'appel de grunt build:release
+
+* l'espace de nom jsxc contient des méthodes utilitaires comme log()
+
 * Dépendances, images, son:
 
 

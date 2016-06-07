@@ -2787,8 +2787,17 @@ jsxc.gui = {
    },
 
    /**
-    * Toggle list with timeout, like menu or settings
-    *
+        Transform list in menu. Structure must be like that:
+            <container id="idToPass">
+                <ul>
+                    <li>Menu elements 1</li>
+                    <li>Menu elements 2</li>
+                    <li>Menu elements ...</li>
+                </ul>
+            </container>
+
+        With timeout for closing
+
     * @memberof jsxc.gui
     */
    toggleList: function(el) {
@@ -3899,20 +3908,21 @@ jsxc.gui.roster = {
     */
    init: function() {
 
-      // initialiser le menu
-      jsxc.gui.menu.init();
-
+      // adding roster skeleton to body, or other choosen element
       $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('roster')));
 
+      // display or hide offline buddies
       if (jsxc.options.get('hideOffline')) {
          $('#jsxc_menu .jsxc_hideOffline').text($.t('Show_offline'));
          $('#jsxc_buddylist').addClass('jsxc_hideOffline');
       }
 
+      // show settings
       $('#jsxc_menu .jsxc_settings').click(function() {
          jsxc.gui.showSettings();
       });
 
+      // display or hide offline buddies
       $('#jsxc_menu .jsxc_hideOffline').click(function() {
 
          var hideOffline = !jsxc.options.get('hideOffline');
@@ -3928,6 +3938,7 @@ jsxc.gui.roster = {
          jsxc.options.set('hideOffline', hideOffline);
       });
 
+      // mute sounds
       if (jsxc.options.get('muteNotification')) {
          jsxc.notification.muteSound();
       }
@@ -3960,10 +3971,12 @@ jsxc.gui.roster = {
          jsxc.gui.showAboutDialog();
       });
 
+      // hide show roster
       $('#jsxc_toggleRoster').click(function() {
          jsxc.gui.roster.toggle();
       });
 
+      // change presence or logout
       $('#jsxc_presence li').click(function() {
          var self = $(this);
          var pres = self.data('pres');
@@ -3983,10 +3996,15 @@ jsxc.gui.roster = {
          opacity: '0.5'
       });
 
-      // select all bottom elements and transform them in menu
-      $('#jsxc_roster > .jsxc_bottom > div').each(function() {
-          jsxc.gui.toggleList.call($(this));
-      });
+    // original menu code
+    // select all bottom elements and transform them in menu
+    // $('#jsxc_roster > .jsxc_bottom > div').each(function() {
+    //  jsxc.gui.toggleList.call($(this));
+    // });
+
+        // initialize main menu
+        jsxc.gui.menu.init();
+
 
       var rosterState = jsxc.storage.getUserItem('roster') || (jsxc.options.get('loginForm').startMinimized ? 'hidden' : 'shown');
 
@@ -5530,8 +5548,7 @@ jsxc.gui.menu = {
             template: "menuWelcome",
             init: function(){
                 console.log("welcomePanel");
-                console.log(this);
-
+//                console.log(this);
 
             }
         },
@@ -5541,7 +5558,7 @@ jsxc.gui.menu = {
             template: "menuRooms",
             init: function(){
                 console.log("roomsPanel");
-                console.log(this);
+//                console.log(this);
 
             }
         },
@@ -5551,7 +5568,7 @@ jsxc.gui.menu = {
             template: "menuSettings",
             init: function(){
                 console.log("settingsPanel");
-                console.log(this);
+//                console.log(this);
             }
         }
      },
@@ -5561,24 +5578,139 @@ jsxc.gui.menu = {
     */
     init: function(){
 
-        var self = jsxc.gui.menu;
+        var menuRoot = $("#side_menu");
 
         // initializing elements
         for(var prop in this.elements){
             var elmt = this.elements[prop];
 
-            // load template
-            if(typeof elmt.template !== "undefined"){
-                elmt.template = jsxc.gui.template.get(elmt.template);
-            }
+            // add Title
+            menuRoot.append("<h1>" + elmt.label + "</h1>");
 
-            // launch init
+            // load and add template
+            if(typeof elmt.template === "undefined"){
+                throw "Parameter cannot be undefined: " + elmt.template;
+            }
+            elmt.template = jsxc.gui.template.get(elmt.template);
+
+            menuRoot.append(elmt.template);
+
+            // launch init function
             if(typeof elmt.init !== "undefined"){
                 elmt.init.call(elmt);
             }
         }
 
+        // set accordion menu
+        this.initAccordion();
+
+        // set foldable
+        this.initFoldableActions();
+    },
+
+    /**
+        Associate click with fold / unfold action
+    */
+    initFoldableActions: function(){
+
+        var self = $("#side_menu");
+
+        // open / close side menu
+        var openSideMenu = function(){
+            self.data("sideMenuEnabled", true);
+            self.animate({ right: "0px" });
+         };
+
+        var closeSideMenu = function(){
+           self.data("sideMenuEnabled", false);
+           self.animate({ right: "-200px" });
+         };
+
+        // disable text selection
+        self.disableSelection();
+
+        // when clicking open menu, and launch timer to hide it after inactivity
+        $("#jsxc_menu > span").click(function() {
+
+            //  side menu is open, close it
+            if(self.data("sideMenuEnabled")){
+                closeSideMenu();
+            }
+
+            // side menu is closed, open it
+            else {
+                openSideMenu();
+                self.data('timerForClosing', window.setTimeout(closeSideMenu, 3000));
+            }
+
+            // update scrollbars
+             $("#side_menu > div").each(function(){
+                $(this).perfectScrollbar('update');
+                //$(this).addClass("side_menu_accordion_content_nested");
+            });
+
+            return false;
+
+        });
+
+        // mouse leaving, timeout to hide
+        // timeouts are stored in self element with jquery.data()
+        self.mouseleave(function() {
+            self.data('timerForClosing', window.setTimeout(closeSideMenu, 3000));
+        });
+
+        // mouse entering, clear timeout to hide
+        // timeouts are stored in self element with jquery.data()
+        self.mouseenter(function() {
+            window.clearTimeout(self.data('timerForClosing'));
+        });
+
+    },
+
+    /*
+        Set menu accordion and searchable
+    */
+    initAccordion: function(){
+
+        console.log("initAccordion");
+
+        // voir: http://www.w3schools.com/howto/howto_js_accordion.asp
+
+        // create accordion
+        $( "#side_menu" ).accordion({
+            collapsible: false,
+            heightStyle: "fill",
+            header: "h1"
+        });
+
+//        // prepare titles
+//        $("#side_menu > h1").each(function(){
+//            $(this).disableSelection();
+//            //$(this).addClass("side_menu_accordion_header");
+//        });
+
+        // prepare divisions
+        $("#side_menu > div").each(function(){
+            $(this).perfectScrollbar();
+            //$(this).addClass("side_menu_accordion_content_nested");
+        });
+//
+//        // add search text fields and buttons
+//        $("#jsxcMenuSearchTextField").keyup(jsxcMenu.onSearchKeyUp);
+//
+//        // afficher le résultat suivant
+//        $("#jsxcMenuNextButton").click(function(){
+//            jsxcMenu.showNextResult();
+//        });
+//
+//        // afficher le résultat suivant
+//        $("#jsxcMenuPreviousButton").click(function(){
+//            jsxcMenu.showPreviousResult();
+//        });
+
     }
+
+
 
 };
 /**
@@ -10810,62 +10942,131 @@ jsxc.gui.template['loginBox'] = '<h3 data-i18n="Login"></h3>\n' +
 '</form>\n' +
 '';
 
-jsxc.gui.template['menuRooms'] = '\n' +
-'<p>menuRooms.html</p>\n' +
+jsxc.gui.template['menuRooms'] = '<div>\n' +
+'    <p>menuRooms.html</p>\n' +
 '\n' +
-'<p>\n' +
-'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sed erat eu leo bibendum vestibulum. Donec aliquam, augue sit amet suscipit facilisis, ex elit interdum nisl, at commodo sem mi fermentum dolor. Curabitur ac faucibus arcu. Mauris elementum in magna ut aliquet. Phasellus sit amet elit quis dolor tincidunt rhoncus scelerisque id velit. Donec ut nunc id ante varius consectetur et et ex. Suspendisse tempus feugiat sem vel tempus. Etiam orci erat, sagittis et nisi sit amet, tincidunt tristique justo. Proin vitae leo at nisi pellentesque rutrum. Donec turpis mauris, eleifend a ornare eu, dignissim non quam. Pellentesque at odio libero. In sapien lorem, auctor ut vulputate non, sollicitudin et ipsum. Integer ac arcu lacus. In enim arcu, posuere nec metus ac, fermentum lacinia lacus. Cras dignissim molestie lacus pulvinar efficitur. Praesent molestie purus orci, pulvinar sollicitudin velit pulvinar vitae.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sed erat eu leo bibendum vestibulum. Donec\n' +
+'        aliquam, augue sit amet suscipit facilisis, ex elit interdum nisl, at commodo sem mi fermentum dolor. Curabitur\n' +
+'        ac faucibus arcu. Mauris elementum in magna ut aliquet. Phasellus sit amet elit quis dolor tincidunt rhoncus\n' +
+'        scelerisque id velit. Donec ut nunc id ante varius consectetur et et ex. Suspendisse tempus feugiat sem vel\n' +
+'        tempus. Etiam orci erat, sagittis et nisi sit amet, tincidunt tristique justo. Proin vitae leo at nisi\n' +
+'        pellentesque rutrum. Donec turpis mauris, eleifend a ornare eu, dignissim non quam. Pellentesque at odio libero.\n' +
+'        In sapien lorem, auctor ut vulputate non, sollicitudin et ipsum. Integer ac arcu lacus. In enim arcu, posuere\n' +
+'        nec metus ac, fermentum lacinia lacus. Cras dignissim molestie lacus pulvinar efficitur. Praesent molestie purus\n' +
+'        orci, pulvinar sollicitudin velit pulvinar vitae.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Nulla facilisi. Pellentesque ac euismod felis. Sed tempor nisi in euismod dapibus. Fusce posuere lectus id lacus imperdiet cursus. Maecenas id diam nisl. Maecenas volutpat feugiat tellus, sit amet elementum neque finibus placerat. Suspendisse potenti. Etiam massa mi, hendrerit id odio nec, efficitur luctus enim. Sed felis quam, aliquam nec facilisis iaculis, ornare at sapien. Cras ut lorem pellentesque, interdum libero vitae, facilisis erat. Sed in luctus est. Duis arcu mi, tempor eu iaculis vel, malesuada vitae lorem. Nulla est enim, porttitor quis suscipit vitae, sodales vel leo.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Nulla facilisi. Pellentesque ac euismod felis. Sed tempor nisi in euismod dapibus. Fusce posuere lectus id lacus\n' +
+'        imperdiet cursus. Maecenas id diam nisl. Maecenas volutpat feugiat tellus, sit amet elementum neque finibus\n' +
+'        placerat. Suspendisse potenti. Etiam massa mi, hendrerit id odio nec, efficitur luctus enim. Sed felis quam,\n' +
+'        aliquam nec facilisis iaculis, ornare at sapien. Cras ut lorem pellentesque, interdum libero vitae, facilisis\n' +
+'        erat. Sed in luctus est. Duis arcu mi, tempor eu iaculis vel, malesuada vitae lorem. Nulla est enim, porttitor\n' +
+'        quis suscipit vitae, sodales vel leo.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Suspendisse potenti. Quisque mattis cursus metus, sed rhoncus nunc condimentum sit amet. Vivamus ultrices turpis massa, quis vestibulum magna pharetra quis. Pellentesque posuere consectetur arcu et dignissim. Aliquam a eros quis mi ultrices porta. Morbi sed condimentum quam, in faucibus ex. Curabitur id bibendum mauris, eget pellentesque ex. Curabitur eget lacus urna. Donec interdum velit a metus varius vulputate. Curabitur accumsan mattis rhoncus. Morbi vehicula viverra nisl, ut venenatis urna tempor sit amet. Sed blandit commodo arcu nec ullamcorper. Aliquam ornare luctus pharetra.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Suspendisse potenti. Quisque mattis cursus metus, sed rhoncus nunc condimentum sit amet. Vivamus ultrices turpis\n' +
+'        massa, quis vestibulum magna pharetra quis. Pellentesque posuere consectetur arcu et dignissim. Aliquam a eros\n' +
+'        quis mi ultrices porta. Morbi sed condimentum quam, in faucibus ex. Curabitur id bibendum mauris, eget\n' +
+'        pellentesque ex. Curabitur eget lacus urna. Donec interdum velit a metus varius vulputate. Curabitur accumsan\n' +
+'        mattis rhoncus. Morbi vehicula viverra nisl, ut venenatis urna tempor sit amet. Sed blandit commodo arcu nec\n' +
+'        ullamcorper. Aliquam ornare luctus pharetra.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Duis maximus elit non enim tempor finibus. Sed accumsan suscipit ipsum, at varius nisi hendrerit in. Sed eu massa neque. Praesent a aliquam nunc, nec suscipit tellus. Sed odio diam, molestie nec tincidunt vitae, blandit a risus. Aenean laoreet, justo ut tristique pretium, velit libero porta mi, a venenatis dolor massa vitae risus. Donec dapibus, massa a pharetra auctor, augue ipsum tempor sapien, id auctor urna velit vel justo. Maecenas elementum porttitor imperdiet.\n' +
-'</p>';
+'    <p>\n' +
+'        Duis maximus elit non enim tempor finibus. Sed accumsan suscipit ipsum, at varius nisi hendrerit in. Sed eu\n' +
+'        massa neque. Praesent a aliquam nunc, nec suscipit tellus. Sed odio diam, molestie nec tincidunt vitae, blandit\n' +
+'        a risus. Aenean laoreet, justo ut tristique pretium, velit libero porta mi, a venenatis dolor massa vitae risus.\n' +
+'        Donec dapibus, massa a pharetra auctor, augue ipsum tempor sapien, id auctor urna velit vel justo. Maecenas\n' +
+'        elementum porttitor imperdiet.\n' +
+'    </p>\n' +
+'</div>';
 
-jsxc.gui.template['menuSettings'] = '\n' +
-'<p>menuSettings.html</p>\n' +
+jsxc.gui.template['menuSettings'] = '<div>\n' +
+'    <p>menuSettings.html</p>\n' +
 '\n' +
-'<p>\n' +
-'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sed erat eu leo bibendum vestibulum. Donec aliquam, augue sit amet suscipit facilisis, ex elit interdum nisl, at commodo sem mi fermentum dolor. Curabitur ac faucibus arcu. Mauris elementum in magna ut aliquet. Phasellus sit amet elit quis dolor tincidunt rhoncus scelerisque id velit. Donec ut nunc id ante varius consectetur et et ex. Suspendisse tempus feugiat sem vel tempus. Etiam orci erat, sagittis et nisi sit amet, tincidunt tristique justo. Proin vitae leo at nisi pellentesque rutrum. Donec turpis mauris, eleifend a ornare eu, dignissim non quam. Pellentesque at odio libero. In sapien lorem, auctor ut vulputate non, sollicitudin et ipsum. Integer ac arcu lacus. In enim arcu, posuere nec metus ac, fermentum lacinia lacus. Cras dignissim molestie lacus pulvinar efficitur. Praesent molestie purus orci, pulvinar sollicitudin velit pulvinar vitae.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sed erat eu leo bibendum vestibulum. Donec\n' +
+'        aliquam, augue sit amet suscipit facilisis, ex elit interdum nisl, at commodo sem mi fermentum dolor. Curabitur\n' +
+'        ac faucibus arcu. Mauris elementum in magna ut aliquet. Phasellus sit amet elit quis dolor tincidunt rhoncus\n' +
+'        scelerisque id velit. Donec ut nunc id ante varius consectetur et et ex. Suspendisse tempus feugiat sem vel\n' +
+'        tempus. Etiam orci erat, sagittis et nisi sit amet, tincidunt tristique justo. Proin vitae leo at nisi\n' +
+'        pellentesque rutrum. Donec turpis mauris, eleifend a ornare eu, dignissim non quam. Pellentesque at odio libero.\n' +
+'        In sapien lorem, auctor ut vulputate non, sollicitudin et ipsum. Integer ac arcu lacus. In enim arcu, posuere\n' +
+'        nec metus ac, fermentum lacinia lacus. Cras dignissim molestie lacus pulvinar efficitur. Praesent molestie purus\n' +
+'        orci, pulvinar sollicitudin velit pulvinar vitae.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Nulla facilisi. Pellentesque ac euismod felis. Sed tempor nisi in euismod dapibus. Fusce posuere lectus id lacus imperdiet cursus. Maecenas id diam nisl. Maecenas volutpat feugiat tellus, sit amet elementum neque finibus placerat. Suspendisse potenti. Etiam massa mi, hendrerit id odio nec, efficitur luctus enim. Sed felis quam, aliquam nec facilisis iaculis, ornare at sapien. Cras ut lorem pellentesque, interdum libero vitae, facilisis erat. Sed in luctus est. Duis arcu mi, tempor eu iaculis vel, malesuada vitae lorem. Nulla est enim, porttitor quis suscipit vitae, sodales vel leo.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Nulla facilisi. Pellentesque ac euismod felis. Sed tempor nisi in euismod dapibus. Fusce posuere lectus id lacus\n' +
+'        imperdiet cursus. Maecenas id diam nisl. Maecenas volutpat feugiat tellus, sit amet elementum neque finibus\n' +
+'        placerat. Suspendisse potenti. Etiam massa mi, hendrerit id odio nec, efficitur luctus enim. Sed felis quam,\n' +
+'        aliquam nec facilisis iaculis, ornare at sapien. Cras ut lorem pellentesque, interdum libero vitae, facilisis\n' +
+'        erat. Sed in luctus est. Duis arcu mi, tempor eu iaculis vel, malesuada vitae lorem. Nulla est enim, porttitor\n' +
+'        quis suscipit vitae, sodales vel leo.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Suspendisse potenti. Quisque mattis cursus metus, sed rhoncus nunc condimentum sit amet. Vivamus ultrices turpis massa, quis vestibulum magna pharetra quis. Pellentesque posuere consectetur arcu et dignissim. Aliquam a eros quis mi ultrices porta. Morbi sed condimentum quam, in faucibus ex. Curabitur id bibendum mauris, eget pellentesque ex. Curabitur eget lacus urna. Donec interdum velit a metus varius vulputate. Curabitur accumsan mattis rhoncus. Morbi vehicula viverra nisl, ut venenatis urna tempor sit amet. Sed blandit commodo arcu nec ullamcorper. Aliquam ornare luctus pharetra.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Suspendisse potenti. Quisque mattis cursus metus, sed rhoncus nunc condimentum sit amet. Vivamus ultrices turpis\n' +
+'        massa, quis vestibulum magna pharetra quis. Pellentesque posuere consectetur arcu et dignissim. Aliquam a eros\n' +
+'        quis mi ultrices porta. Morbi sed condimentum quam, in faucibus ex. Curabitur id bibendum mauris, eget\n' +
+'        pellentesque ex. Curabitur eget lacus urna. Donec interdum velit a metus varius vulputate. Curabitur accumsan\n' +
+'        mattis rhoncus. Morbi vehicula viverra nisl, ut venenatis urna tempor sit amet. Sed blandit commodo arcu nec\n' +
+'        ullamcorper. Aliquam ornare luctus pharetra.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Duis maximus elit non enim tempor finibus. Sed accumsan suscipit ipsum, at varius nisi hendrerit in. Sed eu massa neque. Praesent a aliquam nunc, nec suscipit tellus. Sed odio diam, molestie nec tincidunt vitae, blandit a risus. Aenean laoreet, justo ut tristique pretium, velit libero porta mi, a venenatis dolor massa vitae risus. Donec dapibus, massa a pharetra auctor, augue ipsum tempor sapien, id auctor urna velit vel justo. Maecenas elementum porttitor imperdiet.\n' +
-'</p>';
+'    <p>\n' +
+'        Duis maximus elit non enim tempor finibus. Sed accumsan suscipit ipsum, at varius nisi hendrerit in. Sed eu\n' +
+'        massa neque. Praesent a aliquam nunc, nec suscipit tellus. Sed odio diam, molestie nec tincidunt vitae, blandit\n' +
+'        a risus. Aenean laoreet, justo ut tristique pretium, velit libero porta mi, a venenatis dolor massa vitae risus.\n' +
+'        Donec dapibus, massa a pharetra auctor, augue ipsum tempor sapien, id auctor urna velit vel justo. Maecenas\n' +
+'        elementum porttitor imperdiet.\n' +
+'    </p>\n' +
+'</div>';
 
-jsxc.gui.template['menuWelcome'] = '\n' +
-'<p>menuWelcome.html</p>\n' +
+jsxc.gui.template['menuWelcome'] = '<div>\n' +
+'    <p>menuWelcome.html</p>\n' +
 '\n' +
-'<p>\n' +
-'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sed erat eu leo bibendum vestibulum. Donec aliquam, augue sit amet suscipit facilisis, ex elit interdum nisl, at commodo sem mi fermentum dolor. Curabitur ac faucibus arcu. Mauris elementum in magna ut aliquet. Phasellus sit amet elit quis dolor tincidunt rhoncus scelerisque id velit. Donec ut nunc id ante varius consectetur et et ex. Suspendisse tempus feugiat sem vel tempus. Etiam orci erat, sagittis et nisi sit amet, tincidunt tristique justo. Proin vitae leo at nisi pellentesque rutrum. Donec turpis mauris, eleifend a ornare eu, dignissim non quam. Pellentesque at odio libero. In sapien lorem, auctor ut vulputate non, sollicitudin et ipsum. Integer ac arcu lacus. In enim arcu, posuere nec metus ac, fermentum lacinia lacus. Cras dignissim molestie lacus pulvinar efficitur. Praesent molestie purus orci, pulvinar sollicitudin velit pulvinar vitae.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sed erat eu leo bibendum vestibulum. Donec\n' +
+'        aliquam, augue sit amet suscipit facilisis, ex elit interdum nisl, at commodo sem mi fermentum dolor. Curabitur\n' +
+'        ac faucibus arcu. Mauris elementum in magna ut aliquet. Phasellus sit amet elit quis dolor tincidunt rhoncus\n' +
+'        scelerisque id velit. Donec ut nunc id ante varius consectetur et et ex. Suspendisse tempus feugiat sem vel\n' +
+'        tempus. Etiam orci erat, sagittis et nisi sit amet, tincidunt tristique justo. Proin vitae leo at nisi\n' +
+'        pellentesque rutrum. Donec turpis mauris, eleifend a ornare eu, dignissim non quam. Pellentesque at odio libero.\n' +
+'        In sapien lorem, auctor ut vulputate non, sollicitudin et ipsum. Integer ac arcu lacus. In enim arcu, posuere\n' +
+'        nec metus ac, fermentum lacinia lacus. Cras dignissim molestie lacus pulvinar efficitur. Praesent molestie purus\n' +
+'        orci, pulvinar sollicitudin velit pulvinar vitae.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Nulla facilisi. Pellentesque ac euismod felis. Sed tempor nisi in euismod dapibus. Fusce posuere lectus id lacus imperdiet cursus. Maecenas id diam nisl. Maecenas volutpat feugiat tellus, sit amet elementum neque finibus placerat. Suspendisse potenti. Etiam massa mi, hendrerit id odio nec, efficitur luctus enim. Sed felis quam, aliquam nec facilisis iaculis, ornare at sapien. Cras ut lorem pellentesque, interdum libero vitae, facilisis erat. Sed in luctus est. Duis arcu mi, tempor eu iaculis vel, malesuada vitae lorem. Nulla est enim, porttitor quis suscipit vitae, sodales vel leo.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Nulla facilisi. Pellentesque ac euismod felis. Sed tempor nisi in euismod dapibus. Fusce posuere lectus id lacus\n' +
+'        imperdiet cursus. Maecenas id diam nisl. Maecenas volutpat feugiat tellus, sit amet elementum neque finibus\n' +
+'        placerat. Suspendisse potenti. Etiam massa mi, hendrerit id odio nec, efficitur luctus enim. Sed felis quam,\n' +
+'        aliquam nec facilisis iaculis, ornare at sapien. Cras ut lorem pellentesque, interdum libero vitae, facilisis\n' +
+'        erat. Sed in luctus est. Duis arcu mi, tempor eu iaculis vel, malesuada vitae lorem. Nulla est enim, porttitor\n' +
+'        quis suscipit vitae, sodales vel leo.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Suspendisse potenti. Quisque mattis cursus metus, sed rhoncus nunc condimentum sit amet. Vivamus ultrices turpis massa, quis vestibulum magna pharetra quis. Pellentesque posuere consectetur arcu et dignissim. Aliquam a eros quis mi ultrices porta. Morbi sed condimentum quam, in faucibus ex. Curabitur id bibendum mauris, eget pellentesque ex. Curabitur eget lacus urna. Donec interdum velit a metus varius vulputate. Curabitur accumsan mattis rhoncus. Morbi vehicula viverra nisl, ut venenatis urna tempor sit amet. Sed blandit commodo arcu nec ullamcorper. Aliquam ornare luctus pharetra.\n' +
-'</p>\n' +
+'    <p>\n' +
+'        Suspendisse potenti. Quisque mattis cursus metus, sed rhoncus nunc condimentum sit amet. Vivamus ultrices turpis\n' +
+'        massa, quis vestibulum magna pharetra quis. Pellentesque posuere consectetur arcu et dignissim. Aliquam a eros\n' +
+'        quis mi ultrices porta. Morbi sed condimentum quam, in faucibus ex. Curabitur id bibendum mauris, eget\n' +
+'        pellentesque ex. Curabitur eget lacus urna. Donec interdum velit a metus varius vulputate. Curabitur accumsan\n' +
+'        mattis rhoncus. Morbi vehicula viverra nisl, ut venenatis urna tempor sit amet. Sed blandit commodo arcu nec\n' +
+'        ullamcorper. Aliquam ornare luctus pharetra.\n' +
+'    </p>\n' +
 '\n' +
-'<p>\n' +
-'Duis maximus elit non enim tempor finibus. Sed accumsan suscipit ipsum, at varius nisi hendrerit in. Sed eu massa neque. Praesent a aliquam nunc, nec suscipit tellus. Sed odio diam, molestie nec tincidunt vitae, blandit a risus. Aenean laoreet, justo ut tristique pretium, velit libero porta mi, a venenatis dolor massa vitae risus. Donec dapibus, massa a pharetra auctor, augue ipsum tempor sapien, id auctor urna velit vel justo. Maecenas elementum porttitor imperdiet.\n' +
-'</p>';
+'    <p>\n' +
+'        Duis maximus elit non enim tempor finibus. Sed accumsan suscipit ipsum, at varius nisi hendrerit in. Sed eu\n' +
+'        massa neque. Praesent a aliquam nunc, nec suscipit tellus. Sed odio diam, molestie nec tincidunt vitae, blandit\n' +
+'        a risus. Aenean laoreet, justo ut tristique pretium, velit libero porta mi, a venenatis dolor massa vitae risus.\n' +
+'        Donec dapibus, massa a pharetra auctor, augue ipsum tempor sapien, id auctor urna velit vel justo. Maecenas\n' +
+'        elementum porttitor imperdiet.\n' +
+'    </p>\n' +
+'</div>';
 
 jsxc.gui.template['pleaseAccept'] = '<p data-i18n="Please_accept_"></p>\n' +
 '';
@@ -10877,36 +11078,40 @@ jsxc.gui.template['removeDialog'] = '<h3 data-i18n="Remove_buddy"></h3>\n' +
 '<button class="btn btn-default jsxc_cancel jsxc_close pull-right" data-i18n="Cancel"></button>\n' +
 '';
 
-jsxc.gui.template['roster'] = '<!-- Barre latérale avec listes des contacts et menu -->\n' +
+jsxc.gui.template['roster'] = '<!-- Side bar with buddy list and menu -->\n' +
 '<div id="jsxc_roster">\n' +
 '\n' +
-'    <!-- Liste des contacts -->\n' +
+'    <div id="side_menu">\n' +
+'        Hey hey !\n' +
+'    </div>\n' +
+'\n' +
+'    <!-- buddy list -->\n' +
 '    <ul id="jsxc_buddylist"></ul>\n' +
 '\n' +
-'    <!-- Barre de menu au bas de la liste -->\n' +
+'    <!-- Menu bar on bottom of roster -->\n' +
 '    <div class="jsxc_bottom jsxc_presence jsxc_rosteritem" data-bid="own">\n' +
 '\n' +
 '        <!-- Avatar -->\n' +
 '        <div id="jsxc_avatar" class="jsxc_avatar"/>\n' +
 '\n' +
-'        <!-- Le menu -->\n' +
+'        <!-- Menu container -->\n' +
 '        <div id="jsxc_menu">\n' +
 '\n' +
-'            <!-- Bouton d\'ouverture du menu -->\n' +
+'            <!-- Button for menu openning, image added with scss/_jsxc.scss -->\n' +
 '            <span></span>\n' +
 '\n' +
-'            <div class="jsxc_inner">\n' +
-'                <ul>\n' +
-'                    <li class="jsxc_settings jsxc_settingsicon" data-i18n="Settings"></li>\n' +
-'                    <li class="jsxc_muteNotification" data-i18n="Mute"></li>\n' +
-'                    <li class="jsxc_hideOffline" data-i18n="Hide_offline"></li>\n' +
-'                    <li class="jsxc_addBuddy jsxc_contacticon" data-i18n="Add_buddy"></li>\n' +
-'                    <li class="jsxc_onlineHelp jsxc_helpicon" data-i18n="Online_help"></li>\n' +
-'                    <li class="jsxc_about" data-i18n="About"></li>\n' +
-'                </ul>\n' +
-'            </div>\n' +
-'        </div>\n' +
+'            <!--<div class="jsxc_inner">-->\n' +
+'                <!--<ul>-->\n' +
+'                    <!--<li class="jsxc_settings jsxc_settingsicon" data-i18n="Settings"></li>-->\n' +
+'                    <!--<li class="jsxc_muteNotification" data-i18n="Mute"></li>-->\n' +
+'                    <!--<li class="jsxc_hideOffline" data-i18n="Hide_offline"></li>-->\n' +
+'                    <!--<li class="jsxc_addBuddy jsxc_contacticon" data-i18n="Add_buddy"></li>-->\n' +
+'                    <!--<li class="jsxc_onlineHelp jsxc_helpicon" data-i18n="Online_help"></li>-->\n' +
+'                    <!--<li class="jsxc_about" data-i18n="About"></li>-->\n' +
+'                <!--</ul>-->\n' +
+'            <!--</div>-->\n' +
 '\n' +
+'        </div>\n' +
 '\n' +
 '        <div id="jsxc_notice">\n' +
 '            <span></span>\n' +
@@ -10914,7 +11119,6 @@ jsxc.gui.template['roster'] = '<!-- Barre latérale avec listes des contacts et 
 '                <ul></ul>\n' +
 '            </div>\n' +
 '        </div>\n' +
-'\n' +
 '\n' +
 '        <div id="jsxc_presence">\n' +
 '            <span data-i18n="Offline">Offline</span>\n' +
