@@ -18,9 +18,9 @@ var jsxcMenu = {
     searchTitleMark: "<span class='jsxcMenuSearchTitleMark'> &lt;!&gt;</span>",
 
     highlightSettings:  {
-                   caseSensitive: false,
-                   className: 'jsxcMenuSearchResults'
-               },
+       caseSensitive: false,
+       className: 'jsxcMenuSearchResults'
+    },
 
     /**
         Initialisation du menu

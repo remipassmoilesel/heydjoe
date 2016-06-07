@@ -1,5 +1,6 @@
 
 #side_menu{
+
     position: fixed;
     top: 0px;
     width: 200px;
@@ -9,21 +10,59 @@
     box-sizing: border-box;
     z-index: 80;
 
-    .ui-accordion-content {
+    border-left: 1px solid #e1e1e1;
+
+}
+
+.jsxc_menu_search_results{
+    background: #FFFF88;
+}
+
+.jsxc_menu_search_title_mark{
+    font-weight: bolder;
+}
+
+#jsxc_menu_feedback{
+    text-align: center;
+    font-size: 12px;
+    font-style: italic;
+    color: darkGray;
+}
+
+.jsxc_menu_active_result{
+    color: blue;
+    font-weight: bolder;
+}
+
+#side_menu_search_bar{
+    input{
         position: relative;
-        max-height: 60%;
+
+        &[type="button"]{
+            width: 20px;
+        }
     }
 }
 
-.side_menu_accordion_header{
-    font-size: 15px;
-    font-weight: bolder;
-    background: #cccccc;
-    cursor: pointer;
+#side_menu_content{
 
-    &:hover{
-        background: #ffffff;
+    height: 100%;
+
+    /** Headers */
+    h1{
+        font-size: 11px;
     }
+
+    /** Content */
+    div{
+        font-size: 12px;
+        padding: 5px;
+    }
+
+    .ui-accordion-content {
+        position: relative; /** Needed to avoid perfectscroll problems */
+    }
+
 }
 
 #jsxc_menu {

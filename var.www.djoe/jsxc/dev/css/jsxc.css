@@ -3697,18 +3697,42 @@ li[data-type="groupchat"] .jsxc_video {
   background-color: inherit;
   height: 90%;
   box-sizing: border-box;
-  z-index: 80; }
-  #side_menu .ui-accordion-content {
-    position: relative;
-    max-height: 60%; }
+  z-index: 80;
+  border-left: 1px solid #e1e1e1; }
 
-.side_menu_accordion_header {
-  font-size: 15px;
-  font-weight: bolder;
-  background: #cccccc;
-  cursor: pointer; }
-  .side_menu_accordion_header:hover {
-    background: #ffffff; }
+.jsxc_menu_search_results {
+  background: #FFFF88; }
+
+.jsxc_menu_search_title_mark {
+  font-weight: bolder; }
+
+#jsxc_menu_feedback {
+  text-align: center;
+  font-size: 12px;
+  font-style: italic;
+  color: darkGray; }
+
+.jsxc_menu_active_result {
+  color: blue;
+  font-weight: bolder; }
+
+#side_menu_search_bar input {
+  position: relative; }
+  #side_menu_search_bar input[type="button"] {
+    width: 20px; }
+
+#side_menu_content {
+  height: 100%;
+  /** Headers */
+  /** Content */ }
+  #side_menu_content h1 {
+    font-size: 11px; }
+  #side_menu_content div {
+    font-size: 12px;
+    padding: 5px; }
+  #side_menu_content .ui-accordion-content {
+    position: relative;
+    /** Needed to avoid perfectscroll problems */ }
 
 #jsxc_menu {
   height: 44px;

@@ -9,6 +9,11 @@ Call init() to build the menu. First init call is done in jsxc.roster.init()
 */
 jsxc.gui.menu = {
 
+    /*
+        Time out before close menu
+    */
+    timeoutBeforeClose: 5000,
+
     /**
         Menu elements. Each menu element has a label, a template name and an optionnal init function.
     */
@@ -18,8 +23,25 @@ jsxc.gui.menu = {
             label: "Menu",
             template: "menuWelcome",
             init: function(){
-                console.log("welcomePanel");
-//                console.log(this);
+
+
+            }
+        },
+
+        statusPanel: {
+            label: "Statut",
+            template: "menuStatus",
+            init: function(){
+
+
+            }
+        },
+
+        notificationsPanel: {
+            label: "Notifications",
+            template: "menuNotifications",
+            init: function(){
+
 
             }
         },
@@ -28,8 +50,16 @@ jsxc.gui.menu = {
             label: "Salons et cannaux",
             template: "menuRooms",
             init: function(){
-                console.log("roomsPanel");
-//                console.log(this);
+
+
+            }
+        },
+
+        toolsPanel: {
+            label: "Outils",
+            template: "menuTools",
+            init: function(){
+
 
             }
         },
@@ -38,10 +68,11 @@ jsxc.gui.menu = {
             label: "Paramètres",
             template: "menuSettings",
             init: function(){
-                console.log("settingsPanel");
-//                console.log(this);
+
+
             }
-        }
+        },
+
      },
 
     /**
@@ -49,7 +80,10 @@ jsxc.gui.menu = {
     */
     init: function(){
 
-        var menuRoot = $("#side_menu");
+        // disable text selection
+        $("#side_menu").disableSelection();
+
+        var menuRoot = $("#side_menu_content");
 
         // initializing elements
         for(var prop in this.elements){
@@ -79,8 +113,225 @@ jsxc.gui.menu = {
         this.initFoldableActions();
     },
 
+    /*
+        Set menu accordion and searchable
+    */
+    initAccordion: function(){
+
+        // voir: http://www.w3schools.com/howto/howto_js_accordion.asp
+
+        // create accordion
+        $( "#side_menu_content" ).accordion({
+            collapsible: false,
+            heightStyle: "fill",
+            header: "h1"
+        });
+
+        // adding better srollbars
+        $("#side_menu_content > div").each(function(){
+            $(this).perfectScrollbar();
+        });
+
+        var self = this;
+
+        // add search text fields and buttons
+        $("#jsxc_menu_search_text_field").keyup(self.onSearchKeyUp);
+
+        // show next result
+        $("#jsxc_menu_next_btn").click(function(){
+            self.showNextResult();
+        });
+
+        // show previous result
+        $("#jsxc_menu_previous_btn").click(function(){
+            self.showPreviousResult();
+        });
+
+    },
+
     /**
-        Associate click with fold / unfold action
+        Current index of search result
+    */
+    currentSearchResultIndex: 0,
+
+    /**
+       All currents results
+    */
+    currentResults: [],
+
+    /**
+        Title mark displayed when a result occur in a panel
+    */
+    searchTitleMark: "<span class='jsxc_menu_search_title_mark'> &lt;!&gt;</span>",
+
+    /**
+        Settings for text highliting. Using jquery.highlight.js
+    */
+    highlightSettings:  {
+       caseSensitive: false,
+       className: 'jsxc_menu_search_results'
+    },
+
+    /**
+        Called by search text field when user type something
+    */
+    onSearchKeyUp: function(){
+
+        // terms to search
+        var rawTerms = $(this).val().trim();
+
+        //console.log(rawTerms);
+
+        var self = jsxc.gui.menu;
+
+        // reinitialize indicators
+        self.currentResults = [];
+        self.currentSearchResultIndex = 0;
+        $("#side_menu_content span.jsxc_menu_search_title_mark").remove();
+
+        // champs vide, arret
+        if(rawTerms.length < 1){
+
+            self.feedback();
+
+            self.resetHighlights();
+
+            $( "#side_menu_content > h1.ui-accordion-header" ).eq(0).trigger("click");
+
+            return;
+        }
+
+        // surligner les résultats
+        self.highlightTerms(rawTerms);
+
+        // lister les résultats
+        self.currentResults = $(".jsxc_menu_search_results");
+
+        // pas de résultats, activer le premier onglet
+        if(self.currentResults.length < 1){
+
+            self.feedback("Aucun résultat");
+
+            $("#side_menu_content > h1.ui-accordion-header").eq(0).trigger("click");
+
+        }
+
+        // un ou plusieurs résultats, afficher l'onglet du premier resultat correspondant
+        else {
+
+            // ajouter les marques aux titres correspondants
+            self.currentResults.each(function(index){
+
+                var title;
+                var titleSearch = $(this).parents("h1.ui-accordion-header");
+                if(titleSearch.length > 0){
+                    title = titleSearch.eq(0);
+                } else {
+                    title = self.currentResults.eq(index).parents("div.ui-accordion-content").prev("h1.ui-accordion-header");
+                }
+
+                var mark = $(self.searchTitleMark);
+
+                if(title.find("span.jsxc_menu_search_title_mark").length < 1){
+                    title.append(mark);
+                }
+
+            });
+
+            self.selectResult(0);
+
+        }
+    },
+
+    /**
+        Display a message for user
+    */
+    feedback: function(text){
+        $("#jsxc_menu_feedback").html(text || "&nbsp;");
+    },
+
+    /**
+        Highlight all term searched
+    */
+    highlightTerms: function(terms){
+
+        this.resetHighlights();
+
+        // surligner tous les élements
+        $("#side_menu_content").highlight(terms, this.highlightSettings);
+
+    },
+
+    /**
+        Enlever le surlignage
+    */
+    resetHighlights: function(){
+
+        $("#side_menu_content").unhighlight(this.highlightSettings);
+
+        // retirer les précédents résultats actifs
+        $("#side_menu_content .jsxc_menu_active_result").each(function(){
+            $(this).removeClass("jsxc_menu_active_result");
+        });
+    },
+
+    /**
+        Active the next result
+    */
+    showNextResult: function(){
+
+        this.currentSearchResultIndex ++;
+
+        if(this.currentSearchResultIndex > this.currentResults.length - 1){
+            this.feedback("Dernier résultat atteint");
+            this.currentSearchResultIndex = this.currentResults.length - 1;
+        }
+
+        this.selectResult(this.currentSearchResultIndex);
+
+    },
+
+    /**
+        Active the previous result
+    */
+    showPreviousResult: function(){
+
+        this.currentSearchResultIndex --;
+
+        if(this.currentSearchResultIndex <= 0){
+            this.feedback("Premier résultat atteint");
+            this.currentSearchResultIndex = 0;
+        }
+
+        this.selectResult(this.currentSearchResultIndex);
+
+    },
+
+    /**
+        Show result tab and active it
+    */
+    selectResult: function(index){
+
+        // retirer les précédents résultats actifs
+        $("#side_menu_content .jsxc_menu_active_result").each(function(){
+            $(this).removeClass("jsxc_menu_active_result");
+        });
+
+        // ajouter la classe au résultat actif
+        this.currentResults.eq(this.currentSearchResultIndex).addClass("jsxc_menu_active_result");
+
+        // activer l'accordéon correspondant
+        var titleSearch = this.currentResults.eq(index).parents("h1");
+        if(titleSearch.length > 0){
+            titleSearch.eq(0).trigger("click");
+        } else {
+            this.currentResults.eq(index).parents("div.ui-accordion-content").prev("h1.ui-accordion-header").trigger("click");
+        }
+
+    },
+
+    /**
+        Associate click with fold / unfold menu action
     */
     initFoldableActions: function(){
 
@@ -97,28 +348,30 @@ jsxc.gui.menu = {
            self.animate({ right: "-200px" });
          };
 
-        // disable text selection
-        self.disableSelection();
-
         // when clicking open menu, and launch timer to hide it after inactivity
         $("#jsxc_menu > span").click(function() {
 
             //  side menu is open, close it
             if(self.data("sideMenuEnabled")){
                 closeSideMenu();
+
+                window.clearTimeout(self.data('timerForClosing'));
             }
 
             // side menu is closed, open it
             else {
-                openSideMenu();
-                self.data('timerForClosing', window.setTimeout(closeSideMenu, 3000));
-            }
 
-            // update scrollbars
-             $("#side_menu > div").each(function(){
-                $(this).perfectScrollbar('update');
-                //$(this).addClass("side_menu_accordion_content_nested");
-            });
+               // reresh accordion size
+                $("#side_menu_content").accordion("refresh");
+
+                openSideMenu();
+
+                self.data('timerForClosing', window.setTimeout(closeSideMenu,
+                    jsxc.gui.menu.timeoutBeforeClose));
+
+                // focus on search text field
+                $("#jsxc_menu_search_text_field").focus();
+            }
 
             return false;
 
@@ -127,7 +380,7 @@ jsxc.gui.menu = {
         // mouse leaving, timeout to hide
         // timeouts are stored in self element with jquery.data()
         self.mouseleave(function() {
-            self.data('timerForClosing', window.setTimeout(closeSideMenu, 3000));
+            self.data('timerForClosing', window.setTimeout(closeSideMenu, jsxc.gui.menu.timeoutBeforeClose));
         });
 
         // mouse entering, clear timeout to hide
@@ -138,48 +391,6 @@ jsxc.gui.menu = {
 
     },
 
-    /*
-        Set menu accordion and searchable
-    */
-    initAccordion: function(){
-
-        console.log("initAccordion");
-
-        // voir: http://www.w3schools.com/howto/howto_js_accordion.asp
-
-        // create accordion
-        $( "#side_menu" ).accordion({
-            collapsible: false,
-            heightStyle: "fill",
-            header: "h1"
-        });
-
-//        // prepare titles
-//        $("#side_menu > h1").each(function(){
-//            $(this).disableSelection();
-//            //$(this).addClass("side_menu_accordion_header");
-//        });
-
-        // prepare divisions
-        $("#side_menu > div").each(function(){
-            $(this).perfectScrollbar();
-            //$(this).addClass("side_menu_accordion_content_nested");
-        });
-//
-//        // add search text fields and buttons
-//        $("#jsxcMenuSearchTextField").keyup(jsxcMenu.onSearchKeyUp);
-//
-//        // afficher le résultat suivant
-//        $("#jsxcMenuNextButton").click(function(){
-//            jsxcMenu.showNextResult();
-//        });
-//
-//        // afficher le résultat suivant
-//        $("#jsxcMenuPreviousButton").click(function(){
-//            jsxcMenu.showPreviousResult();
-//        });
-
-    }
 
 
 
