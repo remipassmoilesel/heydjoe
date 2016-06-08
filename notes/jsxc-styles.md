@@ -17,3 +17,5 @@ la forme:
 
     @import "menu";
     /* importe ./_menu.scss */
+    
+* Toutes les couleurs sont stockées dans des variables dans _colors.scss

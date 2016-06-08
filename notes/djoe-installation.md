@@ -33,6 +33,11 @@
         * Just married
         * REST API
 
+    * Dans "Salon de discussion" > "Paramètres de salon de discussion" > "Services options"
+        * \+ Make room persistent
+        * \+ Allowoccupants to invite others
+
+
 * Puis configurer le serveur pour TLS. Toutes les étapes sont indispensables (même si vous ne voulez pas de mot de passe
 sur la clef privée):
 

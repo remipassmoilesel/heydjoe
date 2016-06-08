@@ -2759,7 +2759,7 @@ fieldset[disabled] #jsxc_webrtc .checkbox label {
 
 .jsxc_online:before, .jsxc_chat:before, .jsxc_away:before, .jsxc_xa:before, .jsxc_dnd:before {
   content: ' ';
-  display: block;
+  display: inline-block;
   width: 12px;
   height: 12px;
   border-radius: 100%;
@@ -2770,7 +2770,8 @@ fieldset[disabled] #jsxc_webrtc .checkbox label {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100%;
-  box-sizing: content-box; }
+  box-sizing: content-box;
+  margin-right: 5px; }
 
 .jsxc_online:before {
   background-color: green; }
@@ -3110,22 +3111,30 @@ fieldset[disabled] #jsxc_webrtc .checkbox label {
 #jsxc_avatar {
   cursor: default !important; }
 
+/**
 #jsxc_presence {
-  cursor: pointer;
-  padding-left: 2px;
-  overflow: hidden; }
-  #jsxc_presence > span {
-    opacity: 0.8; }
-  #jsxc_presence li {
-    position: relative; }
-    #jsxc_presence li:before {
-      /** Presence indicator */
-      position: absolute;
-      top: 50%;
-      left: 10px;
-      margin-top: -8px;
-      border: 2px solid whitesmoke; }
+    cursor: pointer;
+    padding-left: 2px;
+    overflow: hidden;
 
+    & > span {
+        opacity: 0.8;
+    }
+
+    li {
+        position: relative;
+
+        &:before {
+            /** Presence indicator
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            margin-top: -8px;
+            border: 2px solid whitesmoke;
+        }
+    }
+}
+*/
 #jsxc_notice {
   height: 30px;
   width: 30px;
@@ -3689,7 +3698,7 @@ div.jsxc_transfer {
 li[data-type="groupchat"] .jsxc_video {
   display: none; }
 
-#side_menu {
+#jsxc_side_menu {
   position: fixed;
   top: 0px;
   width: 200px;
@@ -3699,40 +3708,57 @@ li[data-type="groupchat"] .jsxc_video {
   box-sizing: border-box;
   z-index: 80;
   border-left: 1px solid #e1e1e1; }
-
-.jsxc_menu_search_results {
-  background: #FFFF88; }
-
-.jsxc_menu_search_title_mark {
-  font-weight: bolder; }
-
-#jsxc_menu_feedback {
-  text-align: center;
-  font-size: 12px;
-  font-style: italic;
-  color: darkGray; }
-
-.jsxc_menu_active_result {
-  color: blue;
-  font-weight: bolder; }
-
-#side_menu_search_bar input {
-  position: relative; }
-  #side_menu_search_bar input[type="button"] {
-    width: 20px; }
-
-#side_menu_content {
-  height: 100%;
-  /** Headers */
-  /** Content */ }
-  #side_menu_content h1 {
-    font-size: 11px; }
-  #side_menu_content div {
+  #jsxc_side_menu .jsxc_menu_search_results {
+    background: #FFFF88; }
+  #jsxc_side_menu .jsxc_menu_search_title_mark {
+    font-weight: bolder; }
+  #jsxc_side_menu #jsxc_menu_feedback {
+    text-align: center;
     font-size: 12px;
-    padding: 5px; }
-  #side_menu_content .ui-accordion-content {
-    position: relative;
-    /** Needed to avoid perfectscroll problems */ }
+    font-style: italic;
+    color: darkGray; }
+  #jsxc_side_menu .jsxc_menu_active_result {
+    color: blue;
+    font-weight: bolder; }
+  #jsxc_side_menu #jsxc_side_menu_search_bar input {
+    position: relative; }
+    #jsxc_side_menu #jsxc_side_menu_search_bar input[type="button"] {
+      width: 20px; }
+  #jsxc_side_menu #jsxc_side_menu_content {
+    background: inherit;
+    height: 93%;
+    /** Headers */
+    /** Content */ }
+    #jsxc_side_menu #jsxc_side_menu_content h1 {
+      font-size: 11px; }
+    #jsxc_side_menu #jsxc_side_menu_content > div {
+      font-size: 12px;
+      padding: 5px;
+      text-align: left; }
+    #jsxc_side_menu #jsxc_side_menu_content div.actionButton {
+      cursor: pointer;
+      border-radius: 5px;
+      font-family: Arial;
+      color: #454545;
+      font-size: 11px;
+      text-decoration: none;
+      padding-top: 12px;
+      padding-right: 5px;
+      padding-left: 10px;
+      padding-bottom: 12px;
+      background: #ffffff;
+      background-image: -webkit-linear-gradient(top, #ffffff, #e9f1f0);
+      background-image: linear-gradient(to bottom, #ffffff, #e9f1f0);
+      text-decoration: none; }
+      #jsxc_side_menu #jsxc_side_menu_content div.actionButton:hover {
+        background: #007fff;
+        text-decoration: none;
+        color: white; }
+      #jsxc_side_menu #jsxc_side_menu_content div.actionButton.notImplementedYet {
+        cursor: not-allowed; }
+    #jsxc_side_menu #jsxc_side_menu_content .ui-accordion-content {
+      position: relative;
+      /** Needed to avoid perfectscroll problems */ }
 
 #jsxc_menu {
   height: 44px;

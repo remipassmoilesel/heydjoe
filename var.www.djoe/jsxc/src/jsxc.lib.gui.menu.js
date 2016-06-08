@@ -1,29 +1,43 @@
 /**
 
-Main menu. This menu is included in roster.
+ Main menu. This menu is included in roster.
 
-All templates are stored in templates/menu*.html
+ All templates are stored in templates/menu*.html
 
-Call init() to build the menu. First init call is done in jsxc.roster.init()
+ Call init() to build the menu. First init call is done in jsxc.roster.init()
 
-*/
+ */
 jsxc.gui.menu = {
 
     /*
-        Time out before close menu
-    */
+     Time out before close menu
+     */
     timeoutBeforeClose: 5000,
 
     /**
-        Menu elements. Each menu element has a label, a template name and an optionnal init function.
-    */
+     Menu elements. Each menu element has a label, a template name and an optionnal init function.
+     */
     elements: {
 
         welcomePanel: {
             label: "Menu",
             template: "menuWelcome",
-            init: function(){
+            init: function () {
 
+                //<div data-pres="offline" class="actionButton jsxc_offline" data-i18n="Offline"></div>
+
+                $('#jsxc_side_menu_content .jsxc_onlineHelp').click(function () {
+                    window.open(jsxc.options.onlineHelp, 'onlineHelp');
+                });
+
+                // change presence or logout
+                $('#jsxc_side_menu_content .jsxc_menu_offline').click(function () {
+                    jsxc.xmpp.logout(false);
+                    
+                    // close menu and roster
+                    jsxc.gui.menu.closeSideMenu();
+                    jsxc.gui.roster.toggle();
+                });
 
             }
         },
@@ -31,17 +45,56 @@ jsxc.gui.menu = {
         statusPanel: {
             label: "Statut",
             template: "menuStatus",
-            init: function(){
+            init: function () {
 
+                // change presence or logout
+                $('#jsxc_menu_status div').click(function () {
+                    var self = $(this);
 
+                    // pres info is stored in "data-pres" html arg
+                    var pres = self.data('pres');
+
+                    if (pres === 'offline') {
+                        jsxc.xmpp.logout(false);
+                    } else {
+                        jsxc.gui.changePresence(pres);
+                    }
+
+                });
+            }
+        },
+
+        contactPanel: {
+            label: "Contacts",
+            template: "menuContacts",
+            init: function () {
+                $('#jsxc_side_menu_content .jsxc_addBuddy').click(function () {
+                    jsxc.gui.showContactDialog();
+                });
             }
         },
 
         notificationsPanel: {
             label: "Notifications",
             template: "menuNotifications",
-            init: function(){
+            init: function () {
 
+                // mute notifications
+                $('#jsxc_side_menu_content .jsxc_muteNotification').click(function () {
+
+                    if (jsxc.storage.getUserItem('presence') === 'dnd') {
+                        return;
+                    }
+
+                    // invert current choice
+                    var mute = !jsxc.options.get('muteNotification');
+
+                    if (mute) {
+                        jsxc.notification.muteSound();
+                    } else {
+                        jsxc.notification.unmuteSound();
+                    }
+                });
 
             }
         },
@@ -49,16 +102,14 @@ jsxc.gui.menu = {
         roomsPanel: {
             label: "Salons et cannaux",
             template: "menuRooms",
-            init: function(){
-
-
+            init: function () {
             }
         },
 
         toolsPanel: {
             label: "Outils",
             template: "menuTools",
-            init: function(){
+            init: function () {
 
 
             }
@@ -67,33 +118,60 @@ jsxc.gui.menu = {
         settingsPanel: {
             label: "Paramètres",
             template: "menuSettings",
-            init: function(){
+            init: function () {
+
+                // show dialog settings
+                $('#jsxc_side_menu_content .jsxc_dialog_settings').click(function () {
+                    jsxc.gui.showSettings();
+                });
+
+
+                // display or hide offline buddies
+                $('#jsxc_side_menu_content .jsxc_hideOffline').click(function () {
+
+                    var hideOffline = !jsxc.options.get('hideOffline');
+
+                    if (hideOffline) {
+                        $('#jsxc_buddylist').addClass('jsxc_hideOffline');
+                    } else {
+                        $('#jsxc_buddylist').removeClass('jsxc_hideOffline');
+                    }
+
+                    $(this).text(hideOffline ? $.t('Show_offline') : $.t('Hide_offline'));
+
+                    jsxc.options.set('hideOffline', hideOffline);
+                });
+
+                // about dialog
+                $('#jsxc_side_menu_content .jsxc_about').click(function () {
+                    jsxc.gui.showAboutDialog();
+                });
 
 
             }
         },
 
-     },
+    },
 
     /**
-        Initialise menu and menu elements
-    */
-    init: function(){
+     Initialise menu and menu elements
+     */
+    init: function () {
 
         // disable text selection
-        $("#side_menu").disableSelection();
+        $("#jsxc_side_menu").disableSelection();
 
-        var menuRoot = $("#side_menu_content");
+        var menuRoot = $("#jsxc_side_menu_content");
 
         // initializing elements
-        for(var prop in this.elements){
+        for (var prop in this.elements) {
             var elmt = this.elements[prop];
 
             // add Title
             menuRoot.append("<h1>" + elmt.label + "</h1>");
 
             // load and add template
-            if(typeof elmt.template === "undefined"){
+            if (typeof elmt.template === "undefined") {
                 throw "Parameter cannot be undefined: " + elmt.template;
             }
             elmt.template = jsxc.gui.template.get(elmt.template);
@@ -101,7 +179,7 @@ jsxc.gui.menu = {
             menuRoot.append(elmt.template);
 
             // launch init function
-            if(typeof elmt.init !== "undefined"){
+            if (typeof elmt.init !== "undefined") {
                 elmt.init.call(elmt);
             }
         }
@@ -114,21 +192,21 @@ jsxc.gui.menu = {
     },
 
     /*
-        Set menu accordion and searchable
-    */
-    initAccordion: function(){
+     Set menu accordion and searchable
+     */
+    initAccordion: function () {
 
         // voir: http://www.w3schools.com/howto/howto_js_accordion.asp
 
         // create accordion
-        $( "#side_menu_content" ).accordion({
+        $("#jsxc_side_menu_content").accordion({
             collapsible: false,
             heightStyle: "fill",
             header: "h1"
         });
 
         // adding better srollbars
-        $("#side_menu_content > div").each(function(){
+        $("#jsxc_side_menu_content > div").each(function () {
             $(this).perfectScrollbar();
         });
 
@@ -138,44 +216,44 @@ jsxc.gui.menu = {
         $("#jsxc_menu_search_text_field").keyup(self.onSearchKeyUp);
 
         // show next result
-        $("#jsxc_menu_next_btn").click(function(){
+        $("#jsxc_menu_next_btn").click(function () {
             self.showNextResult();
         });
 
         // show previous result
-        $("#jsxc_menu_previous_btn").click(function(){
+        $("#jsxc_menu_previous_btn").click(function () {
             self.showPreviousResult();
         });
 
     },
 
     /**
-        Current index of search result
-    */
+     Current index of search result
+     */
     currentSearchResultIndex: 0,
 
     /**
-       All currents results
-    */
+     All currents results
+     */
     currentResults: [],
 
     /**
-        Title mark displayed when a result occur in a panel
-    */
+     Title mark displayed when a result occur in a panel
+     */
     searchTitleMark: "<span class='jsxc_menu_search_title_mark'> &lt;!&gt;</span>",
 
     /**
-        Settings for text highliting. Using jquery.highlight.js
-    */
-    highlightSettings:  {
-       caseSensitive: false,
-       className: 'jsxc_menu_search_results'
+     Settings for text highliting. Using jquery.highlight.js
+     */
+    highlightSettings: {
+        caseSensitive: false,
+        className: 'jsxc_menu_search_results'
     },
 
     /**
-        Called by search text field when user type something
-    */
-    onSearchKeyUp: function(){
+     Called by search text field when user type something
+     */
+    onSearchKeyUp: function () {
 
         // terms to search
         var rawTerms = $(this).val().trim();
@@ -187,16 +265,16 @@ jsxc.gui.menu = {
         // reinitialize indicators
         self.currentResults = [];
         self.currentSearchResultIndex = 0;
-        $("#side_menu_content span.jsxc_menu_search_title_mark").remove();
+        $("#jsxc_side_menu_content span.jsxc_menu_search_title_mark").remove();
 
         // champs vide, arret
-        if(rawTerms.length < 1){
+        if (rawTerms.length < 1) {
 
             self.feedback();
 
             self.resetHighlights();
 
-            $( "#side_menu_content > h1.ui-accordion-header" ).eq(0).trigger("click");
+            $("#jsxc_side_menu_content > h1.ui-accordion-header").eq(0).trigger("click");
 
             return;
         }
@@ -208,11 +286,11 @@ jsxc.gui.menu = {
         self.currentResults = $(".jsxc_menu_search_results");
 
         // pas de résultats, activer le premier onglet
-        if(self.currentResults.length < 1){
+        if (self.currentResults.length < 1) {
 
             self.feedback("Aucun résultat");
 
-            $("#side_menu_content > h1.ui-accordion-header").eq(0).trigger("click");
+            $("#jsxc_side_menu_content > h1.ui-accordion-header").eq(0).trigger("click");
 
         }
 
@@ -220,11 +298,11 @@ jsxc.gui.menu = {
         else {
 
             // ajouter les marques aux titres correspondants
-            self.currentResults.each(function(index){
+            self.currentResults.each(function (index) {
 
                 var title;
                 var titleSearch = $(this).parents("h1.ui-accordion-header");
-                if(titleSearch.length > 0){
+                if (titleSearch.length > 0) {
                     title = titleSearch.eq(0);
                 } else {
                     title = self.currentResults.eq(index).parents("div.ui-accordion-content").prev("h1.ui-accordion-header");
@@ -232,7 +310,7 @@ jsxc.gui.menu = {
 
                 var mark = $(self.searchTitleMark);
 
-                if(title.find("span.jsxc_menu_search_title_mark").length < 1){
+                if (title.find("span.jsxc_menu_search_title_mark").length < 1) {
                     title.append(mark);
                 }
 
@@ -244,45 +322,45 @@ jsxc.gui.menu = {
     },
 
     /**
-        Display a message for user
-    */
-    feedback: function(text){
+     Display a message for user
+     */
+    feedback: function (text) {
         $("#jsxc_menu_feedback").html(text || "&nbsp;");
     },
 
     /**
-        Highlight all term searched
-    */
-    highlightTerms: function(terms){
+     Highlight all term searched
+     */
+    highlightTerms: function (terms) {
 
         this.resetHighlights();
 
         // surligner tous les élements
-        $("#side_menu_content").highlight(terms, this.highlightSettings);
+        $("#jsxc_side_menu_content").highlight(terms, this.highlightSettings);
 
     },
 
     /**
-        Enlever le surlignage
-    */
-    resetHighlights: function(){
+     Enlever le surlignage
+     */
+    resetHighlights: function () {
 
-        $("#side_menu_content").unhighlight(this.highlightSettings);
+        $("#jsxc_side_menu_content").unhighlight(this.highlightSettings);
 
         // retirer les précédents résultats actifs
-        $("#side_menu_content .jsxc_menu_active_result").each(function(){
+        $("#jsxc_side_menu_content .jsxc_menu_active_result").each(function () {
             $(this).removeClass("jsxc_menu_active_result");
         });
     },
 
     /**
-        Active the next result
-    */
-    showNextResult: function(){
+     Active the next result
+     */
+    showNextResult: function () {
 
-        this.currentSearchResultIndex ++;
+        this.currentSearchResultIndex++;
 
-        if(this.currentSearchResultIndex > this.currentResults.length - 1){
+        if (this.currentSearchResultIndex > this.currentResults.length - 1) {
             this.feedback("Dernier résultat atteint");
             this.currentSearchResultIndex = this.currentResults.length - 1;
         }
@@ -292,13 +370,13 @@ jsxc.gui.menu = {
     },
 
     /**
-        Active the previous result
-    */
-    showPreviousResult: function(){
+     Active the previous result
+     */
+    showPreviousResult: function () {
 
-        this.currentSearchResultIndex --;
+        this.currentSearchResultIndex--;
 
-        if(this.currentSearchResultIndex <= 0){
+        if (this.currentSearchResultIndex <= 0) {
             this.feedback("Premier résultat atteint");
             this.currentSearchResultIndex = 0;
         }
@@ -308,12 +386,12 @@ jsxc.gui.menu = {
     },
 
     /**
-        Show result tab and active it
-    */
-    selectResult: function(index){
+     Show result tab and active it
+     */
+    selectResult: function (index) {
 
         // retirer les précédents résultats actifs
-        $("#side_menu_content .jsxc_menu_active_result").each(function(){
+        $("#jsxc_side_menu_content .jsxc_menu_active_result").each(function () {
             $(this).removeClass("jsxc_menu_active_result");
         });
 
@@ -322,7 +400,7 @@ jsxc.gui.menu = {
 
         // activer l'accordéon correspondant
         var titleSearch = this.currentResults.eq(index).parents("h1");
-        if(titleSearch.length > 0){
+        if (titleSearch.length > 0) {
             titleSearch.eq(0).trigger("click");
         } else {
             this.currentResults.eq(index).parents("div.ui-accordion-content").prev("h1.ui-accordion-header").trigger("click");
@@ -331,46 +409,68 @@ jsxc.gui.menu = {
     },
 
     /**
-        Associate click with fold / unfold menu action
-    */
-    initFoldableActions: function(){
+     Open side menu with parameters and options
+     */
+    openSideMenu: function () {
 
-        var self = $("#side_menu");
+        var self = $("#jsxc_side_menu");
 
-        // open / close side menu
-        var openSideMenu = function(){
-            self.data("sideMenuEnabled", true);
-            self.animate({ right: "0px" });
-         };
+        // state is saved inside the jquery element
+        self.data("sideMenuEnabled", true);
 
-        var closeSideMenu = function(){
-           self.data("sideMenuEnabled", false);
-           self.animate({ right: "-200px" });
-         };
+        // reresh accordion size
+        $("#jsxc_side_menu_content").accordion("refresh");
+
+        self.animate({right: "0px"});
+
+        // focus on search text field
+        $("#jsxc_menu_search_text_field").focus();
+    },
+
+    /**
+     Close the side menu
+     */
+    closeSideMenu: function () {
+
+        var self = $("#jsxc_side_menu");
+
+        // state is saved inside the jquery element
+        self.data("sideMenuEnabled", false);
+
+        self.animate({right: "-200px"});
+
+    },
+
+    /**
+     Associate click with fold / unfold menu action
+     */
+    initFoldableActions: function () {
+
+        var sideMenu = $("#jsxc_side_menu");
+
+        var self = this;
 
         // when clicking open menu, and launch timer to hide it after inactivity
-        $("#jsxc_menu > span").click(function() {
+        $("#jsxc_menu > span").click(function () {
 
             //  side menu is open, close it
-            if(self.data("sideMenuEnabled")){
-                closeSideMenu();
+            if (sideMenu.data("sideMenuEnabled")) {
 
-                window.clearTimeout(self.data('timerForClosing'));
+                self.closeSideMenu();
+
+                // clear timer
+                window.clearTimeout(sideMenu.data('timerForClosing'));
             }
 
             // side menu is closed, open it
             else {
 
-               // reresh accordion size
-                $("#side_menu_content").accordion("refresh");
+                self.openSideMenu();
 
-                openSideMenu();
-
-                self.data('timerForClosing', window.setTimeout(closeSideMenu,
+                // launch timer for closing if no use
+                sideMenu.data('timerForClosing', window.setTimeout(self.closeSideMenu,
                     jsxc.gui.menu.timeoutBeforeClose));
 
-                // focus on search text field
-                $("#jsxc_menu_search_text_field").focus();
             }
 
             return false;
@@ -379,19 +479,17 @@ jsxc.gui.menu = {
 
         // mouse leaving, timeout to hide
         // timeouts are stored in self element with jquery.data()
-        self.mouseleave(function() {
-            self.data('timerForClosing', window.setTimeout(closeSideMenu, jsxc.gui.menu.timeoutBeforeClose));
+        sideMenu.mouseleave(function () {
+            sideMenu.data('timerForClosing', window.setTimeout(self.closeSideMenu, jsxc.gui.menu.timeoutBeforeClose));
         });
 
         // mouse entering, clear timeout to hide
         // timeouts are stored in self element with jquery.data()
-        self.mouseenter(function() {
-            window.clearTimeout(self.data('timerForClosing'));
+        sideMenu.mouseenter(function () {
+            window.clearTimeout(sideMenu.data('timerForClosing'));
         });
 
     },
-
-
 
 
 };

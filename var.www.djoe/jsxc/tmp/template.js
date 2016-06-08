@@ -361,86 +361,89 @@ jsxc.gui.template['loginBox'] = '<h3 data-i18n="Login"></h3>\n' +
 
 jsxc.gui.template['menuContacts'] = '<div>\n' +
 '\n' +
-'    <ul>\n' +
-'        <li>Ajouter un contact</li>\n' +
-'        <li>Supprimer des contacts</li>\n' +
-'    </ul>\n' +
+'    <div class="jsxc_addBuddy actionButton" data-i18n="Add_buddy">Ajouter un contact</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Supprimer un contact</div>\n' +
 '\n' +
 '</div>';
 
 jsxc.gui.template['menuNotifications'] = '<div>\n' +
 '\n' +
-'    <p>Notifications:</p>\n' +
-'    <p>\n' +
-'        <ul>\n' +
-'            <li>Muet</li>\n' +
-'            <li>Activer les notifications de bureau</li>\n' +
-'            <li>Activer les notifications sonores</li>\n' +
-'            <li>Interdire les appels vidéos</li>\n' +
-'        </ul>\n' +
-'    </p>\n' +
+'    <div class="actionButton jsxc_muteNotification" data-i18n="Mute"></div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Activer les notifications de bureau</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Interdire les appels vidéos</div>\n' +
 '\n' +
 '</div>';
 
 jsxc.gui.template['menuRooms'] = '<div>\n' +
 '\n' +
-'    <ul>\n' +
-'        <li>Créer un salon</li>\n' +
-'        <li>Rejoindre un salon</li>\n' +
-'        <li>Liste des salons</li>\n' +
-'    </ul>\n' +
+'    <div class="actionButton notImplementedYet">Créer un salon</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Rejoindre un salon</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Liste des salons</div>\n' +
 '\n' +
 '</div>';
 
 jsxc.gui.template['menuSettings'] = '<div>\n' +
 '\n' +
-'    <ul>\n' +
-'        <li>Rétablir les réglages par défaut</li>\n' +
-'        <li>Masquer les contacts non connectés</li>\n' +
-'        <li>Console XMPP</li>\n' +
-'        <li>Console d\'événements Jquery</li>\n' +
-'        <li>A propos</li>\n' +
+'    <div class="actionButton jsxc_hideOffline" data-i18n="Hide_offline"></div>\n' +
 '\n' +
-'    </ul>\n' +
-'</div>';
+'    <div class="actionButton jsxc_dialog_settings">Boite de dialogue de réglages</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Rétablir les réglages par défaut</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Console XMPP</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Console d\'événements Jquery</div>\n' +
+'\n' +
+'    <div class="actionButton jsxc_about">A propos</div>\n' +
+'\n' +
+'</div>\n' +
+'';
 
-jsxc.gui.template['menuStatus'] = '<div>\n' +
+jsxc.gui.template['menuStatus'] = '<div id="jsxc_menu_status">\n' +
 '\n' +
 '    <p>Statut:</p>\n' +
-'    <p>\n' +
-'        <ul>\n' +
-'            <li>En ligne</li>\n' +
-'            <li>Libre pour discuter</li>\n' +
-'            <li>Absent</li>\n' +
-'            <li>Ne pas déranger</li>\n' +
-'        </ul>\n' +
-'    </p>\n' +
+'    \n' +
+'    <div data-pres="online" class="actionButton jsxc_online" data-i18n="Online"></div>\n' +
+'    <div data-pres="chat" class="actionButton jsxc_chat" data-i18n="Chatty"></div>\n' +
+'    <div data-pres="away" class="actionButton jsxc_away" data-i18n="Away"></div>\n' +
+'    <div data-pres="xa" class="actionButton jsxc_xa" data-i18n="Extended_away"></div>\n' +
+'    <div data-pres="dnd" class="actionButton jsxc_dnd" data-i18n="dnd"></div>\n' +
 '\n' +
 '</div>';
 
 jsxc.gui.template['menuTools'] = '<div>\n' +
 '\n' +
-'    <ul>\n' +
-'        <li>Créer un pad</li>\n' +
-'        <li>Liste des pads</li>\n' +
-'    </ul>\n' +
+'    <div class="actionButton notImplementedYet">Ouvrir un pad</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Créer un pad</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Liste des pads</div>\n' +
 '\n' +
 '</div>';
 
 jsxc.gui.template['menuWelcome'] = '<div>\n' +
 '\n' +
 '    <p>\n' +
-'        Recherchez une fonctionnalités à l\'aide du champs ci-dessus ou explorez les fonctionnalités de la messagerie :)\n' +
+'        Recherchez une fonctionnalité à l\'aide du champs ci-dessus ou explorez le menu :)\n' +
 '    </p>\n' +
+'\n' +
+'    <div class="actionButton jsxc_onlineHelp" data-i18n="Online_help"></div>\n' +
+'    <div data-pres="offline" class="actionButton jsxc_menu_offline">Se déconnecter</div>\n' +
 '\n' +
 '    <p>\n' +
 '        Actualités:\n' +
-'        <ul>\n' +
-'            <li>Jean-Claude vient de se connecter</li>\n' +
-'            <li>Claudette vous à envoyé un message</li>\n' +
-'            <li>Vous avez manqué un message de Jules</li>\n' +
-'        </ul>\n' +
 '    </p>\n' +
+'\n' +
+'    <ul>\n' +
+'        <li>Jean-Claude vient de se connecter</li>\n' +
+'        <li>Claudette vous à envoyé un message</li>\n' +
+'        <li>Vous avez manqué un message de Jules</li>\n' +
+'    </ul>\n' +
 '\n' +
 '</div>';
 
@@ -458,9 +461,9 @@ jsxc.gui.template['roster'] = '<!-- Side bar with buddy list and menu -->\n' +
 '<div id="jsxc_roster">\n' +
 '\n' +
 '    <!-- Main menu -->\n' +
-'    <div id="side_menu">\n' +
+'    <div id="jsxc_side_menu">\n' +
 '\n' +
-'        <div id="side_menu_search_bar">\n' +
+'        <div id="jsxc_side_menu_search_bar">\n' +
 '\n' +
 '            <input type="text" placeholder="Rechercher" id="jsxc_menu_search_text_field"/>\n' +
 '            <input type="button" id="jsxc_menu_previous_btn" value="<"/>\n' +
@@ -470,7 +473,7 @@ jsxc.gui.template['roster'] = '<!-- Side bar with buddy list and menu -->\n' +
 '\n' +
 '        </div>\n' +
 '\n' +
-'        <div id="side_menu_content"></div>\n' +
+'        <div id="jsxc_side_menu_content"></div>\n' +
 '\n' +
 '    </div>\n' +
 '\n' +
