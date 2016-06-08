@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-          "http://www.w3.org/TR/html4/strict.dtd">
+        "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-  <head>
+<head>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-    <title>Dig - Chapter 7</title>
+    <title>Découverte de services XMPP</title>
 
     <link rel='stylesheet' href='bower_components/jquery-ui/themes/black-tie/jquery-ui.css'>
     <script src='bower_components/jquery/dist/jquery.js'></script>
@@ -12,25 +12,24 @@
 
     <link rel='stylesheet' href='dig.css'>
     <script src='dig.js'></script>
-  </head>
-  <body>
-    <h1>Dig</h1>
+</head>
+<body>
+<h1>Découverte de services XMPP</h1>
 
-    <div id='input-bar'>
-      <input id='service' type='text'>
-      <input id='dig' type='button' value='Dig!' disabled='disabled'>
-    </div>
+<div id='input-bar'>
+    <input id='service' type='text' value="im.silverpeas.net">
+    <input id='dig' type='button' value='Découvrir'>
+</div>
 
-    <div class='clear'></div>
+<div class='left'>
+    <h2>Tree:</h2>
+    <ul id='tree'>
+    </ul>
+</div>
 
-    <div class='left'>
-      <ul id='tree'>
-      </ul>
-    </div>
-    
-    <div class='right'>
-      <h2 id='selected-name'></h2>
-      <div id='disco-info'>
+<div class='right'>
+    <h2 id='selected-name'></h2>
+    <div id='disco-info'>
         <h3>Identities:</h3>
         <ul id='identity-list'>
         </ul>
@@ -38,13 +37,36 @@
         <h3>Features:</h3>
         <ul id='feature-list'>
         </ul>
-      </div>
     </div>
+</div>
 
-    <!-- login dialog -->
-    <div id='login_dialog' class='hidden'>
-      <label>JID:</label><input type='text' id='jid'>
-      <label>Password:</label><input type='password' id='password'>
-    </div>
-  </body>
+<!-- Crédits -->
+<div>
+    Source: <a href="https://github.com/metajack/profxmpp.git">https://github.com/metajack/profxmpp.git</a>
+</div>
+
+<!-- Boite de dialogue de connexion-->
+<table id='login_dialog' class='hidden'>
+    <tr>
+        <td>Connexion:</td></tr>
+
+    <tr><td><input type='text' size="50" id='connexion' value="https://im.silverpeas.net:7443/http-bind/"/></td>
+
+    </tr>
+    <tr>
+        <td>JID complet (ex: jjlabringue@im.silverpeas.net):</td></tr>
+
+    <tr><td><input type='text' size="50" id='jid' value="remi@silverpeas.im.net"/></td>
+
+    </tr>
+    <tr>
+
+        <td>Mot de passe:</td></tr>
+
+    <tr><td><input type='password' size="50" id='password'/></td>
+
+    </tr>
+</table>
+
+</body>
 </html>

@@ -1,14 +1,7 @@
 
 
-// le domaine de la page
-var domain =  document.location.host;
-
-// service XMPP / HTTP
-//var boshURL = 'http://' + domain + ':7070/http-bind/';
-var boshURL = "https://im.silverpeas.net:7443/http-bind/";
-
-
 var Dig = {
+
     connection: null,
 
     on_items: function (iq, elem) {
@@ -26,6 +19,8 @@ var Dig = {
                     "</span></li>");
             });
         }
+
+        $('#tree .item').on('click', this.addClickActions);
     },
 
     on_info: function (iq, elem) {
@@ -51,64 +46,11 @@ var Dig = {
                 ($(this).attr('category') || "none") +
                 "</dd></dl></li>");
         });
-    }
-};
 
-$(document).ready(function () {
-    $('#login_dialog').dialog({
-        autoOpen: true,
-        draggable: false,
-        modal: true,
-        title: 'Connect to XMPP',
-        buttons: {
-            "Connect": function () {
-                $(document).trigger('connect', {
-                    jid: $('#jid').val().toLowerCase(),
-                    password: $('#password').val(),
-                });
+        $('#tree .item').on('click', this.addClickActions);
+    },
 
-                $('#password').val('');
-                $(this).dialog('close');
-            }
-        }
-    });
-
-    $('#dig').click(function () {
-        var service = $('#service').val().toLowerCase();
-        $('#service').val('');
-
-        // set up disco info pane
-        $('#selected-name').text(service);
-        $('#identity-list').empty();
-        $('#feature-list').empty();
-
-        // clear tree pane
-        $('#tree').empty();
-
-        $('#tree').append("<li><span class='item selected'>" +
-            service +
-            "</span></li>");
-
-        Dig.connection.sendIQ(
-            $iq({to: service, type: "get"})
-                .c("query", {
-                    xmlns: "http://jabber.org/protocol/disco#info"
-                }),
-            function (iq) {
-                Dig.on_info(iq, $('.selected')[0]);
-            });
-
-        Dig.connection.sendIQ(
-            $iq({to: service, type: "get"})
-                .c("query", {
-                    xmlns: "http://jabber.org/protocol/disco#items"
-                }),
-            function (iq) {
-                Dig.on_items(iq, $('.selected')[0]);
-            });
-    });
-
-    $('#tree .item').live('click', function () {
+    addClickActions: function () {
         if ($(this).hasClass("selected")) {
             return;
         }
@@ -152,12 +94,70 @@ $(document).ready(function () {
                     Dig.on_items(iq, elem);
                 });
         }
+    }
+};
+
+$(document).ready(function () {
+    $('#login_dialog').dialog({
+        autoOpen: true,
+        draggable: false,
+        modal: true,
+        title: 'Connect to XMPP',
+        buttons: {
+            "Connect": function () {
+                $(document).trigger('connect', {
+                    connexion: $('#connexion').val().toLowerCase(),
+                    jid: $('#jid').val().toLowerCase(),
+                    password: $('#password').val(),
+                });
+
+                $('#password').val('');
+                $(this).dialog('close');
+            }
+        },
+        width: "50%"
     });
+
+    $('#dig').click(function () {
+        var service = $('#service').val().toLowerCase();
+        $('#service').val('');
+
+        // set up disco info pane
+        $('#selected-name').text(service);
+        $('#identity-list').empty();
+        $('#feature-list').empty();
+
+        // clear tree pane
+        $('#tree').empty();
+
+        $('#tree').append("<li><span class='item selected'>" +
+            service +
+            "</span></li>");
+
+        Dig.connection.sendIQ(
+            $iq({to: service, type: "get"})
+                .c("query", {
+                    xmlns: "http://jabber.org/protocol/disco#info"
+                }),
+            function (iq) {
+                Dig.on_info(iq, $('.selected')[0]);
+            });
+
+        Dig.connection.sendIQ(
+            $iq({to: service, type: "get"})
+                .c("query", {
+                    xmlns: "http://jabber.org/protocol/disco#items"
+                }),
+            function (iq) {
+                Dig.on_items(iq, $('.selected')[0]);
+            });
+    });
+
+
 });
 
 $(document).bind('connect', function (ev, data) {
-    var conn = new Strophe.Connection(
-        'http://bosh.metajack.im:5280/xmpp-httpbind');
+    var conn = new Strophe.Connection(data.connexion);
 
     conn.connect(data.jid, data.password, function (status) {
         if (status === Strophe.Status.CONNECTED) {

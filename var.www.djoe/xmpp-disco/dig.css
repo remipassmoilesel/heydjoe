@@ -10,22 +10,14 @@ h1 {
     display: none
 }
 
-.left {
+.tree{
     padding: 10px;
-    width: 400px;
-    float: left;
 }
 
 .right {
     padding: 10px;
     border-left: solid 1px black;
-    width: 500px;
-    float: right;
     background-color: #eee;
-}
-
-.clear {
-    clear: both;
 }
 
 .item {
@@ -51,4 +43,7 @@ input {
     line-height: 175%;
     margin-left: 0;
     padding-left: 10px;
+}
+#tree li {
+    cursor: pointer;
 }

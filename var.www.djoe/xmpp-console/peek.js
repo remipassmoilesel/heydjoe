@@ -2,10 +2,6 @@
 
 var Peek = {
 
-    domain: document.location.host,
-
-    boshURL: "https://im.silverpeas.net:7443/http-bind/",
-
     /**
     * La connexion XMPP
     */
@@ -139,6 +135,7 @@ $(document).ready(function () {
         buttons: {
             "Connect": function () {
                 $(document).trigger('connect', {
+                    connexion: $('#connexion').val().toLowerCase(),
                     jid: $('#jid').val().toLowerCase(),
                     password: $('#password').val()
                 });
@@ -208,7 +205,7 @@ $(document).ready(function () {
 
 $(document).bind('connect', function (ev, data) {
 
-    var conn = new Strophe.Connection(Peek.boshURL);
+    var conn = new Strophe.Connection(data.connexion);
 
     conn.xmlInput = function (body) {
         Peek.show_traffic(body, 'incoming');
