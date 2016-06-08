@@ -1,13 +1,11 @@
 
 
-// le domaine de la page
-var domain =  document.location.host;
-
-// service XMPP / HTTP
-//var boshURL = 'http://' + domain + ':7070/http-bind/';
-var boshURL = "http://test-messagerie.ddns.net:7443/http-bind/";
-
 var Peek = {
+
+    domain: document.location.host,
+
+    boshURL: "https://im.silverpeas.net:7443/http-bind/",
+
     /**
     * La connexion XMPP
     */
@@ -210,7 +208,7 @@ $(document).ready(function () {
 
 $(document).bind('connect', function (ev, data) {
 
-    var conn = new Strophe.Connection(boshURL);
+    var conn = new Strophe.Connection(Peek.boshURL);
 
     conn.xmlInput = function (body) {
         Peek.show_traffic(body, 'incoming');

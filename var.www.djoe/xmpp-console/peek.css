@@ -21,7 +21,7 @@ h1 {
     color: #eee;
     font-family: monospace;
 
-    overflow: hidden;
+    overflow: auto;
     word-wrap: break-word;
 }
 
