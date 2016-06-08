@@ -114,6 +114,20 @@ $(function() {
 
     */
 
+    /**
+     * Ecouter les erreur de connexion
+     */
+    $(document).on("authfail.jsxc ", function(){
+        jsxc.xmpp.logout(true);
+        $("#feedbackArea").html("<b>Echec de la connexion. Rechargez la page puis rééssayez !</b>");
+    });
+
+    $(document).on("connected.jsxc ", function(){
+        $("#feedbackArea").html("<i>Connexion établie</i>");
+    });
+
+
+
     // Bouton de connexion à partir d'un identifiant sélectionné et d'un mot de passe déterminé
     $('#connectButton').click(function(){
 
