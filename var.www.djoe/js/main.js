@@ -17,6 +17,7 @@ var webAdminUrl = "http://" + domain + ":9090/";
 var consoleAdminUrl = "http://" + domain + ":9091/";
 var etherpadUrl = "http://" + domain + ":9001/";
 var consoleUrl = "https://" + domain + "/xmpp-console/";
+var discoUrl = "https://" + domain + "/xmpp-disco/";
 
 /**
     Logins disponibles
@@ -174,6 +175,9 @@ function constructGui(){
 
     appendToUtilsInfo('Console XMPP',
         '<a target="_blank" href="' + consoleUrl + '">' + consoleUrl + '</a>');
+
+    appendToUtilsInfo('Découverte de services XMPP',
+        '<a target="_blank" href="' + discoUrl+ '">' + discoUrl + '</a>');
 
     appendToUtilsInfo('API REST Openfire',
         '<a target="_blank" href="openfire-rest/">openfire-rest/</a>');

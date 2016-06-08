@@ -1,0 +1,67 @@
+
+<!-- requete -->
+<iq type='get'
+    from='remi@im.silverpeas.net/9qmwe110ur'
+    to='search.im.silverpeas.net'
+    id='search1'
+    xml:lang='en'>
+    <query xmlns='jabber:iq:search'/>
+</iq>
+
+<!-- reponse -->
+<iq xmlns='jabber:client'
+    type='result'
+    id='search1'
+    from='search.im.silverpeas.net'
+    to='remi@im.silverpeas.net/1pyp981tzw'>
+<query xmlns='jabber:iq:search'>
+    <instructions>
+        The following fields are available for searching. Wildcard (*) characters are allowed as part of the query.
+    </instructions>
+    <first/>
+    <last/>
+    <nick/>
+    <email/>
+    <x xmlns='jabber:x:data'
+       type='form'>
+        <title>
+            Advanced User Search
+        </title>
+        <instructions>
+            The following fields are available for searching. Wildcard (*) characters are allowed as part of the query.
+        </instructions>
+        <field var='FORM_TYPE'
+               type='hidden'>
+            <value>
+                jabber:iq:search
+            </value>
+        </field>
+        <field var='search'
+               type='text-single'
+               label='Search'>
+            <required/>
+        </field>
+        <field var='Username'
+               type='boolean'
+               label='Username'>
+            <value>
+                1
+            </value>
+        </field>
+        <field var='Name'
+               type='boolean'
+               label='Name'>
+            <value>
+                1
+            </value>
+        </field>
+        <field var='Email'
+               type='boolean'
+               label='Email'>
+            <value>
+                1
+            </value>
+        </field>
+    </x>
+</query>
+</iq>
