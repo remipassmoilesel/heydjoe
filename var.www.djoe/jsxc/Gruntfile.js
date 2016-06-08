@@ -279,7 +279,7 @@ module.exports = function(grunt) {
                import: 2
             },
             src: ['<%= target %>/css/*.css']
-         },
+         }
       },
       sass: {
          dist: {

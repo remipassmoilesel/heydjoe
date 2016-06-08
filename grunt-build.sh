@@ -6,5 +6,5 @@ export PATH=$PATH:/home/remipassmoilesel/nodejs4/bin
 
 cd var.www.djoe/jsxc/
 
-grunt build:prerelease
+grunt build:rerelease
 

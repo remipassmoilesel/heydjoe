@@ -33,7 +33,7 @@ jsxc.gui.menu = {
                 // change presence or logout
                 $('#jsxc_side_menu_content .jsxc_menu_offline').click(function () {
                     jsxc.xmpp.logout(false);
-                    
+
                     // close menu and roster
                     jsxc.gui.menu.closeSideMenu();
                     jsxc.gui.roster.toggle();
@@ -396,14 +396,16 @@ jsxc.gui.menu = {
         });
 
         // ajouter la classe au résultat actif
-        this.currentResults.eq(this.currentSearchResultIndex).addClass("jsxc_menu_active_result");
+        if(this.currentResults.length > 0){
+            this.currentResults.eq(this.currentSearchResultIndex).addClass("jsxc_menu_active_result");
 
-        // activer l'accordéon correspondant
-        var titleSearch = this.currentResults.eq(index).parents("h1");
-        if (titleSearch.length > 0) {
-            titleSearch.eq(0).trigger("click");
-        } else {
-            this.currentResults.eq(index).parents("div.ui-accordion-content").prev("h1.ui-accordion-header").trigger("click");
+            // activer l'accordéon correspondant
+            var titleSearch = this.currentResults.eq(index).parents("h1");
+            if (titleSearch.length > 0) {
+                titleSearch.eq(0).trigger("click");
+            } else {
+                this.currentResults.eq(index).parents("div.ui-accordion-content").prev("h1.ui-accordion-header").trigger("click");
+            }
         }
 
     },
@@ -423,8 +425,11 @@ jsxc.gui.menu = {
 
         self.animate({right: "0px"});
 
-        // focus on search text field
-        $("#jsxc_menu_search_text_field").focus();
+        // focus on search text field, but not on small devices
+        if($(window).height() > 700){
+            $("#jsxc_menu_search_text_field").focus();
+        }
+
     },
 
     /**
@@ -439,6 +444,8 @@ jsxc.gui.menu = {
 
         self.animate({right: "-200px"});
 
+        // clear timer
+        window.clearTimeout(self.data('timerForClosing'));
     },
 
     /**
@@ -455,11 +462,7 @@ jsxc.gui.menu = {
 
             //  side menu is open, close it
             if (sideMenu.data("sideMenuEnabled")) {
-
                 self.closeSideMenu();
-
-                // clear timer
-                window.clearTimeout(sideMenu.data('timerForClosing'));
             }
 
             // side menu is closed, open it
@@ -487,6 +490,11 @@ jsxc.gui.menu = {
         // timeouts are stored in self element with jquery.data()
         sideMenu.mouseenter(function () {
             window.clearTimeout(sideMenu.data('timerForClosing'));
+        });
+
+        // close side menu when roster is closed
+        $(document).on("toggle.roster.jsxc", function(){
+            self.closeSideMenu();
         });
 
     },

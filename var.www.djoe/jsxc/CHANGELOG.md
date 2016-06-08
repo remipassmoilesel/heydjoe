@@ -1,3 +1,10 @@
+v3.0.0 / 2016-06-08
+===================
+### Changes
+- new menu
+- update Jquery and Jquery-UI
+- Add mobile detection function
+
 v3.0.0 / 2016-03-11
 ===
 ### New features
