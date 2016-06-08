@@ -359,6 +359,94 @@ jsxc.gui.template['loginBox'] = '<h3 data-i18n="Login"></h3>\n' +
 '</form>\n' +
 '';
 
+jsxc.gui.template['menuContacts'] = '<div>\n' +
+'\n' +
+'    <div class="jsxc_addBuddy actionButton" data-i18n="Add_buddy">Ajouter un contact</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Supprimer un contact</div>\n' +
+'\n' +
+'</div>';
+
+jsxc.gui.template['menuNotifications'] = '<div>\n' +
+'\n' +
+'    <div class="actionButton jsxc_muteNotification" data-i18n="Mute"></div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Activer les notifications de bureau</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Interdire les appels vidéos</div>\n' +
+'\n' +
+'</div>';
+
+jsxc.gui.template['menuRooms'] = '<div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Créer un salon</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Rejoindre un salon</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Liste des salons</div>\n' +
+'\n' +
+'</div>';
+
+jsxc.gui.template['menuSettings'] = '<div>\n' +
+'\n' +
+'    <div class="actionButton jsxc_hideOffline" data-i18n="Hide_offline"></div>\n' +
+'\n' +
+'    <div class="actionButton jsxc_dialog_settings">Boite de dialogue de réglages</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Rétablir les réglages par défaut</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Console XMPP</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Console d\'événements Jquery</div>\n' +
+'\n' +
+'    <div class="actionButton jsxc_about">A propos</div>\n' +
+'\n' +
+'</div>\n' +
+'';
+
+jsxc.gui.template['menuStatus'] = '<div id="jsxc_menu_status">\n' +
+'\n' +
+'    <p>Statut:</p>\n' +
+'    \n' +
+'    <div data-pres="online" class="actionButton jsxc_online" data-i18n="Online"></div>\n' +
+'    <div data-pres="chat" class="actionButton jsxc_chat" data-i18n="Chatty"></div>\n' +
+'    <div data-pres="away" class="actionButton jsxc_away" data-i18n="Away"></div>\n' +
+'    <div data-pres="xa" class="actionButton jsxc_xa" data-i18n="Extended_away"></div>\n' +
+'    <div data-pres="dnd" class="actionButton jsxc_dnd" data-i18n="dnd"></div>\n' +
+'\n' +
+'</div>';
+
+jsxc.gui.template['menuTools'] = '<div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Ouvrir un pad</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Créer un pad</div>\n' +
+'\n' +
+'    <div class="actionButton notImplementedYet">Liste des pads</div>\n' +
+'\n' +
+'</div>';
+
+jsxc.gui.template['menuWelcome'] = '<div>\n' +
+'\n' +
+'    <p>\n' +
+'        Recherchez une fonctionnalité à l\'aide du champs ci-dessus ou explorez le menu :)\n' +
+'    </p>\n' +
+'\n' +
+'    <div class="actionButton jsxc_onlineHelp" data-i18n="Online_help"></div>\n' +
+'    <div data-pres="offline" class="actionButton jsxc_menu_offline">Se déconnecter</div>\n' +
+'\n' +
+'    <p>\n' +
+'        Actualités:\n' +
+'    </p>\n' +
+'\n' +
+'    <ul>\n' +
+'        <li>Jean-Claude vient de se connecter</li>\n' +
+'        <li>Claudette vous à envoyé un message</li>\n' +
+'        <li>Vous avez manqué un message de Jules</li>\n' +
+'    </ul>\n' +
+'\n' +
+'</div>';
+
 jsxc.gui.template['pleaseAccept'] = '<p data-i18n="Please_accept_"></p>\n' +
 '';
 
@@ -369,36 +457,41 @@ jsxc.gui.template['removeDialog'] = '<h3 data-i18n="Remove_buddy"></h3>\n' +
 '<button class="btn btn-default jsxc_cancel jsxc_close pull-right" data-i18n="Cancel"></button>\n' +
 '';
 
-jsxc.gui.template['roster'] = '<!-- Barre latérale avec listes des contacts et menu -->\n' +
+jsxc.gui.template['roster'] = '<!-- Side bar with buddy list and menu -->\n' +
 '<div id="jsxc_roster">\n' +
 '\n' +
-'    <!-- Liste des contacts -->\n' +
+'    <!-- Main menu -->\n' +
+'    <div id="jsxc_side_menu">\n' +
+'\n' +
+'        <div id="jsxc_side_menu_search_bar">\n' +
+'\n' +
+'            <input type="text" placeholder="Rechercher" id="jsxc_menu_search_text_field"/>\n' +
+'            <input type="button" id="jsxc_menu_previous_btn" value="<"/>\n' +
+'            <input type="button" id="jsxc_menu_next_btn" value=">"/>\n' +
+'\n' +
+'            <div id="jsxc_menu_feedback">&nbsp;</div>\n' +
+'\n' +
+'        </div>\n' +
+'\n' +
+'        <div id="jsxc_side_menu_content"></div>\n' +
+'\n' +
+'    </div>\n' +
+'\n' +
+'    <!-- buddy list -->\n' +
 '    <ul id="jsxc_buddylist"></ul>\n' +
 '\n' +
-'    <!-- Barre de menu au bas de la liste -->\n' +
+'    <!-- Menu bar on bottom of roster -->\n' +
 '    <div class="jsxc_bottom jsxc_presence jsxc_rosteritem" data-bid="own">\n' +
 '\n' +
 '        <!-- Avatar -->\n' +
 '        <div id="jsxc_avatar" class="jsxc_avatar"/>\n' +
 '\n' +
-'        <!-- Le menu -->\n' +
 '        <div id="jsxc_menu">\n' +
 '\n' +
-'            <!-- Bouton d\'ouverture du menu -->\n' +
+'            <!-- Button for menu openning, image added with scss/_jsxc.scss -->\n' +
 '            <span></span>\n' +
 '\n' +
-'            <div class="jsxc_inner">\n' +
-'                <ul>\n' +
-'                    <li class="jsxc_settings jsxc_settingsicon" data-i18n="Settings"></li>\n' +
-'                    <li class="jsxc_muteNotification" data-i18n="Mute"></li>\n' +
-'                    <li class="jsxc_hideOffline" data-i18n="Hide_offline"></li>\n' +
-'                    <li class="jsxc_addBuddy jsxc_contacticon" data-i18n="Add_buddy"></li>\n' +
-'                    <li class="jsxc_onlineHelp jsxc_helpicon" data-i18n="Online_help"></li>\n' +
-'                    <li class="jsxc_about" data-i18n="About"></li>\n' +
-'                </ul>\n' +
-'            </div>\n' +
 '        </div>\n' +
-'\n' +
 '\n' +
 '        <div id="jsxc_notice">\n' +
 '            <span></span>\n' +
@@ -406,7 +499,6 @@ jsxc.gui.template['roster'] = '<!-- Barre latérale avec listes des contacts et 
 '                <ul></ul>\n' +
 '            </div>\n' +
 '        </div>\n' +
-'\n' +
 '\n' +
 '        <div id="jsxc_presence">\n' +
 '            <span data-i18n="Offline">Offline</span>\n' +

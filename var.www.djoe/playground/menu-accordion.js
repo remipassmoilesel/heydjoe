@@ -1,9 +1,9 @@
 
 $(function(){
-    djoeMenu.init();
+    jsxcMenu.init();
 });
 
-var djoeMenu = {
+var jsxcMenu = {
 
     /**
         Index du résultat courant
@@ -15,12 +15,12 @@ var djoeMenu = {
     */
     currentResults: [],
 
-    searchTitleMark: "<span class='djoeMenuSearchTitleMark'> &lt;!&gt;</span>",
+    searchTitleMark: "<span class='jsxcMenuSearchTitleMark'> &lt;!&gt;</span>",
 
     highlightSettings:  {
-                   caseSensitive: false,
-                   className: 'djoeMenuSearchResults'
-               },
+       caseSensitive: false,
+       className: 'jsxcMenuSearchResults'
+    },
 
     /**
         Initialisation du menu
@@ -28,21 +28,21 @@ var djoeMenu = {
     init: function (){
 
         // créer le menu accordéon
-        $( "#djoeMenuCtn" ).accordion({
+        $( "#jsxcMenuCtn" ).accordion({
           header: "h1"
         });
 
         // rechercher dans l'accordéon
-        $("#djoeMenuSearchTextField").keyup(djoeMenu.onSearchKeyUp);
+        $("#jsxcMenuSearchTextField").keyup(jsxcMenu.onSearchKeyUp);
 
         // afficher le résultat suivant
-        $("#djoeMenuNextButton").click(function(){
-            djoeMenu.showNextResult();
+        $("#jsxcMenuNextButton").click(function(){
+            jsxcMenu.showNextResult();
         });
 
         // afficher le résultat suivant
-        $("#djoeMenuPreviousButton").click(function(){
-            djoeMenu.showPreviousResult();
+        $("#jsxcMenuPreviousButton").click(function(){
+            jsxcMenu.showPreviousResult();
         });
     },
 
@@ -55,18 +55,18 @@ var djoeMenu = {
             var rawTerms = $(this).val().trim();
 
             // reinitialiser les indicateurs
-            djoeMenu.currentResults = [];
-            djoeMenu.currentSearchResultIndex = 0;
-            $("#djoeMenuCtn span.djoeMenuSearchTitleMark").remove();
+            jsxcMenu.currentResults = [];
+            jsxcMenu.currentSearchResultIndex = 0;
+            $("#jsxcMenuCtn span.jsxcMenuSearchTitleMark").remove();
 
             // champs vide, arret
             if(rawTerms.length < 1){
 
-                djoeMenu.feedback();
+                jsxcMenu.feedback();
 
-                djoeMenu.resetHighlights();
+                jsxcMenu.resetHighlights();
 
-                $( "#djoeMenuCtn > h1.ui-accordion-header" ).eq(0).trigger("click");
+                $( "#jsxcMenuCtn > h1.ui-accordion-header" ).eq(0).trigger("click");
 
                 return;
             }
@@ -75,50 +75,50 @@ var djoeMenu = {
             // console.log(rawTerms);
 
             // surligner les résultats
-            djoeMenu.highlightTerms(rawTerms);
+            jsxcMenu.highlightTerms(rawTerms);
 
-            //console.log($(".djoeMenuSearchResults"));
+            //console.log($(".jsxcMenuSearchResults"));
 
             // lister les résultats
-            djoeMenu.currentResults = $(".djoeMenuSearchResults");
+            jsxcMenu.currentResults = $(".jsxcMenuSearchResults");
 
-            //console.log("djoeMenu.currentResults");
-            //console.log(djoeMenu.currentResults.length);
+            //console.log("jsxcMenu.currentResults");
+            //console.log(jsxcMenu.currentResults.length);
 
             // pas de résultats, activer le premier onglet
-            if(djoeMenu.currentResults.length < 1){
+            if(jsxcMenu.currentResults.length < 1){
 
-                djoeMenu.feedback("Aucun résultat");
+                jsxcMenu.feedback("Aucun résultat");
 
-                $("#djoeMenuCtn > h1.ui-accordion-header").eq(0).trigger("click");
+                $("#jsxcMenuCtn > h1.ui-accordion-header").eq(0).trigger("click");
 
             }
 
             // un ou plusieurs résultats, afficher l'onglet du premier resultat correspondant
             else {
 
-                //djoeMenu.feedback(djoeMenu.currentResults.length + " résultats");
+                //jsxcMenu.feedback(jsxcMenu.currentResults.length + " résultats");
 
                 // ajouter les marques aux titres correspondants
-                djoeMenu.currentResults.each(function(index, element){
+                jsxcMenu.currentResults.each(function(index, element){
 
                     var title;
                     var titleSearch = $(this).parents("h1.ui-accordion-header");
                     if(titleSearch.length > 0){
                         title = titleSearch.eq(0);
                     } else {
-                        title = djoeMenu.currentResults.eq(index).parents("div.ui-accordion-content").prev("h1.ui-accordion-header");
+                        title = jsxcMenu.currentResults.eq(index).parents("div.ui-accordion-content").prev("h1.ui-accordion-header");
                     }
 
-                    var mark = $(djoeMenu.searchTitleMark);
+                    var mark = $(jsxcMenu.searchTitleMark);
 
-                    if(title.find("span.djoeMenuSearchTitleMark").length < 1){
+                    if(title.find("span.jsxcMenuSearchTitleMark").length < 1){
                         title.append(mark);
                     }
 
                 });
 
-                djoeMenu.selectResult(0);
+                jsxcMenu.selectResult(0);
 
             }
     },
@@ -127,7 +127,7 @@ var djoeMenu = {
         Afficher un retour
     */
     feedback: function(text){
-        $("#djoeMenuFeedback").html(text || "&nbsp;");
+        $("#jsxcMenuFeedback").html(text || "&nbsp;");
     },
 
     /**
@@ -135,10 +135,10 @@ var djoeMenu = {
     */
     highlightTerms: function(terms){
 
-        djoeMenu.resetHighlights();
+        jsxcMenu.resetHighlights();
 
         // surligner tous les élements
-        $("#djoeMenuCtn").highlight(terms, djoeMenu.highlightSettings);
+        $("#jsxcMenuCtn").highlight(terms, jsxcMenu.highlightSettings);
 
     },
 
@@ -147,11 +147,11 @@ var djoeMenu = {
     */
     resetHighlights: function(){
 
-        $("#djoeMenuCtn").unhighlight(djoeMenu.highlightSettings);
+        $("#jsxcMenuCtn").unhighlight(jsxcMenu.highlightSettings);
 
         // retirer les précédents résultats actifs
-        $("#djoeMenuCtn.djoeMenuActiveResult").each(function(){
-            $(this).removeClass("djoeMenuActiveResult");
+        $("#jsxcMenuCtn.jsxcMenuActiveResult").each(function(){
+            $(this).removeClass("jsxcMenuActiveResult");
         });
     },
 
@@ -160,14 +160,14 @@ var djoeMenu = {
     */
     showNextResult: function(){
 
-        djoeMenu.currentSearchResultIndex ++;
+        jsxcMenu.currentSearchResultIndex ++;
 
-        if(djoeMenu.currentSearchResultIndex > djoeMenu.currentResults.length - 1){
-            djoeMenu.feedback("Dernier résultat atteint");
-            djoeMenu.currentSearchResultIndex = djoeMenu.currentResults.length - 1;
+        if(jsxcMenu.currentSearchResultIndex > jsxcMenu.currentResults.length - 1){
+            jsxcMenu.feedback("Dernier résultat atteint");
+            jsxcMenu.currentSearchResultIndex = jsxcMenu.currentResults.length - 1;
         }
 
-        djoeMenu.selectResult(djoeMenu.currentSearchResultIndex);
+        jsxcMenu.selectResult(jsxcMenu.currentSearchResultIndex);
 
     },
 
@@ -176,14 +176,14 @@ var djoeMenu = {
     */
     showPreviousResult: function(){
 
-        djoeMenu.currentSearchResultIndex --;
+        jsxcMenu.currentSearchResultIndex --;
 
-        if(djoeMenu.currentSearchResultIndex <= 0){
-            djoeMenu.feedback("Premier résultat atteint");
-            djoeMenu.currentSearchResultIndex = 0;
+        if(jsxcMenu.currentSearchResultIndex <= 0){
+            jsxcMenu.feedback("Premier résultat atteint");
+            jsxcMenu.currentSearchResultIndex = 0;
         }
 
-        djoeMenu.selectResult(djoeMenu.currentSearchResultIndex);
+        jsxcMenu.selectResult(jsxcMenu.currentSearchResultIndex);
 
     },
 
@@ -193,14 +193,14 @@ var djoeMenu = {
     selectResult: function(index){
 
         // ajouter la classe au résultat actif
-        djoeMenu.currentResults.eq(djoeMenu.currentSearchResultIndex).addClass("djoeMenuActiveResult");
+        jsxcMenu.currentResults.eq(jsxcMenu.currentSearchResultIndex).addClass("jsxcMenuActiveResult");
 
         // activer l'accordéon correspondant
-        var titleSearch = djoeMenu.currentResults.eq(index).parents("h1");
+        var titleSearch = jsxcMenu.currentResults.eq(index).parents("h1");
         if(titleSearch.length > 0){
             titleSearch.eq(0).trigger("click");
         } else {
-            djoeMenu.currentResults.eq(index).parents("div.ui-accordion-content").prev("h1.ui-accordion-header").trigger("click");
+            jsxcMenu.currentResults.eq(index).parents("div.ui-accordion-content").prev("h1.ui-accordion-header").trigger("click");
         }
 
     }

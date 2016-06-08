@@ -46,11 +46,6 @@
 */
  StorageConsole.prototype.update = function(){
 
-    console.log("localStorage");
-    console.log(localStorage);
-    console.log("sessionStorage");
-    console.log(sessionStorage);
-
     var consoleDiv = $("#" + this.logSpaceId);
 
      var appendElement = function(key, val){

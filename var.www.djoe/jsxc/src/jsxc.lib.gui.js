@@ -375,8 +375,17 @@ jsxc.gui = {
    },
 
    /**
-    * Toggle list with timeout, like menu or settings
-    *
+        Transform list in menu. Structure must be like that:
+            <container id="idToPass">
+                <ul>
+                    <li>Menu elements 1</li>
+                    <li>Menu elements 2</li>
+                    <li>Menu elements ...</li>
+                </ul>
+            </container>
+
+        With timeout for closing
+
     * @memberof jsxc.gui
     */
    toggleList: function(el) {
@@ -398,8 +407,6 @@ jsxc.gui = {
       };
 
       $(this).click(function() {
-
-          //console.log("Onclick, please toggle my friend !");
 
          if (!self.hasClass('jsxc_opened')) {
             // hide other lists
@@ -1489,78 +1496,23 @@ jsxc.gui.roster = {
     */
    init: function() {
 
-
+      // adding roster skeleton to body, or other choosen element
       $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('roster')));
 
+      // display or hide offline buddies
       if (jsxc.options.get('hideOffline')) {
          $('#jsxc_menu .jsxc_hideOffline').text($.t('Show_offline'));
          $('#jsxc_buddylist').addClass('jsxc_hideOffline');
       }
-
-      $('#jsxc_menu .jsxc_settings').click(function() {
-         jsxc.gui.showSettings();
-      });
-
-      $('#jsxc_menu .jsxc_hideOffline').click(function() {
-
-         var hideOffline = !jsxc.options.get('hideOffline');
-
-         if (hideOffline) {
-            $('#jsxc_buddylist').addClass('jsxc_hideOffline');
-         } else {
-            $('#jsxc_buddylist').removeClass('jsxc_hideOffline');
-         }
-
-         $(this).text(hideOffline ? $.t('Show_offline') : $.t('Hide_offline'));
-
-         jsxc.options.set('hideOffline', hideOffline);
-      });
-
+      
+      // mute sounds
       if (jsxc.options.get('muteNotification')) {
          jsxc.notification.muteSound();
       }
-
-      $('#jsxc_menu .jsxc_muteNotification').click(function() {
-
-         if (jsxc.storage.getUserItem('presence') === 'dnd') {
-            return;
-         }
-
-         // invert current choice
-         var mute = !jsxc.options.get('muteNotification');
-
-         if (mute) {
-            jsxc.notification.muteSound();
-         } else {
-            jsxc.notification.unmuteSound();
-         }
-      });
-
-      $('#jsxc_roster .jsxc_addBuddy').click(function() {
-         jsxc.gui.showContactDialog();
-      });
-
-      $('#jsxc_roster .jsxc_onlineHelp').click(function() {
-         window.open(jsxc.options.onlineHelp, 'onlineHelp');
-      });
-
-      $('#jsxc_roster .jsxc_about').click(function() {
-         jsxc.gui.showAboutDialog();
-      });
-
+      
+      // hide show roster
       $('#jsxc_toggleRoster').click(function() {
          jsxc.gui.roster.toggle();
-      });
-
-      $('#jsxc_presence li').click(function() {
-         var self = $(this);
-         var pres = self.data('pres');
-
-         if (pres === 'offline') {
-            jsxc.xmpp.logout(false);
-         } else {
-            jsxc.gui.changePresence(pres);
-         }
       });
 
       $('#jsxc_buddylist').slimScroll({
@@ -1571,12 +1523,9 @@ jsxc.gui.roster = {
          opacity: '0.5'
       });
 
-      // select all bottom elements and transform them in menu
-      $('#jsxc_roster > .jsxc_bottom > div').each(function() {
-//        console.log("roster init");
-//        console.log($(this));
-          jsxc.gui.toggleList.call($(this));
-      });
+        // initialize main menu
+        jsxc.gui.menu.init();
+
 
       var rosterState = jsxc.storage.getUserItem('roster') || (jsxc.options.get('loginForm').startMinimized ? 'hidden' : 'shown');
 

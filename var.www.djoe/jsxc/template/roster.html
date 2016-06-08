@@ -1,33 +1,38 @@
-<!-- Barre latérale avec listes des contacts et menu -->
+<!-- Side bar with buddy list and menu -->
 <div id="jsxc_roster">
 
-    <!-- Liste des contacts -->
+    <!-- Main menu -->
+    <div id="jsxc_side_menu">
+
+        <div id="jsxc_side_menu_search_bar">
+
+            <input type="text" placeholder="Rechercher" id="jsxc_menu_search_text_field"/>
+            <input type="button" id="jsxc_menu_previous_btn" value="<"/>
+            <input type="button" id="jsxc_menu_next_btn" value=">"/>
+
+            <div id="jsxc_menu_feedback">&nbsp;</div>
+
+        </div>
+
+        <div id="jsxc_side_menu_content"></div>
+
+    </div>
+
+    <!-- buddy list -->
     <ul id="jsxc_buddylist"></ul>
 
-    <!-- Barre de menu au bas de la liste -->
+    <!-- Menu bar on bottom of roster -->
     <div class="jsxc_bottom jsxc_presence jsxc_rosteritem" data-bid="own">
 
         <!-- Avatar -->
         <div id="jsxc_avatar" class="jsxc_avatar"/>
 
-        <!-- Le menu -->
         <div id="jsxc_menu">
 
-            <!-- Bouton d'ouverture du menu -->
+            <!-- Button for menu openning, image added with scss/_jsxc.scss -->
             <span></span>
 
-            <div class="jsxc_inner">
-                <ul>
-                    <li class="jsxc_settings jsxc_settingsicon" data-i18n="Settings"></li>
-                    <li class="jsxc_muteNotification" data-i18n="Mute"></li>
-                    <li class="jsxc_hideOffline" data-i18n="Hide_offline"></li>
-                    <li class="jsxc_addBuddy jsxc_contacticon" data-i18n="Add_buddy"></li>
-                    <li class="jsxc_onlineHelp jsxc_helpicon" data-i18n="Online_help"></li>
-                    <li class="jsxc_about" data-i18n="About"></li>
-                </ul>
-            </div>
         </div>
-
 
         <div id="jsxc_notice">
             <span></span>
@@ -35,7 +40,6 @@
                 <ul></ul>
             </div>
         </div>
-
 
         <div id="jsxc_presence">
             <span data-i18n="Offline">Offline</span>

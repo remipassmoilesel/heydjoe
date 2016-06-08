@@ -1,0 +1,130 @@
+
+#jsxc_side_menu {
+
+  position: fixed;
+  top: 0px;
+  width: 200px;
+  right: -200px;
+  background-color: inherit;
+  height: 90%;
+  box-sizing: border-box;
+  z-index: 80;
+  border-left: 1px solid #e1e1e1;
+
+  .jsxc_menu_search_results {
+    background: #FFFF88;
+  }
+
+  .jsxc_menu_search_title_mark {
+    font-weight: bolder;
+  }
+
+  #jsxc_menu_feedback {
+    text-align: center;
+    font-size: 12px;
+    font-style: italic;
+    color: darkGray;
+  }
+
+  .jsxc_menu_active_result {
+    color: blue;
+    font-weight: bolder;
+  }
+
+  #jsxc_side_menu_search_bar {
+    input {
+      position: relative;
+
+      &[type="button"] {
+        width: 20px;
+      }
+    }
+  }
+
+  #jsxc_side_menu_content {
+
+    background: inherit;
+
+    height: 93%;
+
+    /** Headers */
+    h1 {
+      font-size: 11px;
+    }
+
+    /** Content */
+    & > div {
+      font-size: 12px;
+      padding: 5px;
+      text-align: left;
+    }
+
+    div.actionButton {
+
+      cursor: pointer;
+
+      border-radius: 5px;
+      font-family: Arial;
+      color: #454545;
+      font-size: 11px;
+      text-decoration: none;
+
+      padding-top: 12px;
+      padding-right: 5px;
+      padding-left: 10px;
+      padding-bottom: 12px;
+
+      background: #ffffff;
+      background-image: linear-gradient(to bottom, #ffffff, #e9f1f0);
+      text-decoration: none;
+
+      &:hover {
+        background: rgb(0, 127, 255);
+        text-decoration: none;
+        color: white;
+      }
+
+      &.notImplementedYet{
+        cursor: not-allowed;
+      }
+
+    }
+
+    .ui-accordion-content {
+      position: relative; /** Needed to avoid perfectscroll problems */
+    }
+
+  }
+
+}
+
+#jsxc_menu {
+
+  height: 44px;
+  width: 44px;
+  cursor: pointer;
+  float: right;
+  text-align: center;
+
+  /** Menu button for open / close */
+  &:hover > span {
+    opacity: 1;
+  }
+
+  /** Menu button for open / close */
+  & > span {
+    opacity: 0.5;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-image: image-url("menu_black.svg");
+    background-repeat: no-repeat;
+    background-position: center 10px;
+    background-size: 17px;
+  }
+
+  @media (min-width: 768px) {
+    height: 30px;
+    width: 30px;
+  }
+}
