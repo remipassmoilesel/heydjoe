@@ -63,6 +63,10 @@
     }
 
     div.actionButton {
+
+      width: 80%;
+      margin: auto;
+
       cursor: pointer;
       border-radius: 5px;
       color: #333;
@@ -87,40 +91,6 @@
       }
 
     }
-
-    /*
-    div.actionButton {
-
-
-      cursor: pointer;
-
-      border-radius: 5px;
-      font-family: Arial;
-      color: #454545;
-      font-size: 11px;
-      text-decoration: none;
-
-      padding-top: 12px;
-      padding-right: 5px;
-      padding-left: 10px;
-      padding-bottom: 12px;
-
-      background: #ffffff;
-      background-image: linear-gradient(to bottom, #ffffff, #e9f1f0);
-      text-decoration: none;
-
-      &:hover {
-        background: rgba(126, 183, 59, 0.77);
-        text-decoration: none;
-        color: white;
-      }
-
-      &.notImplementedYet{
-        cursor: not-allowed;
-      }
-
-    }
-    */
 
     .ui-accordion-content {
       position: relative; /** Needed to avoid perfectscroll problems */

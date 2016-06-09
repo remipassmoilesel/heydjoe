@@ -41,7 +41,8 @@ jsxc.gui.menu = {
                     jsxc.gui.roster.toggle();
                 });
 
-            }
+            },
+
         },
 
         statusPanel: {
@@ -63,7 +64,8 @@ jsxc.gui.menu = {
                     }
 
                 });
-            }
+            },
+
         },
 
         contactPanel: {
@@ -72,25 +74,39 @@ jsxc.gui.menu = {
             init: function () {
 
                 /**
-                 * Add a contact from list
+                 * Add or remove a contact from list
                  */
+                // add 
                 $('#jsxc_menuContacts .jsxc_addBuddyFromList').click(function () {
 
                     // retrieve first element selected
                     var selItems = $("#jsxc_menuContacts .ui-selected");
 
                     // test if already buddy
-                    if(selItems.hasClass("buddy_item")){
+                    if (selItems.hasClass("buddy_item")) {
                         console.log("Déjà amis mec !");
                         return;
                     }
 
-                    if(selItems.length > 0){
+                    if (selItems.length > 0) {
                         jsxc.xmpp.addBuddy(selItems.data("userjid"));
                     }
 
                     // stop propaging
                     return false;
+                });
+
+                // remove
+                $('#jsxc_menuContacts .jsxc_removeBuddyFromList').click(function () {
+
+                    // retrieve first element selected
+                    var selItems = $("#jsxc_menuContacts .ui-selected");
+
+                    if (selItems.length > 0) {
+
+
+                    }
+
                 });
 
                 // make selectable list
@@ -99,41 +115,57 @@ jsxc.gui.menu = {
                 // make list scrollable
                 $("#jsxc_menuContacts .jsxc_userListContainer").perfectScrollbar();
 
-                // add contact to list
-                jsxc.xmpp.search.getUserList().then(function (users) {
-                    $.each(users, function (index, elmt) {
 
+                var updateUserList = function(){
 
-                        // mettre une marque si le cotnact est dans le roster ou pas
-                        // créer un utilitaire de création de zone de feedback
+                    // add contact to list
+                    jsxc.xmpp.search.getUserList().then(function (users) {
 
-                        var li = $("<li></li>")
-                            .text(elmt.username)
-                            .attr({
-                                'data-userjid': elmt.jid,
-                                'class': 'ui-widget-content'
-                            });
+                        // remove exisiting elements
+                        $("#jsxc_menuContacts .jsxc_userList").empty();
 
-                        if(elmt._is_buddy){
-                            li.addClass("buddy_item");
-                        }
+                        // add users
+                        $.each(users, function (index, elmt) {
 
-                        $("#jsxc_menuContacts .jsxc_userList")
-                            .append(li);
-                    });
-                })
-                    .fail(function () {
+                            // mettre une marque si le cotnact est dans le roster ou pas
+                            // créer un utilitaire de création de zone de feedback
 
-                        var li = $("<li></li>")
-                            .text("Liste des contacts indisponible")
-                            .attr({'class': 'ui-widget-content'});
+                            var li = $("<li></li>")
+                                .text(elmt.username)
+                                .attr({
+                                    'data-userjid': elmt.jid,
+                                    'class': 'ui-widget-content',
+                                    'title': elmt.username + " n'est pas dans vos contacts"
+                                });
 
-                        $("#jsxc_menuContacts .jsxc_userList")
-                            .append(li);
+                            if (elmt._is_buddy) {
+                                li.addClass("buddy_item")
+                                .attr({
+                                    'title': elmt.username + " est dans vos contacts"
+                                });
+                            }
 
-                    });
+                            $("#jsxc_menuContacts .jsxc_userList")
+                                .append(li);
+                        });
+                    })
+                        .fail(function () {
 
-            }
+                            var li = $("<li></li>")
+                                .text("Liste des contacts indisponible")
+                                .attr({'class': 'ui-widget-content'});
+
+                            $("#jsxc_menuContacts .jsxc_userList")
+                                .append(li);
+
+                        });
+                };
+
+                $(document).on("add.roster.jsxc", updateUserList);
+
+                updateUserList();
+
+            },
         },
 
         notificationsPanel: {
@@ -158,14 +190,16 @@ jsxc.gui.menu = {
                     }
                 });
 
-            }
+            },
+
         },
 
         roomsPanel: {
             label: "Salons et cannaux",
             template: "menuRooms",
             init: function () {
-            }
+            },
+
         },
 
         toolsPanel: {
@@ -174,7 +208,8 @@ jsxc.gui.menu = {
             init: function () {
 
 
-            }
+            },
+
         },
 
         settingsPanel: {
@@ -210,7 +245,7 @@ jsxc.gui.menu = {
                 });
 
 
-            }
+            },
         },
 
     },

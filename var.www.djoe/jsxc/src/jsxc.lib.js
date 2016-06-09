@@ -939,6 +939,14 @@ jsxc = {
 
     isExtraSmallDevice: function () {
         return $(window).width() < 500;
+    },
+
+    /**
+     * Debug tool for printing stack trace
+     *
+     */
+    stackTrace: function(){
+        console.err(new Error.stack);
     }
     
 }

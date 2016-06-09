@@ -139,6 +139,26 @@
             log( "Value is ( 3*6 = ) 18: " + value );
         });
 
+
+        /**
+         * Test de resolution auto de promesse
+         *
+         */
+
+        var defer2 = $.Deferred();
+
+        defer2.resolve("Résolue avant enregistrement du handler");
+
+        defer2.promise().then(function(result){
+
+            console.log(result);
+
+            log(result);
+        });
+
+
+
+
     </script>
 
     <style type="text/css">

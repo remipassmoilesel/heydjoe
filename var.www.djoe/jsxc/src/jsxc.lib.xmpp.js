@@ -6,24 +6,7 @@
 jsxc.xmpp = {
 
     conn: null, // connection
-
-    /**
-     * Return the local list of buddies, in the form of bare JID
-     *
-     * <p> Sometimes buddies are stocked in form of "node", "node@domain", ...
-     *
-     */
-    getLocaleBuddyListBJID: function(){
-
-        var output = [];
-
-        $.each(jsxc.storage.getUserItem('buddylist'), function(index, item){
-            output.push(jsxc.jidToBid(item));
-        });
-
-        return output;
-    },
-
+    
     /**
      * Create new connection or attach to old
      *
@@ -52,6 +35,7 @@ jsxc.xmpp = {
      */
     login: function () {
 
+        // check if not already connected
         if (jsxc.xmpp.conn && jsxc.xmpp.conn.authenticated) {
             jsxc.debug('Connection already authenticated.');
             return;
@@ -85,26 +69,29 @@ jsxc.xmpp = {
                 }
         }
 
+        // check if jid present
         if (!jid) {
             jsxc.warn('Jid required for login');
 
             return;
         }
 
+        // check if bid present
         if (!jsxc.bid) {
             jsxc.bid = jsxc.jidToBid(jid);
         }
 
+        // check if url is present
         var url = jsxc.options.get('xmpp').url;
-
         if (!url) {
             jsxc.warn('xmpp.url required for login');
 
             return;
         }
 
+        // Register eventlisteners
         if (!(jsxc.xmpp.conn && jsxc.xmpp.conn.connected)) {
-            // Register eventlistener
+
             $(document).on('connected.jsxc', jsxc.xmpp.connected);
             $(document).on('attached.jsxc', jsxc.xmpp.attached);
             $(document).on('disconnected.jsxc', jsxc.xmpp.disconnected);

@@ -3,6 +3,7 @@
 * Utilitaires:
 
 
+    jsxc.stackTrace() // print stack trace
     jsxc.xmpp.getLocaleBuddyListBJID() // array of local buddies
     jsxc.el_exists($("#selector")); // check if element exist
     jsxc.jidToBid(item); // get bare jid 
@@ -23,6 +24,9 @@
     // evenements générés lors du premier chargement
     cloaded.roster.jsxc
     
+    // evenement lors de l'ajout ET DE LA SUPPRESSION d'un ou plusieurs amis
+    add.roster.jsxc
+    
     Pas d'evenement à la mise à jour ? (jsxc.xmpp.onRosterChanged)
     
 
@@ -37,7 +41,7 @@
         $(document).on('connected.jsxc', jsxc.webrtc.onConnected);
     });
 
-* L'initialisation d'un module se fait généralement à la réception de l'evenement JQueqy "attached.jsxc", envoyé après connexion.
+* L'initialisation d'un module se fait généralement à la réception de l'evenement JQuery "attached.jsxc", envoyé après connexion XMPP.
 Il est possible de s'inspirer par exemple du module webrtc
 
 * De la documentation est disponible dans jsxc/doc. La doc est générée

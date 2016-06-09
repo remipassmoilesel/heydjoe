@@ -63,6 +63,27 @@ jsxc.xmpp.search = {
     userListCache: undefined,
 
     /**
+     * Check an array of users and add a field "_is_buddy" to each user.
+     *
+     * <p>/!\ Work directly on the array
+     *
+     * @param userArr
+     * @returns {*}
+     */
+    checkIfBuddies: function(userArr){
+
+        // list of buddies to check
+        var buddies = jsxc.storage.getLocaleBuddyListBJID();
+
+        $.each(userArr, function(i, e){
+            // check if is a buddy
+            e["_is_buddy"] = buddies.indexOf(jsxc.jidToBid(e.jid)) !== -1;
+        })
+
+        return userArr;
+    },
+
+    /**
      * Return a promise containing all users in an array or an empty array
      *
      * <p>Response is stored in cache
@@ -80,16 +101,19 @@ jsxc.xmpp.search = {
         // list is already present, return false promise
         if(self.userListCache){
 
-            // send list of item
-            defer.resolve(JSON.parse(JSON.stringify(self.userListCache)));
+            // clone array
+            var clone = JSON.parse(JSON.stringify(self.userListCache));
 
-            // console.log("cached user list");
+            // check buddies
+            self.checkIfBuddies(clone);
 
-            return defer;
+            // send list of users
+            defer.resolve(clone);
+
         }
 
         else {
-            return self.searchUsers("*").then(function(result){
+            self.searchUsers("*").then(function(result){
 
                 self.userListCache = result;
                 defer.resolve(JSON.parse(JSON.stringify(self.userListCache)));
@@ -109,8 +133,10 @@ jsxc.xmpp.search = {
      * @returns {*}
      */
     getFreshUserList: function() {
+
         var self = jsxc.xmpp.search;
         self.userListCache = undefined;
+
         return self.getUserList();
     },
 
@@ -149,9 +175,6 @@ jsxc.xmpp.search = {
         // response in a promise
         var defer = $.Deferred();
 
-        // list of buddies to check
-        var buddies = jsxc.xmpp.getLocaleBuddyListBJID();
-
         // listenning for iq response
         self.conn.addHandler(function(stanza){
 
@@ -183,12 +206,11 @@ jsxc.xmpp.search = {
                     r[$(this).attr("var").toLowerCase()] = $(this).text();
                 });
 
-                // check if is a buddy
-                r["_is_buddy"] = buddies.indexOf(jsxc.jidToBid(r.jid)) !== -1;
-
                 result.push(r);
 
             });
+
+            self.checkIfBuddies(result);
 
             // send list of item
             defer.resolve(result);
@@ -265,7 +287,7 @@ jsxc.xmpp.search = {
 };
 
 /**
- * Initialize user search
+ * Initialize user search module. Executed at each connexion.
  */
 $(document).ready(function () {
     $(document).on('attached.jsxc', jsxc.xmpp.search.init);
