@@ -146,6 +146,11 @@ jsxc = {
             jsxc.log = jsxc.log + '$ ' + msg + ': ' + d + '\n';
         } else {
             console.log(msg);
+
+            // stack trace
+            var err = new Error();
+            console.log(err.stack);
+
             jsxc.log = jsxc.log + '$ ' + msg + '\n';
         }
     }
@@ -933,5 +938,6 @@ jsxc = {
     isExtraSmallDevice: function () {
         return $(window).width() < 500;
     }
+    
 }
 ;
