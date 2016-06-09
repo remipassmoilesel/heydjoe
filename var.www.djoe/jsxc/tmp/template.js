@@ -405,8 +405,6 @@ jsxc.gui.template['menuSettings'] = '<div>\n' +
 '';
 
 jsxc.gui.template['menuStatus'] = '<div id="jsxc_menu_status">\n' +
-'\n' +
-'    <p>Statut:</p>\n' +
 '    \n' +
 '    <div data-pres="online" class="actionButton jsxc_online" data-i18n="Online"></div>\n' +
 '    <div data-pres="chat" class="actionButton jsxc_chat" data-i18n="Chatty"></div>\n' +
@@ -435,15 +433,16 @@ jsxc.gui.template['menuWelcome'] = '<div>\n' +
 '    <div class="actionButton jsxc_onlineHelp" data-i18n="Online_help"></div>\n' +
 '    <div data-pres="offline" class="actionButton jsxc_menu_offline">Se déconnecter</div>\n' +
 '\n' +
-'    <p>\n' +
-'        Actualités:\n' +
-'    </p>\n' +
+'    <!-- Affichage des notifications -->\n' +
 '\n' +
-'    <ul>\n' +
-'        <li>Jean-Claude vient de se connecter</li>\n' +
-'        <li>Claudette vous à envoyé un message</li>\n' +
-'        <li>Vous avez manqué un message de Jules</li>\n' +
-'    </ul>\n' +
+'\n' +
+'    <div id="jsxc_notice">\n' +
+'        <p>\n' +
+'            Notifications: <span class="jsxc_menu_notif_number"></span>\n' +
+'        </p>\n' +
+'\n' +
+'        <ul></ul>\n' +
+'    </div>\n' +
 '\n' +
 '</div>';
 
@@ -491,13 +490,6 @@ jsxc.gui.template['roster'] = '<!-- Side bar with buddy list and menu -->\n' +
 '            <!-- Button for menu openning, image added with scss/_jsxc.scss -->\n' +
 '            <span></span>\n' +
 '\n' +
-'        </div>\n' +
-'\n' +
-'        <div id="jsxc_notice">\n' +
-'            <span></span>\n' +
-'            <div class="jsxc_inner">\n' +
-'                <ul></ul>\n' +
-'            </div>\n' +
 '        </div>\n' +
 '\n' +
 '        <div id="jsxc_presence">\n' +

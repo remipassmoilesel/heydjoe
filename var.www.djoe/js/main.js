@@ -9,6 +9,7 @@ var boshUrl = "https://" + domain + ":7443/http-bind/";
 
 // domaine xmpp (différent du domaine de la page)
 var xmppDomain = "im.silverpeas.net";
+var searchDomain = "search.im.silverpeas.net";
 
 // nom du client
 var xmppResource = "heyDjoe";
@@ -55,7 +56,7 @@ $(function() {
             domain: xmppDomain,
             resource: xmppResource,
             overwrite: true,
-            onlogin: true
+            searchDomain: searchDomain
         },
 
         /** Off the record désactivé car inutile et source d'erreurs */

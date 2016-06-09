@@ -1,5 +1,20 @@
 # Remarques générales sur JSXC
 
+jsxc.el_exists($("#selector"));
+
+* Les modules sont généralement initialisés en fin de fichier à l'aide d'un bloc de la forme:
+
+
+    $(document).ready(function() {
+        $(document).on('init.window.jsxc', jsxc.webrtc.initWindow);
+        $(document).on('attached.jsxc', jsxc.webrtc.init);
+        $(document).on('disconnected.jsxc', jsxc.webrtc.onDisconnected);
+        $(document).on('connected.jsxc', jsxc.webrtc.onConnected);
+    });
+
+* L'initialisation d'un module se fait généralement à la réception de l'evenement JQueqy "attached.jsxc", envoyé après connexion.
+Il est possible de s'inspirer par exemple du module webrtc
+
 * De la documentation est disponible dans jsxc/doc. La doc est générée
 à l'appel de grunt build:release
 

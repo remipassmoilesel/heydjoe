@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>JSDoc: Source: jsxc.lib.gui.js</title>
-    
+
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
     <!--[if lt IE 9]>
@@ -16,16 +16,17 @@
 <body>
 
 <div id="main">
-    
+
     <h1 class="page-title">Source: jsxc.lib.gui.js</h1>
+
     
-    
+
 
 
     
     <section>
         <article>
-            <pre class="prettyprint source"><code>/* global Favico, emojione*/
+            <pre class="prettyprint source linenums"><code>/* global Favico, emojione*/
 /**
  * Handle functions for chat window's and buddylist
  * 
@@ -35,7 +36,7 @@ jsxc.gui = {
    /** Smilie token to file mapping */
    emotions: [
       ['O:-) O:)', 'innocent'],
-      ['>:-( >:( &gt;:-( &gt;:(', 'angry'],
+      ['>:-( >:( &amp;gt;:-( &amp;gt;:(', 'angry'],
       [':-) :)', 'slight_smile'],
       [':-D :D', 'grin'],
       [':-( :(', 'disappointed'],
@@ -51,7 +52,7 @@ jsxc.gui = {
       [':coffee:', 'coffee'],
       [':devil:', 'smiling_imp'],
       [':kiss: :kissing:', 'kissing'],
-      ['@->-- @-&gt;--', 'rose'],
+      ['@->-- @-&amp;gt;--', 'rose'],
       [':music:', 'musical_note'],
       [':love:', 'heart_eyes'],
       [':heart:', 'heart'],
@@ -85,7 +86,7 @@ jsxc.gui = {
       message: function(jid, params) {
          var win = jsxc.gui.window.open(jsxc.jidToBid(jid));
 
-         if (params && typeof params.body === 'string') {
+         if (params &amp;&amp; typeof params.body === 'string') {
             win.find('.jsxc_textinput').val(params.body);
          }
       },
@@ -99,7 +100,7 @@ jsxc.gui = {
       subscribe: function(jid, params) {
          jsxc.gui.showContactDialog(jid);
 
-         if (params && typeof params.name) {
+         if (params &amp;&amp; typeof params.name) {
             $('#jsxc_alias').val(params.name);
          }
       },
@@ -111,7 +112,7 @@ jsxc.gui = {
 
       /** xmpp:JID?join[;password=TEXT] */
       join: function(jid, params) {
-         var password = (params && params.password) ? params.password : null;
+         var password = (params &amp;&amp; params.password) ? params.password : null;
 
          jsxc.muc.showJoinChat(jid, password);
       }
@@ -150,7 +151,7 @@ jsxc.gui = {
       jsxc.gui.tooltip('#jsxc_windowList');
 
       var fo = jsxc.options.get('favicon');
-      if (fo && fo.enable) {
+      if (fo &amp;&amp; fo.enable) {
          jsxc.gui.favicon = new Favico({
             animation: 'pop',
             bgColor: fo.bgColor,
@@ -250,7 +251,7 @@ jsxc.gui = {
       }
 
       // update gui according to subscription state
-      if (data.sub && data.sub !== 'both') {
+      if (data.sub &amp;&amp; data.sub !== 'both') {
          ue.addClass('jsxc_oneway');
       } else {
          ue.removeClass('jsxc_oneway');
@@ -395,17 +396,28 @@ jsxc.gui = {
     * @returns {jquery} jQuery object of the window element
     */
    getWindow: function(bid) {
+
       jsxc.warn('jsxc.gui.getWindow is deprecated!');
 
       return jsxc.gui.window.get(bid);
    },
 
    /**
-    * Toggle list with timeout, like menu or settings
-    * 
+        Transform list in menu. Structure must be like that:
+            &lt;container id="idToPass">
+                &lt;ul>
+                    &lt;li>Menu elements 1&lt;/li>
+                    &lt;li>Menu elements 2&lt;/li>
+                    &lt;li>Menu elements ...&lt;/li>
+                &lt;/ul>
+            &lt;/container>
+
+        With timeout for closing
+
     * @memberof jsxc.gui
     */
    toggleList: function(el) {
+
       var self = el || $(this);
 
       self.disableSelection();
@@ -437,6 +449,7 @@ jsxc.gui = {
          self.toggleClass('jsxc_opened');
 
          return false;
+
       }).mouseleave(function() {
          ul.data('timer', window.setTimeout(slideUp, 2000));
       }).mouseenter(function() {
@@ -861,7 +874,7 @@ jsxc.gui = {
          }
       }
 
-      if ($.fn && $.fn.jquery) {
+      if ($.fn &amp;&amp; $.fn.jquery) {
          userInfo += '&lt;b>jQuery:&lt;/b> ' + $.fn.jquery + '&lt;br />';
       }
 
@@ -897,7 +910,7 @@ jsxc.gui = {
             identities = [];
             cap = jsxc.xmpp.getCapabilitiesByJid(bid + '/' + res);
 
-            if (cap !== null && cap.identities !== null) {
+            if (cap !== null &amp;&amp; cap.identities !== null) {
                identities = cap.identities;
             }
 
@@ -948,7 +961,7 @@ jsxc.gui = {
 
             content += '&lt;/li>';
 
-            if (depth === 0 && $('#jsxc_dialog ul.jsxc_vCard').length > 0) {
+            if (depth === 0 &amp;&amp; $('#jsxc_dialog ul.jsxc_vCard').length > 0) {
                if ($('#jsxc_dialog ul.jsxc_vCard li.jsxc_sep:first').length > 0) {
                   $('#jsxc_dialog ul.jsxc_vCard li.jsxc_sep:first').before(content);
                } else {
@@ -1005,7 +1018,7 @@ jsxc.gui = {
             $('#jsxc_dialog h3').before(img_el);
          }
 
-         if ($(stanza).find('vCard').length === 0 || ($(stanza).find('vcard > *').length === 1 && photo.length === 1)) {
+         if ($(stanza).find('vCard').length === 0 || ($(stanza).find('vcard > *').length === 1 &amp;&amp; photo.length === 1)) {
             failedToLoad();
             return;
          }
@@ -1015,7 +1028,12 @@ jsxc.gui = {
       }, failedToLoad);
    },
 
+    /**
+        Open a dialog box with misc settings.
+
+    */
    showSettings: function() {
+
       jsxc.gui.dialog.open(jsxc.gui.template.get('settings'));
 
       if (jsxc.options.get('xmpp').overwrite === 'false' || jsxc.options.get('xmpp').overwrite === false) {
@@ -1033,9 +1051,9 @@ jsxc.gui = {
 
             var data = jsxc.options.get(prop);
 
-            if (data && typeof data[key] !== 'undefined') {
+            if (data &amp;&amp; typeof data[key] !== 'undefined') {
                if (type === 'checkbox') {
-                  if (data[key] !== 'false' && data[key] !== false) {
+                  if (data[key] !== 'false' &amp;&amp; data[key] !== false) {
                      this.checked = 'checked';
                   }
                } else {
@@ -1155,7 +1173,7 @@ jsxc.gui = {
    showSelectionDialog: function(header, msg, primary, option, primaryLabel, optionLabel) {
       var opt;
 
-      if (arguments.length === 1 && typeof header === 'object' && header !== null) {
+      if (arguments.length === 1 &amp;&amp; typeof header === 'object' &amp;&amp; header !== null) {
          opt = header;
       } else {
          opt = {
@@ -1188,19 +1206,19 @@ jsxc.gui = {
          dialog.find('p').hide();
       }
 
-      if (opt.primary && opt.primary.label) {
+      if (opt.primary &amp;&amp; opt.primary.label) {
          dialog.find('.btn-primary').text(opt.primary.label);
       }
 
-      if (opt.primary && opt.option.label) {
+      if (opt.primary &amp;&amp; opt.option.label) {
          dialog.find('.btn-default').text(opt.option.label);
       }
 
-      if (opt.primary && opt.primary.cb) {
+      if (opt.primary &amp;&amp; opt.primary.cb) {
          dialog.find('.btn-primary').click(opt.primary.cb);
       }
 
-      if (opt.primary && opt.option.cb) {
+      if (opt.primary &amp;&amp; opt.option.cb) {
          dialog.find('.btn-primary').click(opt.option.cb);
       }
    },
@@ -1270,7 +1288,7 @@ jsxc.gui = {
     */
    unreadMsg: function(bid) {
       var winData = jsxc.storage.getUserItem('window', bid) || {};
-      var count = (winData && winData.unread) || 0;
+      var count = (winData &amp;&amp; winData.unread) || 0;
       count = (count === true) ? 1 : count + 1; //unread was boolean (&lt;2.1.0)
 
       // update user counter
@@ -1302,7 +1320,7 @@ jsxc.gui = {
       if (typeof count !== 'number') {
          // get counter after page reload
          var winData = jsxc.storage.getUserItem('window', bid);
-         count = (winData && winData.unread) || 1;
+         count = (winData &amp;&amp; winData.unread) || 1;
          count = (count === true) ? 1 : count; //unread was boolean (&lt;2.1.0)
       }
 
@@ -1321,7 +1339,7 @@ jsxc.gui = {
    readMsg: function(bid) {
       var win = jsxc.gui.window.get(bid);
       var winData = jsxc.storage.getUserItem('window', bid);
-      var count = (winData && winData.unread) || 0;
+      var count = (winData &amp;&amp; winData.unread) || 0;
       count = (count === true) ? 0 : count; //unread was boolean (&lt;2.1.0)
 
       var el = jsxc.gui.roster.getItem(bid).add(win);
@@ -1395,7 +1413,7 @@ jsxc.gui = {
          var spot = $("&lt;span>X&lt;/span>").addClass("jsxc_spot");
          var href = $(this).attr("href").replace(/^ *(mailto|xmpp):/, "").trim();
 
-         if (href !== '' && href !== Strophe.getBareJidFromJid(jsxc.storage.getItem("jid"))) {
+         if (href !== '' &amp;&amp; href !== Strophe.getBareJidFromJid(jsxc.storage.getItem("jid"))) {
             var bid = jsxc.jidToBid(href);
             var self = $(this);
             var s = self.prev();
@@ -1445,7 +1463,7 @@ jsxc.gui = {
          'font-size': el.height() * 0.6 + 'px'
       });
 
-      if (typeof text === 'string' && text.length > 0) {
+      if (typeof text === 'string' &amp;&amp; text.length > 0) {
          el.text(text[0].toUpperCase());
       }
    },
@@ -1458,7 +1476,7 @@ jsxc.gui = {
     */
    shortnameToImage: function(str) {
       str = str.replace(jsxc.gui.regShortNames, function(shortname) {
-         if (typeof shortname === 'undefined' || shortname === '' || (!(shortname in jsxc.gui.emoticonList.emojione) && !(shortname in jsxc.gui.emoticonList.core))) {
+         if (typeof shortname === 'undefined' || shortname === '' || (!(shortname in jsxc.gui.emoticonList.emojione) &amp;&amp; !(shortname in jsxc.gui.emoticonList.core))) {
             return shortname;
          }
 
@@ -1505,76 +1523,24 @@ jsxc.gui.roster = {
     * @returns {undefined}
     */
    init: function() {
+
+      // adding roster skeleton to body, or other choosen element
       $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('roster')));
 
+      // display or hide offline buddies
       if (jsxc.options.get('hideOffline')) {
          $('#jsxc_menu .jsxc_hideOffline').text($.t('Show_offline'));
          $('#jsxc_buddylist').addClass('jsxc_hideOffline');
       }
-
-      $('#jsxc_menu .jsxc_settings').click(function() {
-         jsxc.gui.showSettings();
-      });
-
-      $('#jsxc_menu .jsxc_hideOffline').click(function() {
-         var hideOffline = !jsxc.options.get('hideOffline');
-
-         if (hideOffline) {
-            $('#jsxc_buddylist').addClass('jsxc_hideOffline');
-         } else {
-            $('#jsxc_buddylist').removeClass('jsxc_hideOffline');
-         }
-
-         $(this).text(hideOffline ? $.t('Show_offline') : $.t('Hide_offline'));
-
-         jsxc.options.set('hideOffline', hideOffline);
-      });
-
+      
+      // mute sounds
       if (jsxc.options.get('muteNotification')) {
          jsxc.notification.muteSound();
       }
-
-      $('#jsxc_menu .jsxc_muteNotification').click(function() {
-
-         if (jsxc.storage.getUserItem('presence') === 'dnd') {
-            return;
-         }
-
-         // invert current choice
-         var mute = !jsxc.options.get('muteNotification');
-
-         if (mute) {
-            jsxc.notification.muteSound();
-         } else {
-            jsxc.notification.unmuteSound();
-         }
-      });
-
-      $('#jsxc_roster .jsxc_addBuddy').click(function() {
-         jsxc.gui.showContactDialog();
-      });
-
-      $('#jsxc_roster .jsxc_onlineHelp').click(function() {
-         window.open(jsxc.options.onlineHelp, 'onlineHelp');
-      });
-
-      $('#jsxc_roster .jsxc_about').click(function() {
-         jsxc.gui.showAboutDialog();
-      });
-
+      
+      // hide show roster
       $('#jsxc_toggleRoster').click(function() {
          jsxc.gui.roster.toggle();
-      });
-
-      $('#jsxc_presence li').click(function() {
-         var self = $(this);
-         var pres = self.data('pres');
-
-         if (pres === 'offline') {
-            jsxc.xmpp.logout(false);
-         } else {
-            jsxc.gui.changePresence(pres);
-         }
       });
 
       $('#jsxc_buddylist').slimScroll({
@@ -1585,9 +1551,9 @@ jsxc.gui.roster = {
          opacity: '0.5'
       });
 
-      $('#jsxc_roster > .jsxc_bottom > div').each(function() {
-         jsxc.gui.toggleList.call($(this));
-      });
+        // initialize main menu
+        jsxc.gui.menu.init();
+
 
       var rosterState = jsxc.storage.getUserItem('roster') || (jsxc.options.get('loginForm').startMinimized ? 'hidden' : 'shown');
 
@@ -1603,6 +1569,7 @@ jsxc.gui.roster = {
       jsxc.notice.load();
 
       jsxc.gui.roster.ready = true;
+
       $(document).trigger('ready.roster.jsxc');
    },
 
@@ -1612,6 +1579,7 @@ jsxc.gui.roster = {
     * @param {String} bid bar jid
     */
    add: function(bid) {
+
       var data = jsxc.storage.getUserItem('buddy', bid);
       var bud = jsxc.gui.buddyTemplate.clone().attr('data-bid', bid).attr('data-type', data.type || 'chat');
 
@@ -1709,7 +1677,7 @@ jsxc.gui.roster = {
 
          var thisStatus = ($(this).data('sub') === 'both') ? $(this).data('status') : -1;
 
-         if (($(this).data('name').toLowerCase() > data.name.toLowerCase() && thisStatus === status) || thisStatus &lt; status) {
+         if (($(this).data('name').toLowerCase() > data.name.toLowerCase() &amp;&amp; thisStatus === status) || thisStatus &lt; status) {
 
             $(this).before(li);
             insert = true;
@@ -1841,6 +1809,7 @@ jsxc.gui.roster = {
     * @param {string} state Toggle to state
     */
    toggle: function(state) {
+
       var duration;
 
       var roster = $('#jsxc_roster');
@@ -1850,7 +1819,7 @@ jsxc.gui.roster = {
          state = (jsxc.storage.getUserItem('roster') === jsxc.CONST.HIDDEN) ? jsxc.CONST.SHOWN : jsxc.CONST.HIDDEN;
       }
 
-      if (state === 'shown' && jsxc.isExtraSmallDevice()) {
+      if (state === 'shown' &amp;&amp; jsxc.isExtraSmallDevice()) {
          jsxc.gui.window.hide();
       }
 
@@ -1988,7 +1957,7 @@ jsxc.gui.dialog = {
    close: function(name) {
       jsxc.debug('close dialog');
 
-      if (typeof name === 'string' && name.length > 0 && !jsxc.el_exists('#jsxc_dialog[data-name=' + name + ']')) {
+      if (typeof name === 'string' &amp;&amp; name.length > 0 &amp;&amp; !jsxc.el_exists('#jsxc_dialog[data-name=' + name + ']')) {
          return;
       }
 
@@ -2119,7 +2088,7 @@ jsxc.gui.window = {
 
       win.find('.jsxc_textarea').click(function() {
          // check if user clicks element or selects text
-         if (typeof getSelection === 'function' && !getSelection().toString()) {
+         if (typeof getSelection === 'function' &amp;&amp; !getSelection().toString()) {
             win.find('.jsxc_textinput').focus();
          }
       });
@@ -2191,7 +2160,7 @@ jsxc.gui.window = {
       jsxc.gui.updateWindowListSB();
 
       // create related otr object
-      if (jsxc.master && !jsxc.otr.objects[bid]) {
+      if (jsxc.master &amp;&amp; !jsxc.otr.objects[bid]) {
          jsxc.otr.create(bid);
       } else {
          jsxc.otr.enable(bid);
@@ -2525,7 +2494,7 @@ jsxc.gui.window = {
     */
    postMessage: function(message) {
 
-      if (typeof message === 'object' && !(message instanceof jsxc.Message)) {
+      if (typeof message === 'object' &amp;&amp; !(message instanceof jsxc.Message)) {
          message = new jsxc.Message(message);
       }
 
@@ -2538,12 +2507,12 @@ jsxc.gui.window = {
 
       // exceptions:
 
-      if (message.direction === jsxc.Message.OUT && data.msgstate === OTR.CONST.MSGSTATE_FINISHED && message.forwarded !== true) {
+      if (message.direction === jsxc.Message.OUT &amp;&amp; data.msgstate === OTR.CONST.MSGSTATE_FINISHED &amp;&amp; message.forwarded !== true) {
          message.direction = jsxc.Message.SYS;
          message.msg = $.t('your_message_wasnt_send_please_end_your_private_conversation');
       }
 
-      if (message.direction === jsxc.Message.OUT && data.msgstate === OTR.CONST.MSGSTATE_FINISHED) {
+      if (message.direction === jsxc.Message.OUT &amp;&amp; data.msgstate === OTR.CONST.MSGSTATE_FINISHED) {
          message.direction = 'sys';
          message.msg = $.t('unencrypted_message_received') + ' ' + message.msg;
       }
@@ -2561,19 +2530,19 @@ jsxc.gui.window = {
          });
       }
 
-      if (message.direction === 'in' && !jsxc.gui.window.get(message.bid).find('.jsxc_textinput').is(":focus")) {
+      if (message.direction === 'in' &amp;&amp; !jsxc.gui.window.get(message.bid).find('.jsxc_textinput').is(":focus")) {
          jsxc.gui.unreadMsg(message.bid);
 
          $(document).trigger('postmessagein.jsxc', [message.bid, html_msg]);
       }
 
-      if (message.direction === jsxc.Message.OUT && jsxc.master && message.forwarded !== true && html_msg) {
+      if (message.direction === jsxc.Message.OUT &amp;&amp; jsxc.master &amp;&amp; message.forwarded !== true &amp;&amp; html_msg) {
          jsxc.xmpp.sendMessage(message.bid, html_msg, message._uid);
       }
 
       jsxc.gui.window._postMessage(message);
 
-      if (message.direction === 'out' && message.msg === '?' && jsxc.options.get('theAnswerToAnything') !== false) {
+      if (message.direction === 'out' &amp;&amp; message.msg === '?' &amp;&amp; jsxc.options.get('theAnswerToAnything') !== false) {
          if (typeof jsxc.options.get('theAnswerToAnything') === 'undefined' || (Math.random() * 100 % 42) &lt; 1) {
             jsxc.options.set('theAnswerToAnything', true);
 
@@ -2602,7 +2571,7 @@ jsxc.gui.window = {
       var direction = message.direction;
       var uid = message._uid;
 
-      if (win.find('.jsxc_textinput').is(':not(:focus)') && direction === jsxc.Message.IN && !restore) {
+      if (win.find('.jsxc_textinput').is(':not(:focus)') &amp;&amp; direction === jsxc.Message.IN &amp;&amp; !restore) {
          jsxc.gui.window.highlight(bid);
       }
 
@@ -2659,7 +2628,7 @@ jsxc.gui.window = {
          msgDiv.addClass('jsxc_encrypted');
       }
 
-      if (message.attachment && message.attachment.name) {
+      if (message.attachment &amp;&amp; message.attachment.name) {
          var attachment = $('&lt;div>');
          attachment.addClass('jsxc_attachment');
          attachment.addClass('jsxc_' + message.attachment.type.replace(/\//, '-'));
@@ -2673,7 +2642,7 @@ jsxc.gui.window = {
             attachment.addClass('jsxc_data');
          }
 
-         if (message.attachment.type.match(/^image\//) && message.attachment.thumbnail) {
+         if (message.attachment.type.match(/^image\//) &amp;&amp; message.attachment.thumbnail) {
             $('&lt;img alt="preview">').attr('src', message.attachment.thumbnail).attr('title', message.attachment.name).appendTo(attachment);
          } else {
             attachment.text(message.attachment.name);
@@ -2704,7 +2673,7 @@ jsxc.gui.window = {
          win.find('.jsxc_textarea').append(msgDiv);
       }
 
-      if (typeof message.sender === 'object' && message.sender !== null) {
+      if (typeof message.sender === 'object' &amp;&amp; message.sender !== null) {
          var title = '';
          var avatarDiv = $('&lt;div>');
          avatarDiv.addClass('jsxc_avatar').prependTo(msgDiv);
@@ -2736,7 +2705,7 @@ jsxc.gui.window = {
 
          avatarDiv.attr('title', jsxc.escapeHTML(title));
 
-         if (msgDiv.prev().length > 0 && msgDiv.prev().find('.jsxc_avatar').attr('title') === avatarDiv.attr('title')) {
+         if (msgDiv.prev().length > 0 &amp;&amp; msgDiv.prev().find('.jsxc_avatar').attr('title') === avatarDiv.attr('title')) {
             avatarDiv.css('visibility', 'hidden');
          }
       }
@@ -2769,7 +2738,7 @@ jsxc.gui.window = {
 
       // convert legacy storage structure introduced in v3.0.0
       if (chat) {
-         while (chat !== null && chat.length > 0) {
+         while (chat !== null &amp;&amp; chat.length > 0) {
             var c = chat.pop();
 
             c.bid = bid;
@@ -2787,7 +2756,7 @@ jsxc.gui.window = {
 
       var history = jsxc.storage.getUserItem('history', bid);
 
-      while (history !== null && history.length > 0) {
+      while (history !== null &amp;&amp; history.length > 0) {
          var uid = history.pop();
 
          jsxc.gui.window._postMessage(new jsxc.Message(uid), true);
@@ -2929,7 +2898,7 @@ jsxc.gui.window = {
          jsxc.gui.window.hideOverlay(bid);
          jsxc.storage.removeUserItem('smp', bid);
 
-         if (jsxc.master && jsxc.otr.objects[bid]) {
+         if (jsxc.master &amp;&amp; jsxc.otr.objects[bid]) {
             jsxc.otr.objects[bid].sm.abort();
          }
       });
@@ -2960,7 +2929,7 @@ jsxc.gui.window = {
          var fileCapableRes = jsxc.webrtc.getCapableRes(jid, jsxc.webrtc.reqFileFeatures);
          var resources = Object.keys(jsxc.storage.getUserItem('res', bid)) || [];
 
-         if (res === null && resources.length === 1 && fileCapableRes.length === 1) {
+         if (res === null &amp;&amp; resources.length === 1 &amp;&amp; fileCapableRes.length === 1) {
             res = fileCapableRes[0];
             jid = bid + '/' + res;
          } else if (fileCapableRes.indexOf(res) &lt; 0) {
@@ -2997,7 +2966,7 @@ jsxc.gui.window = {
 
          msg.empty().append(attachment);
 
-         if (FileReader && file.type.match(/^image\//)) {
+         if (FileReader &amp;&amp; file.type.match(/^image\//)) {
             var img = $('&lt;img alt="preview">').attr('title', file.name);
             img.attr('src', jsxc.options.get('root') + '/img/loading.gif');
             img.appendTo(attachment);
@@ -3073,9 +3042,9 @@ jsxc.gui.template.get = function(name, bid, msg) {
       var data = jsxc.storage.getUserItem('buddy', bid);
 
       $.extend(ph, {
-         bid_priv_fingerprint: (data && data.fingerprint) ? data.fingerprint.replace(/(.{8})/g, '$1 ') : $.t('not_available'),
+         bid_priv_fingerprint: (data &amp;&amp; data.fingerprint) ? data.fingerprint.replace(/(.{8})/g, '$1 ') : $.t('not_available'),
          bid_jid: bid,
-         bid_name: (data && data.name) ? data.name : bid
+         bid_name: (data &amp;&amp; data.name) ? data.name : bid
       });
    }
 
@@ -3116,13 +3085,13 @@ jsxc.gui.template.get = function(name, bid, msg) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.webrtc.html">webrtc</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li>{boolean}</li><li>{integer}</li><li>{string}</li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.webrtc.html">webrtc</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li><li><a href="menu.html">menu</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
-<br clear="both">
+<br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Wed May 04 2016 11:50:36 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Jun 08 2016 15:33:31 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>
