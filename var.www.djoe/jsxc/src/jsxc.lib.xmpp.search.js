@@ -52,18 +52,66 @@ jsxc.xmpp.search = {
             //console.log(arguments);
         });
 
+        // set user cache
+        self.getUserList();
+
     },
 
     /**
+     * Cache for ALL users list
+     */
+    userListCache: undefined,
+
+    /**
      * Return a promise containing all users in an array or an empty array
+     *
+     * <p>Response is stored in cache
      *
      * <p>Each entry of the array contains:
      * mail, jid, name, username, _is_buddy
      *
      */
     getUserList: function() {
+
         var self = jsxc.xmpp.search;
-        return self.searchUsers("*");
+
+        var defer = $.Deferred();
+
+        // list is already present, return false promise
+        if(self.userListCache){
+
+            // send list of item
+            defer.resolve(JSON.parse(JSON.stringify(self.userListCache)));
+
+            // console.log("cached user list");
+
+            return defer;
+        }
+
+        else {
+            return self.searchUsers("*").then(function(result){
+
+                self.userListCache = result;
+                defer.resolve(JSON.parse(JSON.stringify(self.userListCache)));
+
+                // console.log("new user list");
+                // console.log(self.userListCache.length);
+
+            });
+        }
+
+        return defer.promise();
+    },
+
+    /**
+     * Get new user list
+     *
+     * @returns {*}
+     */
+    getFreshUserList: function() {
+        var self = jsxc.xmpp.search;
+        self.userListCache = undefined;
+        return self.getUserList();
     },
 
     /**
