@@ -146,6 +146,13 @@ jsxc = {
             jsxc.log = jsxc.log + '$ ' + msg + ': ' + d + '\n';
         } else {
             console.log(msg);
+
+            // stack trace
+            if(jsxc.storage.getItem('debug')){
+                var err = new Error();
+                console.log(err.stack);
+            }
+
             jsxc.log = jsxc.log + '$ ' + msg + '\n';
         }
     }
@@ -932,6 +939,15 @@ jsxc = {
 
     isExtraSmallDevice: function () {
         return $(window).width() < 500;
+    },
+
+    /**
+     * Debug tool for printing stack trace
+     *
+     */
+    stackTrace: function(){
+        console.err(new Error.stack);
     }
+    
 }
 ;

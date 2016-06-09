@@ -359,11 +359,19 @@ jsxc.gui.template['loginBox'] = '<h3 data-i18n="Login"></h3>\n' +
 '</form>\n' +
 '';
 
-jsxc.gui.template['menuContacts'] = '<div>\n' +
+jsxc.gui.template['menuContacts'] = '<div id="jsxc_menuContacts">\n' +
 '\n' +
-'    <div class="jsxc_addBuddy actionButton" data-i18n="Add_buddy">Ajouter un contact</div>\n' +
+'    Utilisateurs disponibles:\n' +
 '\n' +
-'    <div class="actionButton notImplementedYet">Supprimer un contact</div>\n' +
+'    <div class="jsxc_userListContainer">\n' +
+'\n' +
+'        <ol class="jsxc_userList">\n' +
+'        </ol>\n' +
+'\n' +
+'    </div>\n' +
+'\n' +
+'    <div class="jsxc_addBuddyFromList actionButton" data-i18n="Add_buddy"></div>\n' +
+'    <div class="jsxc_removeBuddyFromList actionButton">Supprimer un contact</div>\n' +
 '\n' +
 '</div>';
 

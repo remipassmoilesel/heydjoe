@@ -3739,40 +3739,7 @@ li[data-type="groupchat"] .jsxc_video {
     background: inherit;
     height: 93%;
     /** Headers */
-    /** Content */
-    /*
-    div.actionButton {
-
-
-      cursor: pointer;
-
-      border-radius: 5px;
-      font-family: Arial;
-      color: #454545;
-      font-size: 11px;
-      text-decoration: none;
-
-      padding-top: 12px;
-      padding-right: 5px;
-      padding-left: 10px;
-      padding-bottom: 12px;
-
-      background: #ffffff;
-      background-image: linear-gradient(to bottom, #ffffff, #e9f1f0);
-      text-decoration: none;
-
-      &:hover {
-        background: rgba(126, 183, 59, 0.77);
-        text-decoration: none;
-        color: white;
-      }
-
-      &.notImplementedYet{
-        cursor: not-allowed;
-      }
-
-    }
-    */ }
+    /** Content */ }
     #jsxc_side_menu #jsxc_side_menu_content h1 {
       font-size: 11px; }
     #jsxc_side_menu #jsxc_side_menu_content > div {
@@ -3780,6 +3747,8 @@ li[data-type="groupchat"] .jsxc_video {
       padding: 5px;
       text-align: left; }
     #jsxc_side_menu #jsxc_side_menu_content div.actionButton {
+      width: 80%;
+      margin: auto;
       cursor: pointer;
       border-radius: 5px;
       color: #333;
@@ -3801,6 +3770,34 @@ li[data-type="groupchat"] .jsxc_video {
     #jsxc_side_menu #jsxc_side_menu_content .ui-accordion-content {
       position: relative;
       /** Needed to avoid perfectscroll problems */ }
+
+/**
+  User selection list
+*/
+.jsxc_userList {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 100%; }
+  .jsxc_userList .ui-selecting {
+    background: #FECA40; }
+  .jsxc_userList .ui-selected {
+    background: #7eb73b;
+    color: white; }
+  .jsxc_userList li {
+    margin: 3px;
+    padding: 0.4em;
+    cursor: pointer;
+    height: 30px; }
+  .jsxc_userList .buddy_item:after {
+    content: url('../img/user_list_buddy.png');
+    vertical-align: -30%; }
+
+.jsxc_userListContainer {
+  position: relative;
+  height: 150px;
+  margin: 5px;
+  border: 1px solid #dddddd; }
 
 #jsxc_menu {
   height: 44px;
