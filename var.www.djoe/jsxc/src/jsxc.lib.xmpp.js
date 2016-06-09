@@ -8,6 +8,23 @@ jsxc.xmpp = {
     conn: null, // connection
 
     /**
+     * Return the local list of buddies, in the form of bare JID
+     *
+     * <p> Sometimes buddies are stocked in form of "node", "node@domain", ...
+     *
+     */
+    getLocaleBuddyListBJID: function(){
+
+        var output = [];
+
+        $.each(jsxc.storage.getUserItem('buddylist'), function(index, item){
+            output.push(jsxc.jidToBid(item));
+        });
+
+        return output;
+    },
+
+    /**
      * Create new connection or attach to old
      *
      * @name login
