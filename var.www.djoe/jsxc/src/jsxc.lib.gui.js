@@ -47,6 +47,30 @@ jsxc.gui = {
         },
         'emojione': emojione.emojioneList
     },
+    
+    /**
+     * Format an element to create a feedback area, and show a message
+     *
+     * @param selector
+     * @returns {JQuery|jQuery|HTMLElement}
+     */
+    feedback: function(selector, message, timeout){
+        
+        // add class if necessary
+        if($(selector).hasClass("jsxc_feedbackArea") === false){
+            $(selector).addClass("jsxc_feedbackArea");                
+        }
+
+        // show message
+        $(selector).html(message);
+        
+        // hide message 
+        setTimeout(function(){
+            $(selector).html("&nbsp;");    
+        }, timeout || 4000);
+        
+        return $(selector);
+    },
 
     /**
      * Different uri query actions as defined in XEP-0147.

@@ -3882,8 +3882,8 @@ li[data-type="groupchat"] .jsxc_video {
     margin-top: 20px; }
   #jsxc_dialog form {
     /*&.col-sm-6:nth-child(odd) {
-           clear: left;
-        }*/ }
+       clear: left;
+    }*/ }
     #jsxc_dialog form fieldset {
       margin-bottom: 30px;
       padding: 0px 30px;
@@ -4202,6 +4202,15 @@ img.jsxc_vCard {
   @media (min-width: 768px) {
     .jsxc_more {
       width: 25px; } }
+
+/**
+  Area to print feebacks
+*/
+.jsxc_feedbackArea {
+  color: #3F3F3F;
+  font-size: 11px;
+  font-style: italic;
+  text-align: center; }
 
 .jsxc_remotevideo, .jsxc_noRemoteVideo {
   width: 100%;

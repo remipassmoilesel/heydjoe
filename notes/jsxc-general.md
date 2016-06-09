@@ -6,7 +6,9 @@
     jsxc.stackTrace() // print stack trace
     jsxc.xmpp.getLocaleBuddyListBJID() // array of local buddies
     jsxc.el_exists($("#selector")); // check if element exist
-    jsxc.jidToBid(item); // get bare jid 
+    jsxc.jidToBid(item); // get bare jid
+    jsxc.gui.createFeedbackArea(); // create a feedback area
+    .notImplementedYet // css class for non implemented functionnalities 
 
 * Liste d'utilisateurs amis. La liste d'utilisateurs est normalement demandée au serveur puis stockée en local.
 

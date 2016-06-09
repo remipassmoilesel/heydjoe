@@ -2514,6 +2514,30 @@ jsxc.gui = {
         },
         'emojione': emojione.emojioneList
     },
+    
+    /**
+     * Format an element to create a feedback area, and show a message
+     *
+     * @param selector
+     * @returns {JQuery|jQuery|HTMLElement}
+     */
+    feedback: function(selector, message, timeout){
+        
+        // add class if necessary
+        if($(selector).hasClass("jsxc_feedbackArea") === false){
+            $(selector).addClass("jsxc_feedbackArea");                
+        }
+
+        // show message
+        $(selector).html(message);
+        
+        // hide message 
+        setTimeout(function(){
+            $(selector).html("&nbsp;");    
+        }, timeout || 4000);
+        
+        return $(selector);
+    },
 
     /**
      * Different uri query actions as defined in XEP-0147.
@@ -5593,21 +5617,32 @@ jsxc.gui.menu = {
                 /**
                  * Add or remove a contact from list
                  */
-                // add 
+
+                // add
                 $('#jsxc_menuContacts .jsxc_addBuddyFromList').click(function () {
 
                     // retrieve first element selected
                     var selItems = $("#jsxc_menuContacts .ui-selected");
 
-                    // test if already buddy
-                    if (selItems.hasClass("buddy_item")) {
-                        console.log("Déjà amis mec !");
+                    // test if a user is selected
+                    if (selItems.length < 1) {
+                        jsxc.gui.feedback("#jsxc_contactMenuFeedbackArea",
+                            selItems.data("userjid") + " est déjà dans vos contacts");
                         return;
                     }
 
-                    if (selItems.length > 0) {
-                        jsxc.xmpp.addBuddy(selItems.data("userjid"));
+                    // test if already buddy
+                    if (selItems.hasClass("buddy_item")) {
+                        jsxc.gui.feedback("#jsxc_contactMenuFeedbackArea",
+                            selItems.data("userjid") + " est déjà dans vos contacts");
+                        return;
                     }
+                    
+                    jsxc.xmpp.addBuddy(selItems.data("userjid"));
+
+                    jsxc.gui.feedback("#jsxc_contactMenuFeedbackArea",
+                        "Une invitation à été envoyée à " + selItems.data("userjid"));
+
 
                     // stop propaging
                     return false;
@@ -5633,7 +5668,7 @@ jsxc.gui.menu = {
                 $("#jsxc_menuContacts .jsxc_userListContainer").perfectScrollbar();
 
 
-                var updateUserList = function(){
+                var updateUserList = function () {
 
                     // add contact to list
                     jsxc.xmpp.search.getUserList().then(function (users) {
@@ -5657,9 +5692,9 @@ jsxc.gui.menu = {
 
                             if (elmt._is_buddy) {
                                 li.addClass("buddy_item")
-                                .attr({
-                                    'title': elmt.username + " est dans vos contacts"
-                                });
+                                    .attr({
+                                        'title': elmt.username + " est dans vos contacts"
+                                    });
                             }
 
                             $("#jsxc_menuContacts .jsxc_userList")
@@ -11078,7 +11113,7 @@ jsxc.xmpp.search = {
         $.each(userArr, function(i, e){
             // check if is a buddy
             e["_is_buddy"] = buddies.indexOf(jsxc.jidToBid(e.jid)) !== -1;
-        })
+        });
 
         return userArr;
     },
@@ -11664,8 +11699,10 @@ jsxc.gui.template['menuContacts'] = '<div id="jsxc_menuContacts">\n' +
 '\n' +
 '    </div>\n' +
 '\n' +
-'    <div class="jsxc_addBuddyFromList actionButton" data-i18n="Add_buddy"></div>\n' +
-'    <div class="jsxc_removeBuddyFromList actionButton">Supprimer un contact</div>\n' +
+'    <div class="jsxc_addBuddyFromList actionButton">Inviter un utilisateur</div>\n' +
+'    <div class="jsxc_removeBuddyFromList actionButton notImplementedYet">Supprimer un contact</div>\n' +
+'\n' +
+'    <div id="jsxc_contactMenuFeedbackArea"></div>\n' +
 '\n' +
 '</div>';
 

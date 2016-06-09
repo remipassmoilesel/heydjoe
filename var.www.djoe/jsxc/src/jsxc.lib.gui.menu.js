@@ -76,21 +76,32 @@ jsxc.gui.menu = {
                 /**
                  * Add or remove a contact from list
                  */
-                // add 
+
+                // add
                 $('#jsxc_menuContacts .jsxc_addBuddyFromList').click(function () {
 
                     // retrieve first element selected
                     var selItems = $("#jsxc_menuContacts .ui-selected");
 
-                    // test if already buddy
-                    if (selItems.hasClass("buddy_item")) {
-                        console.log("Déjà amis mec !");
+                    // test if a user is selected
+                    if (selItems.length < 1) {
+                        jsxc.gui.feedback("#jsxc_contactMenuFeedbackArea",
+                            selItems.data("userjid") + " est déjà dans vos contacts");
                         return;
                     }
 
-                    if (selItems.length > 0) {
-                        jsxc.xmpp.addBuddy(selItems.data("userjid"));
+                    // test if already buddy
+                    if (selItems.hasClass("buddy_item")) {
+                        jsxc.gui.feedback("#jsxc_contactMenuFeedbackArea",
+                            selItems.data("userjid") + " est déjà dans vos contacts");
+                        return;
                     }
+                    
+                    jsxc.xmpp.addBuddy(selItems.data("userjid"));
+
+                    jsxc.gui.feedback("#jsxc_contactMenuFeedbackArea",
+                        "Une invitation à été envoyée à " + selItems.data("userjid"));
+
 
                     // stop propaging
                     return false;
@@ -116,7 +127,7 @@ jsxc.gui.menu = {
                 $("#jsxc_menuContacts .jsxc_userListContainer").perfectScrollbar();
 
 
-                var updateUserList = function(){
+                var updateUserList = function () {
 
                     // add contact to list
                     jsxc.xmpp.search.getUserList().then(function (users) {
@@ -140,9 +151,9 @@ jsxc.gui.menu = {
 
                             if (elmt._is_buddy) {
                                 li.addClass("buddy_item")
-                                .attr({
-                                    'title': elmt.username + " est dans vos contacts"
-                                });
+                                    .attr({
+                                        'title': elmt.username + " est dans vos contacts"
+                                    });
                             }
 
                             $("#jsxc_menuContacts .jsxc_userList")

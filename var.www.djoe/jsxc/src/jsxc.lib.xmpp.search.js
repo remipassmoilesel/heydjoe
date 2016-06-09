@@ -78,7 +78,7 @@ jsxc.xmpp.search = {
         $.each(userArr, function(i, e){
             // check if is a buddy
             e["_is_buddy"] = buddies.indexOf(jsxc.jidToBid(e.jid)) !== -1;
-        })
+        });
 
         return userArr;
     },
