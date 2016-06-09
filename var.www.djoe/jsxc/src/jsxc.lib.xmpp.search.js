@@ -49,7 +49,7 @@ jsxc.xmpp.search = {
 
         // first request to know if search is available
         self.requestForSearchCapabilities().then(function(){
-            console.log(arguments);
+            //console.log(arguments);
         });
 
     },
@@ -58,7 +58,7 @@ jsxc.xmpp.search = {
      * Return a promise containing all users in an array or an empty array
      *
      * <p>Each entry of the array contains:
-     * mail, jid, name, username
+     * mail, jid, name, username, _is_buddy
      *
      */
     getUserList: function() {
@@ -72,12 +72,15 @@ jsxc.xmpp.search = {
      * <p>Wildcards "*" are allowed
      *
      * <p>Each entry of the array contains:
-     * mail, jid, name, username
+     * mail, jid, name, username, _is_buddy
      *
      */
     searchUsers: function(terms){
 
         var self = jsxc.xmpp.search;
+
+        // iq id for filtering
+        var userListRequest;
 
         // send XMPP request to get all users
         var iq = $iq({
@@ -98,20 +101,23 @@ jsxc.xmpp.search = {
         // response in a promise
         var defer = $.Deferred();
 
+        // list of buddies to check
+        var buddies = jsxc.xmpp.getLocaleBuddyListBJID();
+
         // listenning for iq response
         self.conn.addHandler(function(stanza){
 
             var id = $(stanza).attr('id');
 
             // ignore not interesting messages
-            if (id !== self.userListRequest) {
+            if (id !== userListRequest) {
                 return true;
             }
 
             // error while retieving users
             if($(stanza).find("error").length > 0){
 
-                defer.resolve([]);
+                defer.reject();
 
                 // remove handler when finished
                 return false;
@@ -129,6 +135,9 @@ jsxc.xmpp.search = {
                     r[$(this).attr("var").toLowerCase()] = $(this).text();
                 });
 
+                // check if is a buddy
+                r["_is_buddy"] = buddies.indexOf(jsxc.jidToBid(r.jid)) !== -1;
+
                 result.push(r);
 
             });
@@ -142,7 +151,7 @@ jsxc.xmpp.search = {
         }, null, 'iq');
 
         // send request after regitered handler
-        self.userListRequest = self.conn.sendIQ(iq);
+        userListRequest = self.conn.sendIQ(iq);
 
         // return a promise
         return defer.promise();
