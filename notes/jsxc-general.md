@@ -1,6 +1,31 @@
 # Remarques générales sur JSXC
 
-jsxc.el_exists($("#selector"));
+* Utilitaires:
+
+
+    jsxc.xmpp.getLocaleBuddyListBJID() // array of local buddies
+    jsxc.el_exists($("#selector")); // check if element exist
+    jsxc.jidToBid(item); // get bare jid 
+
+* Liste d'utilisateurs amis. La liste d'utilisateurs est normalement demandée au serveur puis stockée en local.
+
+    
+    // Une méthode à été créé pour récupérer une liste de bare JID
+     jsxc.getLocaleBuddyListBJID()
+    
+    // Demande au serveur
+    jsxc.xmpp.onRoster: function (iq) {
+    jsxc.xmpp.onRosterChanged: function (iq) {
+    
+    // accès en local
+    var buddies = jsxc.storage.getUserItem('buddylist');
+    
+    // evenements générés lors du premier chargement
+    cloaded.roster.jsxc
+    
+    Pas d'evenement à la mise à jour ? (jsxc.xmpp.onRosterChanged)
+    
+
 
 * Les modules sont généralement initialisés en fin de fichier à l'aide d'un bloc de la forme:
 

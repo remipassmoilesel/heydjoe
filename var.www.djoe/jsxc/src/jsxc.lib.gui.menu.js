@@ -70,9 +70,69 @@ jsxc.gui.menu = {
             label: "Contacts",
             template: "menuContacts",
             init: function () {
-                $('#jsxc_side_menu_content .jsxc_addBuddy').click(function () {
-                    jsxc.gui.showContactDialog();
+
+                /**
+                 * Add a contact from list
+                 */
+                $('#jsxc_menuContacts .jsxc_addBuddyFromList').click(function () {
+
+                    // retrieve first element selected
+                    var selItems = $("#jsxc_menuContacts .ui-selected");
+
+                    // test if already buddy
+                    if(selItems.hasClass("buddy_item")){
+                        console.log("Déjà amis mec !");
+                        return;
+                    }
+
+                    if(selItems.length > 0){
+                        jsxc.xmpp.addBuddy(selItems.data("userjid"));
+                    }
+
+                    // stop propaging
+                    return false;
                 });
+
+                // make selectable list
+                $("#jsxc_menuContacts .jsxc_userList").selectable();
+
+                // make list scrollable
+                $("#jsxc_menuContacts .jsxc_userListContainer").perfectScrollbar();
+
+                // add contact to list
+                jsxc.xmpp.search.getUserList().then(function (users) {
+                    $.each(users, function (index, elmt) {
+
+
+                        // mettre une marque si le cotnact est dans le roster ou pas
+                        // créer un utilitaire de création de zone de feedback
+
+                        var li = $("<li></li>")
+                            .text(elmt.username)
+                            .attr({
+                                'data-userjid': elmt.jid,
+                                'class': 'ui-widget-content'
+                            });
+
+                        if(elmt._is_buddy){
+                            li.addClass("buddy_item");
+                        }
+
+                        $("#jsxc_menuContacts .jsxc_userList")
+                            .append(li);
+                    });
+                })
+                    .fail(function () {
+
+                        var li = $("<li></li>")
+                            .text("Liste des contacts indisponible")
+                            .attr({'class': 'ui-widget-content'});
+
+                        $("#jsxc_menuContacts .jsxc_userList")
+                            .append(li);
+
+                    });
+
             }
         },
 
@@ -398,7 +458,7 @@ jsxc.gui.menu = {
         });
 
         // ajouter la classe au résultat actif
-        if(this.currentResults.length > 0){
+        if (this.currentResults.length > 0) {
             this.currentResults.eq(this.currentSearchResultIndex).addClass("jsxc_menu_active_result");
 
             // activer l'accordéon correspondant
@@ -428,7 +488,7 @@ jsxc.gui.menu = {
         self.animate({right: "0px"});
 
         // focus on search text field, but not on small devices
-        if($(window).height() > 700){
+        if ($(window).height() > 700) {
             $("#jsxc_menu_search_text_field").focus();
         }
 
@@ -489,7 +549,7 @@ jsxc.gui.menu = {
         });
 
         // close side menu when roster is closed
-        $(document).on("toggle.roster.jsxc", function(){
+        $(document).on("toggle.roster.jsxc", function () {
             self.closeSideMenu();
         });
 

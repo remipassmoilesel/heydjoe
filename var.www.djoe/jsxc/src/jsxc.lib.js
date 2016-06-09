@@ -148,8 +148,10 @@ jsxc = {
             console.log(msg);
 
             // stack trace
-            var err = new Error();
-            console.log(err.stack);
+            if(jsxc.storage.getItem('debug')){
+                var err = new Error();
+                console.log(err.stack);
+            }
 
             jsxc.log = jsxc.log + '$ ' + msg + '\n';
         }

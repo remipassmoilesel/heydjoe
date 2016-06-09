@@ -3802,6 +3802,34 @@ li[data-type="groupchat"] .jsxc_video {
       position: relative;
       /** Needed to avoid perfectscroll problems */ }
 
+/**
+  User selection list
+*/
+.jsxc_userList {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 100%; }
+  .jsxc_userList .ui-selecting {
+    background: #FECA40; }
+  .jsxc_userList .ui-selected {
+    background: #7eb73b;
+    color: white; }
+  .jsxc_userList li {
+    margin: 3px;
+    padding: 0.4em;
+    cursor: pointer;
+    height: 30px; }
+  .jsxc_userList .buddy_item:after {
+    content: url('../img/user_list_buddy.png');
+    vertical-align: -30%; }
+
+.jsxc_userListContainer {
+  position: relative;
+  height: 150px;
+  margin: 5px;
+  border: 1px solid #dddddd; }
+
 #jsxc_menu {
   height: 44px;
   width: 44px;
