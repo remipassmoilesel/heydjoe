@@ -10894,7 +10894,8 @@ jsxc.xmpp.search = {
      * @returns {boolean}
      */
     isUserSearchAvailable: function () {
-        return this.userSearchAvailable;
+        var self = jsxc.xmpp.search;
+        return self.userSearchAvailable;
     },
 
     /**
