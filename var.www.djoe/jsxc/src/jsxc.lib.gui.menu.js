@@ -1,21 +1,23 @@
 /**
-
- Main menu. This menu is included in roster.
-
- All templates are stored in templates/menu*.html
-
- Call init() to build the menu. First init call is done in jsxc.roster.init()
-
- */
+ *
+ * Main menu. This menu is included in roster.
+ *
+ * <p>All templates are stored in templates/menu*.html
+ *
+ * <p>Call init() to build the menu. First init call is done in jsxc.roster.init()
+ *
+ * @namespace menu
+ *
+ * */
 jsxc.gui.menu = {
 
-    /*
-     Time out before close menu
+    /**
+     * Time out before close menu
      */
     timeoutBeforeClose: 5000,
 
     /**
-     Menu elements. Each menu element has a label, a template name and an optionnal init function.
+     * Menu elements. Each menu element has a label, a template name and an optional init function.
      */
     elements: {
 
@@ -154,7 +156,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Initialise menu and menu elements
+     * Initialise menu and menu elements
      */
     init: function () {
 
@@ -191,8 +193,8 @@ jsxc.gui.menu = {
         this.initFoldableActions();
     },
 
-    /*
-     Set menu accordion and searchable
+    /**
+     * Set menu accordion and searchable
      */
     initAccordion: function () {
 
@@ -228,22 +230,22 @@ jsxc.gui.menu = {
     },
 
     /**
-     Current index of search result
+     * Current index of search result
      */
     currentSearchResultIndex: 0,
 
     /**
-     All currents results
+     * All currents results
      */
     currentResults: [],
 
     /**
-     Title mark displayed when a result occur in a panel
+     * Title mark displayed when a result occur in a panel
      */
     searchTitleMark: "<span class='jsxc_menu_search_title_mark'> &lt;!&gt;</span>",
 
     /**
-     Settings for text highliting. Using jquery.highlight.js
+     * Settings for text highliting. Using jquery.highlight.js
      */
     highlightSettings: {
         caseSensitive: false,
@@ -251,7 +253,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Called by search text field when user type something
+     * Called by search text field when user type something
      */
     onSearchKeyUp: function () {
 
@@ -322,14 +324,14 @@ jsxc.gui.menu = {
     },
 
     /**
-     Display a message for user
+     * Display a message for user
      */
     feedback: function (text) {
         $("#jsxc_menu_feedback").html(text || "&nbsp;");
     },
 
     /**
-     Highlight all term searched
+     * Highlight all term searched
      */
     highlightTerms: function (terms) {
 
@@ -341,7 +343,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Enlever le surlignage
+     * Enlever le surlignage
      */
     resetHighlights: function () {
 
@@ -354,7 +356,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Active the next result
+     * Active the next result
      */
     showNextResult: function () {
 
@@ -370,7 +372,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Active the previous result
+     * Active the previous result
      */
     showPreviousResult: function () {
 
@@ -386,7 +388,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Show result tab and active it
+     * Show result tab and active it
      */
     selectResult: function (index) {
 
@@ -411,7 +413,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Open side menu with parameters and options
+     * Open side menu with parameters and options
      */
     openSideMenu: function () {
 
@@ -433,7 +435,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Close the side menu
+     * Close the side menu
      */
     closeSideMenu: function () {
 
@@ -449,7 +451,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Associate click with fold / unfold menu action
+     * Associate click with fold / unfold menu action
      */
     initFoldableActions: function () {
 
@@ -467,13 +469,7 @@ jsxc.gui.menu = {
 
             // side menu is closed, open it
             else {
-
                 self.openSideMenu();
-
-                // launch timer for closing if no use
-                sideMenu.data('timerForClosing', window.setTimeout(self.closeSideMenu,
-                    jsxc.gui.menu.timeoutBeforeClose));
-
             }
 
             return false;

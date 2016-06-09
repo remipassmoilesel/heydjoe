@@ -1,282 +1,285 @@
 /**
  * Set some options for the chat.
- * 
+ *
  * @namespace jsxc.options
  */
 jsxc.options = {
 
-   /** name of container application (e.g. owncloud or SOGo) */
-   app_name: 'web applications',
+    /** name of container application (e.g. owncloud or SOGo) */
+    app_name: 'web applications',
 
-   /** Timeout for the keepalive signal */
-   timeout: 3000,
+    /** Timeout for the keepalive signal */
+    timeout: 3000,
 
-   /** Timeout for the keepalive signal if the master is busy */
-   busyTimeout: 15000,
+    /** Timeout for the keepalive signal if the master is busy */
+    busyTimeout: 15000,
 
-   /** OTR options */
-   otr: {
-      enable: true,
-      ERROR_START_AKE: false,
-      debug: false,
-      SEND_WHITESPACE_TAG: true,
-      WHITESPACE_START_AKE: true
-   },
+    /** OTR options */
+    otr: {
+        enable: true,
+        ERROR_START_AKE: false,
+        debug: false,
+        SEND_WHITESPACE_TAG: true,
+        WHITESPACE_START_AKE: true
+    },
 
-   /** xmpp options */
-   xmpp: {
-      /** BOSH url */
-      url: null,
+    /** xmpp options */
+    xmpp: {
+        /** BOSH url */
+        url: null,
 
-      /** XMPP JID*/
-      jid: null,
+        /** XMPP JID*/
+        jid: null,
 
-      /** XMPP domain */
-      domain: null,
+        /** XMPP domain */
+        domain: null,
 
-      /** XMPP password */
-      password: null,
+        /** Domain for user search, XEP 0055*/
+        searchDomain: null,
 
-      /** session id */
-      sid: null,
+        /** XMPP password */
+        password: null,
 
-      /** request id */
-      rid: null,
+        /** session id */
+        sid: null,
 
-      /** True: Allow user to overwrite xmpp settings */
-      overwrite: false,
+        /** request id */
+        rid: null,
 
-      /** @deprecated since v2.1.0. Use now loginForm.enable. */
-      onlogin: null
-   },
+        /** True: Allow user to overwrite xmpp settings */
+        overwrite: false,
 
-   /** default xmpp priorities */
-   priority: {
-      online: 0,
-      chat: 0,
-      away: 0,
-      xa: 0,
-      dnd: 0
-   },
+        /** @deprecated since v2.1.0. Use now loginForm.enable. */
+        onlogin: null
+    },
 
-   /**
-    * This function is called if a login form was found, but before any 
-    * modification is done to it.
-    * 
-    * @memberOf jsxc.options
-    * @function
-    */
-   formFound: null,
+    /** default xmpp priorities */
+    priority: {
+        online: 0,
+        chat: 0,
+        away: 0,
+        xa: 0,
+        dnd: 0
+    },
 
-   /** If all 3 properties are set and enable is true, the login form is used */
-   loginForm: {
-      /** False, disables login through login form */
-      enable: true,
+    /**
+     * This function is called if a login form was found, but before any
+     * modification is done to it.
+     *
+     * @memberOf jsxc.options
+     * @function
+     */
+    formFound: null,
 
-      /** jquery object from form */
-      form: null,
+    /** If all 3 properties are set and enable is true, the login form is used */
+    loginForm: {
+        /** False, disables login through login form */
+        enable: true,
 
-      /** jquery object from input element which contains the jid */
-      jid: null,
+        /** jquery object from form */
+        form: null,
 
-      /** jquery object from input element which contains the password */
-      pass: null,
+        /** jquery object from input element which contains the jid */
+        jid: null,
 
-      /** manipulate JID from input element */
-      preJid: function(jid) {
-         return jid;
-      },
+        /** jquery object from input element which contains the password */
+        pass: null,
 
-      /**
-       * Action after login was called: dialog [String] Show wait dialog, false [boolean] | 
-       * quiet [String] Do nothing
-       */
-      onConnecting: 'dialog',
+        /** manipulate JID from input element */
+        preJid: function (jid) {
+            return jid;
+        },
 
-      /**
-       * Action after connected: submit [String] Submit form, false [boolean] Do
-       * nothing, continue [String] Start chat
-       */
-      onConnected: 'submit',
+        /**
+         * Action after login was called: dialog [String] Show wait dialog, false [boolean] |
+         * quiet [String] Do nothing
+         */
+        onConnecting: 'dialog',
 
-      /**
-       * Action after auth fail: submit [String] Submit form, false [boolean] | quiet [String] Do
-       * nothing, ask [String] Show auth fail dialog
-       */
-      onAuthFail: 'submit',
+        /**
+         * Action after connected: submit [String] Submit form, false [boolean] Do
+         * nothing, continue [String] Start chat
+         */
+        onConnected: 'submit',
 
-      /**
-       * True: Attach connection even is login form was found.
-       * 
-       * @type {Boolean}
-       * @deprecated since 3.0.0. Use now loginForm.ifFound (true => attach, false => pause)
-       */
-      attachIfFound: true,
+        /**
+         * Action after auth fail: submit [String] Submit form, false [boolean] | quiet [String] Do
+         * nothing, ask [String] Show auth fail dialog
+         */
+        onAuthFail: 'submit',
 
-      /**
-       * Describes what we should do if login form was found: 
-       * - Attach connection
-       * - Force new connection with loginForm.jid and loginForm.passed
-       * - Pause connection and do nothing
-       * 
-       * @type {(attach|force|pause)}
-       */
-      ifFound: 'attach',
+        /**
+         * True: Attach connection even is login form was found.
+         *
+         * @type {Boolean}
+         * @deprecated since 3.0.0. Use now loginForm.ifFound (true => attach, false => pause)
+         */
+        attachIfFound: true,
 
-      /**
-       * True: Display roster minimized after first login. Afterwards the last 
-       * roster state will be used. 
-       */
-      startMinimized: false
-   },
+        /**
+         * Describes what we should do if login form was found:
+         * - Attach connection
+         * - Force new connection with loginForm.jid and loginForm.passed
+         * - Pause connection and do nothing
+         *
+         * @type {(attach|force|pause)}
+         */
+        ifFound: 'attach',
 
-   /** jquery object from logout element */
-   logoutElement: null,
+        /**
+         * True: Display roster minimized after first login. Afterwards the last
+         * roster state will be used.
+         */
+        startMinimized: false
+    },
 
-   /** How many messages should be logged? */
-   numberOfMsg: 10,
+    /** jquery object from logout element */
+    logoutElement: null,
 
-   /** Default language */
-   defaultLang: 'en',
+    /** How many messages should be logged? */
+    numberOfMsg: 10,
 
-   /** auto language detection */
-   autoLang: true,
+    /** Default language */
+    defaultLang: 'en',
 
-   /** Place for roster */
-   rosterAppend: 'body',
+    /** auto language detection */
+    autoLang: true,
 
-   /** Should we use the HTML5 notification API? */
-   notification: true,
+    /** Place for roster */
+    rosterAppend: 'body',
 
-   /** duration for notification */
-   popupDuration: 6000,
+    /** Should we use the HTML5 notification API? */
+    notification: true,
 
-   /** Absolute path root of JSXC installation */
-   root: '',
+    /** duration for notification */
+    popupDuration: 6000,
 
-   /**
-    * This function decides wether the roster will be displayed or not if no
-    * connection is found.
-    */
-   displayRosterMinimized: function() {
-      return false;
-   },
+    /** Absolute path root of JSXC installation */
+    root: '',
 
-   /** Set to true if you want to hide offline buddies. */
-   hideOffline: false,
+    /**
+     * This function decides wether the roster will be displayed or not if no
+     * connection is found.
+     */
+    displayRosterMinimized: function () {
+        return false;
+    },
 
-   /** Mute notification sound? */
-   muteNotification: false,
+    /** Set to true if you want to hide offline buddies. */
+    hideOffline: false,
 
-   /**
-    * If no avatar is found, this function is called.
-    * 
-    * @param jid Jid of that user.
-    * @this {jQuery} Elements to update with probable .jsxc_avatar elements
-    */
-   defaultAvatar: function(jid) {
-      jsxc.gui.avatarPlaceholder($(this).find('.jsxc_avatar'), jid);
-   },
+    /** Mute notification sound? */
+    muteNotification: false,
 
-   /**
-    * This callback processes all settings.
-    * @callback loadSettingsCallback
-    * @param settings {object} could be every jsxc option
-    */
+    /**
+     * If no avatar is found, this function is called.
+     *
+     * @param jid Jid of that user.
+     * @this {jQuery} Elements to update with probable .jsxc_avatar elements
+     */
+    defaultAvatar: function (jid) {
+        jsxc.gui.avatarPlaceholder($(this).find('.jsxc_avatar'), jid);
+    },
 
-   /**
-    * Returns permanent saved settings and overwrite default jsxc.options.
-    * 
-    * @memberOf jsxc.options
-    * @function
-    * @param username {string} username
-    * @param password {string} password
-    * @param cb {loadSettingsCallback} Callback that handles the result
-    */
-   loadSettings: null,
+    /**
+     * This callback processes all settings.
+     * @callback loadSettingsCallback
+     * @param settings {object} could be every jsxc option
+     */
 
-   /**
-    * Call this function to save user settings permanent.
-    * 
-    * @memberOf jsxc.options
-    * @param data Holds all data as key/value
-    * @param cb Called with true on success, false otherwise
-    */
-   saveSettinsPermanent: function(data, cb) {
-      cb(true);
-   },
+    /**
+     * Returns permanent saved settings and overwrite default jsxc.options.
+     *
+     * @memberOf jsxc.options
+     * @function
+     * @param username {string} username
+     * @param password {string} password
+     * @param cb {loadSettingsCallback} Callback that handles the result
+     */
+    loadSettings: null,
 
-   carbons: {
-      /** Enable carbon copies? */
-      enable: false
-   },
+    /**
+     * Call this function to save user settings permanent.
+     *
+     * @memberOf jsxc.options
+     * @param data Holds all data as key/value
+     * @param cb Called with true on success, false otherwise
+     */
+    saveSettinsPermanent: function (data, cb) {
+        cb(true);
+    },
 
-   /**
-    * Processes user list.
-    * 
-    * @callback getUsers-cb
-    * @param {object} list List of users, key: username, value: alias
-    */
+    carbons: {
+        /** Enable carbon copies? */
+        enable: false
+    },
 
-   /**
-    * Returns a list of usernames and aliases
-    * 
-    * @function getUsers
-    * @memberOf jsxc.options
-    * @param {string} search Search token (start with)
-    * @param {getUsers-cb} cb Called with list of users
-    */
-   getUsers: null,
+    /**
+     * Processes user list.
+     *
+     * @callback getUsers-cb
+     * @param {object} list List of users, key: username, value: alias
+     */
 
-   /** Options for info in favicon */
-   favicon: {
-      enable: true,
+    /**
+     * Returns a list of usernames and aliases
+     *
+     * @function getUsers
+     * @memberOf jsxc.options
+     * @param {string} search Search token (start with)
+     * @param {getUsers-cb} cb Called with list of users
+     */
+    getUsers: null,
 
-      /** Favicon info background color */
-      bgColor: '#E59400',
+    /** Options for info in favicon */
+    favicon: {
+        enable: true,
 
-      /** Favicon info text color */
-      textColor: '#fff'
-   },
+        /** Favicon info background color */
+        bgColor: '#E59400',
 
-   /** @deprecated since v2.1.0. Use now RTCPeerConfig.url. */
-   turnCredentialsPath: null,
+        /** Favicon info text color */
+        textColor: '#fff'
+    },
 
-   /** RTCPeerConfiguration used for audio/video calls. */
-   RTCPeerConfig: {
-      /** Time-to-live for config from url */
-      ttl: 3600,
+    /** @deprecated since v2.1.0. Use now RTCPeerConfig.url. */
+    turnCredentialsPath: null,
 
-      /** [optional] If set, jsxc requests and uses RTCPeerConfig from this url */
-      url: null,
+    /** RTCPeerConfiguration used for audio/video calls. */
+    RTCPeerConfig: {
+        /** Time-to-live for config from url */
+        ttl: 3600,
 
-      /** If true, jsxc send cookies when requesting RTCPeerConfig from the url above */
-      withCredentials: false,
+        /** [optional] If set, jsxc requests and uses RTCPeerConfig from this url */
+        url: null,
 
-      /** ICE servers like defined in http://www.w3.org/TR/webrtc/#idl-def-RTCIceServer */
-      iceServers: [{
-         urls: 'stun:stun.stunprotocol.org'
-      }]
-   },
+        /** If true, jsxc send cookies when requesting RTCPeerConfig from the url above */
+        withCredentials: false,
 
-   /** Link to an online user manual */
-   onlineHelp: 'http://www.jsxc.org/manual.html',
+        /** ICE servers like defined in http://www.w3.org/TR/webrtc/#idl-def-RTCIceServer */
+        iceServers: [{
+            urls: 'stun:stun.stunprotocol.org'
+        }]
+    },
 
-   viewport: {
-      getSize: function() {
-         var w = $(window).width() - $('#jsxc_windowListSB').width();
-         var h = $(window).height();
+    /** Link to an online user manual */
+    onlineHelp: 'http://www.jsxc.org/manual.html',
 
-         if (jsxc.storage.getUserItem('roster') === 'shown') {
-            w -= $('#jsxc_roster').outerWidth(true);
-         }
+    viewport: {
+        getSize: function () {
+            var w = $(window).width() - $('#jsxc_windowListSB').width();
+            var h = $(window).height();
 
-         return {
-            width: w,
-            height: h
-         };
-      }
-   },
+            if (jsxc.storage.getUserItem('roster') === 'shown') {
+                w -= $('#jsxc_roster').outerWidth(true);
+            }
 
-   maxStorableSize: 1000000
+            return {
+                width: w,
+                height: h
+            };
+        }
+    },
+
+    maxStorableSize: 1000000
 };

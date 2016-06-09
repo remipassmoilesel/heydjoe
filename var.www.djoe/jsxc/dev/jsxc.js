@@ -945,1239 +945,1242 @@ jsxc = {
 
 /**
  * Handle XMPP stuff.
- * 
+ *
  * @namespace jsxc.xmpp
  */
 jsxc.xmpp = {
-   conn: null, // connection
 
-   /**
-    * Create new connection or attach to old
-    * 
-    * @name login
-    * @memberOf jsxc.xmpp
-    * @private
-    */
-   /**
-    * Create new connection with given parameters.
-    * 
-    * @name login^2
-    * @param {string} jid
-    * @param {string} password
-    * @memberOf jsxc.xmpp
-    * @private
-    */
-   /**
-    * Attach connection with given parameters.
-    * 
-    * @name login^3
-    * @param {string} jid
-    * @param {string} sid
-    * @param {string} rid
-    * @memberOf jsxc.xmpp
-    * @private
-    */
-   login: function() {
+    conn: null, // connection
 
-      if (jsxc.xmpp.conn && jsxc.xmpp.conn.authenticated) {
-         jsxc.debug('Connection already authenticated.');
-         return;
-      }
+    /**
+     * Create new connection or attach to old
+     *
+     * @name login
+     * @memberOf jsxc.xmpp
+     * @private
+     */
+    /**
+     * Create new connection with given parameters.
+     *
+     * @name login^2
+     * @param {string} jid
+     * @param {string} password
+     * @memberOf jsxc.xmpp
+     * @private
+     */
+    /**
+     * Attach connection with given parameters.
+     *
+     * @name login^3
+     * @param {string} jid
+     * @param {string} sid
+     * @param {string} rid
+     * @memberOf jsxc.xmpp
+     * @private
+     */
+    login: function () {
 
-      var jid = null,
-         password = null,
-         sid = null,
-         rid = null;
+        if (jsxc.xmpp.conn && jsxc.xmpp.conn.authenticated) {
+            jsxc.debug('Connection already authenticated.');
+            return;
+        }
 
-      switch (arguments.length) {
-         case 2:
-            jid = arguments[0];
-            password = arguments[1];
-            break;
-         case 3:
-            jid = arguments[0];
-            sid = arguments[1];
-            rid = arguments[2];
-            break;
-         default:
-            sid = jsxc.storage.getItem('sid');
-            rid = jsxc.storage.getItem('rid');
+        var jid = null,
+            password = null,
+            sid = null,
+            rid = null;
 
-            if (sid !== null && rid !== null) {
-               jid = jsxc.storage.getItem('jid');
-            } else {
-               sid = jsxc.options.xmpp.sid || null;
-               rid = jsxc.options.xmpp.rid || null;
-               jid = jsxc.options.xmpp.jid;
+        switch (arguments.length) {
+            case 2:
+                jid = arguments[0];
+                password = arguments[1];
+                break;
+            case 3:
+                jid = arguments[0];
+                sid = arguments[1];
+                rid = arguments[2];
+                break;
+            default:
+                sid = jsxc.storage.getItem('sid');
+                rid = jsxc.storage.getItem('rid');
+
+                if (sid !== null && rid !== null) {
+                    jid = jsxc.storage.getItem('jid');
+                } else {
+                    sid = jsxc.options.xmpp.sid || null;
+                    rid = jsxc.options.xmpp.rid || null;
+                    jid = jsxc.options.xmpp.jid;
+                }
+        }
+
+        if (!jid) {
+            jsxc.warn('Jid required for login');
+
+            return;
+        }
+
+        if (!jsxc.bid) {
+            jsxc.bid = jsxc.jidToBid(jid);
+        }
+
+        var url = jsxc.options.get('xmpp').url;
+
+        if (!url) {
+            jsxc.warn('xmpp.url required for login');
+
+            return;
+        }
+
+        if (!(jsxc.xmpp.conn && jsxc.xmpp.conn.connected)) {
+            // Register eventlistener
+            $(document).on('connected.jsxc', jsxc.xmpp.connected);
+            $(document).on('attached.jsxc', jsxc.xmpp.attached);
+            $(document).on('disconnected.jsxc', jsxc.xmpp.disconnected);
+            $(document).on('connfail.jsxc', jsxc.xmpp.onConnfail);
+            $(document).on('authfail.jsxc', jsxc.xmpp.onAuthFail);
+
+            Strophe.addNamespace('RECEIPTS', 'urn:xmpp:receipts');
+        }
+
+        // Create new connection (no login)
+        jsxc.xmpp.conn = new Strophe.Connection(url);
+
+        if (jsxc.storage.getItem('debug') === true) {
+            jsxc.xmpp.conn.xmlInput = function (data) {
+                console.log('<', data);
+            };
+            jsxc.xmpp.conn.xmlOutput = function (data) {
+                console.log('>', data);
+            };
+        }
+
+        jsxc.xmpp.conn.nextValidRid = jsxc.xmpp.onRidChange;
+
+        var callback = function (status, condition) {
+
+            jsxc.debug(Object.getOwnPropertyNames(Strophe.Status)[status] + ': ' + condition);
+
+            switch (status) {
+                case Strophe.Status.CONNECTING:
+                    $(document).trigger('connecting.jsxc');
+                    break;
+                case Strophe.Status.CONNECTED:
+                    jsxc.bid = jsxc.jidToBid(jsxc.xmpp.conn.jid.toLowerCase());
+                    $(document).trigger('connected.jsxc');
+                    break;
+                case Strophe.Status.ATTACHED:
+                    $(document).trigger('attached.jsxc');
+                    break;
+                case Strophe.Status.DISCONNECTED:
+                    $(document).trigger('disconnected.jsxc');
+                    break;
+                case Strophe.Status.CONNFAIL:
+                    $(document).trigger('connfail.jsxc');
+                    break;
+                case Strophe.Status.AUTHFAIL:
+                    $(document).trigger('authfail.jsxc');
+                    break;
             }
-      }
+        };
 
-      if (!jid) {
-         jsxc.warn('Jid required for login');
+        if (jsxc.xmpp.conn.caps) {
+            jsxc.xmpp.conn.caps.node = 'http://jsxc.org/';
+        }
 
-         return;
-      }
+        if (sid && rid) {
+            jsxc.debug('Try to attach');
+            jsxc.debug('SID: ' + sid);
 
-      if (!jsxc.bid) {
-         jsxc.bid = jsxc.jidToBid(jid);
-      }
+            jsxc.reconnect = true;
 
-      var url = jsxc.options.get('xmpp').url;
+            jsxc.xmpp.conn.attach(jid, sid, rid, callback);
+        } else {
+            jsxc.debug('New connection');
 
-      if (!url) {
-         jsxc.warn('xmpp.url required for login');
+            if (jsxc.xmpp.conn.caps) {
+                // Add system handler, because user handler isn't called before
+                // we are authenticated
+                jsxc.xmpp.conn._addSysHandler(function (stanza) {
+                    var from = jsxc.xmpp.conn.domain,
+                        c = stanza.querySelector('c'),
+                        ver = c.getAttribute('ver'),
+                        node = c.getAttribute('node');
 
-         return;
-      }
+                    var _jidNodeIndex = JSON.parse(localStorage.getItem('strophe.caps._jidNodeIndex')) || {};
 
-      if (!(jsxc.xmpp.conn && jsxc.xmpp.conn.connected)) {
-         // Register eventlistener
-         $(document).on('connected.jsxc', jsxc.xmpp.connected);
-         $(document).on('attached.jsxc', jsxc.xmpp.attached);
-         $(document).on('disconnected.jsxc', jsxc.xmpp.disconnected);
-         $(document).on('connfail.jsxc', jsxc.xmpp.onConnfail);
-         $(document).on('authfail.jsxc', jsxc.xmpp.onAuthFail);
+                    jsxc.xmpp.conn.caps._jidVerIndex[from] = ver;
+                    _jidNodeIndex[from] = node;
 
-         Strophe.addNamespace('RECEIPTS', 'urn:xmpp:receipts');
-      }
+                    localStorage.setItem('strophe.caps._jidVerIndex', JSON.stringify(jsxc.xmpp.conn.caps._jidVerIndex));
+                    localStorage.setItem('strophe.caps._jidNodeIndex', JSON.stringify(_jidNodeIndex));
+                }, Strophe.NS.CAPS);
+            }
 
-      // Create new connection (no login)
-      jsxc.xmpp.conn = new Strophe.Connection(url);
+            jsxc.xmpp.conn.connect(jid, password || jsxc.options.xmpp.password, callback);
+        }
+    },
 
-      if (jsxc.storage.getItem('debug') === true) {
-         jsxc.xmpp.conn.xmlInput = function(data) {
-            console.log('<', data);
-         };
-         jsxc.xmpp.conn.xmlOutput = function(data) {
-            console.log('>', data);
-         };
-      }
+    /**
+     * Logs user out of his xmpp session and does some clean up.
+     *
+     * @param {boolean} complete If set to false, roster will not be removed
+     * @returns {Boolean}
+     */
+    logout: function (complete) {
 
-      jsxc.xmpp.conn.nextValidRid = jsxc.xmpp.onRidChange;
+        // instruct all tabs
+        jsxc.storage.removeItem('sid');
 
-      var callback = function(status, condition) {
+        // clean up
+        jsxc.storage.removeUserItem('buddylist');
+        jsxc.storage.removeUserItem('windowlist');
+        jsxc.storage.removeUserItem('unreadMsg');
 
-         jsxc.debug(Object.getOwnPropertyNames(Strophe.Status)[status] + ': ' + condition);
+        if (!jsxc.master) {
+            $('#jsxc_roster').remove();
+            $('#jsxc_windowlist').remove();
+            return true;
+        }
 
-         switch (status) {
-            case Strophe.Status.CONNECTING:
-               $(document).trigger('connecting.jsxc');
-               break;
-            case Strophe.Status.CONNECTED:
-               jsxc.bid = jsxc.jidToBid(jsxc.xmpp.conn.jid.toLowerCase());
-               $(document).trigger('connected.jsxc');
-               break;
-            case Strophe.Status.ATTACHED:
-               $(document).trigger('attached.jsxc');
-               break;
-            case Strophe.Status.DISCONNECTED:
-               $(document).trigger('disconnected.jsxc');
-               break;
-            case Strophe.Status.CONNFAIL:
-               $(document).trigger('connfail.jsxc');
-               break;
-            case Strophe.Status.AUTHFAIL:
-               $(document).trigger('authfail.jsxc');
-               break;
-         }
-      };
+        if (jsxc.xmpp.conn === null) {
+            return true;
+        }
 
-      if (jsxc.xmpp.conn.caps) {
-         jsxc.xmpp.conn.caps.node = 'http://jsxc.org/';
-      }
+        // Hide dropdown menu
+        $('body').click();
 
-      if (sid && rid) {
-         jsxc.debug('Try to attach');
-         jsxc.debug('SID: ' + sid);
+        jsxc.triggeredFromElement = (typeof complete === 'boolean') ? complete : true;
 
-         jsxc.reconnect = true;
+        // restore all otr objects
+        $.each(jsxc.storage.getUserItem('otrlist') || {}, function (i, val) {
+            jsxc.otr.create(val);
+        });
 
-         jsxc.xmpp.conn.attach(jid, sid, rid, callback);
-      } else {
-         jsxc.debug('New connection');
+        var numOtr = Object.keys(jsxc.otr.objects || {}).length + 1;
+        var disReady = function () {
+            if (--numOtr <= 0) {
+                jsxc.xmpp.conn.flush();
 
-         if (jsxc.xmpp.conn.caps) {
-            // Add system handler, because user handler isn't called before
-            // we are authenticated
-            jsxc.xmpp.conn._addSysHandler(function(stanza) {
-               var from = jsxc.xmpp.conn.domain,
-                  c = stanza.querySelector('c'),
-                  ver = c.getAttribute('ver'),
-                  node = c.getAttribute('node');
+                setTimeout(function () {
+                    jsxc.xmpp.conn.disconnect();
+                }, 600);
+            }
+        };
 
-               var _jidNodeIndex = JSON.parse(localStorage.getItem('strophe.caps._jidNodeIndex')) || {};
+        // end all private conversations
+        $.each(jsxc.otr.objects || {}, function (key, obj) {
+            if (obj.msgstate === OTR.CONST.MSGSTATE_ENCRYPTED) {
+                obj.endOtr.call(obj, function () {
+                    obj.init.call(obj);
+                    jsxc.otr.backup(key);
 
-               jsxc.xmpp.conn.caps._jidVerIndex[from] = ver;
-               _jidNodeIndex[from] = node;
+                    disReady();
+                });
+            } else {
+                disReady();
+            }
+        });
 
-               localStorage.setItem('strophe.caps._jidVerIndex', JSON.stringify(jsxc.xmpp.conn.caps._jidVerIndex));
-               localStorage.setItem('strophe.caps._jidNodeIndex', JSON.stringify(_jidNodeIndex));
-            }, Strophe.NS.CAPS);
-         }
+        disReady();
 
-         jsxc.xmpp.conn.connect(jid, password || jsxc.options.xmpp.password, callback);
-      }
-   },
+        // Trigger real logout in jsxc.xmpp.disconnected()
+        return false;
+    },
 
-   /**
-    * Logs user out of his xmpp session and does some clean up.
-    * 
-    * @param {boolean} complete If set to false, roster will not be removed
-    * @returns {Boolean}
-    */
-   logout: function(complete) {
+    /**
+     * Triggered if connection is established
+     *
+     * @private
+     */
+    connected: function () {
 
-      // instruct all tabs
-      jsxc.storage.removeItem('sid');
+        jsxc.xmpp.conn.pause();
 
-      // clean up
-      jsxc.storage.removeUserItem('buddylist');
-      jsxc.storage.removeUserItem('windowlist');
-      jsxc.storage.removeUserItem('unreadMsg');
+        jsxc.xmpp.initNewConnection();
 
-      if (!jsxc.master) {
-         $('#jsxc_roster').remove();
-         $('#jsxc_windowlist').remove();
-         return true;
-      }
+        jsxc.xmpp.saveSessionParameter();
 
-      if (jsxc.xmpp.conn === null) {
-         return true;
-      }
+        if (jsxc.options.loginForm.triggered) {
+            switch (jsxc.options.loginForm.onConnected || 'submit') {
+                case 'submit':
+                    jsxc.submitLoginForm();
+                    return;
+                case false:
+                    return;
+            }
+        }
 
-      // Hide dropdown menu
-      $('body').click();
+        // start chat
 
-      jsxc.triggeredFromElement = (typeof complete === 'boolean') ? complete : true;
+        jsxc.gui.dialog.close();
 
-      // restore all otr objects
-      $.each(jsxc.storage.getUserItem('otrlist') || {}, function(i, val) {
-         jsxc.otr.create(val);
-      });
+        jsxc.xmpp.conn.resume();
+        jsxc.onMaster();
 
-      var numOtr = Object.keys(jsxc.otr.objects || {}).length + 1;
-      var disReady = function() {
-         if (--numOtr <= 0) {
-            jsxc.xmpp.conn.flush();
+        $(document).trigger('attached.jsxc');
+    },
 
-            setTimeout(function() {
-               jsxc.xmpp.conn.disconnect();
-            }, 600);
-         }
-      };
+    /**
+     * Triggered if connection is attached
+     *
+     * @private
+     */
+    attached: function () {
 
-      // end all private conversations
-      $.each(jsxc.otr.objects || {}, function(key, obj) {
-         if (obj.msgstate === OTR.CONST.MSGSTATE_ENCRYPTED) {
-            obj.endOtr.call(obj, function() {
-               obj.init.call(obj);
-               jsxc.otr.backup(key);
+        $('#jsxc_roster').removeClass('jsxc_noConnection');
 
-               disReady();
-            });
-         } else {
-            disReady();
-         }
-      });
+        jsxc.xmpp.conn.addHandler(jsxc.xmpp.onRosterChanged, 'jabber:iq:roster', 'iq', 'set');
+        jsxc.xmpp.conn.addHandler(jsxc.xmpp.onMessage, null, 'message', 'chat');
+        jsxc.xmpp.conn.addHandler(jsxc.xmpp.onReceived, null, 'message');
+        jsxc.xmpp.conn.addHandler(jsxc.xmpp.onPresence, null, 'presence');
 
-      disReady();
+        jsxc.gui.init();
 
-      // Trigger real logout in jsxc.xmpp.disconnected()
-      return false;
-   },
+        var caps = jsxc.xmpp.conn.caps;
+        var domain = jsxc.xmpp.conn.domain;
 
-   /**
-    * Triggered if connection is established
-    * 
-    * @private
-    */
-   connected: function() {
-
-      jsxc.xmpp.conn.pause();
-
-      jsxc.xmpp.initNewConnection();
-
-      jsxc.xmpp.saveSessionParameter();
-
-      if (jsxc.options.loginForm.triggered) {
-         switch (jsxc.options.loginForm.onConnected || 'submit') {
-            case 'submit':
-               jsxc.submitLoginForm();
-               return;
-            case false:
-               return;
-         }
-      }
-
-      // start chat
-
-      jsxc.gui.dialog.close();
-
-      jsxc.xmpp.conn.resume();
-      jsxc.onMaster();
-
-      $(document).trigger('attached.jsxc');
-   },
-
-   /**
-    * Triggered if connection is attached
-    * 
-    * @private
-    */
-   attached: function() {
-
-      $('#jsxc_roster').removeClass('jsxc_noConnection');
-
-      jsxc.xmpp.conn.addHandler(jsxc.xmpp.onRosterChanged, 'jabber:iq:roster', 'iq', 'set');
-      jsxc.xmpp.conn.addHandler(jsxc.xmpp.onMessage, null, 'message', 'chat');
-      jsxc.xmpp.conn.addHandler(jsxc.xmpp.onReceived, null, 'message');
-      jsxc.xmpp.conn.addHandler(jsxc.xmpp.onPresence, null, 'presence');
-
-      jsxc.gui.init();
-
-      var caps = jsxc.xmpp.conn.caps;
-      var domain = jsxc.xmpp.conn.domain;
-
-      if (caps) {
-         var conditionalEnable = function() {};
-
-         if (jsxc.options.get('carbons').enable) {
-            conditionalEnable = function() {
-               if (jsxc.xmpp.conn.caps.hasFeatureByJid(domain, jsxc.CONST.NS.CARBONS)) {
-                  jsxc.xmpp.carbons.enable();
-               }
+        if (caps) {
+            var conditionalEnable = function () {
             };
 
-            $(document).on('caps.strophe', function onCaps(ev, from) {
+            if (jsxc.options.get('carbons').enable) {
+                conditionalEnable = function () {
+                    if (jsxc.xmpp.conn.caps.hasFeatureByJid(domain, jsxc.CONST.NS.CARBONS)) {
+                        jsxc.xmpp.carbons.enable();
+                    }
+                };
 
-               if (from !== domain) {
-                  return;
-               }
+                $(document).on('caps.strophe', function onCaps(ev, from) {
 
-               conditionalEnable();
+                    if (from !== domain) {
+                        return;
+                    }
 
-               $(document).off('caps.strophe', onCaps);
+                    conditionalEnable();
+
+                    $(document).off('caps.strophe', onCaps);
+                });
+            }
+
+            if (typeof caps._knownCapabilities[caps._jidVerIndex[domain]] === 'undefined') {
+                var _jidNodeIndex = JSON.parse(localStorage.getItem('strophe.caps._jidNodeIndex')) || {};
+
+                jsxc.debug('Request server capabilities');
+
+                caps._requestCapabilities(jsxc.xmpp.conn.domain, _jidNodeIndex[domain], caps._jidVerIndex[domain]);
+            } else {
+                // We know server caps
+                conditionalEnable();
+            }
+        }
+
+        // Only load roaster if necessary
+        if (!jsxc.reconnect || !jsxc.storage.getUserItem('buddylist')) {
+            // in order to not overide existing presence information, we send
+            // pres first after roster is ready
+            $(document).one('cloaded.roster.jsxc', jsxc.xmpp.sendPres);
+
+            $('#jsxc_roster > p:first').remove();
+
+            var iq = $iq({
+                type: 'get'
+            }).c('query', {
+                xmlns: 'jabber:iq:roster'
             });
-         }
 
-         if (typeof caps._knownCapabilities[caps._jidVerIndex[domain]] === 'undefined') {
-            var _jidNodeIndex = JSON.parse(localStorage.getItem('strophe.caps._jidNodeIndex')) || {};
+            jsxc.xmpp.conn.sendIQ(iq, jsxc.xmpp.onRoster);
+        } else {
+            jsxc.xmpp.sendPres();
 
-            jsxc.debug('Request server capabilities');
+            if (!jsxc.restoreCompleted) {
+                jsxc.restoreRoster();
+                jsxc.restoreWindows();
+                jsxc.restoreCompleted = true;
 
-            caps._requestCapabilities(jsxc.xmpp.conn.domain, _jidNodeIndex[domain], caps._jidVerIndex[domain]);
-         } else {
-            // We know server caps
-            conditionalEnable();
-         }
-      }
+                $(document).trigger('restoreCompleted.jsxc');
+            }
+        }
 
-      // Only load roaster if necessary
-      if (!jsxc.reconnect || !jsxc.storage.getUserItem('buddylist')) {
-         // in order to not overide existing presence information, we send
-         // pres first after roster is ready
-         $(document).one('cloaded.roster.jsxc', jsxc.xmpp.sendPres);
+        jsxc.xmpp.saveSessionParameter();
 
-         $('#jsxc_roster > p:first').remove();
+        jsxc.masterActions();
+    },
 
-         var iq = $iq({
-            type: 'get'
-         }).c('query', {
-            xmlns: 'jabber:iq:roster'
-         });
+    saveSessionParameter: function () {
 
-         jsxc.xmpp.conn.sendIQ(iq, jsxc.xmpp.onRoster);
-      } else {
-         jsxc.xmpp.sendPres();
+        var nomJid = Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid).toLowerCase() + '/' + Strophe.getResourceFromJid(jsxc.xmpp.conn.jid);
 
-         if (!jsxc.restoreCompleted) {
-            jsxc.restoreRoster();
-            jsxc.restoreWindows();
-            jsxc.restoreCompleted = true;
+        // Save sid and jid
+        jsxc.storage.setItem('sid', jsxc.xmpp.conn._proto.sid);
+        jsxc.storage.setItem('jid', nomJid);
+    },
 
-            $(document).trigger('restoreCompleted.jsxc');
-         }
-      }
+    initNewConnection: function () {
+        // make shure roster will be reloaded
+        jsxc.storage.removeUserItem('buddylist');
 
-      jsxc.xmpp.saveSessionParameter();
+        jsxc.storage.removeUserItem('windowlist');
+        jsxc.storage.removeUserItem('own');
+        jsxc.storage.removeUserItem('avatar', 'own');
+        jsxc.storage.removeUserItem('otrlist');
+        jsxc.storage.removeUserItem('unreadMsg');
 
-      jsxc.masterActions();
-   },
+        // reset user options
+        jsxc.storage.removeUserElement('options', 'RTCPeerConfig');
+    },
 
-   saveSessionParameter: function() {
+    /**
+     * Sends presence stanza to server.
+     */
+    sendPres: function () {
+        // disco stuff
+        if (jsxc.xmpp.conn.disco) {
+            jsxc.xmpp.conn.disco.addIdentity('client', 'web', 'JSXC');
+            jsxc.xmpp.conn.disco.addFeature(Strophe.NS.DISCO_INFO);
+            jsxc.xmpp.conn.disco.addFeature(Strophe.NS.RECEIPTS);
+        }
 
-      var nomJid = Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid).toLowerCase() + '/' + Strophe.getResourceFromJid(jsxc.xmpp.conn.jid);
+        // create presence stanza
+        var pres = $pres();
 
-      // Save sid and jid
-      jsxc.storage.setItem('sid', jsxc.xmpp.conn._proto.sid);
-      jsxc.storage.setItem('jid', nomJid);
-   },
+        if (jsxc.xmpp.conn.caps) {
+            // attach caps
+            pres.c('c', jsxc.xmpp.conn.caps.generateCapsAttrs()).up();
+        }
 
-   initNewConnection: function() {
-      // make shure roster will be reloaded
-      jsxc.storage.removeUserItem('buddylist');
+        var presState = jsxc.storage.getUserItem('presence') || 'online';
+        if (presState !== 'online') {
+            pres.c('show').t(presState).up();
+        }
 
-      jsxc.storage.removeUserItem('windowlist');
-      jsxc.storage.removeUserItem('own');
-      jsxc.storage.removeUserItem('avatar', 'own');
-      jsxc.storage.removeUserItem('otrlist');
-      jsxc.storage.removeUserItem('unreadMsg');
+        var priority = jsxc.options.get('priority');
+        if (priority && typeof priority[presState] !== 'undefined' && parseInt(priority[presState]) !== 0) {
+            pres.c('priority').t(priority[presState]).up();
+        }
 
-      // reset user options
-      jsxc.storage.removeUserElement('options', 'RTCPeerConfig');
-   },
+        jsxc.debug('Send presence', pres.toString());
+        jsxc.xmpp.conn.send(pres);
+    },
 
-   /**
-    * Sends presence stanza to server.
-    */
-   sendPres: function() {
-      // disco stuff
-      if (jsxc.xmpp.conn.disco) {
-         jsxc.xmpp.conn.disco.addIdentity('client', 'web', 'JSXC');
-         jsxc.xmpp.conn.disco.addFeature(Strophe.NS.DISCO_INFO);
-         jsxc.xmpp.conn.disco.addFeature(Strophe.NS.RECEIPTS);
-      }
+    /**
+     * Triggered if lost connection
+     *
+     * @private
+     */
+    disconnected: function () {
+        jsxc.debug('disconnected');
 
-      // create presence stanza
-      var pres = $pres();
+        jsxc.storage.removeItem('jid');
+        jsxc.storage.removeItem('sid');
+        jsxc.storage.removeItem('rid');
+        jsxc.storage.removeItem('hidden');
+        jsxc.storage.removeUserItem('avatar', 'own');
+        jsxc.storage.removeUserItem('otrlist');
 
-      if (jsxc.xmpp.conn.caps) {
-         // attach caps
-         pres.c('c', jsxc.xmpp.conn.caps.generateCapsAttrs()).up();
-      }
+        $(document).off('connected.jsxc', jsxc.xmpp.connected);
+        $(document).off('attached.jsxc', jsxc.xmpp.attached);
+        $(document).off('disconnected.jsxc', jsxc.xmpp.disconnected);
+        $(document).off('connfail.jsxc', jsxc.xmpp.onConnfail);
+        $(document).off('authfail.jsxc', jsxc.xmpp.onAuthFail);
 
-      var presState = jsxc.storage.getUserItem('presence') || 'online';
-      if (presState !== 'online') {
-         pres.c('show').t(presState).up();
-      }
+        jsxc.xmpp.conn = null;
 
-      var priority = jsxc.options.get('priority');
-      if (priority && typeof priority[presState] !== 'undefined' && parseInt(priority[presState]) !== 0) {
-         pres.c('priority').t(priority[presState]).up();
-      }
+        $('#jsxc_windowList').remove();
 
-      jsxc.debug('Send presence', pres.toString());
-      jsxc.xmpp.conn.send(pres);
-   },
+        if (jsxc.triggeredFromElement) {
+            $(document).trigger('toggle.roster.jsxc', ['hidden', 0]);
+            $('#jsxc_roster').remove();
 
-   /**
-    * Triggered if lost connection
-    * 
-    * @private
-    */
-   disconnected: function() {
-      jsxc.debug('disconnected');
+            if (jsxc.triggeredFromLogout) {
+                window.location = jsxc.options.logoutElement.attr('href');
+            }
+        } else {
+            jsxc.gui.roster.noConnection();
+        }
 
-      jsxc.storage.removeItem('jid');
-      jsxc.storage.removeItem('sid');
-      jsxc.storage.removeItem('rid');
-      jsxc.storage.removeItem('hidden');
-      jsxc.storage.removeUserItem('avatar', 'own');
-      jsxc.storage.removeUserItem('otrlist');
+        window.clearInterval(jsxc.keepalive);
+        jsxc.role_allocation = false;
+        jsxc.master = false;
+        jsxc.storage.removeItem('alive');
+    },
 
-      $(document).off('connected.jsxc', jsxc.xmpp.connected);
-      $(document).off('attached.jsxc', jsxc.xmpp.attached);
-      $(document).off('disconnected.jsxc', jsxc.xmpp.disconnected);
-      $(document).off('connfail.jsxc', jsxc.xmpp.onConnfail);
-      $(document).off('authfail.jsxc', jsxc.xmpp.onAuthFail);
+    /**
+     * Triggered on connection fault
+     *
+     * @param {String} condition information why we lost the connection
+     * @private
+     */
+    onConnfail: function (ev, condition) {
+        jsxc.debug('XMPP connection failed: ' + condition);
 
-      jsxc.xmpp.conn = null;
+        if (jsxc.options.loginForm.triggered) {
+            jsxc.submitLoginForm();
+        }
+    },
 
-      $('#jsxc_windowList').remove();
+    /**
+     * Triggered on auth fail.
+     *
+     * @private
+     */
+    onAuthFail: function () {
 
-      if (jsxc.triggeredFromElement) {
-         $(document).trigger('toggle.roster.jsxc', ['hidden', 0]);
-         $('#jsxc_roster').remove();
+        if (jsxc.options.loginForm.triggered) {
+            switch (jsxc.options.loginForm.onAuthFail || 'ask') {
+                case 'ask':
+                    jsxc.gui.showAuthFail();
+                    break;
+                case 'submit':
+                    jsxc.submitLoginForm();
+                    break;
+                case 'quiet':
+                case false:
+                    return;
+            }
+        }
+    },
 
-         if (jsxc.triggeredFromLogout) {
-            window.location = jsxc.options.logoutElement.attr('href');
-         }
-      } else {
-         jsxc.gui.roster.noConnection();
-      }
+    /**
+     * Triggered on initial roster load
+     *
+     * @param {dom} iq
+     * @private
+     */
+    onRoster: function (iq) {
+        /*
+         * <iq from='' type='get' id=''> <query xmlns='jabber:iq:roster'> <item
+         * jid='' name='' subscription='' /> ... </query> </iq>
+         */
 
-      window.clearInterval(jsxc.keepalive);
-      jsxc.role_allocation = false;
-      jsxc.master = false;
-      jsxc.storage.removeItem('alive');
-   },
+        jsxc.debug('Load roster', iq);
 
-   /**
-    * Triggered on connection fault
-    * 
-    * @param {String} condition information why we lost the connection
-    * @private
-    */
-   onConnfail: function(ev, condition) {
-      jsxc.debug('XMPP connection failed: ' + condition);
+        var buddies = [];
 
-      if (jsxc.options.loginForm.triggered) {
-         jsxc.submitLoginForm();
-      }
-   },
+        $(iq).find('item').each(function () {
+            var jid = $(this).attr('jid');
+            var name = $(this).attr('name') || jid;
+            var bid = jsxc.jidToBid(jid);
+            var sub = $(this).attr('subscription');
 
-   /**
-    * Triggered on auth fail.
-    * 
-    * @private
-    */
-   onAuthFail: function() {
+            buddies.push(bid);
 
-      if (jsxc.options.loginForm.triggered) {
-         switch (jsxc.options.loginForm.onAuthFail || 'ask') {
-            case 'ask':
-               jsxc.gui.showAuthFail();
-               break;
-            case 'submit':
-               jsxc.submitLoginForm();
-               break;
-            case 'quiet':
-            case false:
-               return;
-         }
-      }
-   },
+            jsxc.storage.removeUserItem('res', bid);
 
-   /**
-    * Triggered on initial roster load
-    * 
-    * @param {dom} iq
-    * @private
-    */
-   onRoster: function(iq) {
-      /*
-       * <iq from='' type='get' id=''> <query xmlns='jabber:iq:roster'> <item
-       * jid='' name='' subscription='' /> ... </query> </iq>
-       */
+            jsxc.storage.saveBuddy(bid, {
+                jid: jid,
+                name: name,
+                status: 0,
+                sub: sub,
+                res: []
+            });
 
-      jsxc.debug('Load roster', iq);
+            jsxc.gui.roster.add(bid);
+        });
 
-      var buddies = [];
+        if (buddies.length === 0) {
+            jsxc.gui.roster.empty();
+        }
 
-      $(iq).find('item').each(function() {
-         var jid = $(this).attr('jid');
-         var name = $(this).attr('name') || jid;
-         var bid = jsxc.jidToBid(jid);
-         var sub = $(this).attr('subscription');
+        jsxc.storage.setUserItem('buddylist', buddies);
 
-         buddies.push(bid);
+        // load bookmarks
+        jsxc.xmpp.bookmarks.load();
 
-         jsxc.storage.removeUserItem('res', bid);
+        jsxc.gui.roster.loaded = true;
+        jsxc.debug('Roster loaded');
+        $(document).trigger('cloaded.roster.jsxc');
+    },
 
-         jsxc.storage.saveBuddy(bid, {
-            jid: jid,
-            name: name,
-            status: 0,
-            sub: sub,
-            res: []
-         });
+    /**
+     * Triggerd on roster changes
+     *
+     * @param {dom} iq
+     * @returns {Boolean} True to preserve handler
+     * @private
+     */
+    onRosterChanged: function (iq) {
+        /*
+         * <iq from='' type='set' id=''> <query xmlns='jabber:iq:roster'> <item
+         * jid='' name='' subscription='' /> </query> </iq>
+         */
 
-         jsxc.gui.roster.add(bid);
-      });
+        jsxc.debug('onRosterChanged', iq);
 
-      if (buddies.length === 0) {
-         jsxc.gui.roster.empty();
-      }
+        $(iq).find('item').each(function () {
+            var jid = $(this).attr('jid');
+            var name = $(this).attr('name') || jid;
+            var bid = jsxc.jidToBid(jid);
+            var sub = $(this).attr('subscription');
+            // var ask = $(this).attr('ask');
 
-      jsxc.storage.setUserItem('buddylist', buddies);
+            if (sub === 'remove') {
+                jsxc.gui.roster.purge(bid);
+            } else {
+                var bl = jsxc.storage.getUserItem('buddylist');
 
-      // load bookmarks
-      jsxc.xmpp.bookmarks.load();
+                if (bl.indexOf(bid) < 0) {
+                    bl.push(bid); // (INFO) push returns the new length
+                    jsxc.storage.setUserItem('buddylist', bl);
+                }
 
-      jsxc.gui.roster.loaded = true;
-      jsxc.debug('Roster loaded');
-      $(document).trigger('cloaded.roster.jsxc');
-   },
+                var temp = jsxc.storage.saveBuddy(bid, {
+                    jid: jid,
+                    name: name,
+                    sub: sub
+                });
 
-   /**
-    * Triggerd on roster changes
-    * 
-    * @param {dom} iq
-    * @returns {Boolean} True to preserve handler
-    * @private
-    */
-   onRosterChanged: function(iq) {
-      /*
-       * <iq from='' type='set' id=''> <query xmlns='jabber:iq:roster'> <item
-       * jid='' name='' subscription='' /> </query> </iq>
-       */
+                if (temp === 'updated') {
 
-      jsxc.debug('onRosterChanged', iq);
+                    jsxc.gui.update(bid);
+                    jsxc.gui.roster.reorder(bid);
+                } else {
+                    jsxc.gui.roster.add(bid);
+                }
+            }
 
-      $(iq).find('item').each(function() {
-         var jid = $(this).attr('jid');
-         var name = $(this).attr('name') || jid;
-         var bid = jsxc.jidToBid(jid);
-         var sub = $(this).attr('subscription');
-         // var ask = $(this).attr('ask');
+            // Remove pending friendship request from notice list
+            if (sub === 'from' || sub === 'both') {
+                var notices = jsxc.storage.getUserItem('notices');
+                var noticeKey = null,
+                    notice;
 
-         if (sub === 'remove') {
-            jsxc.gui.roster.purge(bid);
-         } else {
+                for (noticeKey in notices) {
+                    notice = notices[noticeKey];
+
+                    if (notice.fnName === 'gui.showApproveDialog' && notice.fnParams[0] === jid) {
+                        jsxc.debug('Remove notice with key ' + noticeKey);
+
+                        jsxc.notice.remove(noticeKey);
+                    }
+                }
+            }
+        });
+
+        if (!jsxc.storage.getUserItem('buddylist') || jsxc.storage.getUserItem('buddylist').length === 0) {
+            jsxc.gui.roster.empty();
+        } else {
+            $('#jsxc_roster > p:first').remove();
+        }
+
+        // preserve handler
+        return true;
+    },
+
+    /**
+     * Triggered on incoming presence stanzas
+     *
+     * @param {dom} presence
+     * @private
+     */
+    onPresence: function (presence) {
+        /*
+         * <presence xmlns='jabber:client' type='unavailable' from='' to=''/>
+         * 
+         * <presence xmlns='jabber:client' from='' to=''> <priority>5</priority>
+         * <c xmlns='http://jabber.org/protocol/caps'
+         * node='http://psi-im.org/caps' ver='caps-b75d8d2b25' ext='ca cs
+         * ep-notify-2 html'/> </presence>
+         * 
+         * <presence xmlns='jabber:client' from='' to=''> <show>chat</show>
+         * <status></status> <priority>5</priority> <c
+         * xmlns='http://jabber.org/protocol/caps' node='http://psi-im.org/caps'
+         * ver='caps-b75d8d2b25' ext='ca cs ep-notify-2 html'/> </presence>
+         */
+        jsxc.debug('onPresence', presence);
+
+        var ptype = $(presence).attr('type');
+        var from = $(presence).attr('from');
+        var jid = Strophe.getBareJidFromJid(from).toLowerCase();
+        var r = Strophe.getResourceFromJid(from);
+        var bid = jsxc.jidToBid(jid);
+        var data = jsxc.storage.getUserItem('buddy', bid) || {};
+        var res = jsxc.storage.getUserItem('res', bid) || {};
+        var status = null;
+        var xVCard = $(presence).find('x[xmlns="vcard-temp:x:update"]');
+
+        if (jid === Strophe.getBareJidFromJid(jsxc.storage.getItem("jid"))) {
+            return true;
+        }
+
+        if (ptype === 'error') {
+            $(document).trigger('error.presence.jsxc', [from, presence]);
+
+            var error = $(presence).find('error');
+
+            //@TODO display error message
+            jsxc.error('[XMPP] ' + error.attr('code') + ' ' + error.find(">:first-child").prop('tagName'));
+            return true;
+        }
+
+        // incoming friendship request
+        if (ptype === 'subscribe') {
             var bl = jsxc.storage.getUserItem('buddylist');
 
-            if (bl.indexOf(bid) < 0) {
-               bl.push(bid); // (INFO) push returns the new length
-               jsxc.storage.setUserItem('buddylist', bl);
+            if (bl.indexOf(bid) > -1) {
+                jsxc.debug('Auto approve contact request, because he is already in our contact list.');
+
+                jsxc.xmpp.resFriendReq(jid, true);
+                if (data.sub !== 'to') {
+                    jsxc.xmpp.addBuddy(jid, data.name);
+                }
+
+                return true;
             }
 
-            var temp = jsxc.storage.saveBuddy(bid, {
-               jid: jid,
-               name: name,
-               sub: sub
+            jsxc.storage.setUserItem('friendReq', {
+                jid: jid,
+                approve: -1
             });
-
-            if (temp === 'updated') {
-
-               jsxc.gui.update(bid);
-               jsxc.gui.roster.reorder(bid);
-            } else {
-               jsxc.gui.roster.add(bid);
-            }
-         }
-
-         // Remove pending friendship request from notice list
-         if (sub === 'from' || sub === 'both') {
-            var notices = jsxc.storage.getUserItem('notices');
-            var noticeKey = null,
-               notice;
-
-            for (noticeKey in notices) {
-               notice = notices[noticeKey];
-
-               if (notice.fnName === 'gui.showApproveDialog' && notice.fnParams[0] === jid) {
-                  jsxc.debug('Remove notice with key ' + noticeKey);
-
-                  jsxc.notice.remove(noticeKey);
-               }
-            }
-         }
-      });
-
-      if (!jsxc.storage.getUserItem('buddylist') || jsxc.storage.getUserItem('buddylist').length === 0) {
-         jsxc.gui.roster.empty();
-      } else {
-         $('#jsxc_roster > p:first').remove();
-      }
-
-      // preserve handler
-      return true;
-   },
-
-   /**
-    * Triggered on incoming presence stanzas
-    * 
-    * @param {dom} presence
-    * @private
-    */
-   onPresence: function(presence) {
-      /*
-       * <presence xmlns='jabber:client' type='unavailable' from='' to=''/>
-       * 
-       * <presence xmlns='jabber:client' from='' to=''> <priority>5</priority>
-       * <c xmlns='http://jabber.org/protocol/caps'
-       * node='http://psi-im.org/caps' ver='caps-b75d8d2b25' ext='ca cs
-       * ep-notify-2 html'/> </presence>
-       * 
-       * <presence xmlns='jabber:client' from='' to=''> <show>chat</show>
-       * <status></status> <priority>5</priority> <c
-       * xmlns='http://jabber.org/protocol/caps' node='http://psi-im.org/caps'
-       * ver='caps-b75d8d2b25' ext='ca cs ep-notify-2 html'/> </presence>
-       */
-      jsxc.debug('onPresence', presence);
-
-      var ptype = $(presence).attr('type');
-      var from = $(presence).attr('from');
-      var jid = Strophe.getBareJidFromJid(from).toLowerCase();
-      var r = Strophe.getResourceFromJid(from);
-      var bid = jsxc.jidToBid(jid);
-      var data = jsxc.storage.getUserItem('buddy', bid) || {};
-      var res = jsxc.storage.getUserItem('res', bid) || {};
-      var status = null;
-      var xVCard = $(presence).find('x[xmlns="vcard-temp:x:update"]');
-
-      if (jid === Strophe.getBareJidFromJid(jsxc.storage.getItem("jid"))) {
-         return true;
-      }
-
-      if (ptype === 'error') {
-         $(document).trigger('error.presence.jsxc', [from, presence]);
-
-         var error = $(presence).find('error');
-
-         //@TODO display error message
-         jsxc.error('[XMPP] ' + error.attr('code') + ' ' + error.find(">:first-child").prop('tagName'));
-         return true;
-      }
-
-      // incoming friendship request
-      if (ptype === 'subscribe') {
-         var bl = jsxc.storage.getUserItem('buddylist');
-
-         if (bl.indexOf(bid) > -1) {
-            jsxc.debug('Auto approve contact request, because he is already in our contact list.');
-
-            jsxc.xmpp.resFriendReq(jid, true);
-            if (data.sub !== 'to') {
-               jsxc.xmpp.addBuddy(jid, data.name);
-            }
+            jsxc.notice.add($.t('Friendship_request'), $.t('from') + ' ' + jid, 'gui.showApproveDialog', [jid]);
 
             return true;
-         }
-
-         jsxc.storage.setUserItem('friendReq', {
-            jid: jid,
-            approve: -1
-         });
-         jsxc.notice.add($.t('Friendship_request'), $.t('from') + ' ' + jid, 'gui.showApproveDialog', [jid]);
-
-         return true;
-      } else if (ptype === 'unavailable' || ptype === 'unsubscribed') {
-         status = jsxc.CONST.STATUS.indexOf('offline');
-      } else {
-         var show = $(presence).find('show').text();
-         if (show === '') {
-            status = jsxc.CONST.STATUS.indexOf('online');
-         } else {
-            status = jsxc.CONST.STATUS.indexOf(show);
-         }
-      }
-
-      if (status === 0) {
-         delete res[r];
-      } else {
-         res[r] = status;
-      }
-
-      var maxVal = [];
-      var max = 0,
-         prop = null;
-      for (prop in res) {
-         if (res.hasOwnProperty(prop)) {
-            if (max <= res[prop]) {
-               if (max !== res[prop]) {
-                  maxVal = [];
-                  max = res[prop];
-               }
-               maxVal.push(prop);
-            }
-         }
-      }
-
-      if (data.status === 0 && max > 0) {
-         // buddy has come online
-         jsxc.notification.notify({
-            title: data.name,
-            msg: $.t('has_come_online'),
-            source: bid
-         });
-      }
-
-      if (data.type === 'groupchat') {
-         data.status = status;
-      } else {
-         data.status = max;
-      }
-
-      data.res = maxVal;
-      data.jid = jid;
-
-      // Looking for avatar
-      if (xVCard.length > 0 && data.type !== 'groupchat') {
-         var photo = xVCard.find('photo');
-
-         if (photo.length > 0 && photo.text() !== data.avatar) {
-            jsxc.storage.removeUserItem('avatar', data.avatar);
-            data.avatar = photo.text();
-         }
-      }
-
-      // Reset jid
-      if (jsxc.gui.window.get(bid).length > 0) {
-         jsxc.gui.window.get(bid).data('jid', jid);
-      }
-
-      jsxc.storage.setUserItem('buddy', bid, data);
-      jsxc.storage.setUserItem('res', bid, res);
-
-      jsxc.debug('Presence (' + from + '): ' + status);
-
-      jsxc.gui.update(bid);
-      jsxc.gui.roster.reorder(bid);
-
-      $(document).trigger('presence.jsxc', [from, status, presence]);
-
-      // preserve handler
-      return true;
-   },
-
-   /**
-    * Triggered on incoming message stanzas
-    * 
-    * @param {dom} presence
-    * @returns {Boolean}
-    * @private
-    */
-   onMessage: function(stanza) {
-
-      var forwarded = $(stanza).find('forwarded[xmlns="' + jsxc.CONST.NS.FORWARD + '"]');
-      var message, carbon;
-
-      if (forwarded.length > 0) {
-         message = forwarded.find('> message');
-         forwarded = true;
-         carbon = $(stanza).find('> [xmlns="' + jsxc.CONST.NS.CARBONS + '"]');
-
-         if (carbon.length === 0) {
-            carbon = false;
-         }
-
-         jsxc.debug('Incoming forwarded message', message);
-      } else {
-         message = stanza;
-         forwarded = false;
-         carbon = false;
-
-         jsxc.debug('Incoming message', message);
-      }
-
-      var body = $(message).find('body:first').text();
-
-      if (!body || (body.match(/\?OTR/i) && forwarded)) {
-         return true;
-      }
-
-      var type = $(message).attr('type');
-      var from = $(message).attr('from');
-      var mid = $(message).attr('id');
-      var bid;
-
-      var delay = $(message).find('delay[xmlns="urn:xmpp:delay"]');
-
-      var stamp = (delay.length > 0) ? new Date(delay.attr('stamp')) : new Date();
-      stamp = stamp.getTime();
-
-      if (carbon) {
-         var direction = (carbon.prop("tagName") === 'sent') ? jsxc.Message.OUT : jsxc.Message.IN;
-         bid = jsxc.jidToBid((direction === 'out') ? $(message).attr('to') : from);
-
-         jsxc.gui.window.postMessage({
-            bid: bid,
-            direction: direction,
-            msg: body,
-            encrypted: false,
-            forwarded: forwarded,
-            stamp: stamp
-         });
-
-         return true;
-
-      } else if (forwarded) {
-         // Someone forwarded a message to us
-
-         body = from + ' ' + $.t('to') + ' ' + $(stanza).attr('to') + '"' + body + '"';
-
-         from = $(stanza).attr('from');
-      }
-
-      var jid = Strophe.getBareJidFromJid(from);
-      bid = jsxc.jidToBid(jid);
-      var data = jsxc.storage.getUserItem('buddy', bid);
-      var request = $(message).find("request[xmlns='urn:xmpp:receipts']");
-
-      if (data === null) {
-         // jid not in roster
-
-         var chat = jsxc.storage.getUserItem('chat', bid) || [];
-
-         if (chat.length === 0) {
-            jsxc.notice.add($.t('Unknown_sender'), $.t('You_received_a_message_from_an_unknown_sender') + ' (' + bid + ').', 'gui.showUnknownSender', [bid]);
-         }
-
-         var msg = jsxc.removeHTML(body);
-         msg = jsxc.escapeHTML(msg);
-
-         jsxc.storage.saveMessage(bid, 'in', msg, false, forwarded, stamp);
-
-         return true;
-      }
-
-      var win = jsxc.gui.window.init(bid);
-
-      // If we now the full jid, we use it
-      if (type === 'chat') {
-         win.data('jid', from);
-         jsxc.storage.updateUserItem('buddy', bid, {
-            jid: from
-         });
-      }
-
-      $(document).trigger('message.jsxc', [from, body]);
-
-      // create related otr object
-      if (jsxc.master && !jsxc.otr.objects[bid]) {
-         jsxc.otr.create(bid);
-      }
-
-      if (!forwarded && mid !== null && request.length && data !== null && (data.sub === 'both' || data.sub === 'from') && type === 'chat') {
-         // Send received according to XEP-0184
-         jsxc.xmpp.conn.send($msg({
-            to: from
-         }).c('received', {
-            xmlns: 'urn:xmpp:receipts',
-            id: mid
-         }));
-      }
-
-      if (jsxc.otr.objects.hasOwnProperty(bid)) {
-         jsxc.otr.objects[bid].receiveMsg(body, {
-            stamp: stamp,
-            forwarded: forwarded
-         });
-      } else {
-         jsxc.gui.window.postMessage({
-            bid: bid,
-            direction: jsxc.Message.IN,
-            msg: body,
-            encrypted: false,
-            forwarded: forwarded,
-            stamp: stamp
-         });
-      }
-
-      // preserve handler
-      return true;
-   },
-
-   /**
-    * Triggerd if the rid changed
-    * 
-    * @param {integer} rid next valid request id
-    * @private
-    */
-   onRidChange: function(rid) {
-      jsxc.storage.setItem('rid', rid);
-   },
-
-   /**
-    * response to friendship request
-    * 
-    * @param {string} from jid from original friendship req
-    * @param {boolean} approve
-    */
-   resFriendReq: function(from, approve) {
-      if (jsxc.master) {
-         jsxc.xmpp.conn.send($pres({
-            to: from,
-            type: (approve) ? 'subscribed' : 'unsubscribed'
-         }));
-
-         jsxc.storage.removeUserItem('friendReq');
-         jsxc.gui.dialog.close();
-
-      } else {
-         jsxc.storage.updateUserItem('friendReq', 'approve', approve);
-      }
-   },
-
-   /**
-    * Add buddy to my friends
-    * 
-    * @param {string} username jid
-    * @param {string} alias
-    */
-   addBuddy: function(username, alias) {
-      var bid = jsxc.jidToBid(username);
-
-      if (jsxc.master) {
-         // add buddy to roster (trigger onRosterChanged)
-         var iq = $iq({
-            type: 'set'
-         }).c('query', {
-            xmlns: 'jabber:iq:roster'
-         }).c('item', {
-            jid: username,
-            name: alias || ''
-         });
-         jsxc.xmpp.conn.sendIQ(iq);
-
-         // send subscription request to buddy (trigger onRosterChanged)
-         jsxc.xmpp.conn.send($pres({
-            to: username,
-            type: 'subscribe'
-         }));
-
-         jsxc.storage.removeUserItem('add_' + bid);
-      } else {
-         jsxc.storage.setUserItem('add_' + bid, {
-            username: username,
-            alias: alias || null
-         });
-      }
-   },
-
-   /**
-    * Remove buddy from my friends
-    * 
-    * @param {type} jid
-    */
-   removeBuddy: function(jid) {
-      var bid = jsxc.jidToBid(jid);
-
-      // Shortcut to remove buddy from roster and cancle all subscriptions
-      var iq = $iq({
-         type: 'set'
-      }).c('query', {
-         xmlns: 'jabber:iq:roster'
-      }).c('item', {
-         jid: Strophe.getBareJidFromJid(jid),
-         subscription: 'remove'
-      });
-      jsxc.xmpp.conn.sendIQ(iq);
-
-      jsxc.gui.roster.purge(bid);
-   },
-
-   onReceived: function(stanza) {
-      var received = $(stanza).find("received[xmlns='urn:xmpp:receipts']");
-
-      if (received.length) {
-         var receivedId = received.attr('id');
-         var message = new jsxc.Message(receivedId);
-
-         message.received();
-      }
-
-      return true;
-   },
-
-   /**
-    * Public function to send message.
-    * 
-    * @memberOf jsxc.xmpp
-    * @param bid css jid of user
-    * @param msg message
-    * @param uid unique id
-    */
-   sendMessage: function(bid, msg, uid) {
-      if (jsxc.otr.objects.hasOwnProperty(bid)) {
-         jsxc.otr.objects[bid].sendMsg(msg, uid);
-      } else {
-         jsxc.xmpp._sendMessage(jsxc.gui.window.get(bid).data('jid'), msg, uid);
-      }
-   },
-
-   /**
-    * Create message stanza and send it.
-    * 
-    * @memberOf jsxc.xmpp
-    * @param jid Jabber id
-    * @param msg Message
-    * @param uid unique id
-    * @private
-    */
-   _sendMessage: function(jid, msg, uid) {
-      var data = jsxc.storage.getUserItem('buddy', jsxc.jidToBid(jid)) || {};
-      var isBar = (Strophe.getBareJidFromJid(jid) === jid);
-      var type = data.type || 'chat';
-
-      var xmlMsg = $msg({
-         to: jid,
-         type: type,
-         id: uid
-      }).c('body').t(msg);
-
-      if (jsxc.xmpp.carbons.enabled && msg.match(/^\?OTR/)) {
-         xmlMsg.up().c("private", {
-            xmlns: jsxc.CONST.NS.CARBONS
-         });
-      }
-
-      if (type === 'chat' && (isBar || jsxc.xmpp.conn.caps.hasFeatureByJid(jid, Strophe.NS.RECEIPTS))) {
-         // Add request according to XEP-0184
-         xmlMsg.up().c('request', {
-            xmlns: 'urn:xmpp:receipts'
-         });
-      }
-
-      jsxc.xmpp.conn.send(xmlMsg);
-   },
-
-   /**
-    * This function loads a vcard.
-    * 
-    * @memberOf jsxc.xmpp
-    * @param bid
-    * @param cb
-    * @param error_cb
-    */
-   loadVcard: function(bid, cb, error_cb) {
-      if (jsxc.master) {
-         jsxc.xmpp.conn.vcard.get(cb, bid, error_cb);
-      } else {
-         jsxc.storage.setUserItem('vcard', bid, 'request:' + (new Date()).getTime());
-
-         $(document).one('loaded.vcard.jsxc', function(ev, result) {
-            if (result && result.state === 'success') {
-               cb($(result.data).get(0));
+        } else if (ptype === 'unavailable' || ptype === 'unsubscribed') {
+            status = jsxc.CONST.STATUS.indexOf('offline');
+        } else {
+            var show = $(presence).find('show').text();
+            if (show === '') {
+                status = jsxc.CONST.STATUS.indexOf('online');
             } else {
-               error_cb();
+                status = jsxc.CONST.STATUS.indexOf(show);
             }
-         });
-      }
-   },
+        }
 
-   /**
-    * Retrieves capabilities.
-    * 
-    * @memberOf jsxc.xmpp
-    * @param jid
-    * @returns List of known capabilities
-    */
-   getCapabilitiesByJid: function(jid) {
-      if (jsxc.xmpp.conn) {
-         return jsxc.xmpp.conn.caps.getCapabilitiesByJid(jid);
-      }
+        if (status === 0) {
+            delete res[r];
+        } else {
+            res[r] = status;
+        }
 
-      var jidVerIndex = JSON.parse(localStorage.getItem('strophe.caps._jidVerIndex')) || {};
-      var knownCapabilities = JSON.parse(localStorage.getItem('strophe.caps._knownCapabilities')) || {};
-
-      if (jidVerIndex[jid]) {
-         return knownCapabilities[jidVerIndex[jid]];
-      }
-
-      return null;
-   },
-
-   /**
-    * Test if jid has given features
-    * 
-    * @param  {string}   jid     Jabber id
-    * @param  {string[]} feature Single feature or list of features
-    * @param  {Function} cb      Called with the result as first param.
-    * @return {boolean}          True, if jid has all given features. Null, if we do not know it currently.
-    */
-   hasFeatureByJid: function(jid, feature, cb) {
-      var conn = jsxc.xmpp.conn;
-      cb = cb || function() {};
-
-      if (!feature) {
-         return false;
-      }
-
-      if (!$.isArray(feature)) {
-         feature = $.makeArray(feature);
-      }
-
-      var check = function(knownCapabilities) {
-         if (!knownCapabilities) {
-            return null;
-         }
-         var i;
-         for (i = 0; i < feature.length; i++) {
-            if (knownCapabilities['features'].indexOf(feature[i]) < 0) {
-               return false;
+        var maxVal = [];
+        var max = 0,
+            prop = null;
+        for (prop in res) {
+            if (res.hasOwnProperty(prop)) {
+                if (max <= res[prop]) {
+                    if (max !== res[prop]) {
+                        maxVal = [];
+                        max = res[prop];
+                    }
+                    maxVal.push(prop);
+                }
             }
-         }
-         return true;
-      };
+        }
 
-      if (conn.caps._jidVerIndex[jid] && conn.caps._knownCapabilities[conn.caps._jidVerIndex[jid]]) {
-         var hasFeature = check(conn.caps._knownCapabilities[conn.caps._jidVerIndex[jid]]);
-         cb(hasFeature);
+        if (data.status === 0 && max > 0) {
+            // buddy has come online
+            jsxc.notification.notify({
+                title: data.name,
+                msg: $.t('has_come_online'),
+                source: bid
+            });
+        }
 
-         return hasFeature;
-      }
+        if (data.type === 'groupchat') {
+            data.status = status;
+        } else {
+            data.status = max;
+        }
 
-      $(document).on('strophe.caps', function(ev, j, capabilities) {
-         if (j === jid) {
-            cb(check(capabilities));
+        data.res = maxVal;
+        data.jid = jid;
 
-            $(document).off(ev);
-         }
-      });
+        // Looking for avatar
+        if (xVCard.length > 0 && data.type !== 'groupchat') {
+            var photo = xVCard.find('photo');
 
-      return null;
-   }
+            if (photo.length > 0 && photo.text() !== data.avatar) {
+                jsxc.storage.removeUserItem('avatar', data.avatar);
+                data.avatar = photo.text();
+            }
+        }
+
+        // Reset jid
+        if (jsxc.gui.window.get(bid).length > 0) {
+            jsxc.gui.window.get(bid).data('jid', jid);
+        }
+
+        jsxc.storage.setUserItem('buddy', bid, data);
+        jsxc.storage.setUserItem('res', bid, res);
+
+        jsxc.debug('Presence (' + from + '): ' + status);
+
+        jsxc.gui.update(bid);
+        jsxc.gui.roster.reorder(bid);
+
+        $(document).trigger('presence.jsxc', [from, status, presence]);
+
+        // preserve handler
+        return true;
+    },
+
+    /**
+     * Triggered on incoming message stanzas
+     *
+     * @param {dom} presence
+     * @returns {Boolean}
+     * @private
+     */
+    onMessage: function (stanza) {
+
+        var forwarded = $(stanza).find('forwarded[xmlns="' + jsxc.CONST.NS.FORWARD + '"]');
+        var message, carbon;
+
+        if (forwarded.length > 0) {
+            message = forwarded.find('> message');
+            forwarded = true;
+            carbon = $(stanza).find('> [xmlns="' + jsxc.CONST.NS.CARBONS + '"]');
+
+            if (carbon.length === 0) {
+                carbon = false;
+            }
+
+            jsxc.debug('Incoming forwarded message', message);
+        } else {
+            message = stanza;
+            forwarded = false;
+            carbon = false;
+
+            jsxc.debug('Incoming message', message);
+        }
+
+        var body = $(message).find('body:first').text();
+
+        if (!body || (body.match(/\?OTR/i) && forwarded)) {
+            return true;
+        }
+
+        var type = $(message).attr('type');
+        var from = $(message).attr('from');
+        var mid = $(message).attr('id');
+        var bid;
+
+        var delay = $(message).find('delay[xmlns="urn:xmpp:delay"]');
+
+        var stamp = (delay.length > 0) ? new Date(delay.attr('stamp')) : new Date();
+        stamp = stamp.getTime();
+
+        if (carbon) {
+            var direction = (carbon.prop("tagName") === 'sent') ? jsxc.Message.OUT : jsxc.Message.IN;
+            bid = jsxc.jidToBid((direction === 'out') ? $(message).attr('to') : from);
+
+            jsxc.gui.window.postMessage({
+                bid: bid,
+                direction: direction,
+                msg: body,
+                encrypted: false,
+                forwarded: forwarded,
+                stamp: stamp
+            });
+
+            return true;
+
+        } else if (forwarded) {
+            // Someone forwarded a message to us
+
+            body = from + ' ' + $.t('to') + ' ' + $(stanza).attr('to') + '"' + body + '"';
+
+            from = $(stanza).attr('from');
+        }
+
+        var jid = Strophe.getBareJidFromJid(from);
+        bid = jsxc.jidToBid(jid);
+        var data = jsxc.storage.getUserItem('buddy', bid);
+        var request = $(message).find("request[xmlns='urn:xmpp:receipts']");
+
+        if (data === null) {
+            // jid not in roster
+
+            var chat = jsxc.storage.getUserItem('chat', bid) || [];
+
+            if (chat.length === 0) {
+                jsxc.notice.add($.t('Unknown_sender'), $.t('You_received_a_message_from_an_unknown_sender') + ' (' + bid + ').', 'gui.showUnknownSender', [bid]);
+            }
+
+            var msg = jsxc.removeHTML(body);
+            msg = jsxc.escapeHTML(msg);
+
+            jsxc.storage.saveMessage(bid, 'in', msg, false, forwarded, stamp);
+
+            return true;
+        }
+
+        var win = jsxc.gui.window.init(bid);
+
+        // If we now the full jid, we use it
+        if (type === 'chat') {
+            win.data('jid', from);
+            jsxc.storage.updateUserItem('buddy', bid, {
+                jid: from
+            });
+        }
+
+        $(document).trigger('message.jsxc', [from, body]);
+
+        // create related otr object
+        if (jsxc.master && !jsxc.otr.objects[bid]) {
+            jsxc.otr.create(bid);
+        }
+
+        if (!forwarded && mid !== null && request.length && data !== null && (data.sub === 'both' || data.sub === 'from') && type === 'chat') {
+            // Send received according to XEP-0184
+            jsxc.xmpp.conn.send($msg({
+                to: from
+            }).c('received', {
+                xmlns: 'urn:xmpp:receipts',
+                id: mid
+            }));
+        }
+
+        if (jsxc.otr.objects.hasOwnProperty(bid)) {
+            jsxc.otr.objects[bid].receiveMsg(body, {
+                stamp: stamp,
+                forwarded: forwarded
+            });
+        } else {
+            jsxc.gui.window.postMessage({
+                bid: bid,
+                direction: jsxc.Message.IN,
+                msg: body,
+                encrypted: false,
+                forwarded: forwarded,
+                stamp: stamp
+            });
+        }
+
+        // preserve handler
+        return true;
+    },
+
+    /**
+     * Triggerd if the rid changed
+     *
+     * @param {integer} rid next valid request id
+     * @private
+     */
+    onRidChange: function (rid) {
+        jsxc.storage.setItem('rid', rid);
+    },
+
+    /**
+     * response to friendship request
+     *
+     * @param {string} from jid from original friendship req
+     * @param {boolean} approve
+     */
+    resFriendReq: function (from, approve) {
+        if (jsxc.master) {
+            jsxc.xmpp.conn.send($pres({
+                to: from,
+                type: (approve) ? 'subscribed' : 'unsubscribed'
+            }));
+
+            jsxc.storage.removeUserItem('friendReq');
+            jsxc.gui.dialog.close();
+
+        } else {
+            jsxc.storage.updateUserItem('friendReq', 'approve', approve);
+        }
+    },
+
+    /**
+     * Add buddy to my friends
+     *
+     * @param {string} username jid
+     * @param {string} alias
+     */
+    addBuddy: function (username, alias) {
+        var bid = jsxc.jidToBid(username);
+
+        if (jsxc.master) {
+            // add buddy to roster (trigger onRosterChanged)
+            var iq = $iq({
+                type: 'set'
+            }).c('query', {
+                xmlns: 'jabber:iq:roster'
+            }).c('item', {
+                jid: username,
+                name: alias || ''
+            });
+            jsxc.xmpp.conn.sendIQ(iq);
+
+            // send subscription request to buddy (trigger onRosterChanged)
+            jsxc.xmpp.conn.send($pres({
+                to: username,
+                type: 'subscribe'
+            }));
+
+            jsxc.storage.removeUserItem('add_' + bid);
+        } else {
+            jsxc.storage.setUserItem('add_' + bid, {
+                username: username,
+                alias: alias || null
+            });
+        }
+    },
+
+    /**
+     * Remove buddy from my friends
+     *
+     * @param {type} jid
+     */
+    removeBuddy: function (jid) {
+        var bid = jsxc.jidToBid(jid);
+
+        // Shortcut to remove buddy from roster and cancle all subscriptions
+        var iq = $iq({
+            type: 'set'
+        }).c('query', {
+            xmlns: 'jabber:iq:roster'
+        }).c('item', {
+            jid: Strophe.getBareJidFromJid(jid),
+            subscription: 'remove'
+        });
+        jsxc.xmpp.conn.sendIQ(iq);
+
+        jsxc.gui.roster.purge(bid);
+    },
+
+    onReceived: function (stanza) {
+        var received = $(stanza).find("received[xmlns='urn:xmpp:receipts']");
+
+        if (received.length) {
+            var receivedId = received.attr('id');
+            var message = new jsxc.Message(receivedId);
+
+            message.received();
+        }
+
+        return true;
+    },
+
+    /**
+     * Public function to send message.
+     *
+     * @memberOf jsxc.xmpp
+     * @param bid css jid of user
+     * @param msg message
+     * @param uid unique id
+     */
+    sendMessage: function (bid, msg, uid) {
+        if (jsxc.otr.objects.hasOwnProperty(bid)) {
+            jsxc.otr.objects[bid].sendMsg(msg, uid);
+        } else {
+            jsxc.xmpp._sendMessage(jsxc.gui.window.get(bid).data('jid'), msg, uid);
+        }
+    },
+
+    /**
+     * Create message stanza and send it.
+     *
+     * @memberOf jsxc.xmpp
+     * @param jid Jabber id
+     * @param msg Message
+     * @param uid unique id
+     * @private
+     */
+    _sendMessage: function (jid, msg, uid) {
+        var data = jsxc.storage.getUserItem('buddy', jsxc.jidToBid(jid)) || {};
+        var isBar = (Strophe.getBareJidFromJid(jid) === jid);
+        var type = data.type || 'chat';
+
+        var xmlMsg = $msg({
+            to: jid,
+            type: type,
+            id: uid
+        }).c('body').t(msg);
+
+        if (jsxc.xmpp.carbons.enabled && msg.match(/^\?OTR/)) {
+            xmlMsg.up().c("private", {
+                xmlns: jsxc.CONST.NS.CARBONS
+            });
+        }
+
+        if (type === 'chat' && (isBar || jsxc.xmpp.conn.caps.hasFeatureByJid(jid, Strophe.NS.RECEIPTS))) {
+            // Add request according to XEP-0184
+            xmlMsg.up().c('request', {
+                xmlns: 'urn:xmpp:receipts'
+            });
+        }
+
+        jsxc.xmpp.conn.send(xmlMsg);
+    },
+
+    /**
+     * This function loads a vcard.
+     *
+     * @memberOf jsxc.xmpp
+     * @param bid
+     * @param cb
+     * @param error_cb
+     */
+    loadVcard: function (bid, cb, error_cb) {
+        if (jsxc.master) {
+            jsxc.xmpp.conn.vcard.get(cb, bid, error_cb);
+        } else {
+            jsxc.storage.setUserItem('vcard', bid, 'request:' + (new Date()).getTime());
+
+            $(document).one('loaded.vcard.jsxc', function (ev, result) {
+                if (result && result.state === 'success') {
+                    cb($(result.data).get(0));
+                } else {
+                    error_cb();
+                }
+            });
+        }
+    },
+
+    /**
+     * Retrieves capabilities.
+     *
+     * @memberOf jsxc.xmpp
+     * @param jid
+     * @returns List of known capabilities
+     */
+    getCapabilitiesByJid: function (jid) {
+        if (jsxc.xmpp.conn) {
+            return jsxc.xmpp.conn.caps.getCapabilitiesByJid(jid);
+        }
+
+        var jidVerIndex = JSON.parse(localStorage.getItem('strophe.caps._jidVerIndex')) || {};
+        var knownCapabilities = JSON.parse(localStorage.getItem('strophe.caps._knownCapabilities')) || {};
+
+        if (jidVerIndex[jid]) {
+            return knownCapabilities[jidVerIndex[jid]];
+        }
+
+        return null;
+    },
+
+    /**
+     * Test if jid has given features
+     *
+     * @param  {string}   jid     Jabber id
+     * @param  {string[]} feature Single feature or list of features
+     * @param  {Function} cb      Called with the result as first param.
+     * @return {boolean}          True, if jid has all given features. Null, if we do not know it currently.
+     */
+    hasFeatureByJid: function (jid, feature, cb) {
+        var conn = jsxc.xmpp.conn;
+        cb = cb || function () {
+            };
+
+        if (!feature) {
+            return false;
+        }
+
+        if (!$.isArray(feature)) {
+            feature = $.makeArray(feature);
+        }
+
+        var check = function (knownCapabilities) {
+            if (!knownCapabilities) {
+                return null;
+            }
+            var i;
+            for (i = 0; i < feature.length; i++) {
+                if (knownCapabilities['features'].indexOf(feature[i]) < 0) {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        if (conn.caps._jidVerIndex[jid] && conn.caps._knownCapabilities[conn.caps._jidVerIndex[jid]]) {
+            var hasFeature = check(conn.caps._knownCapabilities[conn.caps._jidVerIndex[jid]]);
+            cb(hasFeature);
+
+            return hasFeature;
+        }
+
+        $(document).on('strophe.caps', function (ev, j, capabilities) {
+            if (j === jid) {
+                cb(check(capabilities));
+
+                $(document).off(ev);
+            }
+        });
+
+        return null;
+    }
 };
 
 /**
  * Handle carbons (XEP-0280);
- * 
+ *
  * @namespace jsxc.xmpp.carbons
  */
 jsxc.xmpp.carbons = {
-   enabled: false,
+    enabled: false,
 
-   /**
-    * Enable carbons.
-    * 
-    * @memberOf jsxc.xmpp.carbons
-    * @param cb callback
-    */
-   enable: function(cb) {
-      var iq = $iq({
-         type: 'set'
-      }).c('enable', {
-         xmlns: jsxc.CONST.NS.CARBONS
-      });
+    /**
+     * Enable carbons.
+     *
+     * @memberOf jsxc.xmpp.carbons
+     * @param cb callback
+     */
+    enable: function (cb) {
+        var iq = $iq({
+            type: 'set'
+        }).c('enable', {
+            xmlns: jsxc.CONST.NS.CARBONS
+        });
 
-      jsxc.xmpp.conn.sendIQ(iq, function() {
-         jsxc.xmpp.carbons.enabled = true;
+        jsxc.xmpp.conn.sendIQ(iq, function () {
+            jsxc.xmpp.carbons.enabled = true;
 
-         jsxc.debug('Carbons enabled');
+            jsxc.debug('Carbons enabled');
 
-         if (cb) {
-            cb.call(this);
-         }
-      }, function(stanza) {
-         jsxc.warn('Could not enable carbons', stanza);
-      });
-   },
+            if (cb) {
+                cb.call(this);
+            }
+        }, function (stanza) {
+            jsxc.warn('Could not enable carbons', stanza);
+        });
+    },
 
-   /**
-    * Disable carbons.
-    * 
-    * @memberOf jsxc.xmpp.carbons
-    * @param cb callback
-    */
-   disable: function(cb) {
-      var iq = $iq({
-         type: 'set'
-      }).c('disable', {
-         xmlns: jsxc.CONST.NS.CARBONS
-      });
+    /**
+     * Disable carbons.
+     *
+     * @memberOf jsxc.xmpp.carbons
+     * @param cb callback
+     */
+    disable: function (cb) {
+        var iq = $iq({
+            type: 'set'
+        }).c('disable', {
+            xmlns: jsxc.CONST.NS.CARBONS
+        });
 
-      jsxc.xmpp.conn.sendIQ(iq, function() {
-         jsxc.xmpp.carbons.enabled = false;
+        jsxc.xmpp.conn.sendIQ(iq, function () {
+            jsxc.xmpp.carbons.enabled = false;
 
-         jsxc.debug('Carbons disabled');
+            jsxc.debug('Carbons disabled');
 
-         if (cb) {
-            cb.call(this);
-         }
-      }, function(stanza) {
-         jsxc.warn('Could not disable carbons', stanza);
-      });
-   },
+            if (cb) {
+                cb.call(this);
+            }
+        }, function (stanza) {
+            jsxc.warn('Could not disable carbons', stanza);
+        });
+    },
 
-   /**
-    * Enable/Disable carbons depending on options key.
-    * 
-    * @memberOf jsxc.xmpp.carbons
-    * @param err error message
-    */
-   refresh: function(err) {
-      if (err === false) {
-         return;
-      }
+    /**
+     * Enable/Disable carbons depending on options key.
+     *
+     * @memberOf jsxc.xmpp.carbons
+     * @param err error message
+     */
+    refresh: function (err) {
+        if (err === false) {
+            return;
+        }
 
-      if (jsxc.options.get('carbons').enable) {
-         return jsxc.xmpp.carbons.enable();
-      }
+        if (jsxc.options.get('carbons').enable) {
+            return jsxc.xmpp.carbons.enable();
+        }
 
-      return jsxc.xmpp.carbons.disable();
-   }
+        return jsxc.xmpp.carbons.disable();
+    }
 };
 
 /**
@@ -5493,23 +5496,25 @@ jsxc.gui.template.get = function(name, bid, msg) {
 };
 
 /**
-
- Main menu. This menu is included in roster.
-
- All templates are stored in templates/menu*.html
-
- Call init() to build the menu. First init call is done in jsxc.roster.init()
-
- */
+ *
+ * Main menu. This menu is included in roster.
+ *
+ * <p>All templates are stored in templates/menu*.html
+ *
+ * <p>Call init() to build the menu. First init call is done in jsxc.roster.init()
+ *
+ * @namespace menu
+ *
+ * */
 jsxc.gui.menu = {
 
-    /*
-     Time out before close menu
+    /**
+     * Time out before close menu
      */
     timeoutBeforeClose: 5000,
 
     /**
-     Menu elements. Each menu element has a label, a template name and an optionnal init function.
+     * Menu elements. Each menu element has a label, a template name and an optional init function.
      */
     elements: {
 
@@ -5648,7 +5653,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Initialise menu and menu elements
+     * Initialise menu and menu elements
      */
     init: function () {
 
@@ -5685,8 +5690,8 @@ jsxc.gui.menu = {
         this.initFoldableActions();
     },
 
-    /*
-     Set menu accordion and searchable
+    /**
+     * Set menu accordion and searchable
      */
     initAccordion: function () {
 
@@ -5722,22 +5727,22 @@ jsxc.gui.menu = {
     },
 
     /**
-     Current index of search result
+     * Current index of search result
      */
     currentSearchResultIndex: 0,
 
     /**
-     All currents results
+     * All currents results
      */
     currentResults: [],
 
     /**
-     Title mark displayed when a result occur in a panel
+     * Title mark displayed when a result occur in a panel
      */
     searchTitleMark: "<span class='jsxc_menu_search_title_mark'> &lt;!&gt;</span>",
 
     /**
-     Settings for text highliting. Using jquery.highlight.js
+     * Settings for text highliting. Using jquery.highlight.js
      */
     highlightSettings: {
         caseSensitive: false,
@@ -5745,7 +5750,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Called by search text field when user type something
+     * Called by search text field when user type something
      */
     onSearchKeyUp: function () {
 
@@ -5816,14 +5821,14 @@ jsxc.gui.menu = {
     },
 
     /**
-     Display a message for user
+     * Display a message for user
      */
     feedback: function (text) {
         $("#jsxc_menu_feedback").html(text || "&nbsp;");
     },
 
     /**
-     Highlight all term searched
+     * Highlight all term searched
      */
     highlightTerms: function (terms) {
 
@@ -5835,7 +5840,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Enlever le surlignage
+     * Enlever le surlignage
      */
     resetHighlights: function () {
 
@@ -5848,7 +5853,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Active the next result
+     * Active the next result
      */
     showNextResult: function () {
 
@@ -5864,7 +5869,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Active the previous result
+     * Active the previous result
      */
     showPreviousResult: function () {
 
@@ -5880,7 +5885,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Show result tab and active it
+     * Show result tab and active it
      */
     selectResult: function (index) {
 
@@ -5905,7 +5910,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Open side menu with parameters and options
+     * Open side menu with parameters and options
      */
     openSideMenu: function () {
 
@@ -5927,7 +5932,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Close the side menu
+     * Close the side menu
      */
     closeSideMenu: function () {
 
@@ -5943,7 +5948,7 @@ jsxc.gui.menu = {
     },
 
     /**
-     Associate click with fold / unfold menu action
+     * Associate click with fold / unfold menu action
      */
     initFoldableActions: function () {
 
@@ -5961,13 +5966,7 @@ jsxc.gui.menu = {
 
             // side menu is closed, open it
             else {
-
                 self.openSideMenu();
-
-                // launch timer for closing if no use
-                sideMenu.data('timerForClosing', window.setTimeout(self.closeSideMenu,
-                    jsxc.gui.menu.timeoutBeforeClose));
-
             }
 
             return false;
@@ -7579,119 +7578,119 @@ $(document).one('connected.jsxc', function() {
 
 /**
  * This namespace handle the notice system.
- * 
+ *
  * @namspace jsxc.notice
  * @memberOf jsxc
  */
 jsxc.notice = {
-   /** Number of notices. */
-   _num: 0,
+    /** Number of notices. */
+    _num: 0,
 
-   /**
-    * Loads the saved notices.
-    * 
-    * @memberOf jsxc.notice
-    */
-   load: function() {
-      // reset list
-      $('#jsxc_notice ul li').remove();
-      $('#jsxc_notice > span').text('');
-      jsxc.notice._num = 0;
+    /**
+     * Loads the saved notices.
+     *
+     * @memberOf jsxc.notice
+     */
+    load: function () {
+        // reset list
+        $('#jsxc_notice ul li').remove();
+        $('#jsxc_notice span.jsxc_menu_notif_number').text('');
+        jsxc.notice._num = 0;
 
-      var saved = jsxc.storage.getUserItem('notices') || [];
-      var key = null;
+        var saved = jsxc.storage.getUserItem('notices') || [];
+        var key = null;
 
-      for (key in saved) {
-         if (saved.hasOwnProperty(key)) {
-            var val = saved[key];
+        for (key in saved) {
+            if (saved.hasOwnProperty(key)) {
+                var val = saved[key];
 
-            jsxc.notice.add(val.msg, val.description, val.fnName, val.fnParams, key);
-         }
-      }
-   },
+                jsxc.notice.add(val.msg, val.description, val.fnName, val.fnParams, key);
+            }
+        }
+    },
 
-   /**
-    * Add a new notice to the stack;
-    * 
-    * @memberOf jsxc.notice
-    * @param msg Header message
-    * @param description Notice description
-    * @param fnName Function name to be called if you open the notice
-    * @param fnParams Array of params for function
-    * @param id Notice id
-    */
-   add: function(msg, description, fnName, fnParams, id) {
-      var nid = id || Date.now();
-      var list = $('#jsxc_notice ul');
-      var notice = $('<li/>');
+    /**
+     * Add a new notice to the stack;
+     *
+     * @memberOf jsxc.notice
+     * @param msg Header message
+     * @param description Notice description
+     * @param fnName Function name to be called if you open the notice
+     * @param fnParams Array of params for function
+     * @param id Notice id
+     */
+    add: function (msg, description, fnName, fnParams, id) {
+        var nid = id || Date.now();
+        var list = $('#jsxc_notice ul');
+        var notice = $('<li/>');
 
-      notice.click(function() {
-         jsxc.notice.remove(nid);
+        notice.click(function () {
+            jsxc.notice.remove(nid);
 
-         jsxc.exec(fnName, fnParams);
-
-         return false;
-      });
-
-      notice.text(msg);
-      notice.attr('title', description || '');
-      notice.attr('data-nid', nid);
-      list.append(notice);
-
-      $('#jsxc_notice > span').text(++jsxc.notice._num);
-
-      if (!id) {
-         var saved = jsxc.storage.getUserItem('notices') || {};
-         saved[nid] = {
-            msg: msg,
-            description: description,
-            fnName: fnName,
-            fnParams: fnParams
-         };
-         jsxc.storage.setUserItem('notices', saved);
-
-         jsxc.notification.notify(msg, description || '', null, true, jsxc.CONST.SOUNDS.NOTICE);
-      }
-   },
-
-   /**
-    * Removes notice from stack
-    * 
-    * @memberOf jsxc.notice
-    * @param nid The notice id
-    */
-   remove: function(nid) {
-      var el = $('#jsxc_notice li[data-nid=' + nid + ']');
-
-      el.remove();
-      $('#jsxc_notice > span').text(--jsxc.notice._num || '');
-
-      var s = jsxc.storage.getUserItem('notices');
-      delete s[nid];
-      jsxc.storage.setUserItem('notices', s);
-   },
-
-   /**
-    * Check if there is already a notice for the given function name.
-    * 
-    * @memberOf jsxc.notice
-    * @param {string} fnName Function name
-    * @returns {boolean} True if there is >0 functions with the given name
-    */
-   has: function(fnName) {
-      var saved = jsxc.storage.getUserItem('notices') || [];
-      var has = false;
-
-      $.each(saved, function(index, val) {
-         if (val.fnName === fnName) {
-            has = true;
+            jsxc.exec(fnName, fnParams);
 
             return false;
-         }
-      });
+        });
 
-      return has;
-   }
+        notice.text(msg + " " + description);
+        notice.attr('title', description || '');
+        notice.attr('data-nid', nid);
+        list.append(notice);
+
+        $('#jsxc_notice span.jsxc_menu_notif_number').text(++jsxc.notice._num);
+
+        if (!id) {
+            var saved = jsxc.storage.getUserItem('notices') || {};
+            saved[nid] = {
+                msg: msg,
+                description: description,
+                fnName: fnName,
+                fnParams: fnParams
+            };
+            jsxc.storage.setUserItem('notices', saved);
+
+            jsxc.notification.notify(msg, description || '', null, true, jsxc.CONST.SOUNDS.NOTICE);
+        }
+    },
+
+    /**
+     * Removes notice from stack
+     *
+     * @memberOf jsxc.notice
+     * @param nid The notice id
+     */
+    remove: function (nid) {
+        var el = $('#jsxc_notice li[data-nid=' + nid + ']');
+
+        el.remove();
+        $('#jsxc_notice span.jsxc_menu_notif_number').text(--jsxc.notice._num || '');
+
+        var s = jsxc.storage.getUserItem('notices');
+        delete s[nid];
+        jsxc.storage.setUserItem('notices', s);
+    },
+
+    /**
+     * Check if there is already a notice for the given function name.
+     *
+     * @memberOf jsxc.notice
+     * @param {string} fnName Function name
+     * @returns {boolean} True if there is >0 functions with the given name
+     */
+    has: function (fnName) {
+        var saved = jsxc.storage.getUserItem('notices') || [];
+        var has = false;
+
+        $.each(saved, function (index, val) {
+            if (val.fnName === fnName) {
+                has = true;
+
+                return false;
+            }
+        });
+
+        return has;
+    }
 };
 
 /**
@@ -7971,285 +7970,288 @@ jsxc.notification = {
 
 /**
  * Set some options for the chat.
- * 
+ *
  * @namespace jsxc.options
  */
 jsxc.options = {
 
-   /** name of container application (e.g. owncloud or SOGo) */
-   app_name: 'web applications',
+    /** name of container application (e.g. owncloud or SOGo) */
+    app_name: 'web applications',
 
-   /** Timeout for the keepalive signal */
-   timeout: 3000,
+    /** Timeout for the keepalive signal */
+    timeout: 3000,
 
-   /** Timeout for the keepalive signal if the master is busy */
-   busyTimeout: 15000,
+    /** Timeout for the keepalive signal if the master is busy */
+    busyTimeout: 15000,
 
-   /** OTR options */
-   otr: {
-      enable: true,
-      ERROR_START_AKE: false,
-      debug: false,
-      SEND_WHITESPACE_TAG: true,
-      WHITESPACE_START_AKE: true
-   },
+    /** OTR options */
+    otr: {
+        enable: true,
+        ERROR_START_AKE: false,
+        debug: false,
+        SEND_WHITESPACE_TAG: true,
+        WHITESPACE_START_AKE: true
+    },
 
-   /** xmpp options */
-   xmpp: {
-      /** BOSH url */
-      url: null,
+    /** xmpp options */
+    xmpp: {
+        /** BOSH url */
+        url: null,
 
-      /** XMPP JID*/
-      jid: null,
+        /** XMPP JID*/
+        jid: null,
 
-      /** XMPP domain */
-      domain: null,
+        /** XMPP domain */
+        domain: null,
 
-      /** XMPP password */
-      password: null,
+        /** Domain for user search, XEP 0055*/
+        searchDomain: null,
 
-      /** session id */
-      sid: null,
+        /** XMPP password */
+        password: null,
 
-      /** request id */
-      rid: null,
+        /** session id */
+        sid: null,
 
-      /** True: Allow user to overwrite xmpp settings */
-      overwrite: false,
+        /** request id */
+        rid: null,
 
-      /** @deprecated since v2.1.0. Use now loginForm.enable. */
-      onlogin: null
-   },
+        /** True: Allow user to overwrite xmpp settings */
+        overwrite: false,
 
-   /** default xmpp priorities */
-   priority: {
-      online: 0,
-      chat: 0,
-      away: 0,
-      xa: 0,
-      dnd: 0
-   },
+        /** @deprecated since v2.1.0. Use now loginForm.enable. */
+        onlogin: null
+    },
 
-   /**
-    * This function is called if a login form was found, but before any 
-    * modification is done to it.
-    * 
-    * @memberOf jsxc.options
-    * @function
-    */
-   formFound: null,
+    /** default xmpp priorities */
+    priority: {
+        online: 0,
+        chat: 0,
+        away: 0,
+        xa: 0,
+        dnd: 0
+    },
 
-   /** If all 3 properties are set and enable is true, the login form is used */
-   loginForm: {
-      /** False, disables login through login form */
-      enable: true,
+    /**
+     * This function is called if a login form was found, but before any
+     * modification is done to it.
+     *
+     * @memberOf jsxc.options
+     * @function
+     */
+    formFound: null,
 
-      /** jquery object from form */
-      form: null,
+    /** If all 3 properties are set and enable is true, the login form is used */
+    loginForm: {
+        /** False, disables login through login form */
+        enable: true,
 
-      /** jquery object from input element which contains the jid */
-      jid: null,
+        /** jquery object from form */
+        form: null,
 
-      /** jquery object from input element which contains the password */
-      pass: null,
+        /** jquery object from input element which contains the jid */
+        jid: null,
 
-      /** manipulate JID from input element */
-      preJid: function(jid) {
-         return jid;
-      },
+        /** jquery object from input element which contains the password */
+        pass: null,
 
-      /**
-       * Action after login was called: dialog [String] Show wait dialog, false [boolean] | 
-       * quiet [String] Do nothing
-       */
-      onConnecting: 'dialog',
+        /** manipulate JID from input element */
+        preJid: function (jid) {
+            return jid;
+        },
 
-      /**
-       * Action after connected: submit [String] Submit form, false [boolean] Do
-       * nothing, continue [String] Start chat
-       */
-      onConnected: 'submit',
+        /**
+         * Action after login was called: dialog [String] Show wait dialog, false [boolean] |
+         * quiet [String] Do nothing
+         */
+        onConnecting: 'dialog',
 
-      /**
-       * Action after auth fail: submit [String] Submit form, false [boolean] | quiet [String] Do
-       * nothing, ask [String] Show auth fail dialog
-       */
-      onAuthFail: 'submit',
+        /**
+         * Action after connected: submit [String] Submit form, false [boolean] Do
+         * nothing, continue [String] Start chat
+         */
+        onConnected: 'submit',
 
-      /**
-       * True: Attach connection even is login form was found.
-       * 
-       * @type {Boolean}
-       * @deprecated since 3.0.0. Use now loginForm.ifFound (true => attach, false => pause)
-       */
-      attachIfFound: true,
+        /**
+         * Action after auth fail: submit [String] Submit form, false [boolean] | quiet [String] Do
+         * nothing, ask [String] Show auth fail dialog
+         */
+        onAuthFail: 'submit',
 
-      /**
-       * Describes what we should do if login form was found: 
-       * - Attach connection
-       * - Force new connection with loginForm.jid and loginForm.passed
-       * - Pause connection and do nothing
-       * 
-       * @type {(attach|force|pause)}
-       */
-      ifFound: 'attach',
+        /**
+         * True: Attach connection even is login form was found.
+         *
+         * @type {Boolean}
+         * @deprecated since 3.0.0. Use now loginForm.ifFound (true => attach, false => pause)
+         */
+        attachIfFound: true,
 
-      /**
-       * True: Display roster minimized after first login. Afterwards the last 
-       * roster state will be used. 
-       */
-      startMinimized: false
-   },
+        /**
+         * Describes what we should do if login form was found:
+         * - Attach connection
+         * - Force new connection with loginForm.jid and loginForm.passed
+         * - Pause connection and do nothing
+         *
+         * @type {(attach|force|pause)}
+         */
+        ifFound: 'attach',
 
-   /** jquery object from logout element */
-   logoutElement: null,
+        /**
+         * True: Display roster minimized after first login. Afterwards the last
+         * roster state will be used.
+         */
+        startMinimized: false
+    },
 
-   /** How many messages should be logged? */
-   numberOfMsg: 10,
+    /** jquery object from logout element */
+    logoutElement: null,
 
-   /** Default language */
-   defaultLang: 'en',
+    /** How many messages should be logged? */
+    numberOfMsg: 10,
 
-   /** auto language detection */
-   autoLang: true,
+    /** Default language */
+    defaultLang: 'en',
 
-   /** Place for roster */
-   rosterAppend: 'body',
+    /** auto language detection */
+    autoLang: true,
 
-   /** Should we use the HTML5 notification API? */
-   notification: true,
+    /** Place for roster */
+    rosterAppend: 'body',
 
-   /** duration for notification */
-   popupDuration: 6000,
+    /** Should we use the HTML5 notification API? */
+    notification: true,
 
-   /** Absolute path root of JSXC installation */
-   root: '',
+    /** duration for notification */
+    popupDuration: 6000,
 
-   /**
-    * This function decides wether the roster will be displayed or not if no
-    * connection is found.
-    */
-   displayRosterMinimized: function() {
-      return false;
-   },
+    /** Absolute path root of JSXC installation */
+    root: '',
 
-   /** Set to true if you want to hide offline buddies. */
-   hideOffline: false,
+    /**
+     * This function decides wether the roster will be displayed or not if no
+     * connection is found.
+     */
+    displayRosterMinimized: function () {
+        return false;
+    },
 
-   /** Mute notification sound? */
-   muteNotification: false,
+    /** Set to true if you want to hide offline buddies. */
+    hideOffline: false,
 
-   /**
-    * If no avatar is found, this function is called.
-    * 
-    * @param jid Jid of that user.
-    * @this {jQuery} Elements to update with probable .jsxc_avatar elements
-    */
-   defaultAvatar: function(jid) {
-      jsxc.gui.avatarPlaceholder($(this).find('.jsxc_avatar'), jid);
-   },
+    /** Mute notification sound? */
+    muteNotification: false,
 
-   /**
-    * This callback processes all settings.
-    * @callback loadSettingsCallback
-    * @param settings {object} could be every jsxc option
-    */
+    /**
+     * If no avatar is found, this function is called.
+     *
+     * @param jid Jid of that user.
+     * @this {jQuery} Elements to update with probable .jsxc_avatar elements
+     */
+    defaultAvatar: function (jid) {
+        jsxc.gui.avatarPlaceholder($(this).find('.jsxc_avatar'), jid);
+    },
 
-   /**
-    * Returns permanent saved settings and overwrite default jsxc.options.
-    * 
-    * @memberOf jsxc.options
-    * @function
-    * @param username {string} username
-    * @param password {string} password
-    * @param cb {loadSettingsCallback} Callback that handles the result
-    */
-   loadSettings: null,
+    /**
+     * This callback processes all settings.
+     * @callback loadSettingsCallback
+     * @param settings {object} could be every jsxc option
+     */
 
-   /**
-    * Call this function to save user settings permanent.
-    * 
-    * @memberOf jsxc.options
-    * @param data Holds all data as key/value
-    * @param cb Called with true on success, false otherwise
-    */
-   saveSettinsPermanent: function(data, cb) {
-      cb(true);
-   },
+    /**
+     * Returns permanent saved settings and overwrite default jsxc.options.
+     *
+     * @memberOf jsxc.options
+     * @function
+     * @param username {string} username
+     * @param password {string} password
+     * @param cb {loadSettingsCallback} Callback that handles the result
+     */
+    loadSettings: null,
 
-   carbons: {
-      /** Enable carbon copies? */
-      enable: false
-   },
+    /**
+     * Call this function to save user settings permanent.
+     *
+     * @memberOf jsxc.options
+     * @param data Holds all data as key/value
+     * @param cb Called with true on success, false otherwise
+     */
+    saveSettinsPermanent: function (data, cb) {
+        cb(true);
+    },
 
-   /**
-    * Processes user list.
-    * 
-    * @callback getUsers-cb
-    * @param {object} list List of users, key: username, value: alias
-    */
+    carbons: {
+        /** Enable carbon copies? */
+        enable: false
+    },
 
-   /**
-    * Returns a list of usernames and aliases
-    * 
-    * @function getUsers
-    * @memberOf jsxc.options
-    * @param {string} search Search token (start with)
-    * @param {getUsers-cb} cb Called with list of users
-    */
-   getUsers: null,
+    /**
+     * Processes user list.
+     *
+     * @callback getUsers-cb
+     * @param {object} list List of users, key: username, value: alias
+     */
 
-   /** Options for info in favicon */
-   favicon: {
-      enable: true,
+    /**
+     * Returns a list of usernames and aliases
+     *
+     * @function getUsers
+     * @memberOf jsxc.options
+     * @param {string} search Search token (start with)
+     * @param {getUsers-cb} cb Called with list of users
+     */
+    getUsers: null,
 
-      /** Favicon info background color */
-      bgColor: '#E59400',
+    /** Options for info in favicon */
+    favicon: {
+        enable: true,
 
-      /** Favicon info text color */
-      textColor: '#fff'
-   },
+        /** Favicon info background color */
+        bgColor: '#E59400',
 
-   /** @deprecated since v2.1.0. Use now RTCPeerConfig.url. */
-   turnCredentialsPath: null,
+        /** Favicon info text color */
+        textColor: '#fff'
+    },
 
-   /** RTCPeerConfiguration used for audio/video calls. */
-   RTCPeerConfig: {
-      /** Time-to-live for config from url */
-      ttl: 3600,
+    /** @deprecated since v2.1.0. Use now RTCPeerConfig.url. */
+    turnCredentialsPath: null,
 
-      /** [optional] If set, jsxc requests and uses RTCPeerConfig from this url */
-      url: null,
+    /** RTCPeerConfiguration used for audio/video calls. */
+    RTCPeerConfig: {
+        /** Time-to-live for config from url */
+        ttl: 3600,
 
-      /** If true, jsxc send cookies when requesting RTCPeerConfig from the url above */
-      withCredentials: false,
+        /** [optional] If set, jsxc requests and uses RTCPeerConfig from this url */
+        url: null,
 
-      /** ICE servers like defined in http://www.w3.org/TR/webrtc/#idl-def-RTCIceServer */
-      iceServers: [{
-         urls: 'stun:stun.stunprotocol.org'
-      }]
-   },
+        /** If true, jsxc send cookies when requesting RTCPeerConfig from the url above */
+        withCredentials: false,
 
-   /** Link to an online user manual */
-   onlineHelp: 'http://www.jsxc.org/manual.html',
+        /** ICE servers like defined in http://www.w3.org/TR/webrtc/#idl-def-RTCIceServer */
+        iceServers: [{
+            urls: 'stun:stun.stunprotocol.org'
+        }]
+    },
 
-   viewport: {
-      getSize: function() {
-         var w = $(window).width() - $('#jsxc_windowListSB').width();
-         var h = $(window).height();
+    /** Link to an online user manual */
+    onlineHelp: 'http://www.jsxc.org/manual.html',
 
-         if (jsxc.storage.getUserItem('roster') === 'shown') {
-            w -= $('#jsxc_roster').outerWidth(true);
-         }
+    viewport: {
+        getSize: function () {
+            var w = $(window).width() - $('#jsxc_windowListSB').width();
+            var h = $(window).height();
 
-         return {
-            width: w,
-            height: h
-         };
-      }
-   },
+            if (jsxc.storage.getUserItem('roster') === 'shown') {
+                w -= $('#jsxc_roster').outerWidth(true);
+            }
 
-   maxStorableSize: 1000000
+            return {
+                width: w,
+                height: h
+            };
+        }
+    },
+
+    maxStorableSize: 1000000
 };
 
 /**
@@ -10863,6 +10865,220 @@ jsxc.xmpp.bookmarks.showDialog = function(room) {
    });
 };
 
+/**
+ * Implements user search (XEP 0055)
+ *
+ *
+ */
+jsxc.xmpp.search = {
+
+    /**
+     * Where connection is stored
+     *
+     */
+    conn: null,
+
+    /**
+     * Domain for search. If not set at init{xmpp:{...}} domain will be used
+     *
+     */
+    searchDomain: null,
+
+    /**
+     * True if user search is available
+     */
+    userSearchAvailable: false,
+
+    /**
+     * Return true if user search is available
+     * @returns {boolean}
+     */
+    isUserSearchAvailable: function () {
+        return this.userSearchAvailable;
+    },
+
+    /**
+     * Initialize search functionnalities
+     */
+    init: function () {
+
+        //console.log("jsxc.lib.xmpp.search.init()");
+
+        var self = jsxc.xmpp.search;
+
+        // shortcut
+        self.conn = jsxc.xmpp.conn;
+
+        // retrieve domain
+        var xmppOpts = jsxc.options.get("xmpp");
+        self.searchDomain = xmppOpts.searchDomain || xmppOpts.domain;
+
+        // first request to know if search is available
+        self.requestForSearchCapabilities().then(function(){
+            console.log(arguments);
+        });
+
+    },
+
+    /**
+     * Return a promise containing all users in an array or an empty array
+     *
+     * <p>Each entry of the array contains:
+     * mail, jid, name, username
+     *
+     */
+    getUserList: function() {
+        var self = jsxc.xmpp.search;
+        return self.searchUsers("*");
+    },
+
+    /**
+     * Return a promise containing all users corresponding to "terms" in an array or an empty array
+     *
+     * <p>Wildcards "*" are allowed
+     *
+     * <p>Each entry of the array contains:
+     * mail, jid, name, username
+     *
+     */
+    searchUsers: function(terms){
+
+        var self = jsxc.xmpp.search;
+
+        // send XMPP request to get all users
+        var iq = $iq({
+            type: 'set',
+            to: self.searchDomain
+        })
+            .c('query', {xmlns: 'jabber:iq:search'})
+            .c('x', {xmlns: 'jabber:x:data', type:'submit'})
+            .c('field', {type: 'hidden', var:'FORM_TYPE'})
+            .c('value','jabber:iq:search').up().up()
+            .c('field', {var: 'search',type:"text-single"})
+            .c('value',terms).up().up()
+            .c('field', {var: 'Username', type:"boolean"})
+            .c('value','1').up().up()
+            .c('field', {var: 'Name', type:"boolean"})
+            .c('value','1').up().up();
+
+        // response in a promise
+        var defer = $.Deferred();
+
+        // listenning for iq response
+        self.conn.addHandler(function(stanza){
+
+            var id = $(stanza).attr('id');
+
+            // ignore not interesting messages
+            if (id !== self.userListRequest) {
+                return true;
+            }
+
+            // error while retieving users
+            if($(stanza).find("error").length > 0){
+
+                defer.resolve([]);
+
+                // remove handler when finished
+                return false;
+            }
+
+            var result = [];
+
+            // browse items and create object
+            $(stanza).find("item").each(function(){
+
+                var r = {};
+
+                // browse fields and get values
+                $(this).find("field").each(function(){
+                    r[$(this).attr("var").toLowerCase()] = $(this).text();
+                });
+
+                result.push(r);
+
+            });
+
+            // send list of item
+            defer.resolve(result);
+
+            // remove handler when finished
+            return false;
+
+        }, null, 'iq');
+
+        // send request after regitered handler
+        self.userListRequest = self.conn.sendIQ(iq);
+
+        // return a promise
+        return defer.promise();
+    },
+
+    /**
+     * Send request to know if search is available.
+     *
+     * <p>Designed to be called only one time at init.
+     *
+     * <p>If need more, need to be improved with promises
+     *
+     * <p>If search is available isUserSearchAvailable() return true.
+     */
+    requestForSearchCapabilities: function () {
+
+        var self = jsxc.xmpp.search;
+
+        // id of the XMPP request for filtering
+        var capabilityRequestId;
+
+        // request
+        var iq = $iq({
+            type: 'get',
+            to: self.searchDomain
+        }).c('query', {
+            xmlns: 'jabber:iq:search'
+        });
+
+        // response in a promise
+        var defer = $.Deferred();
+
+        // listenning for iq response
+        self.conn.addHandler(function(stanza){
+
+            var id = $(stanza).attr('id');
+
+            // filter iq responses
+            if (id !== capabilityRequestId) {
+                return true;
+            }
+
+            self.userSearchAvailable = $(stanza).find("error").length === 0;
+
+            // console.log("self.userSearchAvailable");
+            // console.log(self.userSearchAvailable);
+
+            defer.resolve(self.userSearchAvailable);
+
+            // remove handler when finished
+            return false;
+
+        }, null, 'iq');
+
+        // send request
+        capabilityRequestId = self.conn.sendIQ(iq);
+
+        // return a promise
+        return defer.promise();
+    },
+
+
+};
+
+/**
+ * Initialize user search
+ */
+$(document).ready(function () {
+    $(document).on('attached.jsxc', jsxc.xmpp.search.init);
+});
 
 
 jsxc.gui.template['aboutDialog'] = '<h3>JavaScript XMPP Chat</h3>\n' +
@@ -11270,8 +11486,6 @@ jsxc.gui.template['menuSettings'] = '<div>\n' +
 '';
 
 jsxc.gui.template['menuStatus'] = '<div id="jsxc_menu_status">\n' +
-'\n' +
-'    <p>Statut:</p>\n' +
 '    \n' +
 '    <div data-pres="online" class="actionButton jsxc_online" data-i18n="Online"></div>\n' +
 '    <div data-pres="chat" class="actionButton jsxc_chat" data-i18n="Chatty"></div>\n' +
@@ -11300,15 +11514,16 @@ jsxc.gui.template['menuWelcome'] = '<div>\n' +
 '    <div class="actionButton jsxc_onlineHelp" data-i18n="Online_help"></div>\n' +
 '    <div data-pres="offline" class="actionButton jsxc_menu_offline">Se déconnecter</div>\n' +
 '\n' +
-'    <p>\n' +
-'        Actualités:\n' +
-'    </p>\n' +
+'    <!-- Affichage des notifications -->\n' +
 '\n' +
-'    <ul>\n' +
-'        <li>Jean-Claude vient de se connecter</li>\n' +
-'        <li>Claudette vous à envoyé un message</li>\n' +
-'        <li>Vous avez manqué un message de Jules</li>\n' +
-'    </ul>\n' +
+'\n' +
+'    <div id="jsxc_notice">\n' +
+'        <p>\n' +
+'            Notifications: <span class="jsxc_menu_notif_number"></span>\n' +
+'        </p>\n' +
+'\n' +
+'        <ul></ul>\n' +
+'    </div>\n' +
 '\n' +
 '</div>';
 
@@ -11356,13 +11571,6 @@ jsxc.gui.template['roster'] = '<!-- Side bar with buddy list and menu -->\n' +
 '            <!-- Button for menu openning, image added with scss/_jsxc.scss -->\n' +
 '            <span></span>\n' +
 '\n' +
-'        </div>\n' +
-'\n' +
-'        <div id="jsxc_notice">\n' +
-'            <span></span>\n' +
-'            <div class="jsxc_inner">\n' +
-'                <ul></ul>\n' +
-'            </div>\n' +
 '        </div>\n' +
 '\n' +
 '        <div id="jsxc_presence">\n' +

@@ -350,13 +350,9 @@
 */
 
 #jsxc_notice {
-  height: 30px;
-  width: 30px;
-  float: right;
-  text-align: center;
-  line-height: 30px;
 
-  span {
+  // Notification number
+  span.jsxc_menu_notif_number {
     background-color: $notice_bg;
     border-radius: 11px;
     color: $notice_color;
@@ -366,7 +362,27 @@
     animation: bounce 2s 1s infinite;
   }
 
-  > span:empty {
+  // hide notif number if empty
+  span.jsxc_menu_notif_number:empty {
     display: none;
   }
+
+  ul{
+    padding: 0.2em;
+  }
+
+  li{
+    cursor: pointer;
+  }
+
+  /*
+
+  height: 30px;
+  width: 30px;
+  float: right;
+  text-align: center;
+  line-height: 30px;
+
+
+  */
 }

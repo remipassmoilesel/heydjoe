@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Essais sur les promesses JQuery</title>
+
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/base/jquery-ui.css">
+
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+    <script src="jquery.highlight.js"></script>
+
+    <script>
+
+        // source: http://tutorials.jenkov.com/jquery/deferred-objects.html
+
+        function log(object) {
+            $("#pg").append("<p>" + object + "</p>");
+        }
+
+        /**
+         * Créer un deferredObject et retourner une promesse après une seconde
+         *
+         * @returns {JQueryDeferred}
+         */
+        function doAsync2() {
+            var deferredObject = $.Deferred();
+
+            setTimeout(function () {
+                deferredObject.resolve();
+            }, 1000);
+
+            return deferredObject.promise();
+        }
+
+        var promise = doAsync2();
+
+        promise.done(function () {
+            console.log("Done !");
+            log("Done !");
+        });
+
+
+        function doAsync3() {
+            var deferredObject = $.Deferred();
+
+            setTimeout(function () {
+                var randomValue = Math.random();
+                if (randomValue < 0.5) {
+                    deferredObject.resolve();
+                } else {
+                    deferredObject.reject();
+                }
+            }, 1000);
+
+            return deferredObject.promise();
+        }
+
+        var promise = doAsync3();
+
+        promise.done(function () {
+            console.log("Done !");
+            log("Done !");
+        })
+                .fail(function () {
+                    console.log("Fail !");
+                    log("Fail !");
+                });
+
+        /**
+         * Les méthodes done et fail existent sur les objets Promise également.
+         *
+         * Il est possible de retourner un objet deferred à la place de la promesse.
+         *
+         * Mais en retournant une promesse, l'appel de fail ou done n'affectera
+         *
+         * @returns {*|JQueryDeferred}
+         */
+        function doAsync4() {
+            var deferredObject = $.Deferred();
+
+            setTimeout(function () {
+                var randomValue = Math.random();
+                if (randomValue < 0.5) {
+                    deferredObject.resolve();
+                } else {
+                    deferredObject.reject();
+                }
+            }, 1000);
+
+            return deferredObject;
+        }
+
+        // méthode dispo sur les promesses
+        promise.done()
+        promise.fail()
+        promise.always()
+        promise.progress()
+        promise.then()
+        promise.state()
+
+
+        // gérer la progression d'une promesse
+        function doAsync5() {
+            var deferredObject = $.Deferred();
+
+            setTimeout(function() { deferredObject.notify(1); }, 1000);
+            setTimeout(function() { deferredObject.notify(2); }, 2000);
+            setTimeout(function() { deferredObject.notify(3); }, 3000);
+            setTimeout(function() { deferredObject.resolve(); }, 4000);
+
+            return deferredObject.promise();
+        }
+
+        doAsync5().progress(function(progressValue) {
+            console.log("doAsync5 progress : " + progressValue)
+        }).done(function () {
+            console.log("doAsync5 succeeded. ");
+        });
+
+        // chainage
+        doAsync5().then(function(val) { console.log("done 1") },
+                function(val) { console.log("fail 1") },
+                function(val) { console.log("prog 1") }
+
+        ).then(function(val) { console.log("done 2") },
+                function(val) { console.log("fail 2") },
+                function(val) { console.log("prog 2") }
+        );
+
+        // retourner une valeur
+        var defer = $.Deferred(),
+                filtered = defer.then( null, function( value ) {
+                    return value * 3;
+                });
+
+        defer.reject( 6 );
+        filtered.fail(function( value ) {
+            log( "Value is ( 3*6 = ) 18: " + value );
+        });
+
+    </script>
+
+    <style type="text/css">
+
+
+    </style>
+
+</head>
+<body>
+
+<h1>JQuery deferred objects</h1>
+<h3>Essais sur les promesses jquery</h3>
+
+<div id="pg"></div>
+
+<p>Source: http://tutorials.jenkov.com/jquery/deferred-objects.html</p>
+
+</body>
+</html>

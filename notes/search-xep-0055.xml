@@ -1,67 +1,273 @@
+<root>
 
-<!-- requete -->
-<iq type='get'
-    from='remi@im.silverpeas.net/9qmwe110ur'
-    to='search.im.silverpeas.net'
-    id='search1'
-    xml:lang='en'>
-    <query xmlns='jabber:iq:search'/>
-</iq>
+    <!--
 
-<!-- reponse -->
-<iq xmlns='jabber:client'
-    type='result'
-    id='search1'
-    from='search.im.silverpeas.net'
-    to='remi@im.silverpeas.net/1pyp981tzw'>
-<query xmlns='jabber:iq:search'>
-    <instructions>
-        The following fields are available for searching. Wildcard (*) characters are allowed as part of the query.
-    </instructions>
-    <first/>
-    <last/>
-    <nick/>
-    <email/>
-    <x xmlns='jabber:x:data'
-       type='form'>
-        <title>
-            Advanced User Search
-        </title>
-        <instructions>
-            The following fields are available for searching. Wildcard (*) characters are allowed as part of the query.
-        </instructions>
-        <field var='FORM_TYPE'
-               type='hidden'>
-            <value>
-                jabber:iq:search
-            </value>
-        </field>
-        <field var='search'
-               type='text-single'
-               label='Search'>
-            <required/>
-        </field>
-        <field var='Username'
-               type='boolean'
-               label='Username'>
-            <value>
-                1
-            </value>
-        </field>
-        <field var='Name'
-               type='boolean'
-               label='Name'>
-            <value>
-                1
-            </value>
-        </field>
-        <field var='Email'
-               type='boolean'
-               label='Email'>
-            <value>
-                1
-            </value>
-        </field>
-    </x>
-</query>
-</iq>
+   Openfire ne prend pas en compte cette syntaxe, voir plus bas
+
+    -->
+
+    <!-- requete -->
+    <iq type='get'
+        from='remi@im.silverpeas.net/9qmwe110ur'
+        to='search.im.silverpeas.net'
+        id='search1'
+        xml:lang='en'>
+        <query xmlns='jabber:iq:search'/>
+    </iq>
+
+    <!-- reponse -->
+    <iq xmlns='jabber:client'
+        type='result'
+        id='search1'
+        from='search.im.silverpeas.net'
+        to='remi@im.silverpeas.net/1pyp981tzw'>
+        <query xmlns='jabber:iq:search'>
+            <instructions>
+                The following fields are available for searching. Wildcard (*) characters are allowed as part of the
+                query.
+            </instructions>
+            <first/>
+            <last/>
+            <nick/>
+            <email/>
+            <x xmlns='jabber:x:data'
+               type='form'>
+                <title>
+                    Advanced User Search
+                </title>
+                <instructions>
+                    The following fields are available for searching. Wildcard (*) characters are allowed as part of the
+                    query.
+                </instructions>
+                <field var='FORM_TYPE'
+                       type='hidden'>
+                    <value>
+                        jabber:iq:search
+                    </value>
+                </field>
+                <field var='search'
+                       type='text-single'
+                       label='Search'>
+                    <required/>
+                </field>
+                <field var='Username'
+                       type='boolean'
+                       label='Username'>
+                    <value>
+                        1
+                    </value>
+                </field>
+                <field var='Name'
+                       type='boolean'
+                       label='Name'>
+                    <value>
+                        1
+                    </value>
+                </field>
+                <field var='Email'
+                       type='boolean'
+                       label='Email'>
+                    <value>
+                        1
+                    </value>
+                </field>
+            </x>
+        </query>
+    </iq>
+
+    <!--
+
+        La bonne méthode est d'utiliser les DATA FORMS
+
+    -->
+
+    <!-- Demander tous utilisateur (Username *) -->
+
+    <iq type='set' to='search.im.silverpeas.net' xmlns='jabber:client'>
+        <query xmlns='jabber:iq:search'>
+            <x xmlns='jabber:x:data' type='submit'>
+                <field type='hidden' var='FORM_TYPE'>
+                    <value>jabber:iq:search</value>
+                </field>
+                <field var='search' type='text-single'>
+                    <value>*</value>
+                </field>
+                <field var='Username' type='boolean'>
+                    <value>1</value>
+                </field>
+                <field var='Name' type='boolean'>
+                    <value>1</value>
+                </field>
+            </x>
+        </query>
+    </iq>
+
+    <!--Réponse -->
+
+    <query xmlns="jabber:iq:search">
+        <x xmlns="jabber:x:data" type="result">
+            <field var="FORM_TYPE" type="hidden"/>
+            <reported>
+                <field var="jid" type="jid-single" label="JID"/>
+                <field var="Username" type="text-single" label="Username"/>
+                <field var="Name" type="text-single" label="Name"/>
+                <field var="Email" type="text-single" label="Email"/>
+            </reported>
+            <item>
+                <field var="Email">
+                    <value/>
+                </field>
+                <field var="jid">
+                    <value>julescesar@im.silverpeas.net</value>
+                </field>
+                <field var="Username">
+                    <value>julescesar</value>
+                </field>
+                <field var="Name">
+                    <value/>
+                </field>
+            </item>
+            <item>
+                <field var="Email">
+                    <value/>
+                </field>
+                <field var="jid">
+                    <value>nicolas@im.silverpeas.net</value>
+                </field>
+                <field var="Username">
+                    <value>nicolas</value>
+                </field>
+                <field var="Name">
+                    <value/>
+                </field>
+            </item>
+            <item>
+                <field var="Email">
+                    <value/>
+                </field>
+                <field var="jid">
+                    <value>yohann@im.silverpeas.net</value>
+                </field>
+                <field var="Username">
+                    <value>yohann</value>
+                </field>
+                <field var="Name">
+                    <value/>
+                </field>
+            </item>
+            <item>
+                <field var="Email">
+                    <value/>
+                </field>
+                <field var="jid">
+                    <value>sebastien@im.silverpeas.net</value>
+                </field>
+                <field var="Username">
+                    <value>sebastien</value>
+                </field>
+                <field var="Name">
+                    <value/>
+                </field>
+            </item>
+            <item>
+                <field var="Email">
+                    <value/>
+                </field>
+                <field var="jid">
+                    <value>aurore@im.silverpeas.net</value>
+                </field>
+                <field var="Username">
+                    <value>aurore</value>
+                </field>
+                <field var="Name">
+                    <value/>
+                </field>
+            </item>
+            <item>
+                <field var="Email">
+                    <value>remi.pace@silverpeas.org</value>
+                </field>
+                <field var="jid">
+                    <value>admin@im.silverpeas.net</value>
+                </field>
+                <field var="Username">
+                    <value>admin</value>
+                </field>
+                <field var="Name">
+                    <value>Administrator</value>
+                </field>
+            </item>
+            <item>
+                <field var="Email">
+                    <value/>
+                </field>
+                <field var="jid">
+                    <value>miguel@im.silverpeas.net</value>
+                </field>
+                <field var="Username">
+                    <value>miguel</value>
+                </field>
+                <field var="Name">
+                    <value/>
+                </field>
+            </item>
+            <item>
+                <field var="Email">
+                    <value/>
+                </field>
+                <field var="jid">
+                    <value>jean@im.silverpeas.net</value>
+                </field>
+                <field var="Username">
+                    <value>jean</value>
+                </field>
+                <field var="Name">
+                    <value/>
+                </field>
+            </item>
+            <item>
+                <field var="Email">
+                    <value/>
+                </field>
+                <field var="jid">
+                    <value>companioncube@im.silverpeas.net</value>
+                </field>
+                <field var="Username">
+                    <value>companioncube</value>
+                </field>
+                <field var="Name">
+                    <value/>
+                </field>
+            </item>
+            <item>
+                <field var="Email">
+                    <value/>
+                </field>
+                <field var="jid">
+                    <value>remi@im.silverpeas.net</value>
+                </field>
+                <field var="Username">
+                    <value>remi</value>
+                </field>
+                <field var="Name">
+                    <value/>
+                </field>
+            </item>
+            <item>
+                <field var="Email">
+                    <value/>
+                </field>
+                <field var="jid">
+                    <value>david@im.silverpeas.net</value>
+                </field>
+                <field var="Username">
+                    <value>david</value>
+                </field>
+                <field var="Name">
+                    <value/>
+                </field>
+            </item>
+        </x>
+    </query>
+
+</root>

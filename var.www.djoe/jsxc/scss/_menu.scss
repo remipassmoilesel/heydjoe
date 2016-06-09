@@ -12,7 +12,7 @@
   border-left: 1px solid #e1e1e1;
 
   .jsxc_menu_search_results {
-    background: #FFFF88;
+    background: rgba(126, 183, 59, 0.51);
   }
 
   .jsxc_menu_search_title_mark {
@@ -32,6 +32,9 @@
   }
 
   #jsxc_side_menu_search_bar {
+
+    margin-top: 0.4em;
+
     input {
       position: relative;
 
@@ -60,6 +63,34 @@
     }
 
     div.actionButton {
+      cursor: pointer;
+      border-radius: 5px;
+      color: #333;
+      text-decoration: none;
+      padding:0.5em 1em;
+      /*
+      background-color: #fff;
+      background-image: linear-gradient(to bottom, #ffffff, #e5e5e5);
+      */
+      border:1px solid #CCC;
+      font-size:90%;
+      margin-bottom:0.5em;
+
+      &:hover {
+        border: 1px solid #6fa800;
+        background: #7eb73b;
+        color: #fff;
+      }
+
+      &.notImplementedYet {
+        cursor: not-allowed;
+      }
+
+    }
+
+    /*
+    div.actionButton {
+
 
       cursor: pointer;
 
@@ -79,7 +110,7 @@
       text-decoration: none;
 
       &:hover {
-        background: rgb(0, 127, 255);
+        background: rgba(126, 183, 59, 0.77);
         text-decoration: none;
         color: white;
       }
@@ -89,6 +120,7 @@
       }
 
     }
+    */
 
     .ui-accordion-content {
       position: relative; /** Needed to avoid perfectscroll problems */
