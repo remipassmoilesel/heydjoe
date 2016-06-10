@@ -1,6 +1,5 @@
-# Fichiers de configuration
+# Configuration files
 
-Fichiers pour configuration des serveurs distants.
+For server config.
 
-Les fichiers présents dans la liste `list.txt`
-sont récupérés grâce au script `../rsync-get-config-files.sh`
+All files in `list.txt` are grabbed with `../rsync-get-config-files.sh`

@@ -168,7 +168,7 @@ jsxc.gui.menu = {
                 var roomList = jsxc.gui.createRoomList("#jsxc_availablesRooms");
 
                 // join room button
-                $('#jsxc_menuRooms .jsxc_joinRoom').click(function(){
+                $('#jsxc_menuRooms .jsxc_joinRoom').click(function () {
 
                     // retrieve first element selected
                     var selItems = $("#jsxc_availablesRooms .ui-selected");
@@ -180,7 +180,7 @@ jsxc.gui.menu = {
                     }
 
                     // join room
-                    jsxc.muc.join(selItems.data("roomjid"), jsxc.getCurrentNode());
+                    jsxc.muc.join(selItems.data("roomjid"), jsxc.xmpp.getCurrentNode());
 
                     // open window
                     jsxc.gui.window.open(selItems.data("roomjid"));
@@ -189,7 +189,7 @@ jsxc.gui.menu = {
 
                 // refresh list button
                 $('#jsxc_menuRooms .jsxc_refreshRoomList').click(function () {
-                    
+
                     roomList.updateRoomList();
 
                     jsxc.gui.feedback("La liste des salons est en cours<br> de mise à jour");
@@ -197,8 +197,94 @@ jsxc.gui.menu = {
                 });
 
                 // display room dialog
-                $("#jsxc_menuRooms .jsxc_createRoom").click(jsxc.muc.showJoinChat);
+                $("#jsxc_menuRooms .jsxc_roomDialog").click(jsxc.muc.showJoinChat);
 
+
+                // check room name format
+                var roomNameTxt = $('#jsxc_menuRooms .jsxc_inputChatRoomName');
+                roomNameTxt.keyup(function () {
+
+                    var name = $(this).val().trim();
+
+                    if (name === "") {
+                        roomNameTxt.removeClass("jsxc_invalid");
+                        return;
+                    }
+
+                    if (name.match(/^[a-z0-9]{5,}$/i) === null) {
+                        roomNameTxt.addClass("jsxc_invalid");
+                    }
+
+                    else {
+                        roomNameTxt.removeClass("jsxc_invalid");
+                    }
+
+                    return;
+
+                });
+
+
+                // create room
+                $('#jsxc_menuRooms .jsxc_createRoom').click(function () {
+
+                    console.log($('#jsxc_menuRooms .jsxc_inputChatRoomName').val().trim());
+
+                    var roomName = $('#jsxc_menuRooms .jsxc_inputChatRoomName').val().trim();
+
+                    // check room name format
+                    if (roomName.match(/^[a-z0-9]{5,}$/i) === null) {
+
+                        jsxc.gui.feedback("Le nom du salon est invalide: <br> /^[a-z0-9]{5,}$/i", "warn");
+
+                        return false;
+                    }
+
+                    var fullRoomName = roomName + "@" + jsxc.options.get('muc').server;
+
+                    jsxc.xmpp.conn.disco.info(fullRoomName, null,
+
+                        // room already exist
+                        function (stanza) {
+
+                            // join room
+                            jsxc.muc.join(fullRoomName, jsxc.xmpp.getCurrentNode());
+
+                            // open window
+                            jsxc.gui.window.open(fullRoomName);
+
+                            jsxc.gui.feedback("Le salon existe déjà: <br>" + roomName, "warn");
+
+                        },
+
+                        function (stanza) {
+
+                            // room not found, create
+                            if ($(stanza).find("item-not-found").length > 0) {
+
+                                // create room
+                                jsxc.muc.join(fullRoomName, jsxc.xmpp.getCurrentNode());
+
+                                // locale update list TODO: Broadcast event ?
+                                roomList.updateRoomList();
+
+                                // open window
+                                jsxc.gui.window.open(fullRoomName);
+
+                                // empty text field
+                                $('#jsxc_menuRooms .jsxc_inputChatRoomName').val("");
+
+                                jsxc.gui.feedback("Le salon à été créé");
+
+                            }
+
+                            // error while creating
+                            else {
+                                jsxc.gui.feedback("Erreur lors de la création du salon", "warn");
+                            }
+
+                        });
+
+                });
 
             },
 

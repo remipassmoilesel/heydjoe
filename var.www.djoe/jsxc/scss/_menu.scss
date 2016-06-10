@@ -11,6 +11,17 @@
   z-index: 80;
   border-left: 1px solid #e1e1e1;
 
+  input {
+    position: static;
+  }
+
+  .jsxc_inputChatRoomName{
+    height: 25px;
+    padding: 3px;
+    width: 80%;
+    margin: 5px;
+  }
+
   .jsxc_menu_search_results {
     background: rgba(126, 183, 59, 0.51);
   }

@@ -388,14 +388,19 @@ jsxc.gui.template['menuRooms'] = '<div id="jsxc_menuRooms">\n' +
 '    Liste des salons disponibles:\n' +
 '    <div id="jsxc_availablesRooms"></div>\n' +
 '\n' +
-'\n' +
-'    <div class="actionButton notImplementedYet">Créer un salon</div>\n' +
-'\n' +
 '    <div class="jsxc_joinRoom actionButton">Rejoindre un salon</div>\n' +
 '\n' +
 '    <div class="jsxc_refreshRoomList actionButton">Rafraichir la liste</div>\n' +
 '\n' +
-'    <div class="jsxc_createRoom actionButton">Boite de dialogue "salons"</div>\n' +
+'    <div style="text-align: center">\n' +
+'        <input type="text" class="jsxc_inputChatRoomName"/>\n' +
+'    </div>\n' +
+'\n' +
+'    <div class="jsxc_createRoom actionButton">Créer un salon</div>\n' +
+'\n' +
+'    <!--<div class="jsxc_roomDialog actionButton" >Boite de dialogue "salons"</div>-->\n' +
+'\n' +
+'    <div class="jsxc_deleteRoom actionButton notImplementedYet">Supprimer un salon</div>\n' +
 '\n' +
 '</div>';
 

@@ -950,16 +950,5 @@ jsxc = {
         console.error(time);
         console.error((new Error()).stack);
     },
-
-    /**
-     * Return the node of the current user. Example: jean@something/client is connected so getCurrentNode() return jean
-     * @returns {*}
-     */
-    getCurrentNode: function(){
-        return Strophe.getNodeFromJid(jsxc.xmpp.conn.jid);
-    }
     
-    
-    
-}
-;
+};
