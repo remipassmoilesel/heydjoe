@@ -975,6 +975,8 @@ jsxc.xmpp = {
                 alias: alias || null
             });
         }
+        
+        $(document).trigger("buddyListChanged.jsxc");
     },
 
     /**
@@ -985,7 +987,7 @@ jsxc.xmpp = {
     removeBuddy: function (jid) {
         var bid = jsxc.jidToBid(jid);
 
-        // Shortcut to remove buddy from roster and cancle all subscriptions
+        // Shortcut to remove buddy from roster and cancel all subscriptions
         var iq = $iq({
             type: 'set'
         }).c('query', {
@@ -997,6 +999,8 @@ jsxc.xmpp = {
         jsxc.xmpp.conn.sendIQ(iq);
 
         jsxc.gui.roster.purge(bid);
+
+        $(document).trigger("buddyListChanged.jsxc");
     },
 
     onReceived: function (stanza) {

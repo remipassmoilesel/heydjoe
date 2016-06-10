@@ -366,7 +366,10 @@ jsxc.gui.template['menuContacts'] = '<div id="jsxc_menuContacts">\n' +
 '    <div id="jsxc_contactsUserList"></div>\n' +
 '\n' +
 '    <div class="jsxc_addBuddyFromList actionButton">Inviter un utilisateur</div>\n' +
+'\n' +
 '    <div class="jsxc_removeBuddyFromList actionButton">Supprimer un contact</div>\n' +
+'\n' +
+'    <div class="jsxc_refreshBuddyList actionButton">Rafraichir la liste</div>\n' +
 '\n' +
 '</div>';
 
@@ -380,7 +383,7 @@ jsxc.gui.template['menuNotifications'] = '<div>\n' +
 '\n' +
 '</div>';
 
-jsxc.gui.template['menuRooms'] = '<div>\n' +
+jsxc.gui.template['menuRooms'] = '<div id="jsxc_menuRooms">\n' +
 '\n' +
 '    Liste des salons disponibles:\n' +
 '    <div id="jsxc_availablesRooms"></div>\n' +
@@ -388,10 +391,9 @@ jsxc.gui.template['menuRooms'] = '<div>\n' +
 '\n' +
 '    <div class="actionButton notImplementedYet">Créer un salon</div>\n' +
 '\n' +
-'    <div class="actionButton notImplementedYet">Rejoindre un salon</div>\n' +
+'    <div class="jsxc_joinRoom actionButton">Rejoindre un salon</div>\n' +
 '\n' +
-'    <div class="actionButton notImplementedYet">Liste des salons</div>\n' +
-'\n' +
+'    <div class="jsxc_refreshRoomList actionButton">Rafraichir la liste</div>\n' +
 '\n' +
 '    <div class="jsxc_createRoom actionButton">Boite de dialogue "salons"</div>\n' +
 '\n' +

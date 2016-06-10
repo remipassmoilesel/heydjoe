@@ -3781,6 +3781,8 @@ li[data-type="groupchat"] .jsxc_video {
   height: 150px;
   margin: 5px;
   border: 1px solid #dddddd; }
+  .jsxc_userListContainer .jsxc_userListRefreshButton {
+    position: absolute; }
   .jsxc_userListContainer .jsxc_userList {
     list-style-type: none;
     margin: 0;

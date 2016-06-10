@@ -54,71 +54,93 @@ jsxc.gui.createRoomList = function (selector) {
     // make list scrollable
     root.perfectScrollbar();
 
-    // afficher les salons disponibles
-    jsxc.xmpp.conn.muc.listRooms(jsxc.options.get('muc').server,
+    // refresh room list
+    var updateRoomList = function () {
 
-        // getting list
-        function (stanza) {
+        jsxc.xmpp.conn.muc.listRooms(jsxc.options.get('muc').server,
 
-            console.log(stanza);
+            // getting list
+            function (stanza) {
 
-            var items = $(stanza).find('item');
+                list.empty();
 
-            // no rooms
-            if (items.length < 1) {
+                var items = $(stanza).find('item');
+
+                // no rooms
+                if (items.length < 1) {
+
+                    // create list element
+                    var li = $("<li></li>")
+                        .text("Aucun salon disponible")
+                        .attr({
+                            'class': 'ui-widget-content'
+                        });
+
+                    list.append(li);
+
+                }
+
+                // list all rooms
+                else {
+
+                    items.each(function () {
+
+                        var rjid = $(this).attr('jid').toLowerCase();
+                        var rnode = Strophe.getNodeFromJid(rjid);
+                        var rname = $(this).attr('name') || rnode;
+
+                        // create list element
+                        var li = $("<li></li>")
+                            .text(rname)
+                            .attr({
+                                'data-roomjid': rjid,
+                                'data-rname': rname,
+                                'class': 'ui-widget-content',
+                                'title': rjid
+                            });
+
+                        list.append(li);
+                    });
+                }
+
+            },
+
+            // error while getting list
+            function () {
+
+                list.empty();
+
+                jsxc.debug("Unable to retrieve rooms", arguments);
 
                 // create list element
                 var li = $("<li></li>")
-                    .text("Aucun salon disponible")
+                    .text("Liste des salons indisponible")
                     .attr({
                         'class': 'ui-widget-content'
                     });
 
                 list.append(li);
+            });
 
-            }
+    };
 
-            // list all rooms
-            else {
+    // update each time buddy list change
+    $(document).on("status.muc.jsxc", updateRoomList);
 
-                items.each(function () {
+    // first update
+    updateRoomList();
 
-                    var rjid = $(this).attr('jid').toLowerCase();
-                    var rnode = Strophe.getNodeFromJid(rjid);
-                    var rname = $(this).attr('name') || rnode;
+    return {
+        /**
+         * Jquery object on root
+         */
+        "root": root,
 
-                    // create list element
-                    var li = $("<li></li>")
-                        .text(rname)
-                        .attr({
-                            'data-roomjid': rjid,
-                            'data-rname': rname,
-                            'class': 'ui-widget-content',
-                            'title': rjid
-                        });
-
-                    list.append(li);
-                });
-            }
-
-        },
-
-        // error while getting list
-        function () {
-
-            jsxc.debug("Unable to retrieve rooms", arguments);
-
-            // create list element
-            var li = $("<li></li>")
-                .text("Liste des salons indisponible")
-                .attr({
-                    'class': 'ui-widget-content'
-                });
-
-            list.append(li);
-        }
-    );
-
+        /**
+         * Update list
+         */
+        "updateRoomList": updateRoomList
+    };
 
 };
 
@@ -150,10 +172,16 @@ jsxc.gui.createUserList = function (selector) {
     root.perfectScrollbar();
 
     // update lists
-    var updateUserList = function () {
+    var updateUserList = function (freshList) {
+
+        var search = jsxc.xmpp.search.getUserList;
+
+        if (freshList === "freshList") {
+            search = jsxc.xmpp.search.getFreshUserList;
+        }
 
         // add contact to list
-        jsxc.xmpp.search.getUserList().then(function (users) {
+        search().then(function (users) {
 
             // remove exisiting elements
             list.empty();
@@ -198,8 +226,21 @@ jsxc.gui.createUserList = function (selector) {
     // update each time buddy list change
     $(document).on("add.roster.jsxc", updateUserList);
     $(document).on("cloaded.roster.jsxc", updateUserList);
+    $(document).on("buddyListChanged.jsxc", updateUserList);
 
     // first update
     updateUserList();
+
+    return {
+        /**
+         * Jquery object on root
+         */
+        "root": root,
+
+        /**
+         * Update list
+         */
+        "updateUserList": updateUserList
+    };
 
 };

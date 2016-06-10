@@ -110,6 +110,9 @@ jsxc.xmpp.search = {
             // send list of users
             defer.resolve(clone);
 
+            // console.log("cached user list");
+            // console.log(self.userListCache.length);
+
         }
 
         else {

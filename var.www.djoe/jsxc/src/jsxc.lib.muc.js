@@ -445,6 +445,7 @@ jsxc.muc = {
      * @param {string} [subject] Current subject
      */
     join: function (room, nickname, password, roomName, subject, bookmark, autojoin) {
+
         var self = jsxc.muc;
 
         jsxc.storage.setUserItem('buddy', room, {
@@ -1385,7 +1386,7 @@ jsxc.muc = {
                 $('#jsxc_nickname').val(data.nickname);
                 $('#jsxc_bookmark').prop('checked', data.bookmarked);
                 $('#jsxc_autojoin').prop('checked', data.autojoin);
-                $('#jsxc_dialog .jsxc_bookmark').hide();
+                $('#jsxc_showJoinChat .jsxc_bookmark').hide();
             } else {
                 jsxc.gui.window.open(room);
             }

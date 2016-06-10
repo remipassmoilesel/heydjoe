@@ -1,8 +1,17 @@
 # Remarques générales sur JSXC
 
+* Informations sur les salons:
+
+    
+    // Utiliser
+    jsxc.xmpp.conn.disco.info(room, null, cb, cb);
+
 * Utilitaires:
 
-
+    
+    // obtenir je jid courant
+    jsxc.xmpp.conn.jid
+    
     jsxc.stackTrace() // print stack trace
     jsxc.xmpp.getLocaleBuddyListBJID() // array of local buddies
     jsxc.el_exists($("#selector")); // check if element exist

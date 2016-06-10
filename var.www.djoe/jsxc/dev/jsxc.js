@@ -953,8 +953,20 @@ jsxc = {
      *
      */
     stackTrace: function(){
-        console.err(new Error.stack);
+        var time = (new Date()).getTime();
+        console.error(time);
+        console.error((new Error()).stack);
+    },
+
+    /**
+     * Return the node of the current user. Example: jean@something/client is connected so getCurrentNode() return jean
+     * @returns {*}
+     */
+    getCurrentNode: function(){
+        return Strophe.getNodeFromJid(jsxc.xmpp.conn.jid);
     }
+    
+    
     
 }
 ;
@@ -1936,6 +1948,8 @@ jsxc.xmpp = {
                 alias: alias || null
             });
         }
+        
+        $(document).trigger("buddyListChanged.jsxc");
     },
 
     /**
@@ -1946,7 +1960,7 @@ jsxc.xmpp = {
     removeBuddy: function (jid) {
         var bid = jsxc.jidToBid(jid);
 
-        // Shortcut to remove buddy from roster and cancle all subscriptions
+        // Shortcut to remove buddy from roster and cancel all subscriptions
         var iq = $iq({
             type: 'set'
         }).c('query', {
@@ -1958,6 +1972,8 @@ jsxc.xmpp = {
         jsxc.xmpp.conn.sendIQ(iq);
 
         jsxc.gui.roster.purge(bid);
+
+        $(document).trigger("buddyListChanged.jsxc");
     },
 
     onReceived: function (stanza) {
@@ -5594,9 +5610,10 @@ jsxc.gui.menu = {
                  * Add or remove a contact from list
                  */
 
-                // add
-                var buttonAdd = $('#jsxc_menuContacts .jsxc_addBuddyFromList');
-                buttonAdd.click(function () {
+                var userList = jsxc.gui.createUserList("#jsxc_contactsUserList");
+
+                // invite user
+                $('#jsxc_menuContacts .jsxc_addBuddyFromList').click(function () {
 
                     // retrieve first element selected
                     var selItems = $("#jsxc_contactsUserList .ui-selected");
@@ -5616,13 +5633,13 @@ jsxc.gui.menu = {
                     // add user
                     jsxc.xmpp.addBuddy(selItems.data("userjid"));
 
-                    jsxc.gui.feedback("Une invitation à été envoyée à " + selItems.data("userjid"));
+                    jsxc.gui.feedback("Une invitation à été envoyée<br> à " + selItems.data("userjid"));
 
                     // stop propaging
                     return false;
                 });
 
-                // remove
+                // remove contact
                 $('#jsxc_menuContacts .jsxc_removeBuddyFromList').click(function () {
 
                     // retrieve first element selected
@@ -5636,7 +5653,15 @@ jsxc.gui.menu = {
 
                 });
 
-                jsxc.gui.createUserList("#jsxc_contactsUserList");
+                // refresh list
+                $('#jsxc_menuContacts .jsxc_refreshBuddyList').click(function () {
+
+                    userList.updateUserList("freshList");
+
+                    jsxc.gui.feedback("La liste d'utilisateur est en cours<br> de mise à jour");
+
+                });
+
 
             },
         },
@@ -5672,16 +5697,42 @@ jsxc.gui.menu = {
             template: "menuRooms",
             init: function () {
 
-                console.log("jsxc.xmpp.conn.muc");
-                console.log(jsxc.xmpp.conn.muc);
-
                 // room selection
-                jsxc.gui.createRoomList("#jsxc_availablesRooms");
+                var roomList = jsxc.gui.createRoomList("#jsxc_availablesRooms");
+
+                // join room button
+                $('#jsxc_menuRooms .jsxc_joinRoom').click(function(){
+
+                    // retrieve first element selected
+                    var selItems = $("#jsxc_availablesRooms .ui-selected");
+
+                    // test if a user is selected
+                    if (selItems.length < 1) {
+                        jsxc.gui.feedback("Vous devez sélectionner un salon", "warn");
+                        return;
+                    }
+
+                    // join room
+                    jsxc.muc.join(selItems.data("roomjid"), jsxc.getCurrentNode());
+
+                    // open window
+                    jsxc.gui.window.open(selItems.data("roomjid"));
+
+                });
+
+                // refresh list button
+                $('#jsxc_menuRooms .jsxc_refreshRoomList').click(function () {
+                    
+                    roomList.updateRoomList();
+
+                    jsxc.gui.feedback("La liste des salons est en cours<br> de mise à jour");
+
+                });
 
                 // display room dialog
-                $(".jsxc_createRoom").click(jsxc.muc.showJoinChat);
+                $("#jsxc_menuRooms .jsxc_createRoom").click(jsxc.muc.showJoinChat);
 
-                
+
             },
 
         },
@@ -5705,7 +5756,6 @@ jsxc.gui.menu = {
                 $('#jsxc_side_menu_content .jsxc_dialog_settings').click(function () {
                     jsxc.gui.showSettings();
                 });
-
 
                 // display or hide offline buddies
                 $('#jsxc_side_menu_content .jsxc_hideOffline').click(function () {
@@ -6132,71 +6182,93 @@ jsxc.gui.createRoomList = function (selector) {
     // make list scrollable
     root.perfectScrollbar();
 
-    // afficher les salons disponibles
-    jsxc.xmpp.conn.muc.listRooms(jsxc.options.get('muc').server,
+    // refresh room list
+    var updateRoomList = function () {
 
-        // getting list
-        function (stanza) {
+        jsxc.xmpp.conn.muc.listRooms(jsxc.options.get('muc').server,
 
-            console.log(stanza);
+            // getting list
+            function (stanza) {
 
-            var items = $(stanza).find('item');
+                list.empty();
 
-            // no rooms
-            if (items.length < 1) {
+                var items = $(stanza).find('item');
+
+                // no rooms
+                if (items.length < 1) {
+
+                    // create list element
+                    var li = $("<li></li>")
+                        .text("Aucun salon disponible")
+                        .attr({
+                            'class': 'ui-widget-content'
+                        });
+
+                    list.append(li);
+
+                }
+
+                // list all rooms
+                else {
+
+                    items.each(function () {
+
+                        var rjid = $(this).attr('jid').toLowerCase();
+                        var rnode = Strophe.getNodeFromJid(rjid);
+                        var rname = $(this).attr('name') || rnode;
+
+                        // create list element
+                        var li = $("<li></li>")
+                            .text(rname)
+                            .attr({
+                                'data-roomjid': rjid,
+                                'data-rname': rname,
+                                'class': 'ui-widget-content',
+                                'title': rjid
+                            });
+
+                        list.append(li);
+                    });
+                }
+
+            },
+
+            // error while getting list
+            function () {
+
+                list.empty();
+
+                jsxc.debug("Unable to retrieve rooms", arguments);
 
                 // create list element
                 var li = $("<li></li>")
-                    .text("Aucun salon disponible")
+                    .text("Liste des salons indisponible")
                     .attr({
                         'class': 'ui-widget-content'
                     });
 
                 list.append(li);
+            });
 
-            }
+    };
 
-            // list all rooms
-            else {
+    // update each time buddy list change
+    $(document).on("status.muc.jsxc", updateRoomList);
 
-                items.each(function () {
+    // first update
+    updateRoomList();
 
-                    var rjid = $(this).attr('jid').toLowerCase();
-                    var rnode = Strophe.getNodeFromJid(rjid);
-                    var rname = $(this).attr('name') || rnode;
+    return {
+        /**
+         * Jquery object on root
+         */
+        "root": root,
 
-                    // create list element
-                    var li = $("<li></li>")
-                        .text(rname)
-                        .attr({
-                            'data-roomjid': rjid,
-                            'data-rname': rname,
-                            'class': 'ui-widget-content',
-                            'title': rjid
-                        });
-
-                    list.append(li);
-                });
-            }
-
-        },
-
-        // error while getting list
-        function () {
-
-            jsxc.debug("Unable to retrieve rooms", arguments);
-
-            // create list element
-            var li = $("<li></li>")
-                .text("Liste des salons indisponible")
-                .attr({
-                    'class': 'ui-widget-content'
-                });
-
-            list.append(li);
-        }
-    );
-
+        /**
+         * Update list
+         */
+        "updateRoomList": updateRoomList
+    };
 
 };
 
@@ -6228,10 +6300,16 @@ jsxc.gui.createUserList = function (selector) {
     root.perfectScrollbar();
 
     // update lists
-    var updateUserList = function () {
+    var updateUserList = function (freshList) {
+
+        var search = jsxc.xmpp.search.getUserList;
+
+        if (freshList === "freshList") {
+            search = jsxc.xmpp.search.getFreshUserList;
+        }
 
         // add contact to list
-        jsxc.xmpp.search.getUserList().then(function (users) {
+        search().then(function (users) {
 
             // remove exisiting elements
             list.empty();
@@ -6276,9 +6354,22 @@ jsxc.gui.createUserList = function (selector) {
     // update each time buddy list change
     $(document).on("add.roster.jsxc", updateUserList);
     $(document).on("cloaded.roster.jsxc", updateUserList);
+    $(document).on("buddyListChanged.jsxc", updateUserList);
 
     // first update
     updateUserList();
+
+    return {
+        /**
+         * Jquery object on root
+         */
+        "root": root,
+
+        /**
+         * Update list
+         */
+        "updateUserList": updateUserList
+    };
 
 };
 /**
@@ -6728,6 +6819,7 @@ jsxc.muc = {
      * @param {string} [subject] Current subject
      */
     join: function (room, nickname, password, roomName, subject, bookmark, autojoin) {
+
         var self = jsxc.muc;
 
         jsxc.storage.setUserItem('buddy', room, {
@@ -7668,7 +7760,7 @@ jsxc.muc = {
                 $('#jsxc_nickname').val(data.nickname);
                 $('#jsxc_bookmark').prop('checked', data.bookmarked);
                 $('#jsxc_autojoin').prop('checked', data.autojoin);
-                $('#jsxc_dialog .jsxc_bookmark').hide();
+                $('#jsxc_showJoinChat .jsxc_bookmark').hide();
             } else {
                 jsxc.gui.window.open(room);
             }
@@ -11282,6 +11374,9 @@ jsxc.xmpp.search = {
             // send list of users
             defer.resolve(clone);
 
+            // console.log("cached user list");
+            // console.log(self.userListCache.length);
+
         }
 
         else {
@@ -11839,7 +11934,10 @@ jsxc.gui.template['menuContacts'] = '<div id="jsxc_menuContacts">\n' +
 '    <div id="jsxc_contactsUserList"></div>\n' +
 '\n' +
 '    <div class="jsxc_addBuddyFromList actionButton">Inviter un utilisateur</div>\n' +
+'\n' +
 '    <div class="jsxc_removeBuddyFromList actionButton">Supprimer un contact</div>\n' +
+'\n' +
+'    <div class="jsxc_refreshBuddyList actionButton">Rafraichir la liste</div>\n' +
 '\n' +
 '</div>';
 
@@ -11853,7 +11951,7 @@ jsxc.gui.template['menuNotifications'] = '<div>\n' +
 '\n' +
 '</div>';
 
-jsxc.gui.template['menuRooms'] = '<div>\n' +
+jsxc.gui.template['menuRooms'] = '<div id="jsxc_menuRooms">\n' +
 '\n' +
 '    Liste des salons disponibles:\n' +
 '    <div id="jsxc_availablesRooms"></div>\n' +
@@ -11861,10 +11959,9 @@ jsxc.gui.template['menuRooms'] = '<div>\n' +
 '\n' +
 '    <div class="actionButton notImplementedYet">Créer un salon</div>\n' +
 '\n' +
-'    <div class="actionButton notImplementedYet">Rejoindre un salon</div>\n' +
+'    <div class="jsxc_joinRoom actionButton">Rejoindre un salon</div>\n' +
 '\n' +
-'    <div class="actionButton notImplementedYet">Liste des salons</div>\n' +
-'\n' +
+'    <div class="jsxc_refreshRoomList actionButton">Rafraichir la liste</div>\n' +
 '\n' +
 '    <div class="jsxc_createRoom actionButton">Boite de dialogue "salons"</div>\n' +
 '\n' +
