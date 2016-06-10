@@ -1,5 +1,16 @@
 # JSXC: notes sur l'interface
 
+* Boites de dialogue
+
+    
+    jsxc.gui.dialog.open(....)
+    jsxc.gui.dialog.close(....)
+
+* Feedback: ajout d'une méthode permettant d'afficher des toasts
+
+
+    jsxc.gui.feedback("message", "type");
+
 * Il est possible d'jaouter le roster à autre chose que body grâce à l'option:
 
 

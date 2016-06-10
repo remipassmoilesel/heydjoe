@@ -3740,6 +3740,39 @@ li[data-type="groupchat"] .jsxc_video {
       position: relative;
       /** Needed to avoid perfectscroll problems */ }
 
+#jsxc_menu {
+  height: 44px;
+  width: 44px;
+  cursor: pointer;
+  float: right;
+  text-align: center;
+  /** Menu button for open / close */
+  /** Menu button for open / close */ }
+  #jsxc_menu:hover > span {
+    opacity: 1; }
+  #jsxc_menu > span {
+    opacity: 0.5;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-image: url('../img/menu_black.svg');
+    background-repeat: no-repeat;
+    background-position: center 10px;
+    background-size: 17px; }
+  @media (min-width: 768px) {
+    #jsxc_menu {
+      height: 30px;
+      width: 30px; } }
+
+/**
+  Area to print feebacks
+*/
+.jsxc_feedbackArea {
+  color: #3F3F3F;
+  font-size: 11px;
+  font-style: italic;
+  text-align: center; }
+
 /**
   User selection list
 */
@@ -3768,29 +3801,30 @@ li[data-type="groupchat"] .jsxc_video {
       content: url('../img/user_list_buddy.png');
       vertical-align: -30%; }
 
-#jsxc_menu {
-  height: 44px;
-  width: 44px;
-  cursor: pointer;
-  float: right;
-  text-align: center;
-  /** Menu button for open / close */
-  /** Menu button for open / close */ }
-  #jsxc_menu:hover > span {
-    opacity: 1; }
-  #jsxc_menu > span {
-    opacity: 0.5;
-    display: block;
-    width: 100%;
-    height: 100%;
-    background-image: url('../img/menu_black.svg');
-    background-repeat: no-repeat;
-    background-position: center 10px;
-    background-size: 17px; }
-  @media (min-width: 768px) {
-    #jsxc_menu {
-      height: 30px;
-      width: 30px; } }
+/**
+  User selection list
+*/
+.jsxc_roomListContainer {
+  position: relative;
+  height: 150px;
+  margin: 5px;
+  border: 1px solid #dddddd; }
+  .jsxc_roomListContainer .jsxc_roomList {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%; }
+    .jsxc_roomListContainer .jsxc_roomList .ui-selecting {
+      background: #FECA40; }
+    .jsxc_roomListContainer .jsxc_roomList .ui-selected {
+      background: #7eb73b;
+      color: white; }
+    .jsxc_roomListContainer .jsxc_roomList li {
+      margin: 3px;
+      padding: 0.4em;
+      cursor: pointer;
+      height: 20px;
+      vertical-align: middle; }
 
 .jsxc_right {
   text-align: right; }
@@ -4171,15 +4205,6 @@ img.jsxc_vCard {
   @media (min-width: 768px) {
     .jsxc_more {
       width: 25px; } }
-
-/**
-  Area to print feebacks
-*/
-.jsxc_feedbackArea {
-  color: #3F3F3F;
-  font-size: 11px;
-  font-style: italic;
-  text-align: center; }
 
 .jsxc_remotevideo, .jsxc_noRemoteVideo {
   width: 100%;

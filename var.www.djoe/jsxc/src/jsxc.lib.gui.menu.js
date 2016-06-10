@@ -111,10 +111,11 @@ jsxc.gui.menu = {
                     // retrieve first element selected
                     var selItems = $("#jsxc_menuContacts .ui-selected");
 
-                    if (selItems.length > 0) {
-
-
+                    if (selItems.length < 1) {
+                        jsxc.gui.feedback("Vous devez sélectionner un utilisateur", "warn");
                     }
+
+                    jsxc.gui.showRemoveDialog(selItems.data("userjid"));
 
                 });
 
@@ -153,6 +154,17 @@ jsxc.gui.menu = {
             label: "Salons et cannaux",
             template: "menuRooms",
             init: function () {
+
+                console.log("jsxc.xmpp.conn.muc");
+                console.log(jsxc.xmpp.conn.muc);
+
+                // room selection
+                jsxc.gui.createRoomList("#jsxc_availablesRooms");
+
+                // display room dialog
+                $(".jsxc_createRoom").click(jsxc.muc.showJoinChat);
+
+                
             },
 
         },

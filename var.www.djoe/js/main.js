@@ -1,7 +1,6 @@
-
 // le domaine de la page
 // var domain =  document.location.host;
-var domain =  "im.silverpeas.net";
+var domain = "im.silverpeas.net";
 
 // service XMPP / HTTP
 //var boshUrl =  'http://' + domain + ':7070/http-bind/';
@@ -21,8 +20,8 @@ var consoleUrl = "https://" + domain + "/xmpp-console/";
 var discoUrl = "https://" + domain + "/xmpp-disco/";
 
 /**
-    Logins disponibles
-*/
+ Logins disponibles
+ */
 var availablesLogins = [
     "admin",
     "remi",
@@ -37,12 +36,12 @@ var availablesLogins = [
     "companioncube"
 ];
 
-$(function() {
+$(function () {
 
     console.log("Initialisation");
 
     // activer les panneau Jquery UI du fichier index
-    $( "#tabs" ).tabs();
+    $("#tabs").tabs();
 
     // afficher les comptes dispos etc ...
     constructGui();
@@ -59,9 +58,11 @@ $(function() {
             searchDomain: searchDomain
         },
 
+        //muc
+        
         /** Off the record désactivé car inutile et source d'erreurs */
         otr: {
-          enable: false
+            enable: false
         },
 
         /** Si des erreurs 404 apparaissent dans la console, il faut adapter cette variable */
@@ -70,30 +71,31 @@ $(function() {
         /** RTCPeerConfiguration used for audio/video calls. */
         RTCPeerConfig: {
 
-        /** Time-to-live for config from url */
-        ttl: 3600,
+            /** Time-to-live for config from url */
+            ttl: 3600,
 
-        /** [optional] If set, jsxc requests and uses RTCPeerConfig from this url */
-        url: null,
+            /** [optional] If set, jsxc requests and uses RTCPeerConfig from this url */
+            url: null,
 
-        /** If true, jsxc send cookies when requesting RTCPeerConfig from the url above */
-        withCredentials: false,
+            /** If true, jsxc send cookies when requesting RTCPeerConfig from the url above */
+            withCredentials: false,
 
-        /** ICE servers like defined in http://www.w3.org/TR/webrtc/#idl-def-RTCIceServer */
-        /**
-            Le serveur STUN est accessible en HTTP et en HTTPS, mais seul le HTTPS et laissé.
-            Le serveur TURN n'est accessible qu'en HTTPS
+            /** ICE servers like defined in http://www.w3.org/TR/webrtc/#idl-def-RTCIceServer */
+            /**
+             Le serveur STUN est accessible en HTTP et en HTTPS, mais seul le HTTPS et laissé.
+             Le serveur TURN n'est accessible qu'en HTTPS
 
-            Mettre des crédential variable, une fois toutes les heures ?
-        */
-        iceServers: [
+             Mettre des crédential variable, une fois toutes les heures ?
+             */
+            iceServers: [
 
-            { urls: "stun:turn1.silverpeas.net:80"},
+                {urls: "stun:turn1.silverpeas.net:80"},
 
-            { urls: "turns:turn1.silverpeas.net:443",
-                credential: "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
-                credentialType: "password",
-                username: "djoe"
+                {
+                    urls: "turns:turn1.silverpeas.net:443",
+                    credential: "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
+                    credentialType: "password",
+                    username: "djoe"
                 },
             ]
         }
@@ -101,36 +103,35 @@ $(function() {
     });
 
     /*
-            // Serveurs STUN publics
+     // Serveurs STUN publics
 
-             {urls: 'stun:stun.l.google.com:19302'},
-                {urls: 'stun:stun1.l.google.com:19302'},
-                {urls: 'stun:stun2.l.google.com:19302'},
-                {urls: 'stun:stun3.l.google.com:19302'},
-                {urls: 'stun:stun.voiparound.com'},
-                {urls: 'stun:stun.voipbuster.com'},
-                {urls: 'stun:stun.voipstunt.com'},
-                {urls: 'stun:stun.voxgratia.org'}
+     {urls: 'stun:stun.l.google.com:19302'},
+     {urls: 'stun:stun1.l.google.com:19302'},
+     {urls: 'stun:stun2.l.google.com:19302'},
+     {urls: 'stun:stun3.l.google.com:19302'},
+     {urls: 'stun:stun.voiparound.com'},
+     {urls: 'stun:stun.voipbuster.com'},
+     {urls: 'stun:stun.voipstunt.com'},
+     {urls: 'stun:stun.voxgratia.org'}
 
 
-    */
+     */
 
     /**
      * Ecouter les erreur de connexion
      */
-    $(document).on("authfail.jsxc ", function(){
+    $(document).on("authfail.jsxc ", function () {
         jsxc.xmpp.logout(true);
         $("#feedbackArea").html("<b>Echec de la connexion. Rechargez la page puis rééssayez !</b>");
     });
 
-    $(document).on("connected.jsxc ", function(){
+    $(document).on("connected.jsxc ", function () {
         $("#feedbackArea").html("<i>Connexion établie</i>");
     });
 
 
-
     // Bouton de connexion à partir d'un identifiant sélectionné et d'un mot de passe déterminé
-    $('#connectButton').click(function(){
+    $('#connectButton').click(function () {
 
         var id = $("#jidTextInput").val() + "@" + xmppDomain;
 
@@ -146,18 +147,18 @@ $(function() {
     });
 
     // déconnexion
-    $('#disconnectButton').click(function(){
+    $('#disconnectButton').click(function () {
 
         jsxc.xmpp.logout(true);
 
     });
 
     /**
-        Création d'Etherpad
-    **/
+     Création d'Etherpad
+     **/
 
-     // Connexion à partir d'un identifiant saisi et d'un mot de passe déterminé
-    $('#newPadButton').click(function(){
+    // Connexion à partir d'un identifiant saisi et d'un mot de passe déterminé
+    $('#newPadButton').click(function () {
         window.open(etherpadUrl + "p/" + $("#newPadName").val(), '_blank');
     });
 
@@ -166,11 +167,11 @@ $(function() {
 
 /**
 
-*/
-function constructGui(){
+ */
+function constructGui() {
 
     // ajouter les comptes dispo à la liste de sélection
-    for(var i = 0; i < availablesLogins.length; i++){
+    for (var i = 0; i < availablesLogins.length; i++) {
         var lg = availablesLogins[i];
 
         // les ajouter à la liste de sélection de pseudo
@@ -178,7 +179,7 @@ function constructGui(){
     }
 
     // afficher des infos utiles
-    var appendToUtilsInfo = function(name, elmt){
+    var appendToUtilsInfo = function (name, elmt) {
         $('#infoDisplay').append("<tr><td>" + (name || '') + "</td><td>" + elmt + "</td><tr/>");
     };
 
@@ -192,7 +193,7 @@ function constructGui(){
         '<a target="_blank" href="' + consoleUrl + '">' + consoleUrl + '</a>');
 
     appendToUtilsInfo('Découverte de services XMPP',
-        '<a target="_blank" href="' + discoUrl+ '">' + discoUrl + '</a>');
+        '<a target="_blank" href="' + discoUrl + '">' + discoUrl + '</a>');
 
     appendToUtilsInfo('API REST Openfire',
         '<a target="_blank" href="openfire-rest/">openfire-rest/</a>');
@@ -212,12 +213,11 @@ function constructGui(){
     appendToUtilsInfo('Etherpad',
         '<a target="_blank" href="' + etherpadUrl + '">' + etherpadUrl + '</a>');
 
-      appendToUtilsInfo('Wiki JSXC',
+    appendToUtilsInfo('Wiki JSXC',
         '<a target="_blank" href="https://github.com/jsxc/jsxc/wiki">https://github.com/jsxc/jsxc/wiki</a>');
 
     appendToUtilsInfo('Liste de ressources',
         '<a target="_blank" href="https://docs.google.com/spreadsheets/d/1qDF4yB3Tpd9Red2sYfCgnISfMBvddke5pYTrwUThyN8/edit#gid=365481387">https://docs.google.com/spreadsheets/...</a>');
-
 
 
 }
