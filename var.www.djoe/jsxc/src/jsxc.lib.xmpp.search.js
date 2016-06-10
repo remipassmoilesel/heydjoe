@@ -104,7 +104,7 @@ jsxc.xmpp.search = {
             // clone array
             var clone = JSON.parse(JSON.stringify(self.userListCache));
 
-            // check buddies
+            // check buddies another time
             self.checkIfBuddies(clone);
 
             // send list of users
@@ -114,6 +114,8 @@ jsxc.xmpp.search = {
 
         else {
             self.searchUsers("*").then(function(result){
+
+                // here buddies are checked by search function
 
                 self.userListCache = result;
                 defer.resolve(JSON.parse(JSON.stringify(self.userListCache)));
@@ -174,6 +176,11 @@ jsxc.xmpp.search = {
 
         // response in a promise
         var defer = $.Deferred();
+
+        if(!self.conn){
+            jsxc.debug("Not connected !");
+            throw "Not connected !";
+        }
 
         // listenning for iq response
         self.conn.addHandler(function(stanza){

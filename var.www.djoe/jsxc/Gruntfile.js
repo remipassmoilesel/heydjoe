@@ -39,6 +39,8 @@ module.exports = function (grunt) {
                         'lib/jquery-ui/themes/base/images/*.png',
                         'lib/jquery-ui/themes/silverpeas/*.css',
                         'lib/jquery-ui/themes/silverpeas/images/*.png',
+                        'lib/jquery-toast-plugin/src/*',
+                        'lib/jquery-toast-plugin/dist/*',   
                         'lib/perfect-scrollbar/js/*.js',
                         'lib/perfect-scrollbar/css/*.css',
                         'lib/i18next/release/i18next-latest.min.js',

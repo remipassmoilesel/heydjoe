@@ -78,30 +78,28 @@ jsxc.gui.menu = {
                  */
 
                 // add
-                $('#jsxc_menuContacts .jsxc_addBuddyFromList').click(function () {
+                var buttonAdd = $('#jsxc_menuContacts .jsxc_addBuddyFromList');
+                buttonAdd.click(function () {
 
                     // retrieve first element selected
-                    var selItems = $("#jsxc_menuContacts .ui-selected");
+                    var selItems = $("#jsxc_contactsUserList .ui-selected");
 
                     // test if a user is selected
                     if (selItems.length < 1) {
-                        jsxc.gui.feedback("#jsxc_contactMenuFeedbackArea",
-                            selItems.data("userjid") + " est déjà dans vos contacts");
+                        jsxc.gui.feedback("Vous devez sélectionner un utilisateur", "warn");
                         return;
                     }
 
                     // test if already buddy
                     if (selItems.hasClass("buddy_item")) {
-                        jsxc.gui.feedback("#jsxc_contactMenuFeedbackArea",
-                            selItems.data("userjid") + " est déjà dans vos contacts");
+                        jsxc.gui.feedback(selItems.data("username") + " est déjà dans vos contacts");
                         return;
                     }
-                    
+
+                    // add user
                     jsxc.xmpp.addBuddy(selItems.data("userjid"));
 
-                    jsxc.gui.feedback("#jsxc_contactMenuFeedbackArea",
-                        "Une invitation à été envoyée à " + selItems.data("userjid"));
-
+                    jsxc.gui.feedback("Une invitation à été envoyée à " + selItems.data("userjid"));
 
                     // stop propaging
                     return false;
@@ -120,61 +118,7 @@ jsxc.gui.menu = {
 
                 });
 
-                // make selectable list
-                $("#jsxc_menuContacts .jsxc_userList").selectable();
-
-                // make list scrollable
-                $("#jsxc_menuContacts .jsxc_userListContainer").perfectScrollbar();
-
-
-                var updateUserList = function () {
-
-                    // add contact to list
-                    jsxc.xmpp.search.getUserList().then(function (users) {
-
-                        // remove exisiting elements
-                        $("#jsxc_menuContacts .jsxc_userList").empty();
-
-                        // add users
-                        $.each(users, function (index, elmt) {
-
-                            // mettre une marque si le cotnact est dans le roster ou pas
-                            // créer un utilitaire de création de zone de feedback
-
-                            var li = $("<li></li>")
-                                .text(elmt.username)
-                                .attr({
-                                    'data-userjid': elmt.jid,
-                                    'class': 'ui-widget-content',
-                                    'title': elmt.username + " n'est pas dans vos contacts"
-                                });
-
-                            if (elmt._is_buddy) {
-                                li.addClass("buddy_item")
-                                    .attr({
-                                        'title': elmt.username + " est dans vos contacts"
-                                    });
-                            }
-
-                            $("#jsxc_menuContacts .jsxc_userList")
-                                .append(li);
-                        });
-                    })
-                        .fail(function () {
-
-                            var li = $("<li></li>")
-                                .text("Liste des contacts indisponible")
-                                .attr({'class': 'ui-widget-content'});
-
-                            $("#jsxc_menuContacts .jsxc_userList")
-                                .append(li);
-
-                        });
-                };
-
-                $(document).on("add.roster.jsxc", updateUserList);
-
-                updateUserList();
+                jsxc.gui.createUserList("#jsxc_contactsUserList");
 
             },
         },

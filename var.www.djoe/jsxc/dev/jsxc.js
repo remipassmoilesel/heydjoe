@@ -2516,27 +2516,119 @@ jsxc.gui = {
     },
     
     /**
-     * Format an element to create a feedback area, and show a message
+     * Show a feedback message. Type can be 'info' or 'warn'
      *
      * @param selector
      * @returns {JQuery|jQuery|HTMLElement}
      */
-    feedback: function(selector, message, timeout){
-        
-        // add class if necessary
-        if($(selector).hasClass("jsxc_feedbackArea") === false){
-            $(selector).addClass("jsxc_feedbackArea");                
-        }
+    feedback: function(message, type, timeout){
 
-        // show message
-        $(selector).html(message);
+        var defaultType = "info";
+
+        var bgColors = {
+            info: '#1a1a1a',
+            warn: '#520400',
+        };
+        var icons = {
+            info: 'info',
+            warn: 'warning',
+        };
+
+        $.toast({
+            text: message, // Text that is to be shown in the toast
+            icon: icons[type || defaultType], // Type of toast icon
+            showHideTransition: 'fade', // fade, slide or plain
+            allowToastClose: true, // Boolean value true or false
+            hideAfter: timeout || 3000, // false to make it sticky or number representing the miliseconds as time after which toast needs to be hidden
+            stack: 5, // false if there should be only one toast at a time or a number representing the maximum number of toasts to be shown at a time
+            position: 'top-right', // bottom-left or bottom-right or bottom-center or top-left or top-right or top-center or mid-center or an object representing the left, right, top, bottom values
+            textAlign: 'left',  // Text alignment i.e. left, right or center
+            loader: false,  // Whether to show loader or not. True by default
+            bgColor: bgColors[type || defaultType], // background color of toast
+        });
+
+    },
+
+    /**
+     * Create an user list. To retrieve selected elements select $("#listId .ui-selected");
+     *
+     *
+     * <p>Each item contains data:
+     *
+     * <p>'data-userjid': elmt.jid, 'data-username': elmt.username,
+     * 
+     * 
+     * @param selector
+     */
+    createUserList: function(selector){
+
+        var root = $(selector);
+
+        root.addClass("jsxc_userListContainer");
+
+        root.append("<ol class='jsxc_userList'></ol>");
+
+        var list = $(selector + " .jsxc_userList");
+
+        // make selectable list
+        list.selectable();
+
+        // make list scrollable
+        root.perfectScrollbar();
+
+        // update lists
+        var updateUserList = function () {
+
+            // add contact to list
+            jsxc.xmpp.search.getUserList().then(function (users) {
+
+                // remove exisiting elements
+                list.empty();
+
+                // add users
+                $.each(users, function (index, elmt) {
+
+                    // create list element
+                    var li = $("<li></li>")
+                        .text(elmt.username)
+                        .attr({
+                            'data-userjid': elmt.jid,
+                            'data-username': elmt.username,
+                            'class': 'ui-widget-content',
+                            'title': elmt.username + " n'est pas dans vos contacts"
+                        });
+
+                    // modify element if buddy
+                    if (elmt._is_buddy) {
+                        li.addClass("buddy_item")
+                            .attr({
+                                'title': elmt.username + " est dans vos contacts"
+                            });
+                    }
+
+                    list.append(li);
+                });
+            })
+
+                // error while updating
+                .fail(function () {
+
+                    var li = $("<li></li>")
+                        .text("Liste des contacts indisponible")
+                        .attr({'class': 'ui-widget-content'});
+
+                    list.append(li);
+
+                });
+        };
+
+        // update each time buddy list change
+        $(document).on("add.roster.jsxc", updateUserList);
+        $(document).on("cloaded.roster.jsxc", updateUserList);
+
+        // first update
+        updateUserList();
         
-        // hide message 
-        setTimeout(function(){
-            $(selector).html("&nbsp;");    
-        }, timeout || 4000);
-        
-        return $(selector);
     },
 
     /**
@@ -5619,30 +5711,28 @@ jsxc.gui.menu = {
                  */
 
                 // add
-                $('#jsxc_menuContacts .jsxc_addBuddyFromList').click(function () {
+                var buttonAdd = $('#jsxc_menuContacts .jsxc_addBuddyFromList');
+                buttonAdd.click(function () {
 
                     // retrieve first element selected
-                    var selItems = $("#jsxc_menuContacts .ui-selected");
+                    var selItems = $("#jsxc_contactsUserList .ui-selected");
 
                     // test if a user is selected
                     if (selItems.length < 1) {
-                        jsxc.gui.feedback("#jsxc_contactMenuFeedbackArea",
-                            selItems.data("userjid") + " est déjà dans vos contacts");
+                        jsxc.gui.feedback("Vous devez sélectionner un utilisateur", "warn");
                         return;
                     }
 
                     // test if already buddy
                     if (selItems.hasClass("buddy_item")) {
-                        jsxc.gui.feedback("#jsxc_contactMenuFeedbackArea",
-                            selItems.data("userjid") + " est déjà dans vos contacts");
+                        jsxc.gui.feedback(selItems.data("username") + " est déjà dans vos contacts");
                         return;
                     }
-                    
+
+                    // add user
                     jsxc.xmpp.addBuddy(selItems.data("userjid"));
 
-                    jsxc.gui.feedback("#jsxc_contactMenuFeedbackArea",
-                        "Une invitation à été envoyée à " + selItems.data("userjid"));
-
+                    jsxc.gui.feedback("Une invitation à été envoyée à " + selItems.data("userjid"));
 
                     // stop propaging
                     return false;
@@ -5661,61 +5751,7 @@ jsxc.gui.menu = {
 
                 });
 
-                // make selectable list
-                $("#jsxc_menuContacts .jsxc_userList").selectable();
-
-                // make list scrollable
-                $("#jsxc_menuContacts .jsxc_userListContainer").perfectScrollbar();
-
-
-                var updateUserList = function () {
-
-                    // add contact to list
-                    jsxc.xmpp.search.getUserList().then(function (users) {
-
-                        // remove exisiting elements
-                        $("#jsxc_menuContacts .jsxc_userList").empty();
-
-                        // add users
-                        $.each(users, function (index, elmt) {
-
-                            // mettre une marque si le cotnact est dans le roster ou pas
-                            // créer un utilitaire de création de zone de feedback
-
-                            var li = $("<li></li>")
-                                .text(elmt.username)
-                                .attr({
-                                    'data-userjid': elmt.jid,
-                                    'class': 'ui-widget-content',
-                                    'title': elmt.username + " n'est pas dans vos contacts"
-                                });
-
-                            if (elmt._is_buddy) {
-                                li.addClass("buddy_item")
-                                    .attr({
-                                        'title': elmt.username + " est dans vos contacts"
-                                    });
-                            }
-
-                            $("#jsxc_menuContacts .jsxc_userList")
-                                .append(li);
-                        });
-                    })
-                        .fail(function () {
-
-                            var li = $("<li></li>")
-                                .text("Liste des contacts indisponible")
-                                .attr({'class': 'ui-widget-content'});
-
-                            $("#jsxc_menuContacts .jsxc_userList")
-                                .append(li);
-
-                        });
-                };
-
-                $(document).on("add.roster.jsxc", updateUserList);
-
-                updateUserList();
+                jsxc.gui.createUserList("#jsxc_contactsUserList");
 
             },
         },
@@ -11139,7 +11175,7 @@ jsxc.xmpp.search = {
             // clone array
             var clone = JSON.parse(JSON.stringify(self.userListCache));
 
-            // check buddies
+            // check buddies another time
             self.checkIfBuddies(clone);
 
             // send list of users
@@ -11149,6 +11185,8 @@ jsxc.xmpp.search = {
 
         else {
             self.searchUsers("*").then(function(result){
+
+                // here buddies are checked by search function
 
                 self.userListCache = result;
                 defer.resolve(JSON.parse(JSON.stringify(self.userListCache)));
@@ -11209,6 +11247,11 @@ jsxc.xmpp.search = {
 
         // response in a promise
         var defer = $.Deferred();
+
+        if(!self.conn){
+            jsxc.debug("Not connected !");
+            throw "Not connected !";
+        }
 
         // listenning for iq response
         self.conn.addHandler(function(stanza){
@@ -11692,17 +11735,10 @@ jsxc.gui.template['menuContacts'] = '<div id="jsxc_menuContacts">\n' +
 '\n' +
 '    Utilisateurs disponibles:\n' +
 '\n' +
-'    <div class="jsxc_userListContainer">\n' +
-'\n' +
-'        <ol class="jsxc_userList">\n' +
-'        </ol>\n' +
-'\n' +
-'    </div>\n' +
+'    <div id="jsxc_contactsUserList"></div>\n' +
 '\n' +
 '    <div class="jsxc_addBuddyFromList actionButton">Inviter un utilisateur</div>\n' +
 '    <div class="jsxc_removeBuddyFromList actionButton notImplementedYet">Supprimer un contact</div>\n' +
-'\n' +
-'    <div id="jsxc_contactMenuFeedbackArea"></div>\n' +
 '\n' +
 '</div>';
 

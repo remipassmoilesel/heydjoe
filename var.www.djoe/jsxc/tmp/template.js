@@ -363,17 +363,10 @@ jsxc.gui.template['menuContacts'] = '<div id="jsxc_menuContacts">\n' +
 '\n' +
 '    Utilisateurs disponibles:\n' +
 '\n' +
-'    <div class="jsxc_userListContainer">\n' +
-'\n' +
-'        <ol class="jsxc_userList">\n' +
-'        </ol>\n' +
-'\n' +
-'    </div>\n' +
+'    <div id="jsxc_contactsUserList"></div>\n' +
 '\n' +
 '    <div class="jsxc_addBuddyFromList actionButton">Inviter un utilisateur</div>\n' +
 '    <div class="jsxc_removeBuddyFromList actionButton notImplementedYet">Supprimer un contact</div>\n' +
-'\n' +
-'    <div id="jsxc_contactMenuFeedbackArea"></div>\n' +
 '\n' +
 '</div>';
 

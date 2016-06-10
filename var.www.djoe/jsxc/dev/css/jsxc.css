@@ -2876,6 +2876,7 @@ fieldset[disabled] #jsxc_webrtc .checkbox label {
   background: url('../img/emotions/surprised.png'); }
 
 #jsxc_roster {
+  font-size: 13px;
   position: fixed;
   top: 0px;
   bottom: 0;
@@ -3111,56 +3112,24 @@ fieldset[disabled] #jsxc_webrtc .checkbox label {
 #jsxc_avatar {
   cursor: default !important; }
 
-/**
-#jsxc_presence {
-    cursor: pointer;
-    padding-left: 2px;
-    overflow: hidden;
+#jsxc_notice span.jsxc_menu_notif_number {
+  background-color: #ffa500;
+  border-radius: 11px;
+  color: #000;
+  font-size: 80%;
+  padding: 2px;
+  position: relative;
+  -webkit-animation: bounce 2s 1s infinite;
+          animation: bounce 2s 1s infinite; }
 
-    & > span {
-        opacity: 0.8;
-    }
+#jsxc_notice span.jsxc_menu_notif_number:empty {
+  display: none; }
 
-    li {
-        position: relative;
+#jsxc_notice ul {
+  padding: 0.2em; }
 
-        &:before {
-            /** Presence indicator
-            position: absolute;
-            top: 50%;
-            left: 10px;
-            margin-top: -8px;
-            border: 2px solid whitesmoke;
-        }
-    }
-}
-*/
-#jsxc_notice {
-  /*
-
-  height: 30px;
-  width: 30px;
-  float: right;
-  text-align: center;
-  line-height: 30px;
-
-
-  */ }
-  #jsxc_notice span.jsxc_menu_notif_number {
-    background-color: #ffa500;
-    border-radius: 11px;
-    color: #000;
-    font-size: 80%;
-    padding: 2px;
-    position: relative;
-    -webkit-animation: bounce 2s 1s infinite;
-            animation: bounce 2s 1s infinite; }
-  #jsxc_notice span.jsxc_menu_notif_number:empty {
-    display: none; }
-  #jsxc_notice ul {
-    padding: 0.2em; }
-  #jsxc_notice li {
-    cursor: pointer; }
+#jsxc_notice li {
+  cursor: pointer; }
 
 #jsxc_windowList {
   position: fixed;
@@ -3774,30 +3743,30 @@ li[data-type="groupchat"] .jsxc_video {
 /**
   User selection list
 */
-.jsxc_userList {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  width: 100%; }
-  .jsxc_userList .ui-selecting {
-    background: #FECA40; }
-  .jsxc_userList .ui-selected {
-    background: #7eb73b;
-    color: white; }
-  .jsxc_userList li {
-    margin: 3px;
-    padding: 0.4em;
-    cursor: pointer;
-    height: 30px; }
-  .jsxc_userList .buddy_item:after {
-    content: url('../img/user_list_buddy.png');
-    vertical-align: -30%; }
-
 .jsxc_userListContainer {
   position: relative;
   height: 150px;
   margin: 5px;
   border: 1px solid #dddddd; }
+  .jsxc_userListContainer .jsxc_userList {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%; }
+    .jsxc_userListContainer .jsxc_userList .ui-selecting {
+      background: #FECA40; }
+    .jsxc_userListContainer .jsxc_userList .ui-selected {
+      background: #7eb73b;
+      color: white; }
+    .jsxc_userListContainer .jsxc_userList li {
+      margin: 3px;
+      padding: 0.4em;
+      cursor: pointer;
+      height: 20px;
+      vertical-align: middle; }
+    .jsxc_userListContainer .jsxc_userList .buddy_item:after {
+      content: url('../img/user_list_buddy.png');
+      vertical-align: -30%; }
 
 #jsxc_menu {
   height: 44px;

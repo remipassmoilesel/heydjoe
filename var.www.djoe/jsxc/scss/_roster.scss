@@ -1,4 +1,7 @@
 #jsxc_roster {
+
+  font-size: 13px;
+
   position: fixed;
   top: 0px;
   bottom: 0;
@@ -324,31 +327,6 @@
   cursor: default !important;
 }
 
-/**
-#jsxc_presence {
-    cursor: pointer;
-    padding-left: 2px;
-    overflow: hidden;
-
-    & > span {
-        opacity: 0.8;
-    }
-
-    li {
-        position: relative;
-
-        &:before {
-            /** Presence indicator
-            position: absolute;
-            top: 50%;
-            left: 10px;
-            margin-top: -8px;
-            border: 2px solid whitesmoke;
-        }
-    }
-}
-*/
-
 #jsxc_notice {
 
   // Notification number
@@ -375,14 +353,4 @@
     cursor: pointer;
   }
 
-  /*
-
-  height: 30px;
-  width: 30px;
-  float: right;
-  text-align: center;
-  line-height: 30px;
-
-
-  */
 }

@@ -49,27 +49,119 @@ jsxc.gui = {
     },
     
     /**
-     * Format an element to create a feedback area, and show a message
+     * Show a feedback message. Type can be 'info' or 'warn'
      *
      * @param selector
      * @returns {JQuery|jQuery|HTMLElement}
      */
-    feedback: function(selector, message, timeout){
-        
-        // add class if necessary
-        if($(selector).hasClass("jsxc_feedbackArea") === false){
-            $(selector).addClass("jsxc_feedbackArea");                
-        }
+    feedback: function(message, type, timeout){
 
-        // show message
-        $(selector).html(message);
+        var defaultType = "info";
+
+        var bgColors = {
+            info: '#1a1a1a',
+            warn: '#520400',
+        };
+        var icons = {
+            info: 'info',
+            warn: 'warning',
+        };
+
+        $.toast({
+            text: message, // Text that is to be shown in the toast
+            icon: icons[type || defaultType], // Type of toast icon
+            showHideTransition: 'fade', // fade, slide or plain
+            allowToastClose: true, // Boolean value true or false
+            hideAfter: timeout || 3000, // false to make it sticky or number representing the miliseconds as time after which toast needs to be hidden
+            stack: 5, // false if there should be only one toast at a time or a number representing the maximum number of toasts to be shown at a time
+            position: 'top-right', // bottom-left or bottom-right or bottom-center or top-left or top-right or top-center or mid-center or an object representing the left, right, top, bottom values
+            textAlign: 'left',  // Text alignment i.e. left, right or center
+            loader: false,  // Whether to show loader or not. True by default
+            bgColor: bgColors[type || defaultType], // background color of toast
+        });
+
+    },
+
+    /**
+     * Create an user list. To retrieve selected elements select $("#listId .ui-selected");
+     *
+     *
+     * <p>Each item contains data:
+     *
+     * <p>'data-userjid': elmt.jid, 'data-username': elmt.username,
+     * 
+     * 
+     * @param selector
+     */
+    createUserList: function(selector){
+
+        var root = $(selector);
+
+        root.addClass("jsxc_userListContainer");
+
+        root.append("<ol class='jsxc_userList'></ol>");
+
+        var list = $(selector + " .jsxc_userList");
+
+        // make selectable list
+        list.selectable();
+
+        // make list scrollable
+        root.perfectScrollbar();
+
+        // update lists
+        var updateUserList = function () {
+
+            // add contact to list
+            jsxc.xmpp.search.getUserList().then(function (users) {
+
+                // remove exisiting elements
+                list.empty();
+
+                // add users
+                $.each(users, function (index, elmt) {
+
+                    // create list element
+                    var li = $("<li></li>")
+                        .text(elmt.username)
+                        .attr({
+                            'data-userjid': elmt.jid,
+                            'data-username': elmt.username,
+                            'class': 'ui-widget-content',
+                            'title': elmt.username + " n'est pas dans vos contacts"
+                        });
+
+                    // modify element if buddy
+                    if (elmt._is_buddy) {
+                        li.addClass("buddy_item")
+                            .attr({
+                                'title': elmt.username + " est dans vos contacts"
+                            });
+                    }
+
+                    list.append(li);
+                });
+            })
+
+                // error while updating
+                .fail(function () {
+
+                    var li = $("<li></li>")
+                        .text("Liste des contacts indisponible")
+                        .attr({'class': 'ui-widget-content'});
+
+                    list.append(li);
+
+                });
+        };
+
+        // update each time buddy list change
+        $(document).on("add.roster.jsxc", updateUserList);
+        $(document).on("cloaded.roster.jsxc", updateUserList);
+
+        // first update
+        updateUserList();
         
-        // hide message 
-        setTimeout(function(){
-            $(selector).html("&nbsp;");    
-        }, timeout || 4000);
-        
-        return $(selector);
     },
 
     /**
