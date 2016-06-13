@@ -13,6 +13,7 @@
 
   input {
     position: static;
+    height: 1em;
   }
 
   .jsxc_inputChatRoomName{
@@ -42,12 +43,19 @@
     font-weight: bolder;
   }
 
+  #jsxc_roomCreationPrivate{
+    width: 1em;
+
+  }
+
   #jsxc_side_menu_search_bar {
 
     margin-top: 0.4em;
+    vertical-align: middle;
 
     input {
       position: relative;
+      height: 2.5em;
 
       &[type="button"] {
         width: 20px;
@@ -73,7 +81,7 @@
       text-align: left;
     }
 
-    div.actionButton {
+    div.jsxc_actionButton {
 
       width: 80%;
       margin: auto;

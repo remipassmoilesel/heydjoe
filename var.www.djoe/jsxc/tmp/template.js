@@ -365,21 +365,21 @@ jsxc.gui.template['menuContacts'] = '<div id="jsxc_menuContacts">\n' +
 '\n' +
 '    <div id="jsxc_contactsUserList"></div>\n' +
 '\n' +
-'    <div class="jsxc_addBuddyFromList actionButton">Inviter un utilisateur</div>\n' +
+'    <div class="jsxc_addBuddyFromList jsxc_actionButton">Inviter un utilisateur</div>\n' +
 '\n' +
-'    <div class="jsxc_removeBuddyFromList actionButton">Supprimer un contact</div>\n' +
+'    <div class="jsxc_removeBuddyFromList jsxc_actionButton">Supprimer un contact</div>\n' +
 '\n' +
-'    <div class="jsxc_refreshBuddyList actionButton">Rafraichir la liste</div>\n' +
+'    <div class="jsxc_refreshBuddyList jsxc_actionButton">Rafraichir la liste</div>\n' +
 '\n' +
 '</div>';
 
 jsxc.gui.template['menuNotifications'] = '<div>\n' +
 '\n' +
-'    <div class="actionButton jsxc_muteNotification" data-i18n="Mute"></div>\n' +
+'    <div class="jsxc_actionButton jsxc_muteNotification" data-i18n="Mute"></div>\n' +
 '\n' +
-'    <div class="actionButton notImplementedYet">Activer les notifications de bureau</div>\n' +
+'    <div class="jsxc_actionButton notImplementedYet">Activer les notifications de bureau</div>\n' +
 '\n' +
-'    <div class="actionButton notImplementedYet">Interdire les appels vidéos</div>\n' +
+'    <div class="jsxc_actionButton notImplementedYet">Interdire les appels vidéos</div>\n' +
 '\n' +
 '</div>';
 
@@ -388,56 +388,62 @@ jsxc.gui.template['menuRooms'] = '<div id="jsxc_menuRooms">\n' +
 '    Liste des salons disponibles:\n' +
 '    <div id="jsxc_availablesRooms"></div>\n' +
 '\n' +
-'    <div class="jsxc_joinRoom actionButton">Rejoindre un salon</div>\n' +
+'    <div class="jsxc_joinRoom jsxc_actionButton">Rejoindre un salon</div>\n' +
 '\n' +
-'    <div class="jsxc_refreshRoomList actionButton">Rafraichir la liste</div>\n' +
+'    <div class="jsxc_refreshRoomList jsxc_actionButton">Rafraichir la liste</div>\n' +
 '\n' +
-'    <div style="text-align: center">\n' +
+'    <div class="jsxc_actionButton notImplementedYet">Informations sur le salon</div>\n' +
+'\n' +
+'    <div class="jsxc_deleteRoom jsxc_actionButton notImplementedYet">Supprimer un salon</div>\n' +
+'\n' +
+'    <div style="text-align: center; margin-bottom: 5px">\n' +
 '        <input type="text" class="jsxc_inputChatRoomName"/>\n' +
+'        <br/>\n' +
+'        <input type="checkbox" id="jsxc_roomCreationPrivate" value="0" class="notImplementedYet"/>Salon privé\n' +
 '    </div>\n' +
 '\n' +
-'    <div class="jsxc_createRoom actionButton">Créer un salon</div>\n' +
+'    <div class="jsxc_createRoom jsxc_actionButton">Créer un salon</div>\n' +
 '\n' +
-'    <!--<div class="jsxc_roomDialog actionButton" >Boite de dialogue "salons"</div>-->\n' +
+'    <p>&nbsp;</p>\n' +
 '\n' +
-'    <div class="jsxc_deleteRoom actionButton notImplementedYet">Supprimer un salon</div>\n' +
+'    <div class="jsxc_roomDialog jsxc_actionButton" >Boite de dialogue "salons"</div>\n' +
 '\n' +
 '</div>';
 
 jsxc.gui.template['menuSettings'] = '<div>\n' +
 '\n' +
-'    <div class="actionButton jsxc_hideOffline" data-i18n="Hide_offline"></div>\n' +
+'    <div class="jsxc_actionButton jsxc_hideOffline" data-i18n="Hide_offline"></div>\n' +
 '\n' +
-'    <div class="actionButton jsxc_dialog_settings">Boite de dialogue de réglages</div>\n' +
+'    <div class="jsxc_actionButton jsxc_dialog_settings">Boite de dialogue de réglages</div>\n' +
 '\n' +
-'    <div class="actionButton notImplementedYet">Rétablir les réglages par défaut</div>\n' +
+'    <div class="jsxc_actionButton notImplementedYet">Rétablir les réglages par défaut</div>\n' +
 '\n' +
-'    <div class="actionButton notImplementedYet">Console XMPP</div>\n' +
+'    <div class="jsxc_actionButton notImplementedYet">Console XMPP</div>\n' +
 '\n' +
-'    <div class="actionButton notImplementedYet">Console d\'événements Jquery</div>\n' +
+'    <div class="jsxc_actionButton notImplementedYet">Console d\'événements Jquery</div>\n' +
 '\n' +
-'    <div class="actionButton jsxc_about">A propos</div>\n' +
+'    <div class="jsxc_actionButton jsxc_about">A propos</div>\n' +
 '\n' +
 '</div>\n' +
 '';
 
 jsxc.gui.template['menuStatus'] = '<div id="jsxc_menu_status">\n' +
 '    \n' +
-'    <div data-pres="online" class="actionButton jsxc_online" data-i18n="Online"></div>\n' +
-'    <div data-pres="chat" class="actionButton jsxc_chat" data-i18n="Chatty"></div>\n' +
-'    <div data-pres="away" class="actionButton jsxc_away" data-i18n="Away"></div>\n' +
-'    <div data-pres="xa" class="actionButton jsxc_xa" data-i18n="Extended_away"></div>\n' +
-'    <div data-pres="dnd" class="actionButton jsxc_dnd" data-i18n="dnd"></div>\n' +
+'    <div data-pres="online" class="jsxc_actionButton jsxc_online" data-i18n="Online"></div>\n' +
+'    <div data-pres="chat" class="jsxc_actionButton jsxc_chat" data-i18n="Chatty"></div>\n' +
+'    <div data-pres="away" class="jsxc_actionButton jsxc_away" data-i18n="Away"></div>\n' +
+'    <div data-pres="xa" class="jsxc_actionButton jsxc_xa" data-i18n="Extended_away"></div>\n' +
+'    <div data-pres="dnd" class="jsxc_actionButton jsxc_dnd" data-i18n="dnd"></div>\n' +
 '\n' +
 '</div>';
 
 jsxc.gui.template['menuTools'] = '<div>\n' +
 '\n' +
-'    <div class="actionButton notImplementedYet">Ouvrir un pad</div>\n' +
+'    <div class="jsxc_actionButton notImplementedYet">Ouvrir un pad</div>\n' +
 '\n' +
-'    <div class="actionButton notImplementedYet">Créer un pad</div>\n' +
+'    <div class="jsxc_actionButton notImplementedYet">Créer un pad</div>\n' +
 '\n' +
-'    <div class="actionButton notImplementedYet">Liste des pads</div>\n' +
+'    <div class="jsxc_actionButton notImplementedYet">Liste des pads</div>\n' +
 '\n' +
 '</div>';
 
@@ -447,8 +453,8 @@ jsxc.gui.template['menuWelcome'] = '<div>\n' +
 '        Recherchez une fonctionnalité à l\'aide du champs ci-dessus ou explorez le menu :)\n' +
 '    </p>\n' +
 '\n' +
-'    <div class="actionButton jsxc_onlineHelp" data-i18n="Online_help"></div>\n' +
-'    <div data-pres="offline" class="actionButton jsxc_menu_offline">Se déconnecter</div>\n' +
+'    <div class="jsxc_actionButton jsxc_onlineHelp" data-i18n="Online_help"></div>\n' +
+'    <div data-pres="offline" class="jsxc_actionButton jsxc_menu_offline">Se déconnecter</div>\n' +
 '\n' +
 '    <!-- Affichage des notifications -->\n' +
 '\n' +

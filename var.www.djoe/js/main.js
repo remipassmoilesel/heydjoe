@@ -1,3 +1,6 @@
+
+"use strict";
+
 // le domaine de la page
 // var domain =  document.location.host;
 var domain = "im.silverpeas.net";
@@ -19,6 +22,7 @@ var etherpadUrl = "http://" + domain + ":9001/";
 var consoleUrl = "https://" + domain + "/xmpp-console/";
 var discoUrl = "https://" + domain + "/xmpp-disco/";
 
+
 /**
  Logins disponibles
  */
@@ -38,7 +42,11 @@ var availablesLogins = [
 
 $(function () {
 
-    console.log("Initialisation");
+    console.log("Initialisation de la page index");
+
+    // console.log("Effacement du stockage local");
+    //
+    // localStorage.clear();
 
     // activer les panneau Jquery UI du fichier index
     $("#tabs").tabs();
@@ -46,9 +54,23 @@ $(function () {
     // afficher les comptes dispos etc ...
     constructGui();
 
+    // afficher les erreurs de Strophe, indispensable
+    var stLogLevel = Strophe.LogLevel.WARN;
+
+    Strophe.log = function (level, msg) {
+        if(level >= stLogLevel){
+            console.error("Strophe [" + level + "] " + msg);
+        }
+    };
+
     // initialisation de JSXC
     // l'option off the record est désactivée
     jsxc.init({
+
+        // spécifier obligatoirement le serveur MUC pour éviter des erreurs d'initialisation
+        muc:{
+            server: "conference.im.silverpeas.net"
+        },
 
         xmpp: {
             url: boshUrl,

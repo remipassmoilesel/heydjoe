@@ -26,7 +26,7 @@ jsxc.gui.menu = {
             template: "menuWelcome",
             init: function () {
 
-                //<div data-pres="offline" class="actionButton jsxc_offline" data-i18n="Offline"></div>
+                //<div data-pres="offline" class="jsxc_actionButton jsxc_offline" data-i18n="Offline"></div>
 
                 $('#jsxc_side_menu_content .jsxc_onlineHelp').click(function () {
                     window.open(jsxc.options.onlineHelp, 'onlineHelp');
@@ -112,8 +112,11 @@ jsxc.gui.menu = {
                     // retrieve first element selected
                     var selItems = $("#jsxc_menuContacts .ui-selected");
 
+                    //console.log(selItems);
+
                     if (selItems.length < 1) {
                         jsxc.gui.feedback("Vous devez sélectionner un utilisateur", "warn");
+                        return;
                     }
 
                     jsxc.gui.showRemoveDialog(selItems.data("userjid"));
@@ -179,6 +182,14 @@ jsxc.gui.menu = {
                         return;
                     }
 
+                    if(selItems.data("roomjid") === "_NO_ROOM_AVAILABLE" ||
+                        typeof selItems.data("roomjid") === "undefined"){
+                        jsxc.gui.feedback("Saisie incorrecte", "warn");
+                        return;
+                    }
+
+                    console.log(selItems.data("roomjid"));
+
                     // join room
                     jsxc.muc.join(selItems.data("roomjid"), jsxc.xmpp.getCurrentNode());
 
@@ -196,11 +207,8 @@ jsxc.gui.menu = {
 
                 });
 
-                // display room dialog
-                $("#jsxc_menuRooms .jsxc_roomDialog").click(jsxc.muc.showJoinChat);
 
-
-                // check room name format
+                // check room name format in creation text field
                 var roomNameTxt = $('#jsxc_menuRooms .jsxc_inputChatRoomName');
                 roomNameTxt.keyup(function () {
 
@@ -226,9 +234,7 @@ jsxc.gui.menu = {
 
                 // create room
                 $('#jsxc_menuRooms .jsxc_createRoom').click(function () {
-
-                    console.log($('#jsxc_menuRooms .jsxc_inputChatRoomName').val().trim());
-
+                    
                     var roomName = $('#jsxc_menuRooms .jsxc_inputChatRoomName').val().trim();
 
                     // check room name format
@@ -244,7 +250,7 @@ jsxc.gui.menu = {
                     jsxc.xmpp.conn.disco.info(fullRoomName, null,
 
                         // room already exist
-                        function (stanza) {
+                        function () {
 
                             // join room
                             jsxc.muc.join(fullRoomName, jsxc.xmpp.getCurrentNode());
@@ -260,6 +266,8 @@ jsxc.gui.menu = {
 
                             // room not found, create
                             if ($(stanza).find("item-not-found").length > 0) {
+
+                                console.log(fullRoomName);
 
                                 // create room
                                 jsxc.muc.join(fullRoomName, jsxc.xmpp.getCurrentNode());
@@ -283,6 +291,10 @@ jsxc.gui.menu = {
                             }
 
                         });
+
+
+                    // display room dialog
+                    $("#jsxc_menuRooms .jsxc_roomDialog").click(jsxc.muc.showJoinChat);
 
                 });
 

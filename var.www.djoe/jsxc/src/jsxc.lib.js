@@ -121,6 +121,7 @@ jsxc = {
      * @param {String} Could be warn|error|null
      */
     debug: function (msg, data, level) {
+
         if (level) {
             msg = '[' + level + '] ' + msg;
         }
@@ -139,11 +140,15 @@ jsxc = {
                 try {
                     d = JSON.stringify(data);
                 } catch (err2) {
-                    d = 'see js console';
+                    d = 'error while stringify, see js console';
                 }
             }
 
             jsxc.log = jsxc.log + '$ ' + msg + ': ' + d + '\n';
+
+            console.log(msg);
+            console.log(data);
+
         } else {
             console.log(msg);
 

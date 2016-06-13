@@ -1,0 +1,9 @@
+
+#3 Event name: attached.jsxc Mon Jun 13 2016 13:17:30 GMT+0200 (CEST)
+Data: undefined
+#9 Event name: ready.roster.jsxc Mon Jun 13 2016 13:17:30 GMT+0200 (CEST)
+Data: undefined
+#11 Event name: add.roster.jsxc Mon Jun 13 2016 13:17:30 GMT+0200 (CEST)
+Data: undefined
+#12 Event name: cloaded.roster.jsxc Mon Jun 13 2016 13:17:30 GMT+0200 (CEST)
+Data: undefined

@@ -8,6 +8,17 @@ Téléchargements:
 
 Source: https://github.com/jsxc/jsxc/wiki/Developer-notes
 
+En bref:
+    
+    $ export PATH="$PATH:/home/remipassmoilesel/nodejs4/bin/"
+    $ git clone https://github.com/jsxc/jsxc/
+    $ cd jsxc/
+    $ git submodule update --init
+    $ npm install -g grunt-cli bower
+    $ npm install && bower install
+    $ grunt
+
+
 * Installer JSXC et ses dépendances:
 
 
@@ -25,7 +36,7 @@ Source: https://github.com/jsxc/jsxc/wiki/Developer-notes
     # Installer les dépendances
     # En cas d'erreur, il s'agit surement de la version de node
     $ npm install
-    $ bower install
+    $ 
 
     # Si ce message d'erreur apparait:
     # gyp: /home/remipassmoilesel/.node-gyp/4.4.4/common.gypi not found

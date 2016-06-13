@@ -23,15 +23,6 @@ jsxc.xmpp.search = {
     userSearchAvailable: false,
 
     /**
-     * Return true if user search is available
-     * @returns {boolean}
-     */
-    isUserSearchAvailable: function () {
-        var self = jsxc.xmpp.search;
-        return self.userSearchAvailable;
-    },
-
-    /**
      * Initialize search functionnalities
      */
     init: function () {
@@ -45,16 +36,30 @@ jsxc.xmpp.search = {
 
         // retrieve domain
         var xmppOpts = jsxc.options.get("xmpp");
-        self.searchDomain = xmppOpts.searchDomain || xmppOpts.domain;
+        self.searchDomain = xmppOpts.searchDomain;
+
+        if(typeof self.searchDomain === "undefined"){
+            self.searchDomain = xmppOpts.domain;
+            jsxc.debug('Search domain not found, domain will be used', xmppOpts.domain, "WARN");
+        }
 
         // first request to know if search is available
-        self.requestForSearchCapabilities().then(function(){
+        self.requestForSearchCapabilities().then(function () {
             //console.log(arguments);
         });
 
         // set user cache
         self.getUserList();
 
+    },
+
+    /**
+     * Return true if user search is available
+     * @returns {boolean}
+     */
+    isUserSearchAvailable: function () {
+        var self = jsxc.xmpp.search;
+        return self.userSearchAvailable;
     },
 
     /**
@@ -70,12 +75,12 @@ jsxc.xmpp.search = {
      * @param userArr
      * @returns {*}
      */
-    checkIfBuddies: function(userArr){
+    checkIfBuddies: function (userArr) {
 
         // list of buddies to check
         var buddies = jsxc.storage.getLocaleBuddyListBJID();
 
-        $.each(userArr, function(i, e){
+        $.each(userArr, function (i, e) {
             // check if is a buddy
             e["_is_buddy"] = buddies.indexOf(jsxc.jidToBid(e.jid)) !== -1;
         });
@@ -92,14 +97,14 @@ jsxc.xmpp.search = {
      * mail, jid, name, username, _is_buddy
      *
      */
-    getUserList: function() {
+    getUserList: function () {
 
         var self = jsxc.xmpp.search;
 
         var defer = $.Deferred();
 
         // list is already present, return false promise
-        if(self.userListCache){
+        if (self.userListCache) {
 
             // clone array
             var clone = JSON.parse(JSON.stringify(self.userListCache));
@@ -116,17 +121,24 @@ jsxc.xmpp.search = {
         }
 
         else {
-            self.searchUsers("*").then(function(result){
+            self.searchUsers("*").then(
+                // successful
+                function (result) {
 
-                // here buddies are checked by search function
+                    // here buddies are checked by search function
 
-                self.userListCache = result;
-                defer.resolve(JSON.parse(JSON.stringify(self.userListCache)));
+                    self.userListCache = result;
+                    defer.resolve(JSON.parse(JSON.stringify(self.userListCache)));
 
-                // console.log("new user list");
-                // console.log(self.userListCache.length);
+                    // console.log("new user list");
+                    // console.log(self.userListCache.length);
 
-            });
+                },
+
+                // not successful
+                function () {
+                    defer.reject();
+                });
         }
 
         return defer.promise();
@@ -137,7 +149,7 @@ jsxc.xmpp.search = {
      *
      * @returns {*}
      */
-    getFreshUserList: function() {
+    getFreshUserList: function () {
 
         var self = jsxc.xmpp.search;
         self.userListCache = undefined;
@@ -154,7 +166,7 @@ jsxc.xmpp.search = {
      * mail, jid, name, username, _is_buddy
      *
      */
-    searchUsers: function(terms){
+    searchUsers: function (terms) {
 
         var self = jsxc.xmpp.search;
 
@@ -167,71 +179,83 @@ jsxc.xmpp.search = {
             to: self.searchDomain
         })
             .c('query', {xmlns: 'jabber:iq:search'})
-            .c('x', {xmlns: 'jabber:x:data', type:'submit'})
-            .c('field', {type: 'hidden', var:'FORM_TYPE'})
-            .c('value','jabber:iq:search').up().up()
-            .c('field', {var: 'search',type:"text-single"})
-            .c('value',terms).up().up()
-            .c('field', {var: 'Username', type:"boolean"})
-            .c('value','1').up().up()
-            .c('field', {var: 'Name', type:"boolean"})
-            .c('value','1').up().up();
+            .c('x', {xmlns: 'jabber:x:data', type: 'submit'})
+            .c('field', {type: 'hidden', var: 'FORM_TYPE'})
+            .c('value', 'jabber:iq:search').up().up()
+            .c('field', {var: 'search', type: "text-single"})
+            .c('value', terms).up().up()
+            .c('field', {var: 'Username', type: "boolean"})
+            .c('value', '1').up().up()
+            .c('field', {var: 'Name', type: "boolean"})
+            .c('value', '1').up().up();
 
         // response in a promise
         var defer = $.Deferred();
 
-        if(!self.conn){
+        if (!self.conn) {
             jsxc.debug("Not connected !");
             throw "Not connected !";
         }
 
-        // listenning for iq response
-        self.conn.addHandler(function(stanza){
+        // send request after regitered handler
+        userListRequest = self.conn.sendIQ(
+            iq,
 
-            var id = $(stanza).attr('id');
+            // successful request
+            function (stanza) {
 
-            // ignore not interesting messages
-            if (id !== userListRequest) {
-                return true;
-            }
+                // console.log("userListRequest = self.conn.sendIQ(");
+                // console.log("ok");
+                // console.log($(stanza).get(0));
 
-            // error while retieving users
-            if($(stanza).find("error").length > 0){
+                var id = $(stanza).attr('id');
 
-                defer.reject();
+                // ignore not interesting messages
+                if (id !== userListRequest) {
+                    return true;
+                }
 
-                // remove handler when finished
-                return false;
-            }
+                // error while retieving users
+                if ($(stanza).find("error").length > 0) {
 
-            var result = [];
+                    defer.reject();
 
-            // browse items and create object
-            $(stanza).find("item").each(function(){
+                    // remove handler when finished
+                    return false;
+                }
 
-                var r = {};
+                var result = [];
 
-                // browse fields and get values
-                $(this).find("field").each(function(){
-                    r[$(this).attr("var").toLowerCase()] = $(this).text();
+                // browse items and create object
+                $(stanza).find("item").each(function () {
+
+                    var r = {};
+
+                    // browse fields and get values
+                    $(this).find("field").each(function () {
+                        r[$(this).attr("var").toLowerCase()] = $(this).text();
+                    });
+
+                    result.push(r);
+
                 });
 
-                result.push(r);
+                self.checkIfBuddies(result);
 
-            });
+                // send list of item
+                defer.resolve(result);
 
-            self.checkIfBuddies(result);
+            },
 
-            // send list of item
-            defer.resolve(result);
+            // error
+            function () {
+                // console.log("userListRequest = self.conn.sendIQ(");
+                // console.log("fail");
+                // console.log($(stanza).get(0));
 
-            // remove handler when finished
-            return false;
-
-        }, null, 'iq');
-
-        // send request after regitered handler
-        userListRequest = self.conn.sendIQ(iq);
+                defer.reject();
+            }
+        );
 
         // return a promise
         return defer.promise();
@@ -264,30 +288,25 @@ jsxc.xmpp.search = {
         // response in a promise
         var defer = $.Deferred();
 
-        // listenning for iq response
-        self.conn.addHandler(function(stanza){
-
-            var id = $(stanza).attr('id');
-
-            // filter iq responses
-            if (id !== capabilityRequestId) {
-                return true;
-            }
-
-            self.userSearchAvailable = $(stanza).find("error").length === 0;
-
-            // console.log("self.userSearchAvailable");
-            // console.log(self.userSearchAvailable);
-
-            defer.resolve(self.userSearchAvailable);
-
-            // remove handler when finished
-            return false;
-
-        }, null, 'iq');
-
         // send request
-        capabilityRequestId = self.conn.sendIQ(iq);
+        capabilityRequestId = self.conn.sendIQ(
+
+            iq,
+
+            // success
+            function (stanza) {
+                self.userSearchAvailable = $(stanza).find("error").length === 0;
+
+                defer.resolve(self.userSearchAvailable);
+            },
+
+            // error
+            function () {
+                self.userSearchAvailable = false;
+
+                defer.reject(self.userSearchAvailable);
+            }
+        );
 
         // return a promise
         return defer.promise();

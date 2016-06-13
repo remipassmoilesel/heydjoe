@@ -62,6 +62,7 @@ jsxc.muc = {
                             var mucIdentity = $(info).find('identity[category="conference"][type="text"]');
 
                             if (mucFeature.length > 0 && mucIdentity.length > 0) {
+
                                 jsxc.debug('muc service found', jid);
 
                                 jsxc.options.set('muc', {
@@ -194,7 +195,7 @@ jsxc.muc = {
 
         // load room list
         self.conn.muc.listRooms(jsxc.options.get('muc').server, function (stanza) {
-            
+
             // workaround: chrome does not display dropdown arrow for dynamically filled datalists
             $('#jsxc_roomlist option:last').remove();
 
@@ -724,6 +725,10 @@ jsxc.muc = {
      * @param {string} presence Presence stanza
      */
     onPresence: function (event, from, status, presence) {
+
+        // console.log("onPresence");
+        // console.log(presence);
+
         var self = jsxc.muc;
         var room = jsxc.jidToBid(from);
         var roomdata = jsxc.storage.getUserItem('buddy', room);
@@ -846,7 +851,7 @@ jsxc.muc = {
 
         $.each(codes, function (index, code) {
             // call code functions and trigger event
-            
+
             if (typeof self.onStatus[code] === 'function') {
                 self.onStatus[code].call(this, room, nickname, member[nickname] || {}, xdata);
             }
@@ -891,8 +896,16 @@ jsxc.muc = {
      * @memberOf jsxc.muc
      */
     onStatus: {
+
+        log: function (args) {
+            console.log("onStatus log()");
+            console.log((new Error()).stack);
+            console.log(args);
+        },
+
         /** Inform user that presence refers to itself */
         110: function (room, nickname, data) {
+
             var self = jsxc.muc;
             var own = jsxc.storage.getUserItem('ownNicknames') || {};
 
@@ -945,8 +958,9 @@ jsxc.muc = {
         },
         /** Inform user that a new room has been created */
         201: function (room) {
-            
-            /**
+
+            //jsxc.muc.onStatus.log(arguments);
+
             var self = jsxc.muc;
             var roomdata = jsxc.storage.getUserItem('buddy', room) || {};
 
@@ -982,7 +996,7 @@ jsxc.muc = {
                     }
                 });
             }
-             */
+
         },
         /** Inform user that he or she has been banned */
         301: function (room, nickname, data, xdata) {

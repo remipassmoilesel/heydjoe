@@ -1,4 +1,4 @@
 var jsxc = null, RTC = null, RTCPeerconnection = null;
 
-(function($) {
-   "use strict";
+(function ($) {
+    "use strict";

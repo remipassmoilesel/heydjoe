@@ -73,7 +73,8 @@ jsxc.gui.createRoomList = function (selector) {
                     var li = $("<li></li>")
                         .text("Aucun salon disponible")
                         .attr({
-                            'class': 'ui-widget-content'
+                            'class': 'ui-widget-content',
+                            'roomjid': "_NO_ROOM_AVAILABLE"
                         });
 
                     list.append(li);
@@ -183,36 +184,39 @@ jsxc.gui.createUserList = function (selector) {
         // add contact to list
         search().then(function (users) {
 
-            // remove exisiting elements
-            list.empty();
+                // remove exisiting elements
+                list.empty();
 
-            // add users
-            $.each(users, function (index, elmt) {
+                // add users
+                $.each(users, function (index, elmt) {
 
-                // create list element
-                var li = $("<li></li>")
-                    .text(elmt.username)
-                    .attr({
-                        'data-userjid': elmt.jid,
-                        'data-username': elmt.username,
-                        'class': 'ui-widget-content',
-                        'title': elmt.username + " n'est pas dans vos contacts"
-                    });
-
-                // modify element if buddy
-                if (elmt._is_buddy) {
-                    li.addClass("buddy_item")
+                    // create list element
+                    var li = $("<li></li>")
+                        .text(elmt.username)
                         .attr({
-                            'title': elmt.username + " est dans vos contacts"
+                            'data-userjid': elmt.jid,
+                            'data-username': elmt.username,
+                            'class': 'ui-widget-content',
+                            'title': elmt.username + " n'est pas dans vos contacts"
                         });
-                }
 
-                list.append(li);
-            });
-        })
+                    // modify element if buddy
+                    if (elmt._is_buddy) {
+                        li.addClass("buddy_item")
+                            .attr({
+                                'title': elmt.username + " est dans vos contacts"
+                            });
+                    }
 
-        // error while updating
-            .fail(function () {
+                    list.append(li);
+                });
+            },
+
+            // error while updating
+            function () {
+
+                // remove exisiting elements
+                list.empty();
 
                 var li = $("<li></li>")
                     .text("Liste des contacts indisponible")
