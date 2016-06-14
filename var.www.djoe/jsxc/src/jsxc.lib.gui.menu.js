@@ -42,7 +42,7 @@ jsxc.gui.menu = {
                 });
 
                 // change presence or logout
-                $('#jsxc_menuWelcome div').click(function () {
+                $('#jsxc_menuWelcome .jsxc_status_buttons div').click(function () {
                     var self = $(this);
 
                     // pres info is stored in "data-pres" html arg

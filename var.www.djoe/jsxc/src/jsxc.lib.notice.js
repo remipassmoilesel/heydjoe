@@ -16,11 +16,16 @@ jsxc.notice = {
     load: function () {
         // reset list
         $('#jsxc_notice ul li').remove();
-        $('#jsxc_notice span.jsxc_menu_notif_number').text('');
+
+        console.log($('#jsxc_roster span.jsxc_menu_notif_number'));
+
+        $('#jsxc_roster .jsxc_menu_notif_number').text('');
         jsxc.notice._num = 0;
 
         var saved = jsxc.storage.getUserItem('notices') || [];
         var key = null;
+
+        // console.log(jsxc.storage.getUserItem('notices'));
 
         for (key in saved) {
             if (saved.hasOwnProperty(key)) {
@@ -59,7 +64,7 @@ jsxc.notice = {
         notice.attr('data-nid', nid);
         list.append(notice);
 
-        $('#jsxc_notice span.jsxc_menu_notif_number').text(++jsxc.notice._num);
+        $('#jsxc_roster .jsxc_menu_notif_number').text(++jsxc.notice._num);
 
         if (!id) {
             var saved = jsxc.storage.getUserItem('notices') || {};
@@ -69,6 +74,9 @@ jsxc.notice = {
                 fnName: fnName,
                 fnParams: fnParams
             };
+
+            console.log(saved);
+
             jsxc.storage.setUserItem('notices', saved);
 
             jsxc.notification.notify(msg, description || '', null, true, jsxc.CONST.SOUNDS.NOTICE);
@@ -85,7 +93,7 @@ jsxc.notice = {
         var el = $('#jsxc_notice li[data-nid=' + nid + ']');
 
         el.remove();
-        $('#jsxc_notice span.jsxc_menu_notif_number').text(--jsxc.notice._num || '');
+        $('#jsxc_roster .jsxc_menu_notif_number').text(--jsxc.notice._num || '');
 
         var s = jsxc.storage.getUserItem('notices');
         delete s[nid];

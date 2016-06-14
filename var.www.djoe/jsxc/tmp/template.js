@@ -465,7 +465,7 @@ jsxc.gui.template['menuWelcome'] = '<div id="jsxc_menuWelcome">\n' +
 '\n' +
 '    <p>Statut:</p>\n' +
 '\n' +
-'    <div>\n' +
+'    <div class="jsxc_status_buttons">\n' +
 '\n' +
 '        <div data-pres="online" class="jsxc_actionButton jsxc_online" data-i18n="Online"></div>\n' +
 '        <div data-pres="chat" class="jsxc_actionButton jsxc_chat" data-i18n="Chatty"></div>\n' +
@@ -522,6 +522,8 @@ jsxc.gui.template['roster'] = '<!-- Side bar with buddy list and menu -->\n' +
 '            <span></span>\n' +
 '\n' +
 '        </div>\n' +
+'\n' +
+'        <div class="jsxc_menu_notif_bottom_roster"><span class="jsxc_menu_notif_number"></span></div>\n' +
 '\n' +
 '        <div id="jsxc_presence">\n' +
 '            <span data-i18n="Offline">Offline</span>\n' +

@@ -113,6 +113,31 @@
     right: 0px;
     transition: right 0.5s;
   }
+
+  // Notification number
+  .jsxc_menu_notif_number {
+    background-color: $notice_bg;
+    border-radius: 11px;
+    color: $notice_color;
+    font-size: 80%;
+    padding: 2px;
+    position: relative;
+    animation: bounce 2s 1s infinite;
+  }
+
+  // hide notif number if empty
+  .jsxc_menu_notif_number:empty {
+    display: none;
+  }
+
+  .jsxc_menu_notif_bottom_roster {
+    height: 30px;
+    width: 30px;
+    float: right;
+    text-align: center;
+    line-height: 30px;
+  }
+
 }
 
 #jsxc_toggleRoster {
@@ -148,7 +173,7 @@
   margin: 0;
   height: 44px;
   border-bottom: 1px solid $roster_bottom_border_top;
-  cursor: pointer;
+  cursor: default;
   width: 100%;
   position: relative;
   color: $roster_color;
@@ -315,7 +340,7 @@
   }
 
   &.jsxc_bottom > div > span {
-    cursor: pointer;
+    //cursor: pointer;
   }
 
   &.jsxc_bottom > div:hover {
@@ -331,28 +356,12 @@
 
   padding: 10px;
 
-  // Notification number
-  span.jsxc_menu_notif_number {
-    background-color: $notice_bg;
-    border-radius: 11px;
-    color: $notice_color;
-    font-size: 80%;
-    padding: 2px;
-    position: relative;
-    animation: bounce 2s 1s infinite;
-  }
-
-  // hide notif number if empty
-  span.jsxc_menu_notif_number:empty {
-    display: none;
-  }
-
-  ul{
+  ul {
     padding-left: 0px;
     margin: 10px;
   }
 
-  li{
+  li {
     cursor: pointer;
   }
 
