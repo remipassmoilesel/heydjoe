@@ -1831,7 +1831,7 @@ jsxc.gui.roster = {
      * @memberOf jsxc.gui.roster
      */
     empty: function () {
-        var text = $('<p>' + $.t('Your_roster_is_empty_add_') + '</p>');
+        var text = $('<p class="jsxc_rosterIsEmptyMessage">' + $.t('Your_roster_is_empty_add_') + '</p>');
         var link = text.find('a');
 
         link.click(function () {
@@ -1840,7 +1840,10 @@ jsxc.gui.roster = {
         text.append(link);
         text.append('.');
 
-        $('#jsxc_roster').prepend(text);
+        if($('#jsxc_roster').find(".jsxc_rosterIsEmptyMessage").length < 1){
+            $('#jsxc_roster').prepend(text);
+        }
+
     }
 };
 

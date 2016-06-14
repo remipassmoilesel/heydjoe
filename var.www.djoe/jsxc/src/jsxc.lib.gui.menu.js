@@ -61,7 +61,7 @@ jsxc.gui.menu = {
         },
 
         contactPanel: {
-            label: "Rechercher un utilisateur",
+            label: "Rechercher d'utilisateurs",
             template: "menuContacts",
             init: function () {
 
@@ -83,18 +83,32 @@ jsxc.gui.menu = {
                         return;
                     }
 
-                    // test if already buddy
-                    if (selItems.hasClass("buddy_item")) {
-                        jsxc.gui.feedback(selItems.data("username") + " est déjà dans vos contacts");
-                        return;
+                    var alreadyBuddy = "";
+                    var added = "";
+
+                    selItems.each(function () {
+
+                        // test if already buddy
+                        if ($(this).hasClass("buddy_item")) {
+                            alreadyBuddy += $(this).data("username") + ", ";
+                            return true;
+                        }
+
+                        // add user
+                        jsxc.xmpp.addBuddy($(this).data("userjid"));
+                        added += $(this).data("username") + ", ";
+
+                    });
+
+                    if (alreadyBuddy.length > 0) {
+                        jsxc.gui.feedback("Déjà dans vos contacts: " + alreadyBuddy.substring(0, alreadyBuddy.length - 2));
                     }
 
-                    // add user
-                    jsxc.xmpp.addBuddy(selItems.data("userjid"));
+                    if (added.length > 0) {
+                        jsxc.gui.feedback("Une invitation à été envoyée<br> à " + added.substring(0, added.length - 2));
+                    }
 
-                    jsxc.gui.feedback("Une invitation à été envoyée<br> à " + selItems.data("userjid"));
-
-                    // stop propaging
+                    // stop propagating
                     return false;
                 });
 
@@ -111,7 +125,33 @@ jsxc.gui.menu = {
                         return;
                     }
 
-                    jsxc.gui.showRemoveDialog(selItems.data("userjid"));
+                    var usersList = "";
+                    selItems.each(function () {
+                        usersList += $(this).data("username") + ", ";
+                    });
+                    usersList = usersList.substring(0, usersList.length - 2);
+
+                    // show confirmation dialog
+                    jsxc.gui.dialog.open(jsxc.gui.template.get('removeManyDialog', null, usersList));
+
+                    $('#jsxc_dialog .jsxc_remove').click(function (ev) {
+                        ev.stopPropagation();
+
+                        selItems.each(function () {
+
+                            if (jsxc.master) {
+                                jsxc.xmpp.removeBuddy($(this).data("userjid"));
+                            } else {
+                                // inform master
+                                jsxc.storage.setUserItem('deletebuddy', $(this).data("userjid"), {
+                                    jid: $(this).data("userjid")
+                                });
+                            }
+
+                        });
+
+                        jsxc.gui.dialog.close();
+                    });
 
                 });
 
@@ -120,7 +160,7 @@ jsxc.gui.menu = {
 
                     userList.updateUserList("freshList");
 
-                    jsxc.gui.feedback("La liste d'utilisateur est en cours<br> de mise à jour");
+                    jsxc.gui.feedback("Mise à jour de la liste d'utilisateurs");
 
                 });
 
@@ -133,134 +173,135 @@ jsxc.gui.menu = {
             template: "menuRooms",
             init: function () {
 
-                // room selection
-                var roomList = jsxc.gui.createRoomList("#jsxc_availablesRooms");
-
-                // join room button
-                $('#jsxc_menuRooms .jsxc_joinRoom').click(function () {
-
-                    // retrieve first element selected
-                    var selItems = $("#jsxc_availablesRooms .ui-selected");
-
-                    // test if a user is selected
-                    if (selItems.length < 1) {
-                        jsxc.gui.feedback("Vous devez sélectionner un salon", "warn");
-                        return;
-                    }
-
-                    if(selItems.data("roomjid") === "_NO_ROOM_AVAILABLE" ||
-                        typeof selItems.data("roomjid") === "undefined"){
-                        jsxc.gui.feedback("Saisie incorrecte", "warn");
-                        return;
-                    }
-
-                    // join room
-                    jsxc.muc.join(selItems.data("roomjid"), jsxc.xmpp.getCurrentNode());
-
-                    // open window
-                    jsxc.gui.window.open(selItems.data("roomjid"));
-
-                });
-
-                // refresh list button
-                $('#jsxc_menuRooms .jsxc_refreshRoomList').click(function () {
-
-                    roomList.updateRoomList();
-
-                    jsxc.gui.feedback("La liste des salons est en cours<br> de mise à jour");
-
-                });
+                // buddy list for room creation
+                //jsxc.gui.createBuddyList("#jsxc_roomCreationUsers");
 
 
-                // check room name format in creation text field
-                var roomNameTxt = $('#jsxc_menuRooms .jsxc_inputChatRoomName');
-                roomNameTxt.keyup(function () {
-
-                    var name = $(this).val().trim();
-
-                    if (name === "") {
-                        roomNameTxt.removeClass("jsxc_invalid");
-                        return;
-                    }
-
-                    if (name.match(/^[a-z0-9]{5,}$/i) === null) {
-                        roomNameTxt.addClass("jsxc_invalid");
-                    }
-
-                    else {
-                        roomNameTxt.removeClass("jsxc_invalid");
-                    }
-
-                    return;
-
-                });
-
-
-                // create room
-                $('#jsxc_menuRooms .jsxc_createRoom').click(function () {
-                    
-                    var roomName = $('#jsxc_menuRooms .jsxc_inputChatRoomName').val().trim();
-
-                    // check room name format
-                    if (roomName.match(/^[a-z0-9]{5,}$/i) === null) {
-
-                        jsxc.gui.feedback("Le nom du salon est invalide: <br> /^[a-z0-9]{5,}$/i", "warn");
-
-                        return false;
-                    }
-
-                    var fullRoomName = roomName + "@" + jsxc.options.get('muc').server;
-
-                    jsxc.xmpp.conn.disco.info(fullRoomName, null,
-
-                        // room already exist
-                        function () {
-
-                            // join room
-                            jsxc.muc.join(fullRoomName, jsxc.xmpp.getCurrentNode());
-
-                            // open window
-                            jsxc.gui.window.open(fullRoomName);
-
-                            jsxc.gui.feedback("Le salon existe déjà: <br>" + roomName, "warn");
-
-                        },
-
-                        function (stanza) {
-
-                            // room not found, create
-                            if ($(stanza).find("item-not-found").length > 0) {
-
-                                console.log(fullRoomName);
-
-                                // create room
-                                jsxc.muc.join(fullRoomName, jsxc.xmpp.getCurrentNode());
-
-                                // locale update list TODO: Broadcast event ?
-                                roomList.updateRoomList();
-
-                                // open window
-                                jsxc.gui.window.open(fullRoomName);
-
-                                // empty text field
-                                $('#jsxc_menuRooms .jsxc_inputChatRoomName').val("");
-
-                                jsxc.gui.feedback("Le salon à été créé");
-
-                            }
-
-                            // error while creating
-                            else {
-                                jsxc.gui.feedback("Erreur lors de la création du salon", "warn");
-                            }
-
-                        });
-
-
-                    // display room dialog
-                    $("#jsxc_menuRooms .jsxc_roomDialog").click(jsxc.muc.showJoinChat);
-
-                });
+                // // join room button
+                // $('#jsxc_menuRooms .jsxc_joinRoom').click(function () {
+                //
+                //     // retrieve first element selected
+                //     var selItems = $("#jsxc_availablesRooms .ui-selected");
+                //
+                //     // test if a user is selected
+                //     if (selItems.length < 1) {
+                //         jsxc.gui.feedback("Vous devez sélectionner un salon", "warn");
+                //         return;
+                //     }
+                //
+                //     if(selItems.data("roomjid") === "_NO_ROOM_AVAILABLE" ||
+                //         typeof selItems.data("roomjid") === "undefined"){
+                //         jsxc.gui.feedback("Saisie incorrecte", "warn");
+                //         return;
+                //     }
+                //
+                //     // join room
+                //     jsxc.muc.join(selItems.data("roomjid"), jsxc.xmpp.getCurrentNode());
+                //
+                //     // open window
+                //     jsxc.gui.window.open(selItems.data("roomjid"));
+                //
+                // });
+                //
+                // // refresh list button
+                // $('#jsxc_menuRooms .jsxc_refreshRoomList').click(function () {
+                //
+                //     roomList.updateRoomList();
+                //
+                //     jsxc.gui.feedback("La liste des salons est en cours<br> de mise à jour");
+                //
+                // });
+                //
+                //
+                // // check room name format in creation text field
+                // var roomNameTxt = $('#jsxc_menuRooms .jsxc_inputChatRoomName');
+                // roomNameTxt.keyup(function () {
+                //
+                //     var name = $(this).val().trim();
+                //
+                //     if (name === "") {
+                //         roomNameTxt.removeClass("jsxc_invalid");
+                //         return;
+                //     }
+                //
+                //     if (name.match(/^[a-z0-9]{5,}$/i) === null) {
+                //         roomNameTxt.addClass("jsxc_invalid");
+                //     }
+                //
+                //     else {
+                //         roomNameTxt.removeClass("jsxc_invalid");
+                //     }
+                //
+                //     return;
+                //
+                // });
+                //
+                //
+                // // create room
+                // $('#jsxc_menuRooms .jsxc_createRoom').click(function () {
+                //
+                //     var roomName = $('#jsxc_menuRooms .jsxc_inputChatRoomName').val().trim();
+                //
+                //     // check room name format
+                //     if (roomName.match(/^[a-z0-9]{5,}$/i) === null) {
+                //
+                //         jsxc.gui.feedback("Le nom du salon est invalide: <br> /^[a-z0-9]{5,}$/i", "warn");
+                //
+                //         return false;
+                //     }
+                //
+                //     var fullRoomName = roomName + "@" + jsxc.options.get('muc').server;
+                //
+                //     jsxc.xmpp.conn.disco.info(fullRoomName, null,
+                //
+                //         // room already exist
+                //         function () {
+                //
+                //             // join room
+                //             jsxc.muc.join(fullRoomName, jsxc.xmpp.getCurrentNode());
+                //
+                //             // open window
+                //             jsxc.gui.window.open(fullRoomName);
+                //
+                //             jsxc.gui.feedback("Le salon existe déjà: <br>" + roomName, "warn");
+                //
+                //         },
+                //
+                //         function (stanza) {
+                //
+                //             // room not found, create
+                //             if ($(stanza).find("item-not-found").length > 0) {
+                //
+                //                 console.log(fullRoomName);
+                //
+                //                 // create room
+                //                 jsxc.muc.join(fullRoomName, jsxc.xmpp.getCurrentNode());
+                //
+                //                 // locale update list TODO: Broadcast event ?
+                //                 roomList.updateRoomList();
+                //
+                //                 // open window
+                //                 jsxc.gui.window.open(fullRoomName);
+                //
+                //                 // empty text field
+                //                 $('#jsxc_menuRooms .jsxc_inputChatRoomName').val("");
+                //
+                //                 jsxc.gui.feedback("Le salon à été créé");
+                //
+                //             }
+                //
+                //             // error while creating
+                //             else {
+                //                 jsxc.gui.feedback("Erreur lors de la création du salon", "warn");
+                //             }
+                //
+                //         });
+                //
+                //
+                //     // display room dialog
+                //     $("#jsxc_menuRooms .jsxc_roomDialog").click(jsxc.muc.showJoinChat);
+                //
+                // });
 
             },
 

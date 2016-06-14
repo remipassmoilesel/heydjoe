@@ -361,13 +361,15 @@ jsxc.gui.template['loginBox'] = '<h3 data-i18n="Login"></h3>\n' +
 
 jsxc.gui.template['menuContacts'] = '<div id="jsxc_menuContacts">\n' +
 '\n' +
-'    Utilisateurs disponibles:\n' +
+'    <p>Utilisateurs disponibles:</p>\n' +
 '\n' +
 '    <div id="jsxc_contactsUserList"></div>\n' +
 '\n' +
-'    <div class="jsxc_addBuddyFromList jsxc_actionButton">Inviter un utilisateur</div>\n' +
+'    <div class="jsxc_menuAdvice">Touche \'Control\' pour sélectionner plusieurs utilisateurs</div>\n' +
 '\n' +
-'    <div class="jsxc_removeBuddyFromList jsxc_actionButton">Supprimer un contact</div>\n' +
+'    <div class="jsxc_addBuddyFromList jsxc_actionButton">Inviter un/des utilisateur(s)</div>\n' +
+'\n' +
+'    <div class="jsxc_removeBuddyFromList jsxc_actionButton">Supprimer un/des contact(s)</div>\n' +
 '\n' +
 '    <div class="jsxc_refreshBuddyList jsxc_actionButton">Rafraichir la liste</div>\n' +
 '\n' +
@@ -375,16 +377,9 @@ jsxc.gui.template['menuContacts'] = '<div id="jsxc_menuContacts">\n' +
 
 jsxc.gui.template['menuRooms'] = '<div id="jsxc_menuRooms">\n' +
 '\n' +
-'    Liste des salons disponibles:\n' +
-'    <div id="jsxc_availablesRooms"></div>\n' +
+'    <p>Démarrer une conversation:</p>\n' +
 '\n' +
-'    <div class="jsxc_joinRoom jsxc_actionButton">Rejoindre un salon</div>\n' +
-'\n' +
-'    <div class="jsxc_refreshRoomList jsxc_actionButton">Rafraichir la liste</div>\n' +
-'\n' +
-'    <div class="jsxc_actionButton notImplementedYet">Informations sur le salon</div>\n' +
-'\n' +
-'    <div class="jsxc_deleteRoom jsxc_actionButton notImplementedYet">Supprimer un salon</div>\n' +
+'    <div class="jsxc_roomCreationUsers"></div>\n' +
 '\n' +
 '    <div class="jsxc_sideMenuCreateRoomForm">\n' +
 '\n' +
@@ -482,6 +477,15 @@ jsxc.gui.template['pleaseAccept'] = '<p data-i18n="Please_accept_"></p>\n' +
 
 jsxc.gui.template['removeDialog'] = '<h3 data-i18n="Remove_buddy"></h3>\n' +
 '<p class="jsxc_maxWidth" data-i18n="[html]You_are_about_to_remove_"></p>\n' +
+'\n' +
+'<button class="btn btn-primary jsxc_remove pull-right" data-i18n="Remove"></button>\n' +
+'<button class="btn btn-default jsxc_cancel jsxc_close pull-right" data-i18n="Cancel"></button>\n' +
+'';
+
+jsxc.gui.template['removeManyDialog'] = '<h3>Suppression de contact</h3>\n' +
+'\n' +
+'<p class="jsxc_maxWidth">Vous allez retirer "{{msg}}" de votre liste de contacts.\n' +
+'    Toutes les fenêtres de discussion liées seront fermées.</p>\n' +
 '\n' +
 '<button class="btn btn-primary jsxc_remove pull-right" data-i18n="Remove"></button>\n' +
 '<button class="btn btn-default jsxc_cancel jsxc_close pull-right" data-i18n="Cancel"></button>\n' +

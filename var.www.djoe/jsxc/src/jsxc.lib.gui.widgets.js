@@ -248,3 +248,107 @@ jsxc.gui.createUserList = function (selector) {
     };
 
 };
+
+/**
+ * Create a buddy list. To retrieve selected elements select $("#listId .ui-selected");
+ *
+ *
+ * <p>Each item contains data:
+ *
+ * <p>'data-userjid': elmt.jid, 'data-username': elmt.username,
+ *
+ *
+ * @param selector
+ */
+jsxc.gui.createUserList = function (selector) {
+
+    var root = $(selector);
+
+    root.addClass("jsxc_userListContainer");
+
+    root.append("<ol class='jsxc_userList'></ol>");
+
+    var list = $(selector + " .jsxc_userList");
+
+    // make selectable list
+    list.selectable();
+
+    // make list scrollable
+    root.perfectScrollbar();
+
+    // update lists
+    var updateUserList = function (freshList) {
+
+        var search = jsxc.xmpp.search.getUserList;
+
+        if (freshList === "freshList") {
+            search = jsxc.xmpp.search.getFreshUserList;
+        }
+
+        // add contact to list
+        search().then(function (users) {
+
+                // remove exisiting elements
+                list.empty();
+
+                // add users
+                $.each(users, function (index, elmt) {
+
+                    // create list element
+                    var li = $("<li></li>")
+                        .text(elmt.username)
+                        .attr({
+                            'data-userjid': elmt.jid,
+                            'data-username': elmt.username,
+                            'class': 'ui-widget-content',
+                            'title': elmt.username + " n'est pas dans vos contacts"
+                        });
+
+                    // modify element if buddy
+                    if (elmt._is_buddy) {
+                        li.addClass("buddy_item")
+                            .attr({
+                                'title': elmt.username + " est dans vos contacts"
+                            });
+                    }
+
+                    list.append(li);
+                });
+            },
+
+            // error while updating
+            function () {
+
+                // remove exisiting elements
+                list.empty();
+
+                var li = $("<li></li>")
+                    .text("Liste des contacts indisponible")
+                    .attr({'class': 'ui-widget-content'});
+
+                list.append(li);
+
+            });
+    };
+
+    // update each time buddy list change
+    $(document).on("add.roster.jsxc", updateUserList);
+    $(document).on("cloaded.roster.jsxc", updateUserList);
+    $(document).on("buddyListChanged.jsxc", updateUserList);
+
+    // first update
+    updateUserList();
+
+    return {
+        /**
+         * Jquery object on root
+         */
+        "root": root,
+
+        /**
+         * Update list
+         */
+        "updateUserList": updateUserList
+    };
+
+};

@@ -17,8 +17,6 @@ jsxc.notice = {
         // reset list
         $('#jsxc_notice ul li').remove();
 
-        console.log($('#jsxc_roster span.jsxc_menu_notif_number'));
-
         $('#jsxc_roster .jsxc_menu_notif_number').text('');
         jsxc.notice._num = 0;
 
