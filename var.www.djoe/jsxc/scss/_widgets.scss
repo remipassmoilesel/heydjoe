@@ -42,10 +42,13 @@
 
     li {
       margin: 3px;
-      padding: 0.4em;
+      padding: 4px;
       cursor: pointer;
-      height: 20px;
+      height: 2em;
+
       vertical-align: middle;
+      line-height: 1;
+
     }
 
     .buddy_item:after {
@@ -87,10 +90,12 @@
 
     li {
       margin: 3px;
-      padding: 0.4em;
+      padding: 4px;
       cursor: pointer;
-      height: 20px;
+      height: 2em;
+
       vertical-align: middle;
+      line-height: 1;
     }
 
     //.buddy_item:after {

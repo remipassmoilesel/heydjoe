@@ -14,6 +14,7 @@ var StorageConsole = function (ctrId) {
     this.refreshBtn = ctrId + "_refreshButton";
     this.clearLocalBtn = ctrId + "_clearLocalButton";
     this.clearSessionBtn = ctrId + "_clearSessionButton";
+    this.logSpacesBtn = ctrId + "_logSpacesButton";
 
     var ctr = $("#" + this.containerId);
 
@@ -30,7 +31,8 @@ var StorageConsole = function (ctrId) {
         })
         .append("<button id='" + this.refreshBtn + "'>Rafraichir</button>")
         .append("<button id='" + this.clearLocalBtn + "'>Nettoyer le stockage local</button>")
-        .append("<button id='" + this.clearSessionBtn + "'>Nettoyer le stockage session</button>");
+        .append("<button id='" + this.clearSessionBtn + "'>Nettoyer le stockage session</button>")
+        .append("<button id='" + this.logSpacesBtn + "'>Journaliser les espaces (en console)</button>");
 
     ctr.append(controls);
 
@@ -64,6 +66,14 @@ var StorageConsole = function (ctrId) {
     $("#" + this.clearSessionBtn).click(function () {
         sessionStorage.clear();
         self.update();
+    });
+
+    // effacement du stockage lors d'un clic
+    $("#" + this.logSpacesBtn).click(function () {
+       console.log("sessionStorage");
+       console.log(sessionStorage);
+       console.log("localStorage");
+       console.log(localStorage);
     });
 
     // + première mise à jour

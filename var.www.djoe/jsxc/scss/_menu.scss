@@ -16,11 +16,23 @@
     height: 1em;
   }
 
-  .jsxc_inputChatRoomName{
-    height: 25px;
-    padding: 3px;
-    width: 80%;
-    margin: 5px;
+  .jsxc_sideMenuCreateRoomForm{
+
+    text-align: left;
+    padding: 5px;
+
+    input[type="checkbox"]{
+      width: 1em;
+      margin: 4px;
+    }
+
+    input[type="text"]{
+      height: 1.8em;
+      padding: 3px;
+      width: 80%;
+      margin: 5px;
+    }
+
   }
 
   .jsxc_menu_search_results {
@@ -41,11 +53,6 @@
   .jsxc_menu_active_result {
     color: blue;
     font-weight: bolder;
-  }
-
-  #jsxc_roomCreationPrivate{
-    width: 1em;
-
   }
 
   #jsxc_side_menu_search_bar {

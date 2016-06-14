@@ -97,8 +97,6 @@ jsxc.gui = {
      */
     init: function () {
 
-        console.log("jsxc.gui.init()");
-
         // Prevent duplicate windowList
         if ($('#jsxc_windowList').length > 0) {
             return;
@@ -1528,8 +1526,6 @@ jsxc.gui.roster = {
 
         // initialize main menu
         jsxc.gui.menu.init();
-
-        console.log("jsxc.gui.roster.init()");
 
         var rosterState = jsxc.storage.getUserItem('roster') || (jsxc.options.get('loginForm').startMinimized ? 'hidden' : 'shown');
 

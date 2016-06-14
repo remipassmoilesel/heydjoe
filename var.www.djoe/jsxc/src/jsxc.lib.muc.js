@@ -450,6 +450,7 @@ jsxc.muc = {
 
         var self = jsxc.muc;
 
+        // save room configuration in localstorage
         jsxc.storage.setUserItem('buddy', room, {
             jid: room,
             name: roomName || room,
@@ -463,8 +464,10 @@ jsxc.muc = {
             config: null
         });
 
+        // join room
         jsxc.xmpp.conn.muc.join(room, nickname, null, null, null, password);
 
+        // save bookmark
         if (bookmark) {
             jsxc.xmpp.bookmarks.add(room, roomName, nickname, autojoin);
         }
@@ -964,9 +967,13 @@ jsxc.muc = {
             var self = jsxc.muc;
             var roomdata = jsxc.storage.getUserItem('buddy', room) || {};
 
+            // case of instant room, no configuration needed
             if (roomdata.autojoin && roomdata.config === self.CONST.ROOMCONFIG.INSTANT) {
                 self.conn.muc.createInstantRoom(room);
-            } else if (roomdata.autojoin && typeof roomdata.config !== 'undefined' && roomdata.config !== null) {
+            }
+
+            //
+            else if (roomdata.autojoin && typeof roomdata.config !== 'undefined' && roomdata.config !== null) {
                 self.conn.muc.saveConfiguration(room, roomdata.config, function () {
                     jsxc.debug('Cached room configuration saved.');
                 }, function () {
@@ -974,7 +981,10 @@ jsxc.muc = {
 
                     //@TODO display error
                 });
-            } else {
+            }
+
+            //
+            else {
                 jsxc.gui.showSelectionDialog({
                     header: $.t('Room_creation'),
                     msg: $.t('Do_you_want_to_change_the_default_room_configuration'),

@@ -40,7 +40,7 @@ jsxc.xmpp.search = {
 
         if(typeof self.searchDomain === "undefined"){
             self.searchDomain = xmppOpts.domain;
-            jsxc.debug('Search domain not found, domain will be used', xmppOpts.domain, "WARN");
+            jsxc.warn('Search domain not found, domain will be used', xmppOpts.domain);
         }
 
         // first request to know if search is available

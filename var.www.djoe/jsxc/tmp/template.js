@@ -373,16 +373,6 @@ jsxc.gui.template['menuContacts'] = '<div id="jsxc_menuContacts">\n' +
 '\n' +
 '</div>';
 
-jsxc.gui.template['menuNotifications'] = '<div>\n' +
-'\n' +
-'    <div class="jsxc_actionButton jsxc_muteNotification" data-i18n="Mute"></div>\n' +
-'\n' +
-'    <div class="jsxc_actionButton notImplementedYet">Activer les notifications de bureau</div>\n' +
-'\n' +
-'    <div class="jsxc_actionButton notImplementedYet">Interdire les appels vidéos</div>\n' +
-'\n' +
-'</div>';
-
 jsxc.gui.template['menuRooms'] = '<div id="jsxc_menuRooms">\n' +
 '\n' +
 '    Liste des salons disponibles:\n' +
@@ -396,10 +386,18 @@ jsxc.gui.template['menuRooms'] = '<div id="jsxc_menuRooms">\n' +
 '\n' +
 '    <div class="jsxc_deleteRoom jsxc_actionButton notImplementedYet">Supprimer un salon</div>\n' +
 '\n' +
-'    <div style="text-align: center; margin-bottom: 5px">\n' +
-'        <input type="text" class="jsxc_inputChatRoomName"/>\n' +
+'    <div class="jsxc_sideMenuCreateRoomForm">\n' +
+'\n' +
+'        <input type="text" class="jsxc_inputChatRoomName" placeholder="Nom du salon"/>\n' +
+'\n' +
+'        <input type="text" class="jsxc_inputChatRoomSubject" placeholder="Sujet"/>\n' +
+'\n' +
 '        <br/>\n' +
 '        <input type="checkbox" id="jsxc_roomCreationPrivate" value="0" class="notImplementedYet"/>Salon privé\n' +
+'\n' +
+'        <br/>\n' +
+'        <input type="checkbox" id="jsxc_roomCreationEphemeral" value="0" class="notImplementedYet"/>Salon éphémère\n' +
+'\n' +
 '    </div>\n' +
 '\n' +
 '    <div class="jsxc_createRoom jsxc_actionButton">Créer un salon</div>\n' +
@@ -410,7 +408,13 @@ jsxc.gui.template['menuRooms'] = '<div id="jsxc_menuRooms">\n' +
 '\n' +
 '</div>';
 
-jsxc.gui.template['menuSettings'] = '<div>\n' +
+jsxc.gui.template['menuSettings'] = '<div id="jsxc_menuSettings">\n' +
+'\n' +
+'    <div class="jsxc_actionButton jsxc_muteNotification" data-i18n="Mute"></div>\n' +
+'\n' +
+'    <div class="jsxc_actionButton notImplementedYet">Activer les notifications de bureau</div>\n' +
+'\n' +
+'    <div class="jsxc_actionButton notImplementedYet">Interdire les appels vidéos</div>\n' +
 '\n' +
 '    <div class="jsxc_actionButton jsxc_hideOffline" data-i18n="Hide_offline"></div>\n' +
 '\n' +
@@ -427,16 +431,6 @@ jsxc.gui.template['menuSettings'] = '<div>\n' +
 '</div>\n' +
 '';
 
-jsxc.gui.template['menuStatus'] = '<div id="jsxc_menu_status">\n' +
-'    \n' +
-'    <div data-pres="online" class="jsxc_actionButton jsxc_online" data-i18n="Online"></div>\n' +
-'    <div data-pres="chat" class="jsxc_actionButton jsxc_chat" data-i18n="Chatty"></div>\n' +
-'    <div data-pres="away" class="jsxc_actionButton jsxc_away" data-i18n="Away"></div>\n' +
-'    <div data-pres="xa" class="jsxc_actionButton jsxc_xa" data-i18n="Extended_away"></div>\n' +
-'    <div data-pres="dnd" class="jsxc_actionButton jsxc_dnd" data-i18n="dnd"></div>\n' +
-'\n' +
-'</div>';
-
 jsxc.gui.template['menuTools'] = '<div>\n' +
 '\n' +
 '    <div class="jsxc_actionButton notImplementedYet">Ouvrir un pad</div>\n' +
@@ -447,24 +441,38 @@ jsxc.gui.template['menuTools'] = '<div>\n' +
 '\n' +
 '</div>';
 
-jsxc.gui.template['menuWelcome'] = '<div>\n' +
+jsxc.gui.template['menuWelcome'] = '<div id="jsxc_menuWelcome">\n' +
 '\n' +
 '    <p>\n' +
 '        Recherchez une fonctionnalité à l\'aide du champs ci-dessus ou explorez le menu :)\n' +
 '    </p>\n' +
 '\n' +
-'    <div class="jsxc_actionButton jsxc_onlineHelp" data-i18n="Online_help"></div>\n' +
 '    <div data-pres="offline" class="jsxc_actionButton jsxc_menu_offline">Se déconnecter</div>\n' +
 '\n' +
-'    <!-- Affichage des notifications -->\n' +
-'\n' +
+'    <!-- Display notifications -->\n' +
 '\n' +
 '    <div id="jsxc_notice">\n' +
-'        <p>\n' +
+'        <div>\n' +
 '            Notifications: <span class="jsxc_menu_notif_number"></span>\n' +
-'        </p>\n' +
+'        </div>\n' +
 '\n' +
-'        <ul></ul>\n' +
+'        <!-- Notification inserted here -->\n' +
+'        <ul>\n' +
+'\n' +
+'        </ul>\n' +
+'\n' +
+'    </div>\n' +
+'\n' +
+'    <p>Statut:</p>\n' +
+'\n' +
+'    <div>\n' +
+'\n' +
+'        <div data-pres="online" class="jsxc_actionButton jsxc_online" data-i18n="Online"></div>\n' +
+'        <div data-pres="chat" class="jsxc_actionButton jsxc_chat" data-i18n="Chatty"></div>\n' +
+'        <div data-pres="away" class="jsxc_actionButton jsxc_away" data-i18n="Away"></div>\n' +
+'        <div data-pres="xa" class="jsxc_actionButton jsxc_xa" data-i18n="Extended_away"></div>\n' +
+'        <div data-pres="dnd" class="jsxc_actionButton jsxc_dnd" data-i18n="dnd"></div>\n' +
+'\n' +
 '    </div>\n' +
 '\n' +
 '</div>';

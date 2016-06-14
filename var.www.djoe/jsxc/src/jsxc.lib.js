@@ -146,8 +146,7 @@ jsxc = {
 
             jsxc.log = jsxc.log + '$ ' + msg + ': ' + d + '\n';
 
-            console.log(msg);
-            console.log(data);
+            console.log(msg, data);
 
         } else {
             console.log(msg);

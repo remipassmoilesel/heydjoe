@@ -28,12 +28,12 @@ jsxc.gui.menu = {
 
                 //<div data-pres="offline" class="jsxc_actionButton jsxc_offline" data-i18n="Offline"></div>
 
-                $('#jsxc_side_menu_content .jsxc_onlineHelp').click(function () {
+                $('#jsxc_menuWelcome .jsxc_onlineHelp').click(function () {
                     window.open(jsxc.options.onlineHelp, 'onlineHelp');
                 });
 
                 // change presence or logout
-                $('#jsxc_side_menu_content .jsxc_menu_offline').click(function () {
+                $('#jsxc_menuWelcome .jsxc_menu_offline').click(function () {
                     jsxc.xmpp.logout(false);
 
                     // close menu and roster
@@ -41,17 +41,8 @@ jsxc.gui.menu = {
                     jsxc.gui.roster.toggle();
                 });
 
-            },
-
-        },
-
-        statusPanel: {
-            label: "Statut",
-            template: "menuStatus",
-            init: function () {
-
                 // change presence or logout
-                $('#jsxc_menu_status div').click(function () {
+                $('#jsxc_menuWelcome div').click(function () {
                     var self = $(this);
 
                     // pres info is stored in "data-pres" html arg
@@ -64,12 +55,13 @@ jsxc.gui.menu = {
                     }
 
                 });
+
             },
 
         },
 
         contactPanel: {
-            label: "Contacts",
+            label: "Rechercher un utilisateur",
             template: "menuContacts",
             init: function () {
 
@@ -136,34 +128,8 @@ jsxc.gui.menu = {
             },
         },
 
-        notificationsPanel: {
-            label: "Notifications",
-            template: "menuNotifications",
-            init: function () {
-
-                // mute notifications
-                $('#jsxc_side_menu_content .jsxc_muteNotification').click(function () {
-
-                    if (jsxc.storage.getUserItem('presence') === 'dnd') {
-                        return;
-                    }
-
-                    // invert current choice
-                    var mute = !jsxc.options.get('muteNotification');
-
-                    if (mute) {
-                        jsxc.notification.muteSound();
-                    } else {
-                        jsxc.notification.unmuteSound();
-                    }
-                });
-
-            },
-
-        },
-
         roomsPanel: {
-            label: "Salons et cannaux",
+            label: "Conversations",
             template: "menuRooms",
             init: function () {
 
@@ -187,8 +153,6 @@ jsxc.gui.menu = {
                         jsxc.gui.feedback("Saisie incorrecte", "warn");
                         return;
                     }
-
-                    console.log(selItems.data("roomjid"));
 
                     // join room
                     jsxc.muc.join(selItems.data("roomjid"), jsxc.xmpp.getCurrentNode());
@@ -317,13 +281,30 @@ jsxc.gui.menu = {
             template: "menuSettings",
             init: function () {
 
+                // mute notifications
+                $('#jsxc_menuSettings .jsxc_muteNotification').click(function () {
+
+                    if (jsxc.storage.getUserItem('presence') === 'dnd') {
+                        return;
+                    }
+
+                    // invert current choice
+                    var mute = !jsxc.options.get('muteNotification');
+
+                    if (mute) {
+                        jsxc.notification.muteSound();
+                    } else {
+                        jsxc.notification.unmuteSound();
+                    }
+                });
+
                 // show dialog settings
-                $('#jsxc_side_menu_content .jsxc_dialog_settings').click(function () {
+                $('#jsxc_menuSettings .jsxc_dialog_settings').click(function () {
                     jsxc.gui.showSettings();
                 });
 
                 // display or hide offline buddies
-                $('#jsxc_side_menu_content .jsxc_hideOffline').click(function () {
+                $('#jsxc_menuSettings .jsxc_hideOffline').click(function () {
 
                     var hideOffline = !jsxc.options.get('hideOffline');
 
@@ -339,7 +320,7 @@ jsxc.gui.menu = {
                 });
 
                 // about dialog
-                $('#jsxc_side_menu_content .jsxc_about').click(function () {
+                $('#jsxc_menuSettings .jsxc_about').click(function () {
                     jsxc.gui.showAboutDialog();
                 });
 

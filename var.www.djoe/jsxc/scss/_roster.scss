@@ -329,6 +329,8 @@
 
 #jsxc_notice {
 
+  padding: 10px;
+
   // Notification number
   span.jsxc_menu_notif_number {
     background-color: $notice_bg;
@@ -346,7 +348,8 @@
   }
 
   ul{
-    padding: 0.2em;
+    padding-left: 0px;
+    margin: 10px;
   }
 
   li{
