@@ -246,6 +246,15 @@ jsxc.gui.template['contactDialog'] = '<h3 data-i18n="Add_buddy"></h3>\n' +
 '</form>\n' +
 '';
 
+jsxc.gui.template['conversationSelectionDialog'] = '<h3>Sélection de conversation</h3>\n' +
+'<p class="jsxc_maxWidth">Sélectionner une ou plusieurs conversation(s) ci-dessous</p>\n' +
+'\n' +
+'<div id="jsxc_dialogConversationList"></div>\n' +
+'\n' +
+'<button class="btn btn-primary jsxc_confirm pull-right" data-i18n="Confirm"></button>\n' +
+'<button class="btn btn-default jsxc_cancel jsxc_close pull-right" data-i18n="Cancel"></button>\n' +
+'';
+
 jsxc.gui.template['fingerprintsDialog'] = '<div>\n' +
 '   <p class="jsxc_maxWidth" data-i18n="A_fingerprint_"></p>\n' +
 '   <p>\n' +
@@ -385,6 +394,8 @@ jsxc.gui.template['menuRooms'] = '<div id="jsxc_menuRooms">\n' +
 '    <div class="jsxc_menuAdvice">Touche \'Control\' pour sélectionner plusieurs utilisateurs</div>\n' +
 '\n' +
 '    <div class="jsxc_refreshBuddyList jsxc_actionButton">Rafraichir la liste</div>\n' +
+'\n' +
+'    <div class="jsxc_inviteBuddiesOnConversation jsxc_actionButton">Inviter dans une conversation existante</div>\n' +
 '\n' +
 '    <!-- Conversation form -->\n' +
 '    <div class="jsxc_sideMenuCreateRoomForm">\n' +

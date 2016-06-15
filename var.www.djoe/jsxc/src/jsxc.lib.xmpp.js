@@ -789,6 +789,9 @@ jsxc.xmpp = {
      */
     onMessage: function (stanza) {
 
+        console.log("onMessage");
+        console.log(stanza);
+
         var forwarded = $(stanza).find('forwarded[xmlns="' + jsxc.CONST.NS.FORWARD + '"]');
         var message, carbon;
 

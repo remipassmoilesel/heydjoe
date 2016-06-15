@@ -191,7 +191,7 @@ jsxc.gui.createUserList = function (selector) {
                 $.each(users, function (index, elmt) {
 
                     // check if not user
-                    if(elmt.username === jsxc.xmpp.getCurrentNode()){
+                    if (elmt.username === jsxc.xmpp.getCurrentNode()) {
                         return true;
                     }
 
@@ -287,8 +287,10 @@ jsxc.gui.createBuddyList = function (selector) {
         list.empty();
 
         var buddylist = jsxc.storage.getLocaleBuddyListBJID();
-        
-        $.each(buddylist, function(index, jid){
+
+        var buddyNumber = 0;
+
+        $.each(buddylist, function (index, jid) {
 
             //console.log(jsxc.storage.getUserItem('buddy', Strophe.getBareJidFromJid(jid)));
 
@@ -297,24 +299,37 @@ jsxc.gui.createBuddyList = function (selector) {
             // check friendship
             var realFriend = infos.sub === 'both' && infos.type !== 'groupchat';
 
-            if(realFriend !== true){
+            if (realFriend !== true) {
                 return true;
             }
 
             var userName = Strophe.getNodeFromJid(jid);
-            
+
             // create list element
             var li = $("<li></li>")
                 .text(userName)
                 .attr({
-                    'data-userjid':jid,
+                    'data-userjid': jid,
                     'data-username': userName,
                     'class': 'ui-widget-content'
                 });
 
             list.append(li);
-            
+
         });
+
+        if (buddyNumber < 1) {
+            // create list element
+            var li = $("<li></li>")
+                .text("Aucun contact confirmé")
+                .attr({
+                    'data-userjid': null,
+                    'data-username': null,
+                    'class': 'ui-widget-content'
+                });
+
+            list.append(li);
+        }
 
     };
 
@@ -336,6 +351,105 @@ jsxc.gui.createBuddyList = function (selector) {
          * Update list
          */
         "updateBuddyList": updateBuddyList
+    };
+
+};
+
+/**
+ * Create a conversation list. To retrieve selected elements select $("#listId .ui-selected");
+ *
+ *
+ * <p>Each item contains data:
+ *
+ * <p>'data-conversjid'
+ *
+ *
+ * @param selector
+ */
+jsxc.gui.createConversationList = function (selector) {
+
+    var root = $(selector);
+
+    root.addClass("jsxc_conversationListContainer");
+
+    root.append("<ol class='jsxc_conversationList'></ol>");
+
+    var list = $(selector + " .jsxc_conversationList");
+
+    // make selectable list
+    list.selectable();
+
+    // make list scrollable
+    root.perfectScrollbar();
+
+    // update lists
+    var updateConversationList = function () {
+
+        list.empty();
+
+        var conversList = jsxc.storage.getLocaleBuddyListBJID();
+
+        var conversNumber = 0;
+
+        $.each(conversList, function (index, jid) {
+
+            var infos = jsxc.storage.getUserItem('buddy', Strophe.getBareJidFromJid(jid));
+
+            // check friendship
+            var chatRoom = infos.type === 'groupchat';
+
+            if (chatRoom !== true) {
+                return true;
+            }
+
+            var conversName = Strophe.getNodeFromJid(jid);
+
+            // create list element
+            var li = $("<li></li>")
+                .text(conversName)
+                .attr({
+                    'data-conversjid': jid,
+                    'class': 'ui-widget-content'
+                });
+
+            list.append(li);
+
+            conversNumber++;
+
+        });
+
+        if (conversNumber < 1) {
+            // create list element
+            var li = $("<li></li>")
+                .text("Aucune conversation")
+                .attr({
+                    'data-conversjid': null,
+                    'class': 'ui-widget-content'
+                });
+
+            list.append(li);
+        }
+
+    };
+
+    // update each time buddy list change
+    $(document).on("add.roster.jsxc", updateConversationList);
+    $(document).on("cloaded.roster.jsxc", updateConversationList);
+    $(document).on("buddyListChanged.jsxc", updateConversationList);
+
+    // first update
+    updateConversationList();
+
+    return {
+        /**
+         * Jquery object on root
+         */
+        "root": root,
+
+        /**
+         * Update list
+         */
+        "updateConversationList": updateConversationList
     };
 
 };

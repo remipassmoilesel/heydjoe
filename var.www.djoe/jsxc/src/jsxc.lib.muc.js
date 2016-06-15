@@ -463,11 +463,9 @@ jsxc.muc = {
             config: null
         };
 
-        if(additionnalDatas){
+        if (additionnalDatas) {
             $.extend(datas, additionnalDatas);
         }
-
-        console.log(datas);
 
         // save room configuration in localstorage
         jsxc.storage.setUserItem('buddy', room, datas);
@@ -1129,11 +1127,11 @@ jsxc.muc = {
             "muc#roomconfig_roomdesc": roomdata.subject,
             "muc#roomconfig_changesubject": "0",
             "muc#roomconfig_maxusers": "0",
-            "muc#roomconfig_presencebroadcast": "participant",
+            "muc#roomconfig_presencebroadcast": "visitor",
             "muc#roomconfig_publicroom": "0",
             "muc#roomconfig_persistentroom": "1",
             "muc#roomconfig_moderatedroom": "0",
-            "muc#roomconfig_membersonly": "1",
+            "muc#roomconfig_membersonly": "0",
             "muc#roomconfig_allowinvites": "1",
             "muc#roomconfig_passwordprotectedroom": "0",
             "muc#roomconfig_whois": "anyone",
@@ -1163,6 +1161,8 @@ jsxc.muc = {
                 // save configuration
                 jsxc.storage.updateUserItem('buddy', room, 'config', form);
 
+                // invite users
+                self.inviteParticipants(room, roomdata.initialParticipants);
             },
 
             // configuration fail
@@ -1173,6 +1173,23 @@ jsxc.muc = {
                 jsxc.gui.feedback("Erreur lors de la création de la discussion");
 
             });
+    },
+
+    /**
+     * Invite participants to a chat room
+     * @param room
+     */
+    inviteParticipants: function (room, jidArray) {
+
+        console.log("Sending invitations");
+        console.log(room);
+        console.log(jidArray);
+
+        var self = jsxc.muc;
+
+        $.each(jidArray, function (index, item) {
+            self.conn.muc.directInvite(room, item, "Vous êtes invité aux chateau de Versaaaaaaiiiillles !");
+        });
     },
 
     /**

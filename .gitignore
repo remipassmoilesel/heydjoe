@@ -1,6 +1,6 @@
 opt.openfire/*
 .idea/
-memos/
+memos
 dev/
 build/
 node_modules

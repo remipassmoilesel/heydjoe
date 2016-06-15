@@ -751,6 +751,41 @@ jsxc.gui = {
             jsxc.gui.dialog.close();
         });
     },
+    
+    /**
+     * Show a dialog to select a conversation
+     *
+     * @param {type} bid
+     * @returns {undefined}
+     */
+    showConversationSelectionDialog: function () {
+
+        var defer = $.Deferred();
+        
+        jsxc.gui.dialog.open(jsxc.gui.template.get('conversationSelectionDialog'));
+
+        jsxc.gui.createConversationList("#jsxc_dialogConversationList");
+        
+        $('#jsxc_dialog .jsxc_confirm').click(function (ev) {
+            ev.stopPropagation();
+        
+            // get selected elements
+            var selItems = $("#jsxc_dialogConversationList .ui-selected");
+
+            defer.resolve(selItems);
+
+            jsxc.gui.dialog.close();
+        });
+
+        $('#jsxc_dialog .jsxc_cancel').click(function (ev) {
+            ev.stopPropagation();
+
+            defer.reject("user canceled");
+
+        });
+        
+        return defer.promise();
+    },
 
     /**
      * Create and show a wait dialog

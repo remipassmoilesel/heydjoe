@@ -216,19 +216,38 @@ jsxc.gui.menu = {
                     // prepare title of room
                     var subject = $("#jsxc_menuRooms .jsxc_inputRoomSubject").val().trim();
 
-                    // prepare id of room, all in lower case, otherwise problem apear with localstorage  !!!!!!!!!!!
+                    // prepare id of room, all in lower case, otherwise problem will appear with local storage  !!!!!!!!!!!
                     var roomjid = jsxc.xmpp.getCurrentNode() + "-" + d.toISOString().replace(/[^a-z0-9]+/gi, "") + "@" + jsxc.options.get('muc').server;
                     roomjid = roomjid.toLowerCase();
+
+                    // save initial participants for invite them
+                    var initialParticipants = [];
+                    selItems.each(function () {
+                        initialParticipants.push($(this).data("userjid"));
+                    });
 
                     // clean up
                     jsxc.gui.window.clear(roomjid);
                     jsxc.storage.setUserItem('member', roomjid, {});
 
-                    jsxc.muc.join(roomjid, jsxc.xmpp.getCurrentNode(), null, title, subject, true, true);
+                    jsxc.muc.join(roomjid, jsxc.xmpp.getCurrentNode(), null, title, subject, true, true,
+                        {"initialParticipants": initialParticipants});
 
                     // open window
                     jsxc.gui.window.open(roomjid);
 
+                });
+
+                // invite users
+                $(".jsxc_inviteBuddiesOnConversation").click(function(){
+                    jsxc.gui.showConversationSelectionDialog()
+                        .done(function(conversations){
+                            console.log(conversations);
+
+                        })
+                        .fail(function(message){
+                            console.log(message);
+                        });
                 });
 
                 // // display room dialog
