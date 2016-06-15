@@ -379,27 +379,27 @@ jsxc.gui.template['menuRooms'] = '<div id="jsxc_menuRooms">\n' +
 '\n' +
 '    <p>Démarrer une conversation:</p>\n' +
 '\n' +
-'    <div class="jsxc_roomCreationUsers"></div>\n' +
+'    <!-- Select users for start a conversation -->\n' +
+'    <div id="jsxc_roomCreationUsers"></div>\n' +
 '\n' +
+'    <div class="jsxc_menuAdvice">Touche \'Control\' pour sélectionner plusieurs utilisateurs</div>\n' +
+'\n' +
+'    <div class="jsxc_refreshBuddyList jsxc_actionButton">Rafraichir la liste</div>\n' +
+'\n' +
+'    <!-- Conversation form -->\n' +
 '    <div class="jsxc_sideMenuCreateRoomForm">\n' +
 '\n' +
-'        <input type="text" class="jsxc_inputChatRoomName" placeholder="Nom du salon"/>\n' +
+'        <input type="text" class="jsxc_inputRoomTitle" placeholder="Titre de la conversation"/>\n' +
 '\n' +
-'        <input type="text" class="jsxc_inputChatRoomSubject" placeholder="Sujet"/>\n' +
-'\n' +
-'        <br/>\n' +
-'        <input type="checkbox" id="jsxc_roomCreationPrivate" value="0" class="notImplementedYet"/>Salon privé\n' +
-'\n' +
-'        <br/>\n' +
-'        <input type="checkbox" id="jsxc_roomCreationEphemeral" value="0" class="notImplementedYet"/>Salon éphémère\n' +
+'        <input type="text" class="jsxc_inputRoomSubject" placeholder="Sujet"/>\n' +
 '\n' +
 '    </div>\n' +
 '\n' +
-'    <div class="jsxc_createRoom jsxc_actionButton">Créer un salon</div>\n' +
+'    <div class="jsxc_createRoom jsxc_actionButton">Nouvelle conversation</div>\n' +
 '\n' +
 '    <p>&nbsp;</p>\n' +
 '\n' +
-'    <div class="jsxc_roomDialog jsxc_actionButton" >Boite de dialogue "salons"</div>\n' +
+'    <!--<div class="jsxc_roomDialog jsxc_actionButton" >Boite de dialogue "salons"</div>-->\n' +
 '\n' +
 '</div>';
 

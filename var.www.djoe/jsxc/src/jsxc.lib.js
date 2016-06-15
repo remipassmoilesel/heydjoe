@@ -951,7 +951,8 @@ jsxc = {
      */
     stackTrace: function(){
         var time = (new Date()).getTime();
-        console.error(time);
+        console.error("Stack trace");
+        console.error("Time: " + time);
         console.error((new Error()).stack);
     },
     

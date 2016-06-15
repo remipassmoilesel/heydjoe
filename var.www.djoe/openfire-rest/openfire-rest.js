@@ -27,7 +27,7 @@ $(document).ready(function () {
 
     // delete all chatrooms
     //orest.deleteAllChatrooms();
-    
+
     // Delete dummy users
     //orest.deleteDummies("dummy", 20);
 
@@ -45,6 +45,9 @@ var orest = {
      */
     apiKey: "6SwpGQ3zmQJ246c3",
 
+    /**
+     * Delete all chatrooms, no confirmation
+     */
     deleteAllChatrooms: function () {
         orest.asyncRequest(
             'GET',

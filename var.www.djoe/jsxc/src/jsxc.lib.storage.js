@@ -63,6 +63,7 @@ jsxc.storage = {
         }
 
         localStorage.setItem(jsxc.storage.getPrefix(uk) + key, value);
+
     },
 
     setUserItem: function (type, key, value) {

@@ -2235,6 +2235,7 @@ jsxc.gui.window = {
      * @returns {jQuery} Window object
      */
     open: function (bid) {
+
         var win = jsxc.gui.window.init(bid);
 
         jsxc.gui.window.show(bid);

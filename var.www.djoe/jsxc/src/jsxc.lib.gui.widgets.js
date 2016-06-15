@@ -190,6 +190,11 @@ jsxc.gui.createUserList = function (selector) {
                 // add users
                 $.each(users, function (index, elmt) {
 
+                    // check if not user
+                    if(elmt.username === jsxc.xmpp.getCurrentNode()){
+                        return true;
+                    }
+
                     // create list element
                     var li = $("<li></li>")
                         .text(elmt.username)
@@ -260,15 +265,15 @@ jsxc.gui.createUserList = function (selector) {
  *
  * @param selector
  */
-jsxc.gui.createUserList = function (selector) {
+jsxc.gui.createBuddyList = function (selector) {
 
     var root = $(selector);
 
-    root.addClass("jsxc_userListContainer");
+    root.addClass("jsxc_buddyListContainer");
 
-    root.append("<ol class='jsxc_userList'></ol>");
+    root.append("<ol class='jsxc_buddyList'></ol>");
 
-    var list = $(selector + " .jsxc_userList");
+    var list = $(selector + " .jsxc_buddyList");
 
     // make selectable list
     list.selectable();
@@ -277,67 +282,49 @@ jsxc.gui.createUserList = function (selector) {
     root.perfectScrollbar();
 
     // update lists
-    var updateUserList = function (freshList) {
+    var updateBuddyList = function () {
 
-        var search = jsxc.xmpp.search.getUserList;
+        list.empty();
 
-        if (freshList === "freshList") {
-            search = jsxc.xmpp.search.getFreshUserList;
-        }
+        var buddylist = jsxc.storage.getLocaleBuddyListBJID();
+        
+        $.each(buddylist, function(index, jid){
 
-        // add contact to list
-        search().then(function (users) {
+            //console.log(jsxc.storage.getUserItem('buddy', Strophe.getBareJidFromJid(jid)));
 
-                // remove exisiting elements
-                list.empty();
+            var infos = jsxc.storage.getUserItem('buddy', Strophe.getBareJidFromJid(jid));
 
-                // add users
-                $.each(users, function (index, elmt) {
+            // check friendship
+            var realFriend = infos.sub === 'both' && infos.type !== 'groupchat';
 
-                    // create list element
-                    var li = $("<li></li>")
-                        .text(elmt.username)
-                        .attr({
-                            'data-userjid': elmt.jid,
-                            'data-username': elmt.username,
-                            'class': 'ui-widget-content',
-                            'title': elmt.username + " n'est pas dans vos contacts"
-                        });
+            if(realFriend !== true){
+                return true;
+            }
 
-                    // modify element if buddy
-                    if (elmt._is_buddy) {
-                        li.addClass("buddy_item")
-                            .attr({
-                                'title': elmt.username + " est dans vos contacts"
-                            });
-                    }
-
-                    list.append(li);
+            var userName = Strophe.getNodeFromJid(jid);
+            
+            // create list element
+            var li = $("<li></li>")
+                .text(userName)
+                .attr({
+                    'data-userjid':jid,
+                    'data-username': userName,
+                    'class': 'ui-widget-content'
                 });
-            },
 
-            // error while updating
-            function () {
+            list.append(li);
+            
+        });
 
-                // remove exisiting elements
-                list.empty();
-
-                var li = $("<li></li>")
-                    .text("Liste des contacts indisponible")
-                    .attr({'class': 'ui-widget-content'});
-
-                list.append(li);
-
-            });
     };
 
     // update each time buddy list change
-    $(document).on("add.roster.jsxc", updateUserList);
-    $(document).on("cloaded.roster.jsxc", updateUserList);
-    $(document).on("buddyListChanged.jsxc", updateUserList);
+    $(document).on("add.roster.jsxc", updateBuddyList);
+    $(document).on("cloaded.roster.jsxc", updateBuddyList);
+    $(document).on("buddyListChanged.jsxc", updateBuddyList);
 
     // first update
-    updateUserList();
+    updateBuddyList();
 
     return {
         /**
@@ -348,7 +335,7 @@ jsxc.gui.createUserList = function (selector) {
         /**
          * Update list
          */
-        "updateUserList": updateUserList
+        "updateBuddyList": updateBuddyList
     };
 
 };

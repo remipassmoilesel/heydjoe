@@ -15,6 +15,16 @@
 .xml_level8 { padding-left: 8em; }
 .xml_level9 { padding-left: 9em; }
 
-.incoming {
+.xmppinspector_traffic{
+    margin: 5px;
+}
+
+.xmppinspector_incoming {
     background-color: #111;
+}
+
+.xmppinspector_title{
+    color: white;
+    font-size: 15px;
+    font-weight: bolder;
 }

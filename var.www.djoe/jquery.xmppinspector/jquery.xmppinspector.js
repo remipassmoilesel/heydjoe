@@ -31,7 +31,8 @@
         logSpace.css({
             'overflow': 'scroll',
             'background': 'black',
-            'height': '90%'
+            'height': '90%',
+            'padding': '15px'
         });
 
         // intercept XML
@@ -46,18 +47,28 @@
 
         // show traffic
         var show_traffic = function (body, type) {
+
+            var title = "<h1 class='xmppinspector_title'>" + type + " " + new Date().toUTCString() + "</h1>";
+
+            type = "xmppinspector_" + type;
+
+
             if (body.childNodes.length > 0) {
 
                 $.each(body.childNodes, function () {
-                    logSpace.append("<div class='" + type + "'>" +
+
+                    logSpace.append(title);
+
+                    logSpace.append("<div class='xmppinspector_traffic " + type + "'>" +
                         pretty_xml(this) +
                         "</div>");
                 });
 
 
+                // scroll down
 
-                var elmt = logSpace.get(0);
-                elmt.scrollTop = elmt.scrollHeight;
+                var height = logSpace[0].scrollHeight;
+                logSpace.scrollTop(height);
 
             }
         };

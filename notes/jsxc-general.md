@@ -11,9 +11,14 @@
     
     // obtenir je jid courant
     jsxc.xmpp.conn.jid
+    jsxc.xmpp.getCurrentNode()
     
     jsxc.stackTrace() // print stack trace
+    
     jsxc.xmpp.getLocaleBuddyListBJID() // array of local buddies
+    
+    jsxc.getFormattedTime(message.stamp) // formatted date
+    
     jsxc.el_exists($("#selector")); // check if element exist
     jsxc.jidToBid(item); // get bare jid
     jsxc.gui.createFeedbackArea(); // create a feedback area

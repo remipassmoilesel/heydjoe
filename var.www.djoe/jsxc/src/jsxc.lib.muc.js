@@ -446,12 +446,11 @@ jsxc.muc = {
      * @param {string} [roomName] Room alias
      * @param {string} [subject] Current subject
      */
-    join: function (room, nickname, password, roomName, subject, bookmark, autojoin) {
+    join: function (room, nickname, password, roomName, subject, bookmark, autojoin, additionnalDatas) {
 
         var self = jsxc.muc;
 
-        // save room configuration in localstorage
-        jsxc.storage.setUserItem('buddy', room, {
+        var datas = {
             jid: room,
             name: roomName || room,
             sub: 'both',
@@ -462,7 +461,16 @@ jsxc.muc = {
             autojoin: autojoin || false,
             nickname: nickname,
             config: null
-        });
+        };
+
+        if(additionnalDatas){
+            $.extend(datas, additionnalDatas);
+        }
+
+        console.log(datas);
+
+        // save room configuration in localstorage
+        jsxc.storage.setUserItem('buddy', room, datas);
 
         // join room
         jsxc.xmpp.conn.muc.join(room, nickname, null, null, null, password);
@@ -729,9 +737,6 @@ jsxc.muc = {
      */
     onPresence: function (event, from, status, presence) {
 
-        // console.log("onPresence");
-        // console.log(presence);
-
         var self = jsxc.muc;
         var room = jsxc.jidToBid(from);
         var roomdata = jsxc.storage.getUserItem('buddy', room);
@@ -962,18 +967,12 @@ jsxc.muc = {
         /** Inform user that a new room has been created */
         201: function (room) {
 
-            //jsxc.muc.onStatus.log(arguments);
-
             var self = jsxc.muc;
             var roomdata = jsxc.storage.getUserItem('buddy', room) || {};
 
-            // case of instant room, no configuration needed
             if (roomdata.autojoin && roomdata.config === self.CONST.ROOMCONFIG.INSTANT) {
                 self.conn.muc.createInstantRoom(room);
-            }
-
-            //
-            else if (roomdata.autojoin && typeof roomdata.config !== 'undefined' && roomdata.config !== null) {
+            } else if (roomdata.autojoin && typeof roomdata.config !== 'undefined' && roomdata.config !== null) {
                 self.conn.muc.saveConfiguration(room, roomdata.config, function () {
                     jsxc.debug('Cached room configuration saved.');
                 }, function () {
@@ -981,30 +980,26 @@ jsxc.muc = {
 
                     //@TODO display error
                 });
-            }
+            } else {
 
-            //
-            else {
-                jsxc.gui.showSelectionDialog({
-                    header: $.t('Room_creation'),
-                    msg: $.t('Do_you_want_to_change_the_default_room_configuration'),
-                    primary: {
-                        label: $.t('Default'),
-                        cb: function () {
-                            jsxc.gui.dialog.close();
+                self.conn.muc.createInstantRoom(room);
+                //jsxc.storage.updateUserItem('buddy', room, 'config', self.CONST.ROOMCONFIG.INSTANT);
 
-                            self.conn.muc.createInstantRoom(room);
 
-                            jsxc.storage.updateUserItem('buddy', room, 'config', self.CONST.ROOMCONFIG.INSTANT);
-                        }
+                // launch configuration of room
+                self.conn.muc.configure(room, function (stanza) {
+                        self._configureChatRoom(room, stanza);
                     },
-                    option: {
-                        label: $.t('Change'),
-                        cb: function () {
-                            self.showRoomConfiguration(room);
-                        }
-                    }
-                });
+
+                    // fail loading room configuration
+                    function (response) {
+
+                        jsxc.warn("Error while loading room configuration", response);
+
+                        jsxc.feedback("Erreur lors de la configuration de la discussion");
+
+                    });
+
             }
 
         },
@@ -1116,6 +1111,68 @@ jsxc.muc = {
                 msg: $.t('muc_removed_shutdown')
             });
         }
+    },
+
+    /**
+     * Configure a chat room after creation
+     * @param stanza
+     * @param room
+     */
+    _configureChatRoom: function (room, stanza) {
+
+        var self = jsxc.muc;
+        var roomdata = jsxc.storage.getUserItem('buddy', room) || {};
+
+        // define fields
+        var fieldValues = {
+            "muc#roomconfig_roomname": roomdata.name,
+            "muc#roomconfig_roomdesc": roomdata.subject,
+            "muc#roomconfig_changesubject": "0",
+            "muc#roomconfig_maxusers": "0",
+            "muc#roomconfig_presencebroadcast": "participant",
+            "muc#roomconfig_publicroom": "0",
+            "muc#roomconfig_persistentroom": "1",
+            "muc#roomconfig_moderatedroom": "0",
+            "muc#roomconfig_membersonly": "1",
+            "muc#roomconfig_allowinvites": "1",
+            "muc#roomconfig_passwordprotectedroom": "0",
+            "muc#roomconfig_whois": "anyone",
+            "muc#roomconfig_enablelogging": "1",
+            "x-muc#roomconfig_canchangenick": "0",
+            "x-muc#roomconfig_registration": "0",
+            // "muc#roomconfig_roomadmins": "",
+            // "muc#roomconfig_roomowners": "",
+        };
+
+        // parse form from stanza
+        var form = Strophe.x.Form.fromXML(stanza);
+
+        $.each(form.fields, function (index, item) {
+
+            if (typeof fieldValues[item.var] !== "undefined") {
+                item.values = [fieldValues[item.var]];
+            }
+
+        });
+
+        // self.conn.muc.cancelConfigure(room);
+
+        // send configuration to server
+        self.conn.muc.saveConfiguration(room, form, function () {
+
+                // save configuration
+                jsxc.storage.updateUserItem('buddy', room, 'config', form);
+
+            },
+
+            // configuration fail
+            function (response) {
+
+                jsxc.warn("Error while configuring room", response);
+
+                jsxc.gui.feedback("Erreur lors de la création de la discussion");
+
+            });
     },
 
     /**
@@ -1496,6 +1553,7 @@ jsxc.muc = {
             switch (self.type.toLowerCase()) {
                 case 'list-single':
                 case 'list-multi':
+
                     el = $('<select>');
                     if (self.type === 'list-multi') {
                         el.attr('multiple', 'multiple');

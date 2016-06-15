@@ -1,5 +1,7 @@
 # Erreurs possibles
 
+* erreurs en rapport avec les données stockées dans le localStorage: attention à la casse, certaines méthode du projet applique systèmatiquement un toLowerCase()
+
 * perfect-scroll de dimension bizarre, sortant du cadre.
 Voir le README sur Github.
 

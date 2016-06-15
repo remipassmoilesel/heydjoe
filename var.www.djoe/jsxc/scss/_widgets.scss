@@ -1,13 +1,12 @@
 /**
   Area to print feebacks
 */
-.jsxc_feedbackArea{
+.jsxc_feedbackArea {
   color: #3F3F3F;
   font-size: 11px;
   font-style: italic;
   text-align: center;
 }
-
 
 /**
   User selection list
@@ -20,8 +19,8 @@
   margin: 5px;
   border: 1px solid #dddddd;
 
-  .jsxc_userListRefreshButton{
-     position: absolute;
+  .jsxc_userListRefreshButton {
+    position: absolute;
   }
 
   .jsxc_userList {
@@ -59,7 +58,6 @@
   }
 
 }
-
 
 /**
   User selection list
@@ -102,6 +100,47 @@
     //  content: image-url("user_list_buddy.png");
     //  vertical-align: -30%;
     //}
+
+  }
+
+}
+
+/**
+  Buddy selection list
+*/
+
+.jsxc_buddyListContainer {
+
+  position: relative;
+  height: 150px;
+  margin: 5px;
+  border: 1px solid #dddddd;
+
+  .jsxc_buddyList {
+
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+
+    .ui-selecting {
+      background: #FECA40;
+    }
+
+    .ui-selected {
+      background: rgb(126, 183, 59);
+      color: white;
+    }
+
+    li {
+      margin: 3px;
+      padding: 4px;
+      cursor: pointer;
+      height: 2em;
+
+      vertical-align: middle;
+      line-height: 1;
+    }
 
   }
 

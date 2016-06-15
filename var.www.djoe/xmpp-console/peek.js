@@ -1,15 +1,15 @@
-
-
 var Peek = {
 
     /**
-    * La connexion XMPP
-    */
+     * La connexion XMPP
+     */
     connection: null,
 
     /**
-        Ajouter du trafic à l'affichage
-    */
+     *
+     * Ajouter du trafic à l'affichage
+     *
+     */
     show_traffic: function (body, type) {
         if (body.childNodes.length > 0) {
             var console = $('#console').get(0);
@@ -18,9 +18,9 @@ var Peek = {
                 console.clientHeight;
 
             $.each(body.childNodes, function () {
-                $('#console').append("<div class='" + type + "'>" + 
-                                     Peek.pretty_xml(this) +
-                                     "</div>");
+                $('#console').append("<div class='" + type + "'>" +
+                    Peek.pretty_xml(this) +
+                    "</div>");
             });
 
             if (at_bottom) {
@@ -30,12 +30,15 @@ var Peek = {
     },
 
     /**
-     Mise en forme XML > HTML
-    */
+     * Mise en forme XML > HTML
+     * @param xml
+     * @param level
+     * @returns {string}
+     */
     pretty_xml: function (xml, level) {
         var i, j;
         var result = [];
-        if (!level) { 
+        if (!level) {
             level = 0;
         }
 
@@ -77,13 +80,13 @@ var Peek = {
                 if (this.nodeType === 1) {
                     result.push(Peek.pretty_xml(this, level + 1));
                 } else if (this.nodeType === 3) {
-                    result.push("<div class='xml_text xml_level" + 
-                                (level + 1) + "'>");
+                    result.push("<div class='xml_text xml_level" +
+                        (level + 1) + "'>");
                     result.push(this.nodeValue);
                     result.push("</div>");
                 }
             });
-            
+
             result.push("<div class='xml xml_level" + level + "'>");
             result.push("<span class='xml_punc'>&lt;/</span>");
             result.push("<span class='xml_tag'>");
@@ -91,13 +94,15 @@ var Peek = {
             result.push("</span>");
             result.push("<span class='xml_punc'>&gt;</span></div>");
         }
-        
+
         return result.join("");
     },
 
     /**
-        Parser du texte et le transformer en objet XML
-    */
+     * 
+     * Parser du texte et le transformer en objet XML
+     * 
+     */
     text_to_xml: function (text) {
         var doc = null;
         if (window['DOMParser']) {
@@ -125,8 +130,9 @@ var Peek = {
 $(document).ready(function () {
 
     /**
-        Ouvrir une popup automatique
-    */
+     * 
+     * Ouvrir une popup automatique
+     */
     $('#login_dialog').dialog({
         autoOpen: true,
         draggable: false,
@@ -139,7 +145,7 @@ $(document).ready(function () {
                     jid: $('#jid').val().toLowerCase(),
                     password: $('#password').val()
                 });
-                
+
                 $('#password').val('');
                 $(this).dialog('close');
             }
@@ -148,16 +154,16 @@ $(document).ready(function () {
     });
 
     /**
-        Appui sur le bouton "Deconnecter"
-    */
+     * Appui sur le bouton "Deconnecter"
+     */
     $('#disconnect_button').click(function () {
         Peek.connection.disconnect();
     });
 
     /**
-        Lors de l'appui sur le bouton envoyer, parser le conteneu du champs texte puis le transmettre au
-         serveur XMPP
-    */
+     * Lors de l'appui sur le bouton envoyer, parser le conteneu du champs texte puis le transmettre au
+     * serveur XMPP
+     */
     $('#send_button').click(function () {
 
         var input = $('#input').val().trim();
@@ -194,10 +200,9 @@ $(document).ready(function () {
     });
 
 
-
     /**
-        Lors de l'appui sur une touche, modifier le fond du champs de saisie
-    */
+     * Lors de l'appui sur une touche, modifier le fond du champs de saisie
+     */
     $('#input').keypress(function () {
         $(this).css({backgroundColor: '#fff'});
     });
