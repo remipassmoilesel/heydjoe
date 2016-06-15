@@ -1,65 +1,65 @@
-
-"use strict";
-
-// le domaine de la page
-// var domain =  document.location.host;
-var domain = "im.silverpeas.net";
-
-// service XMPP / HTTP
-//var boshUrl =  'http://' + domain + ':7070/http-bind/';
-var boshUrl = "https://" + domain + ":7443/http-bind/";
-
-// domaine xmpp (différent du domaine de la page)
-var xmppDomain = "im.silverpeas.net";
-var searchDomain = "search.im.silverpeas.net";
-
-// nom du client
-var xmppResource = "heyDjoe";
-
-var webAdminUrl = "http://" + domain + ":9090/";
-var consoleAdminUrl = "http://" + domain + ":9091/";
-var etherpadUrl = "http://" + domain + ":9001/";
-var consoleUrl = "https://" + domain + "/xmpp-console/";
-var discoUrl = "https://" + domain + "/xmpp-disco/";
-
-
-/**
- Logins disponibles
- */
-var availablesLogins = [
-    "admin",
-    "remi",
-    "david",
-    "yohann",
-    "miguel",
-    "aurore",
-    "nicolas",
-    "sebastien",
-    "jean",
-    "julescesar",
-    "companioncube"
-];
-
 $(function () {
 
+    "use strict";
+
     console.log("Initialisation de la page index");
+
+    // le domaine de la page
+    // var domain =  document.location.host;
+    var domain = "im.silverpeas.net";
+
+    // service XMPP / HTTP
+    //var boshUrl =  'http://' + domain + ':7070/http-bind/';
+    var boshUrl = "https://" + domain + ":7443/http-bind/";
+
+    // domaine xmpp (différent du domaine de la page)
+    var xmppDomain = "im.silverpeas.net";
+    var searchDomain = "search.im.silverpeas.net";
+
+    // nom du client
+    var xmppResource = "heyDjoe";
+
+    var webAdminUrl = "http://" + domain + ":9090/";
+    var consoleAdminUrl = "http://" + domain + ":9091/";
+    var etherpadUrl = "http://" + domain + ":9001/";
+    var consoleUrl = "https://" + domain + "/xmpp-console/";
+    var discoUrl = "https://" + domain + "/xmpp-disco/";
+
+    /**
+     Logins disponibles
+     */
+    var availablesLogins = [
+        "admin",
+        "remi",
+        "david",
+        "yohann",
+        "miguel",
+        "aurore",
+        "nicolas",
+        "sebastien",
+        "jean",
+        "julescesar",
+        "companioncube"
+    ];
+
+    // initialize GUI
+    initializeGui();
 
     // console.log("Effacement du stockage local");
     //
     // localStorage.clear();
 
-    // activer les panneau Jquery UI du fichier index
-    $("#tabs").tabs();
-
-    // afficher les comptes dispos etc ...
-    constructGui();
+    // jsxc debug mode
+    //jsxc.storage.setItem('debug', true)
+    jsxc.storage.setItem('debug', false)
 
     // afficher les erreurs de Strophe, indispensable
     var stLogLevel = Strophe.LogLevel.WARN;
 
     Strophe.log = function (level, msg) {
-        if(level >= stLogLevel){
+        if (level >= stLogLevel) {
             console.error("Strophe [" + level + "] " + msg);
+            console.error((new Error()).stack);
         }
     };
 
@@ -68,7 +68,7 @@ $(function () {
     jsxc.init({
 
         // spécifier obligatoirement le serveur MUC pour éviter des erreurs d'initialisation
-        muc:{
+        muc: {
             server: "conference.im.silverpeas.net"
         },
 
@@ -81,7 +81,7 @@ $(function () {
         },
 
         //muc
-        
+
         /** Off the record désactivé car inutile et source d'erreurs */
         otr: {
             enable: false
@@ -139,109 +139,104 @@ $(function () {
 
      */
 
-    /**
-     * Ecouter les erreur de connexion
-     */
-    $(document).on("authfail.jsxc ", function () {
-        jsxc.xmpp.logout(true);
-        $("#feedbackArea").html("<b>Echec de la connexion. Rechargez la page puis rééssayez !</b>");
-    });
+    function initializeGui() {
 
-    $(document).on("connected.jsxc ", function () {
-        $("#feedbackArea").html("<i>Connexion établie</i>");
-    });
+        // Initialize consoles
+        $("#eventsConsole").eventConsole();
+        new StorageConsole("storageConsole");
 
+        $(document).on("attached.jsxc ", function () {
+            $("#xmppInspector").xmppInspector(jsxc.xmpp.conn);
+        });
+        
+        
+        // index tabs
+        $("#tabs").tabs();
 
-    // Bouton de connexion à partir d'un identifiant sélectionné et d'un mot de passe déterminé
-    $('#connectButton').click(function () {
+        // Listen connexion fail
+        $(document).on("authfail.jsxc ", function () {
+            jsxc.xmpp.logout(true);
+            $("#feedbackArea").html("<b>Echec de la connexion. Rechargez la page puis rééssayez !</b>");
+        });
 
-        var id = $("#jidTextInput").val() + "@" + xmppDomain;
-
-        console.log(id);
-
-        // activer le mode debuggage
-        //jsxc.storage.setItem('debug', true)
-        jsxc.storage.setItem('debug', false)
-
-        // connexion et lancement du GUI
-        jsxc.start(id, "azerty");
-
-    });
-
-    // déconnexion
-    $('#disconnectButton').click(function () {
-
-        jsxc.xmpp.logout(true);
-
-    });
-
-    /**
-     Création d'Etherpad
-     **/
-
-    // Connexion à partir d'un identifiant saisi et d'un mot de passe déterminé
-    $('#newPadButton').click(function () {
-        window.open(etherpadUrl + "p/" + $("#newPadName").val(), '_blank');
-    });
-
-});
+        // listen connexion success
+        $(document).on("attached.jsxc ", function () {
+            $("#feedbackArea").html("<i>Connexion établie</i>");
+        });
 
 
-/**
+        // connexion button
+        $('#connectButton').click(function () {
 
- */
-function constructGui() {
+            var id = $("#jidTextInput").val() + "@" + xmppDomain;
 
-    // ajouter les comptes dispo à la liste de sélection
-    for (var i = 0; i < availablesLogins.length; i++) {
-        var lg = availablesLogins[i];
+            // connexion et lancement du GUI
+            jsxc.start(id, "azerty");
 
-        // les ajouter à la liste de sélection de pseudo
-        $("#jidTextInput").append("<option value='" + lg + "'>" + lg + "</option>");
+        });
+
+        // disconnect button
+        $('#disconnectButton').click(function () {
+            jsxc.xmpp.logout(true);
+        });
+
+        // create pad
+        $('#newPadButton').click(function () {
+            window.open(etherpadUrl + "p/" + $("#newPadName").val(), '_blank');
+        });
+        
+        // show availables accounts
+        for (var i = 0; i < availablesLogins.length; i++) {
+            var lg = availablesLogins[i];
+
+            // les ajouter à la liste de sélection de pseudo
+            $("#jidTextInput").append("<option value='" + lg + "'>" + lg + "</option>");
+        }
+
+        // utils and informations
+        var appendToUtilsInfo = function (name, elmt) {
+            $('#infoDisplay').append("<tr><td>" + (name || '') + "</td><td>" + elmt + "</td><tr/>");
+        };
+
+        appendToUtilsInfo('Feuille de route',
+            '<a target="_blank" href="http://' + domain + ':9001/p/feuille-de-route">http://' + domain + ':9001/p/feuille-de-route</a>');
+
+        appendToUtilsInfo('Activité du serveur',
+            '<a target="_blank" href="http://im.silverpeas.net:8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1day&color=black">http://im.silverpeas.net:8080/monitorix-cgi/...</a>');
+
+        appendToUtilsInfo('Console XMPP',
+            '<a target="_blank" href="' + consoleUrl + '">' + consoleUrl + '</a>');
+
+        appendToUtilsInfo('Découverte de services XMPP',
+            '<a target="_blank" href="' + discoUrl + '">' + discoUrl + '</a>');
+
+        appendToUtilsInfo('API REST Openfire',
+            '<a target="_blank" href="openfire-rest/">openfire-rest/</a>');
+
+        appendToUtilsInfo('Domaine utilisé', domain);
+
+        appendToUtilsInfo('Domaine XMPP utilisé', xmppDomain);
+
+        appendToUtilsInfo('Nom XMPP du client', xmppResource);
+
+        appendToUtilsInfo('Administration web Openfire',
+            '<a target="_blank" href="' + webAdminUrl + '">' + webAdminUrl + '</a>');
+
+        appendToUtilsInfo('Administration console Openfire',
+            '<a target="_blank" href="' + consoleAdminUrl + '">' + consoleAdminUrl + '</a>');
+
+        appendToUtilsInfo('Etherpad',
+            '<a target="_blank" href="' + etherpadUrl + '">' + etherpadUrl + '</a>');
+
+        appendToUtilsInfo('Wiki JSXC',
+            '<a target="_blank" href="https://github.com/jsxc/jsxc/wiki">https://github.com/jsxc/jsxc/wiki</a>');
+
+        appendToUtilsInfo('Liste de ressources',
+            '<a target="_blank" href="https://docs.google.com/spreadsheets/d/1qDF4yB3Tpd9Red2sYfCgnISfMBvddke5pYTrwUThyN8/edit#gid=365481387">https://docs.google.com/spreadsheets/...</a>');
+
+
     }
 
-    // afficher des infos utiles
-    var appendToUtilsInfo = function (name, elmt) {
-        $('#infoDisplay').append("<tr><td>" + (name || '') + "</td><td>" + elmt + "</td><tr/>");
-    };
 
-    appendToUtilsInfo('Feuille de route',
-        '<a target="_blank" href="http://' + domain + ':9001/p/feuille-de-route">http://' + domain + ':9001/p/feuille-de-route</a>');
-
-    appendToUtilsInfo('Activité du serveur',
-        '<a target="_blank" href="http://im.silverpeas.net:8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1day&color=black">http://im.silverpeas.net:8080/monitorix-cgi/...</a>');
-
-    appendToUtilsInfo('Console XMPP',
-        '<a target="_blank" href="' + consoleUrl + '">' + consoleUrl + '</a>');
-
-    appendToUtilsInfo('Découverte de services XMPP',
-        '<a target="_blank" href="' + discoUrl + '">' + discoUrl + '</a>');
-
-    appendToUtilsInfo('API REST Openfire',
-        '<a target="_blank" href="openfire-rest/">openfire-rest/</a>');
-
-    appendToUtilsInfo('Domaine utilisé', domain);
-
-    appendToUtilsInfo('Domaine XMPP utilisé', xmppDomain);
-
-    appendToUtilsInfo('Nom XMPP du client', xmppResource);
-
-    appendToUtilsInfo('Administration web Openfire',
-        '<a target="_blank" href="' + webAdminUrl + '">' + webAdminUrl + '</a>');
-
-    appendToUtilsInfo('Administration console Openfire',
-        '<a target="_blank" href="' + consoleAdminUrl + '">' + consoleAdminUrl + '</a>');
-
-    appendToUtilsInfo('Etherpad',
-        '<a target="_blank" href="' + etherpadUrl + '">' + etherpadUrl + '</a>');
-
-    appendToUtilsInfo('Wiki JSXC',
-        '<a target="_blank" href="https://github.com/jsxc/jsxc/wiki">https://github.com/jsxc/jsxc/wiki</a>');
-
-    appendToUtilsInfo('Liste de ressources',
-        '<a target="_blank" href="https://docs.google.com/spreadsheets/d/1qDF4yB3Tpd9Red2sYfCgnISfMBvddke5pYTrwUThyN8/edit#gid=365481387">https://docs.google.com/spreadsheets/...</a>');
-
-
-}
-
+});
 

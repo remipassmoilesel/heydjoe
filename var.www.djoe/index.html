@@ -25,9 +25,14 @@
     <script src="jsxc/dev/lib/perfect-scrollbar/js/perfect-scrollbar.jquery.js"></script>
     <script src="jsxc/dev/lib/jquery-toast-plugin/src/jquery.toast.js"></script>
     <script src="jsxc/dev/lib/jquery.fullscreen.js"></script>
-    <script src="jsxc/dev/lib/jquery.eventconsole.js/jquery.eventconsole.js"></script>
     <script src="jsxc/dev/lib/jsxc.dep.js"></script>
     <script src="jsxc/dev/lib/jquery.highlight.js"></script>
+
+    <script src="jquery.eventconsole/jquery.eventconsole.js"></script>
+
+    <link href="jquery.xmppinspector/jquery.xmppinspector.css" media="all" rel="stylesheet" type="text/css"/>
+    <script src="jquery.xmppinspector/jquery.xmppinspector.js"></script>
+
     <!--  endrequire -->
 
     <!-- jsxc library -->
@@ -46,13 +51,16 @@
 <div id="content">
 
 
+    <!-- Bandeau -->
     <img src="images/logo.jpg" style="float: left; width: 20%"/>
 
     <div class="textContent">
 
         <h1>Prototype JSXC / Etherpad / Openfire</h1>
 
-        Destiné à la découverte d'outils de communication en temps réel.</div>
+        Destiné à la découverte d'outils de communication en temps réel.
+
+    </div>
 
     <div id="tabs" style="margin-bottom: 100px; clear: both; margin-top: 40px;">
 
@@ -89,15 +97,19 @@
 
             </table>
 
+            <!-- inspecteur XMPP -->
+            <p>&nbsp;</p>
+            <div id="xmppInspector"></div>
+
             <!-- console JQuery -->
             <p>&nbsp;</p>
             <div id="eventsConsole"></div>
-            <script>$("#eventsConsole").eventConsole();</script>
+
 
             <!-- console Storage-->
             <p>&nbsp;</p>
             <div id="storageConsole"></div>
-            <script>new StorageConsole("storageConsole");</script>
+
 
 
         </div>
@@ -165,7 +177,7 @@
 
                 <pre>Menu > Rechercher "Ajouter" > Ajouter un contact</pre>
 
-                <img src="images/add-contact.png" />
+                <img src="images/add-contact.png"/>
             </div>
 
             <h2>Discuter</h2>
