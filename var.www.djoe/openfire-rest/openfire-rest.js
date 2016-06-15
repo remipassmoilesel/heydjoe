@@ -1,26 +1,34 @@
+/**
+ *
+ * Misc works on Openfire REST API
+ *
+ *
+ *
+ * @type {string}
+ */
 
-// URL de base du service REST, sans le '/' final
-var apiBaseUrl = "https://test-messagerie.ddns.net:9091/plugins/restapi/v1";
+$(document).ready(function () {
 
-// Clef d'accès à l'API
-var apiKey = "h5711OI5JckLdAO3";
-
-$(document).ready(function(){
-
-    // afficher la liste des utilisateurs
+    // show all users
     orest.showUserList();
 
-    // créer les utilisateurs par défaut
-//    var defaultPassword = "azerty";
-//    orest.createUsers([
-//        {username: "miguel", password: defaultPassword},
-//        {username: "remi", password: defaultPassword},
-//        {username: "nicolas", password: defaultPassword},
-//        {username: "chewbacca", password: defaultPassword},
-//        {username: "companioncube", password: defaultPassword}
-//    ]);
+    // show all chatrooms
+    orest.showChatroomList();
 
-    // Supprimer une liste d'utilisateurs fictifs
+    // create default users
+    // var defaultPassword = "azerty";
+    // orest.createUsers([
+    //     {username: "miguel", password: defaultPassword},
+    //     {username: "remi", password: defaultPassword},
+    //     {username: "nicolas", password: defaultPassword},
+    //     {username: "chewbacca", password: defaultPassword},
+    //     {username: "companioncube", password: defaultPassword}
+    // ]);
+
+    // delete all chatrooms
+    //orest.deleteAllChatrooms();
+    
+    // Delete dummy users
     //orest.deleteDummies("dummy", 20);
 
 });
@@ -28,50 +36,96 @@ $(document).ready(function(){
 var orest = {
 
     /**
-        Créer une liste d'utilisateurs
-    */
-    createUsers: function(users){
-        $.each(users, function(index, user){
+     * URL for accessing REST API
+     */
+    apiBaseUrl: "https://im.silverpeas.net:9091/plugins/restapi/v1",
+
+    /**
+     * Auth key
+     */
+    apiKey: "6SwpGQ3zmQJ246c3",
+
+    deleteAllChatrooms: function () {
+        orest.asyncRequest(
+            'GET',
+            "/chatrooms",
+            undefined,
+            {"Accept": "application/json"},
+            false)
+            .done(function (response) {
+
+                // iterate rooms
+                $.each(response.chatRoom, function (index, item) {
+
+                    // delete room
+                    orest.asyncRequest(
+                        'DELETE',
+                        "/chatrooms/" + item.roomName);
+                });
+
+            });
+    },
+
+    /**
+     * Display room list
+     */
+    showChatroomList: function () {
+        orest.asyncRequest(
+            'GET',
+            "/chatrooms",
+            undefined,
+            {"Accept": "application/json"});
+    },
+
+    /**
+     *
+     * Create multiple users from a list
+     */
+    createUsers: function (users) {
+        $.each(users, function (index, user) {
             console.log(user);
             orest.createUser(user);
         });
     },
     /**
-        Créer un d'utilisateur
-    */
-    createUser: function(user){
+     *
+     * Create a single user
+     */
+    createUser: function (user) {
         orest.asyncRequest(
             'POST',
             "/users",
             user,
             {"Content-Type": "application/json"}
-            );
+        );
     },
 
     /**
-        Effacer une liste d'utilisateurs créés pour développement
-    */
-    deleteDummies: function(prefix, max){
+     *
+     * Delete a list of dummie users
+     */
+    deleteDummies: function (prefix, max) {
 
-        if(typeof prefix === "undefined"){
+        if (typeof prefix === "undefined") {
             throw "Parameter cannot be undefined: " + prefix;
         }
-        if(typeof prefix === "undefined"){
+        if (typeof prefix === "undefined") {
             throw "Parameter cannot be undefined: " + max;
         }
 
-        for(var i = 0; i < max; i++){
+        for (var i = 0; i < max; i++) {
             orest.deleteUser(prefix + i);
         }
 
     },
 
     /**
-        Effacer un utilisateur
-    */
-    deleteUser: function(name){
+     * Delete a single user
+     *
+     */
+    deleteUser: function (name) {
 
-        if(typeof name === "undefined"){
+        if (typeof name === "undefined") {
             throw "Parameter cannot be undefined: " + name;
         }
 
@@ -79,76 +133,92 @@ var orest = {
     },
 
     /**
-        Afficher la liste des utilisateurs
-    */
-    showUserList: function(){
+     *
+     * Get user list
+     */
+    showUserList: function () {
         orest.asyncRequest('GET', "/users", undefined, {"Accept": "application/json"});
     },
 
     /**
-        Raccourci pour effectuer une requete sur l'API REST
-    */
-    asyncRequest: function(type, url, data, headers){
+     *
+     * Utils to do async REST requests
+     *
+     *
+     */
+    asyncRequest: function (type, url, data, headers, log) {
 
-         if(typeof type === "undefined"){
-                throw "Parameter cannot be undefined: " + type;
-         }
-         if(typeof url === "undefined"){
-                throw "Parameter cannot be undefined: " + url;
-         }
+        if (typeof type === "undefined") {
+            throw "Parameter cannot be undefined: " + type;
+        }
+        if (typeof url === "undefined") {
+            throw "Parameter cannot be undefined: " + url;
+        }
+        if (typeof log === "undefined") {
+            log = true;
+        }
 
-        var restUrl = apiBaseUrl + url;
+
+        var restUrl = orest.apiBaseUrl + url;
 
         var req = {
-                  url: restUrl,
-                  type: type,
-                  headers: {
-                      "Authorization": apiKey
-                  },
-                  success: function(result) {
-                      console.log(type + ": " + url);
-                      console.log("SUCCESS");
-                      console.log(result);
+            url: restUrl,
+            type: type,
+            headers: {
+                "Authorization": orest.apiKey
+            }
+        };
 
-                      orest.log(type + ": " + url + "\nSUCCESS: "
-                        + "\nRequête: " + JSON.stringify(req, null, '\t')
-                        + "\nRéponse: " + JSON.stringify(result, null, '\t')
-                        );
+        if (log) {
+            req.success = function (result) {
+                console.log(type + ": " + url);
+                console.log("SUCCESS");
+                console.log(result);
 
-                  },
-                  error: function(result){
-                      console.log(type + ": " + url);
-                      console.log("ERROR");
-                      console.log(result);
+                orest.log(type + ": " + url + "\nSUCCESS: "
+                    + "\nRequête: " + JSON.stringify(req, null, '\t')
+                    + "\nRéponse: " + JSON.stringify(result, null, '\t')
+                );
 
-                      orest.log(type + ": " + url + "\nERROR: "
-                        + "\nRequête: " + JSON.stringify(req, null, '\t')
-                        + "\nRéponse: " + JSON.stringify(result, null, '\t')
-                        + "\nData: " + $.param(req.data)
-                        );
-                  }
-              };
+            };
+            req.error = function (result) {
+                console.log(type + ": " + url);
+                console.log("ERROR");
+                console.log(result);
+
+                orest.log(type + ": " + url + "\nERROR: "
+                    + "\nRequête: " + JSON.stringify(req, null, '\t')
+                    + "\nRéponse: " + JSON.stringify(result, null, '\t')
+                    + "\nData: " + $.param(req.data)
+                );
+            };
+        }
 
         // ajouter des données si necessaire
-        if(typeof data !== "undefined"){
+        if (typeof data !== "undefined") {
             req.data = data;
-            console.log(data);
         }
 
         // ajouter entetes si necessaire
-        if(typeof headers !== "undefined"){
+        if (typeof headers !== "undefined") {
             $.extend(req.headers, headers);
         }
 
-        $.ajax(req);
+        return $.ajax(req);
 
     },
 
     /**
-        Afficher du contenu dans une zone
-    */
-    log: function(content){
-        $("#logArea").append("<div class='logElement'><pre>" + content + "</pre></div>");
+     * Display content
+     * @param content
+     */
+    log: function (content) {
+
+        var elmt = $("<div class='logElement'><pre>" + content + "</pre></div>");
+        elmt.resizable();
+
+        $("#logArea").append(elmt);
+
     }
 
 

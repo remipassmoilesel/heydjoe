@@ -1,17 +1,26 @@
 
-h1{
+body {
+    font-family: verdana;
+    font-size: 13px;
+
+    padding-bottom: 1000px;
+}
+
+h1 {
     width: 80%;
     margin: auto;
 }
 
-div{
+div {
     width: 80%;
     margin: auto;
     margin-top: 20px;
     margin-bottom: 20px;
 }
 
-.logElement{
-    max-height: 200px;
+.logElement {
+    height: 200px;
     overflow: auto;
+    border: solid 2px darkslategray;
+    padding: 15px;
 }
