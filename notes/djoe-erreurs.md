@@ -1,5 +1,7 @@
 # Erreurs possibles
 
+* Le plugin caps fonctionne mal: voir la fonction ` _requestCapabilities: function (to, node, ver) {` qui enregistre un handler incorrect (pas d'id retourné par disco)
+
 * erreurs en rapport avec les données stockées dans le localStorage: attention à la casse, certaines méthode du projet applique systèmatiquement un toLowerCase()
 
 * perfect-scroll de dimension bizarre, sortant du cadre.

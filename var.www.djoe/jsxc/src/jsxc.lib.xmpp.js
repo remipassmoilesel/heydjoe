@@ -11,7 +11,7 @@ jsxc.xmpp = {
      * Return the node of the current user. Example: jean@something/client is connected so getCurrentNode() return jean
      * @returns {*}
      */
-    getCurrentNode: function(){
+    getCurrentNode: function () {
         return Strophe.getNodeFromJid(jsxc.xmpp.conn.jid);
     },
 
@@ -986,7 +986,7 @@ jsxc.xmpp = {
                 alias: alias || null
             });
         }
-        
+
         $(document).trigger("buddyListChanged.jsxc");
     },
 
@@ -1147,6 +1147,10 @@ jsxc.xmpp = {
         }
 
         var check = function (knownCapabilities) {
+
+            console.log("knownCapabilities");
+            console.log(knownCapabilities);
+
             if (!knownCapabilities) {
                 return null;
             }
@@ -1167,6 +1171,12 @@ jsxc.xmpp = {
         }
 
         $(document).on('strophe.caps', function (ev, j, capabilities) {
+
+            console.log(arguments);
+            console.log(arguments);
+            console.log(arguments);
+            console.log(arguments);
+
             if (j === jid) {
                 cb(check(capabilities));
 

@@ -12,9 +12,10 @@ $(function () {
     //var boshUrl =  'http://' + domain + ':7070/http-bind/';
     var boshUrl = "https://" + domain + ":7443/http-bind/";
 
-    // domaine xmpp (différent du domaine de la page)
+    // xmpp domains
     var xmppDomain = "im.silverpeas.net";
     var searchDomain = "search.im.silverpeas.net";
+    var bookmarkDomain = "pubsub.im.silverpeas.net";
 
     // nom du client
     var xmppResource = "heyDjoe";
@@ -63,6 +64,11 @@ $(function () {
         }
     };
 
+    $(document).on("attached.jsxc", function(){
+
+        jsxc.xmpp.bookmarks.load();
+    });
+
     // initialisation de JSXC
     // l'option off the record est désactivée
     jsxc.init({
@@ -77,7 +83,9 @@ $(function () {
             domain: xmppDomain,
             resource: xmppResource,
             overwrite: true,
-            searchDomain: searchDomain
+            searchDomain: searchDomain,
+            
+            bookmarkDomain: bookmarkDomain
         },
 
         //muc

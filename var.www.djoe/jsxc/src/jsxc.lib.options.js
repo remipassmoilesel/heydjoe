@@ -36,6 +36,9 @@ jsxc.options = {
 
         /** Domain for user search, XEP 0055*/
         searchDomain: null,
+        
+        /** Bookmark domain, XEP 0048*/
+        bookmarkDomain: null,
 
         /** XMPP password */
         password: null,
