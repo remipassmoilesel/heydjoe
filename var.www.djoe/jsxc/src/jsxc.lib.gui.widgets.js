@@ -316,6 +316,8 @@ jsxc.gui.createBuddyList = function (selector) {
 
             list.append(li);
 
+            buddyNumber++;
+
         });
 
         if (buddyNumber < 1) {

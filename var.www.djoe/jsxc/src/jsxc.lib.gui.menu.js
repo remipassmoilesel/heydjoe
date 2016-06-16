@@ -61,7 +61,7 @@ jsxc.gui.menu = {
         },
 
         contactPanel: {
-            label: "Rechercher d'utilisateurs",
+            label: "Recherche d'utilisateurs",
             template: "menuContacts",
             init: function () {
 
@@ -240,6 +240,15 @@ jsxc.gui.menu = {
 
                 // invite users
                 $(".jsxc_inviteBuddiesOnConversation").click(function(){
+
+                    var selItems = $("#jsxc_roomCreationUsers .ui-selected");
+
+                    // check selected elements
+                    if (selItems.length < 1) {
+                        jsxc.gui.feedback("Vous devez sélectionner au moins un contact", "warn");
+                        return;
+                    }
+
                     jsxc.gui.showConversationSelectionDialog()
                         .done(function(conversations){
                             console.log(conversations);
