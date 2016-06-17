@@ -1187,8 +1187,8 @@ jsxc.muc = {
 
         var self = jsxc.muc;
 
-        $.each(jidArray, function (index, item) {
-            self.conn.muc.directInvite(room, item, "Vous êtes invité aux chateau de Versaaaaaaiiiillles !");
+        $.each(jidArray, function (index, jid) {
+            self.conn.muc.directInvite(room, jid, "Vous êtes invité aux chateau de Versaaaaaaiiiillles !");
         });
     },
 
@@ -1441,6 +1441,56 @@ jsxc.muc = {
         jsxc.debug('[muc] error message for ' + room, $(message).find('error')[0]);
 
         return true;
+    },
+
+    /**
+     * Launch creation of a new conversation with buddy array.
+     *
+     * @param buddiesId
+     */
+    createNewConversationWith: function(buddies, title, subject){
+
+        var d = new Date();
+
+        // prepare title of room. If no title, using all usernames sorted.
+        if (title.length < 1) {
+
+            // create username array
+            var userNodeArray = [jsxc.xmpp.getCurrentNode()];
+            $.each(buddies, function (index, item) {
+                userNodeArray.push(Strophe.getNodeFromJid(item));
+            });
+            userNodeArray.sort();
+
+            title = userNodeArray.join(", ");
+
+            title += " " + d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getUTCFullYear();
+
+        }
+
+        // prepare id of room, all in lower case, otherwise problem will appear with local storage
+        var roomjid = jsxc.xmpp.getCurrentNode() + "-" + d.toISOString().replace(/[^a-z0-9]+/gi, "") + "@" + jsxc.options.get('muc').server;
+
+        // all in lower case, otherwise problem will appear with local storage
+        // all in lower case, otherwise problem will appear with local storage
+        // all in lower case, otherwise problem will appear with local storage
+        roomjid = roomjid.toLowerCase();
+
+        // save initial participants for invite them, without current user
+        var initialParticipants = [];
+        $.each(buddies, function (index, item) {
+            initialParticipants.push(item);
+        });
+
+        // clean up
+        jsxc.gui.window.clear(roomjid);
+        jsxc.storage.setUserItem('member', roomjid, {});
+
+        jsxc.muc.join(roomjid, jsxc.xmpp.getCurrentNode(), null, title, subject, true, true,
+            {"initialParticipants": initialParticipants});
+
+        // open window
+        jsxc.gui.window.open(roomjid);
     },
 
     /**

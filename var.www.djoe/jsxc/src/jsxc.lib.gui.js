@@ -650,6 +650,44 @@ jsxc.gui = {
     },
 
     /**
+     * Create and show join discussion dialog
+     *
+     * @param {type} from valid jid
+     */
+    showJoinConversationDialog: function (roomjid, buddyName) {
+
+        jsxc.gui.dialog.open(jsxc.gui.template.get('joinConversationDialog'), {
+            'noClose': true
+        });
+
+        $('#jsxc_dialog .jsxc_buddyName').text(Strophe.getBareJidFromJid(buddyName));
+
+        $('#jsxc_dialog .jsxc_deny').click(function (ev) {
+            ev.stopPropagation();
+
+            jsxc.gui.feedback("Invitation refusée");
+
+            jsxc.gui.dialog.close();
+        });
+
+        $('#jsxc_dialog .jsxc_approve').click(function (ev) {
+            ev.stopPropagation();
+
+            jsxc.gui.dialog.close();
+
+            // clean up
+            jsxc.gui.window.clear(roomjid);
+            jsxc.storage.setUserItem('member', roomjid, {});
+
+            // TODO: set title and subject ?
+            jsxc.muc.join(roomjid, jsxc.xmpp.getCurrentNode(), null, null, null, true, true);
+
+            // open window
+            jsxc.gui.window.open(roomjid);
+        });
+    },
+
+    /**
      * Create and show dialog to add a buddy
      *
      * @param {string} [username] jabber id

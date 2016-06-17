@@ -194,47 +194,19 @@ jsxc.gui.menu = {
                         return;
                     }
 
-                    var d = new Date();
-
-                    // prepare title of room. If no title, using all usernames sorted
+                    // prepare title
                     var title = $("#jsxc_menuRooms .jsxc_inputRoomTitle").val().trim();
-                    if (title.length < 1) {
 
-                        // create username array
-                        var userNodeArray = [jsxc.xmpp.getCurrentNode()];
-                        selItems.each(function () {
-                            userNodeArray.push($(this).data("username"));
-                        });
-                        userNodeArray.sort();
-
-                        title = userNodeArray.join(", ");
-
-                        title += " " + d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getUTCFullYear();
-
-                    }
-
-                    // prepare title of room
+                    // prepare subject
                     var subject = $("#jsxc_menuRooms .jsxc_inputRoomSubject").val().trim();
-
-                    // prepare id of room, all in lower case, otherwise problem will appear with local storage  !!!!!!!!!!!
-                    var roomjid = jsxc.xmpp.getCurrentNode() + "-" + d.toISOString().replace(/[^a-z0-9]+/gi, "") + "@" + jsxc.options.get('muc').server;
-                    roomjid = roomjid.toLowerCase();
-
-                    // save initial participants for invite them
-                    var initialParticipants = [];
+                    
+                    // prepare initial participants
+                    var buddies = [];
                     selItems.each(function () {
-                        initialParticipants.push($(this).data("userjid"));
+                        buddies.push($(this).data("username"));
                     });
-
-                    // clean up
-                    jsxc.gui.window.clear(roomjid);
-                    jsxc.storage.setUserItem('member', roomjid, {});
-
-                    jsxc.muc.join(roomjid, jsxc.xmpp.getCurrentNode(), null, title, subject, true, true,
-                        {"initialParticipants": initialParticipants});
-
-                    // open window
-                    jsxc.gui.window.open(roomjid);
+                    
+                    jsxc.muc.createNewConversationWith(buddies, title, subject);
 
                 });
 
@@ -249,13 +221,24 @@ jsxc.gui.menu = {
                         return;
                     }
 
-                    jsxc.gui.showConversationSelectionDialog()
-                        .done(function(conversations){
-                            console.log(conversations);
+                    // get user array
+                    var users = [];
+                    selItems.each(function(){
+                       users.push($(this).data("userjid"));
+                    });
 
-                        })
-                        .fail(function(message){
-                            console.log(message);
+                    // show dialog
+                    jsxc.gui.showConversationSelectionDialog()
+
+                        // user clicks OK
+                        .done(function(conversations){
+
+                            // iterate conversations
+                            conversations.each(function(){
+                                var conversJid = $(this).data("conversjid");
+                                jsxc.muc.inviteParticipants(conversJid, users);
+                            });
+
                         });
                 });
 
@@ -296,6 +279,10 @@ jsxc.gui.menu = {
                     } else {
                         jsxc.notification.unmuteSound();
                     }
+                });
+
+                $("#jsxc_menuSettings .jsxc_showNotificationRequestDialog").click(function(){
+                    jsxc.gui.showRequestNotification();
                 });
 
                 // show dialog settings
@@ -366,7 +353,6 @@ jsxc.gui.menu = {
 
         // set foldable
         this._initFoldableActions();
-
 
         // open at launch
         $("#jsxc_side_menu_content > h1.ui-accordion-header").eq(2).trigger("click");
@@ -672,6 +658,24 @@ jsxc.gui.menu = {
         $(document).on("toggle.roster.jsxc", function () {
             self.closeSideMenu();
         });
+
+        // click on notification, show first panel
+
+        // when clicking open menu, and launch timer to hide it after inactivity
+        $("#jsxc_roster .jsxc_menu_notif_bottom_roster").click(function () {
+
+            //  side menu is closed, open it
+            if (sideMenu.data("sideMenuEnabled") !== true) {
+                self.openSideMenu();
+            }
+
+            // open first tab
+            $("#jsxc_side_menu_content > h1.ui-accordion-header").eq(0).trigger("click");
+
+            return false;
+
+        });
+
 
     },
 

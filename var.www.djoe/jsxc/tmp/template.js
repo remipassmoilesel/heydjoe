@@ -344,6 +344,15 @@ jsxc.gui.template['joinChat'] = '<h3 data-i18n="Join_chat"></h3>\n' +
 '</div>\n' +
 '';
 
+jsxc.gui.template['joinConversationDialog'] = '<h3>Invitation</h3>\n' +
+'<p>\n' +
+'   <b class="jsxc_buddyName"></b> vous invite à participer à une conversation.\n' +
+'</p>\n' +
+'\n' +
+'<button class="btn btn-primary jsxc_approve pull-right" data-i18n="Approve"></button>\n' +
+'<button class="btn btn-default jsxc_deny pull-right" data-i18n="Deny"></button>\n' +
+'';
+
 jsxc.gui.template['loginBox'] = '<h3 data-i18n="Login"></h3>\n' +
 '<form class="form-horizontal">\n' +
 '   <div class="form-group">\n' +
@@ -416,9 +425,9 @@ jsxc.gui.template['menuRooms'] = '<div id="jsxc_menuRooms">\n' +
 
 jsxc.gui.template['menuSettings'] = '<div id="jsxc_menuSettings">\n' +
 '\n' +
-'    <div class="jsxc_actionButton jsxc_muteNotification" data-i18n="Mute"></div>\n' +
+'    <div class="jsxc_muteNotification jsxc_actionButton" data-i18n="Mute"></div>\n' +
 '\n' +
-'    <div class="jsxc_actionButton notImplementedYet">Activer les notifications de bureau</div>\n' +
+'    <div class="jsxc_showNotificationRequestDialog jsxc_actionButton">Activer les notifications de bureau</div>\n' +
 '\n' +
 '    <div class="jsxc_actionButton notImplementedYet">Interdire les appels vidéos</div>\n' +
 '\n' +

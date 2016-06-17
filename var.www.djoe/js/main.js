@@ -55,6 +55,7 @@ $(function () {
     jsxc.storage.setItem('debug', false)
 
     // afficher les erreurs de Strophe, indispensable
+    var stLogLevel = Strophe.LogLevel.INFO;
     var stLogLevel = Strophe.LogLevel.WARN;
 
     Strophe.log = function (level, msg) {
@@ -63,11 +64,6 @@ $(function () {
             console.error((new Error()).stack);
         }
     };
-
-    $(document).on("attached.jsxc", function(){
-
-        jsxc.xmpp.bookmarks.load();
-    });
 
     // initialisation de JSXC
     // l'option off the record est désactivée
@@ -84,8 +80,6 @@ $(function () {
             resource: xmppResource,
             overwrite: true,
             searchDomain: searchDomain,
-            
-            bookmarkDomain: bookmarkDomain
         },
 
         //muc

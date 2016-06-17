@@ -789,9 +789,6 @@ jsxc.xmpp = {
      */
     onMessage: function (stanza) {
 
-        console.log("onMessage");
-        console.log(stanza);
-
         var forwarded = $(stanza).find('forwarded[xmlns="' + jsxc.CONST.NS.FORWARD + '"]');
         var message, carbon;
 
@@ -1014,7 +1011,38 @@ jsxc.xmpp = {
         $(document).trigger("buddyListChanged.jsxc");
     },
 
+    /**
+     * Triggered on incoming messages, whatever the type of
+     * @param stanza
+     * @returns {boolean}
+     */
     onReceived: function (stanza) {
+
+        console.log("onReceived");
+        console.log(stanza);
+
+        // check if invitation to conference
+        var invitation = $(stanza).find("x[xmlns='jabber:x:conference']");
+
+        console.log(invitation);
+
+        if(invitation.length > 0){
+
+            var buddyName = Strophe.getNodeFromJid($(stanza).attr("from"));
+
+            var roomjid = invitation.attr("jid");
+
+            var reason = invitation.attr("reason");
+            reason = reason ? "Motif: " + reason : "";
+
+            jsxc.notice.add(buddyName + " vous invite à participer à une conversation", 
+                "", 'gui.showJoinConversationDialog', [roomjid, buddyName]);
+
+            return true;
+        }
+
+
+        // show received acknowledgement
         var received = $(stanza).find("received[xmlns='urn:xmpp:receipts']");
 
         if (received.length) {
