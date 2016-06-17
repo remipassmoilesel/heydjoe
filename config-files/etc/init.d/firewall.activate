@@ -57,6 +57,10 @@ iptables  -A INPUT -p tcp --dport 80 -j ACCEPT
 iptables  -A INPUT -p tcp --dport 443 -j ACCEPT
 echo "- Autoriser HTTP(s) : [OK]"
 
+# Etherpad in / out
+iptables  -A OUTPUT -p tcp --dport 445 -j ACCEPT
+iptables  -A INPUT -p tcp --dport 445 -j ACCEPT
+
 # FTP Out
 #iptables  -A OUTPUT -p tcp --dport 21 -j ACCEPT
 #iptables  -A OUTPUT -p tcp --dport 20 -j ACCEPT
