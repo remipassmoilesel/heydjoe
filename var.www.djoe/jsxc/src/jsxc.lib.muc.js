@@ -1452,6 +1452,8 @@ jsxc.muc = {
 
         var d = new Date();
 
+        console.log(buddies);
+
         // prepare title of room. If no title, using all usernames sorted.
         if (title.length < 1) {
 

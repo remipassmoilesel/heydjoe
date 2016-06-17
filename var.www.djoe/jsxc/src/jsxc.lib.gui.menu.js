@@ -203,7 +203,7 @@ jsxc.gui.menu = {
                     // prepare initial participants
                     var buddies = [];
                     selItems.each(function () {
-                        buddies.push($(this).data("username"));
+                        buddies.push($(this).data("userjid"));
                     });
                     
                     jsxc.muc.createNewConversationWith(buddies, title, subject);

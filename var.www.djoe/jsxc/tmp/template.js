@@ -157,61 +157,66 @@ jsxc.gui.template['bookmarkDialog'] = '<h3 data-i18n="Edit_bookmark"></h3>\n' +
 '';
 
 jsxc.gui.template['chatWindow'] = '<li class="jsxc_windowItem">\n' +
-'   <div class="jsxc_window">\n' +
-'      <div class="jsxc_bar">\n' +
-'         <div class="jsxc_avatar"></div>\n' +
-'         <div class="jsxc_tools">\n' +
-'            <div class="jsxc_settings">\n' +
-'               <div class="jsxc_more"></div>\n' +
-'               <div class="jsxc_inner jsxc_menu">\n' +
-'                  <ul>\n' +
-'                     <li>\n' +
-'                        <a class="jsxc_verification" href="#">\n' +
-'                           <span data-i18n="Authentication"></span>\n' +
-'                        </a>\n' +
-'                     </li>\n' +
-'                     <li>\n' +
-'                        <a class="jsxc_clear" href="#">\n' +
-'                           <span data-i18n="clear_history"></span>\n' +
-'                        </a>\n' +
-'                     </li>\n' +
-'                     <li>\n' +
-'                        <a class="jsxc_sendFile" href="#">\n' +
-'                           <span data-i18n="Send_file"></span>\n' +
-'                        </a>\n' +
-'                     </li>\n' +
-'                  </ul>\n' +
-'               </div>\n' +
+'    <div class="jsxc_window">\n' +
+'        <div class="jsxc_bar">\n' +
+'            <div class="jsxc_avatar"></div>\n' +
+'            <div class="jsxc_tools">\n' +
+'                <div class="jsxc_settings">\n' +
+'                    <div class="jsxc_more"></div>\n' +
+'                    <div class="jsxc_inner jsxc_menu">\n' +
+'                        <ul>\n' +
+'                            <li>\n' +
+'                                <a class="jsxc_openpad" href="#">\n' +
+'                                    <span>Ouvrir un pad</span>\n' +
+'                                </a>\n' +
+'                            </li>\n' +
+'                            <li>\n' +
+'                                <a class="jsxc_verification" href="#">\n' +
+'                                    <span data-i18n="Authentication"></span>\n' +
+'                                </a>\n' +
+'                            </li>\n' +
+'                            <li>\n' +
+'                                <a class="jsxc_clear" href="#">\n' +
+'                                    <span data-i18n="clear_history"></span>\n' +
+'                                </a>\n' +
+'                            </li>\n' +
+'                            <li>\n' +
+'                                <a class="jsxc_sendFile" href="#">\n' +
+'                                    <span data-i18n="Send_file"></span>\n' +
+'                                </a>\n' +
+'                            </li>\n' +
+'                        </ul>\n' +
+'                    </div>\n' +
+'                </div>\n' +
+'                <div class="jsxc_close">×</div>\n' +
 '            </div>\n' +
-'            <div class="jsxc_close">×</div>\n' +
-'         </div>\n' +
-'         <div class="jsxc_caption">\n' +
-'            <div class="jsxc_name" />\n' +
-'            <div class="jsxc_lastmsg">\n' +
-'               <span class="jsxc_unread" />\n' +
-'               <span class="jsxc_text" />\n' +
+'            <div class="jsxc_caption">\n' +
+'                <div class="jsxc_name"/>\n' +
+'                <div class="jsxc_lastmsg">\n' +
+'                    <span class="jsxc_unread"/>\n' +
+'                    <span class="jsxc_text"/>\n' +
+'                </div>\n' +
 '            </div>\n' +
-'         </div>\n' +
-'      </div>\n' +
-'      <div class="jsxc_fade">\n' +
-'         <div class="jsxc_overlay">\n' +
-'            <div>\n' +
-'               <div class="jsxc_body" />\n' +
-'               <div class="jsxc_close" />\n' +
+'        </div>\n' +
+'        <div class="jsxc_fade">\n' +
+'            <div class="jsxc_overlay">\n' +
+'                <div>\n' +
+'                    <div class="jsxc_body"/>\n' +
+'                    <div class="jsxc_close"/>\n' +
+'                </div>\n' +
 '            </div>\n' +
-'         </div>\n' +
-'         <div class="jsxc_textarea" />\n' +
-'         <div class="jsxc_emoticons">\n' +
-'            <div class="jsxc_inner">\n' +
-'               <ul>\n' +
-'                  <li style="clear:both"></li>\n' +
-'               </ul>\n' +
+'            <div class="jsxc_textarea"/>\n' +
+'            <div class="jsxc_emoticons">\n' +
+'                <div class="jsxc_inner">\n' +
+'                    <ul>\n' +
+'                        <li style="clear:both"></li>\n' +
+'                    </ul>\n' +
+'                </div>\n' +
 '            </div>\n' +
-'         </div>\n' +
-'         <div class="jsxc_transfer jsxc_otr jsxc_disabled" />\n' +
-'         <input type="text" class="jsxc_textinput" data-i18n="[placeholder]Message" />\n' +
-'      </div>\n' +
-'   </div>\n' +
+'            <div class="jsxc_transfer jsxc_otr jsxc_disabled"/>\n' +
+'            <input type="text" class="jsxc_textinput" data-i18n="[placeholder]Message"/>\n' +
+'        </div>\n' +
+'    </div>\n' +
 '</li>\n' +
 '';
 
