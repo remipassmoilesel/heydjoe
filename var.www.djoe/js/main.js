@@ -55,7 +55,7 @@ $(function () {
     jsxc.storage.setItem('debug', false)
 
     // afficher les erreurs de Strophe, indispensable
-    var stLogLevel = Strophe.LogLevel.INFO;
+    // var stLogLevel = Strophe.LogLevel.INFO;
     var stLogLevel = Strophe.LogLevel.WARN;
 
     Strophe.log = function (level, msg) {

@@ -1018,13 +1018,28 @@ jsxc.xmpp = {
      */
     onReceived: function (stanza) {
 
-        console.log("onReceived");
-        console.log(stanza);
+        // check if composing presence
+        var composing = $(stanza).find("composing[xmlns='http://jabber.org/protocol/chatstates']");
+
+        if(composing.length > 0){
+            
+            var type = $(stanza).attr("type");
+            var from = $(stanza).attr("from");
+
+            // ignore own notif in groupchat
+            if(type === "groupchat" && Strophe.getResourceFromJid(from) === jsxc.xmpp.getCurrentNode()){
+                return true;
+            }
+            
+            jsxc.gui.window.showComposingPresence(from, type);
+
+            // stop but keep handler
+            return true;
+        }
+
 
         // check if invitation to conference
         var invitation = $(stanza).find("x[xmlns='jabber:x:conference']");
-
-        console.log(invitation);
 
         if(invitation.length > 0){
 
@@ -1038,6 +1053,7 @@ jsxc.xmpp = {
             jsxc.notice.add(buddyName + " vous invite à participer à une conversation", 
                 "", 'gui.showJoinConversationDialog', [roomjid, buddyName]);
 
+            // stop but keep handler
             return true;
         }
 

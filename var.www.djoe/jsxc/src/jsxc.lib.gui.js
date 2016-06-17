@@ -789,7 +789,7 @@ jsxc.gui = {
             jsxc.gui.dialog.close();
         });
     },
-    
+
     /**
      * Show a dialog to select a conversation
      *
@@ -799,14 +799,14 @@ jsxc.gui = {
     showConversationSelectionDialog: function () {
 
         var defer = $.Deferred();
-        
+
         jsxc.gui.dialog.open(jsxc.gui.template.get('conversationSelectionDialog'));
 
         jsxc.gui.createConversationList("#jsxc_dialogConversationList");
-        
+
         $('#jsxc_dialog .jsxc_confirm').click(function (ev) {
             ev.stopPropagation();
-        
+
             // get selected elements
             var selItems = $("#jsxc_dialogConversationList .ui-selected");
 
@@ -821,7 +821,7 @@ jsxc.gui = {
             defer.reject("user canceled");
 
         });
-        
+
         return defer.promise();
     },
 
@@ -1913,7 +1913,7 @@ jsxc.gui.roster = {
         text.append(link);
         text.append('.');
 
-        if($('#jsxc_roster').find(".jsxc_rosterIsEmptyMessage").length < 1){
+        if ($('#jsxc_roster').find(".jsxc_rosterIsEmptyMessage").length < 1) {
             $('#jsxc_roster').prepend(text);
         }
 
@@ -2029,6 +2029,92 @@ jsxc.gui.dialog = {
  * @namespace jsxc.gui.window
  */
 jsxc.gui.window = {
+
+    /**
+     * Interval between composing chat state sends
+     */
+    sendComposingIntervalMs: 900,
+    /**
+     *
+     */
+    hideComposingNotifDelay: 3000,
+
+    /**
+     * Show a composing presence from jid specified in argument. JID can be a room jid or a person jid
+     * @param from
+     */
+    showComposingPresence: function (from, type) {
+
+        var bid = Strophe.getBareJidFromJid(from);
+        var user = type === "chat" ? Strophe.getNodeFromJid(from) : Strophe.getResourceFromJid(from);
+
+        console.log();
+        console.log(type);
+        console.log(from);
+        console.log(user);
+        console.log(bid);
+
+        // iterate window list
+        $('#jsxc_windowList .jsxc_windowItem').each(function () {
+
+            // the window element, where are stored informations
+            var self = $(this);
+
+            var winBid = self.data("bid");
+
+            // check conversation
+            if (winBid === bid) {
+
+                console.log("Show presence on");
+                console.log(winBid);
+
+                // add user in array if necessary
+                var usersComposing = self.data("usersComposing") || [];
+                if(usersComposing.indexOf(user) === -1){
+                    usersComposing.push(user);
+                    self.data("usersComposing", usersComposing);
+                }
+
+                var textarea = self.find(".jsxc_textarea");
+                var composingNotif = textarea.find(".jsxc_userComposing");
+
+                // add notification if necessary
+                if (composingNotif.length < 1) {
+                    textarea.append("<div class='jsxc_userComposing jsxc_chatmessage jsxc_sys'></div>");
+                    composingNotif = textarea.find(".jsxc_userComposing");
+                }
+
+                // change text
+                var msg = usersComposing.length > 1 ? " sont en train d'écrire ..." : " est en train d'écrire ...";
+                composingNotif.html(usersComposing.join(", ") + msg);
+
+                // hide notification after delay
+
+                if($(this).data("composingTimeout")){
+                    clearTimeout($(this).data("composingTimeout"));
+                }
+
+                $(this).data("composingTimeout",
+
+                    setTimeout(function () {
+
+                        textarea.find(".jsxc_userComposing").remove();
+
+                        // empty user list
+                        self.data("usersComposing", []);
+
+                    }, jsxc.gui.window.hideComposingNotifDelay)
+
+                );
+
+                // show only one presence
+                return false;
+            }
+
+        });
+    },
+
+
     /**
      * Init a window skeleton
      *
@@ -2037,6 +2123,7 @@ jsxc.gui.window = {
      * @returns {jQuery} Window object
      */
     init: function (bid) {
+
         if (jsxc.gui.window.get(bid).length > 0) {
             return jsxc.gui.window.get(bid);
         }
@@ -2102,6 +2189,9 @@ jsxc.gui.window = {
             return false;
         });
 
+        // last composing state sent time is stored here
+        win.data('lastComposingStateSent', -1);
+
         win.find('.jsxc_textinput').keyup(function (ev) {
             var body = $(this).val();
 
@@ -2114,6 +2204,26 @@ jsxc.gui.window = {
             if (ev.which === 27) {
                 jsxc.gui.window.close(bid);
             }
+
+            // send composing presence
+            if (jsxc.xmpp.conn) {
+
+                var now = new Date().getTime();
+                var last = win.data('lastComposingStateSent');
+
+                // send only every 'n' ms interval
+                if (last === "-1" || (now - last) > jsxc.gui.window.sendComposingIntervalMs) {
+
+                    var type = win.hasClass('jsxc_groupchat') ? 'groupchat' : 'chat';
+
+                    jsxc.xmpp.conn.chatstates.sendComposing(bid, type);
+
+                    win.data('lastComposingStateSent', now);
+                }
+
+            }
+
+
         }).keypress(function (ev) {
             if (ev.which !== 13 || !$(this).val()) {
                 return;
