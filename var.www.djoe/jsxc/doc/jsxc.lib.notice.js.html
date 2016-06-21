@@ -28,119 +28,125 @@
         <article>
             <pre class="prettyprint source linenums"><code>/**
  * This namespace handle the notice system.
- * 
+ *
  * @namspace jsxc.notice
  * @memberOf jsxc
  */
 jsxc.notice = {
-   /** Number of notices. */
-   _num: 0,
+    /** Number of notices. */
+    _num: 0,
 
-   /**
-    * Loads the saved notices.
-    * 
-    * @memberOf jsxc.notice
-    */
-   load: function() {
-      // reset list
-      $('#jsxc_notice ul li').remove();
-      $('#jsxc_notice > span').text('');
-      jsxc.notice._num = 0;
+    /**
+     * Loads the saved notices.
+     *
+     * @memberOf jsxc.notice
+     */
+    load: function () {
+        // reset list
+        $('#jsxc_notice ul li').remove();
 
-      var saved = jsxc.storage.getUserItem('notices') || [];
-      var key = null;
+        $('#jsxc_roster .jsxc_menu_notif_number').text('');
+        jsxc.notice._num = 0;
 
-      for (key in saved) {
-         if (saved.hasOwnProperty(key)) {
-            var val = saved[key];
+        var saved = jsxc.storage.getUserItem('notices') || [];
+        var key = null;
 
-            jsxc.notice.add(val.msg, val.description, val.fnName, val.fnParams, key);
-         }
-      }
-   },
+        // console.log(jsxc.storage.getUserItem('notices'));
 
-   /**
-    * Add a new notice to the stack;
-    * 
-    * @memberOf jsxc.notice
-    * @param msg Header message
-    * @param description Notice description
-    * @param fnName Function name to be called if you open the notice
-    * @param fnParams Array of params for function
-    * @param id Notice id
-    */
-   add: function(msg, description, fnName, fnParams, id) {
-      var nid = id || Date.now();
-      var list = $('#jsxc_notice ul');
-      var notice = $('&lt;li/>');
+        for (key in saved) {
+            if (saved.hasOwnProperty(key)) {
+                var val = saved[key];
 
-      notice.click(function() {
-         jsxc.notice.remove(nid);
+                jsxc.notice.add(val.msg, val.description, val.fnName, val.fnParams, key);
+            }
+        }
+    },
 
-         jsxc.exec(fnName, fnParams);
+    /**
+     * Add a new notice to the stack;
+     *
+     * @memberOf jsxc.notice
+     * @param msg Header message
+     * @param description Notice description
+     * @param fnName Function name to be called if you open the notice
+     * @param fnParams Array of params for function
+     * @param id Notice id
+     */
+    add: function (msg, description, fnName, fnParams, id) {
+        var nid = id || Date.now();
+        var list = $('#jsxc_notice ul');
+        var notice = $('&lt;li/>');
 
-         return false;
-      });
+        notice.click(function () {
+            jsxc.notice.remove(nid);
 
-      notice.text(msg);
-      notice.attr('title', description || '');
-      notice.attr('data-nid', nid);
-      list.append(notice);
-
-      $('#jsxc_notice > span').text(++jsxc.notice._num);
-
-      if (!id) {
-         var saved = jsxc.storage.getUserItem('notices') || {};
-         saved[nid] = {
-            msg: msg,
-            description: description,
-            fnName: fnName,
-            fnParams: fnParams
-         };
-         jsxc.storage.setUserItem('notices', saved);
-
-         jsxc.notification.notify(msg, description || '', null, true, jsxc.CONST.SOUNDS.NOTICE);
-      }
-   },
-
-   /**
-    * Removes notice from stack
-    * 
-    * @memberOf jsxc.notice
-    * @param nid The notice id
-    */
-   remove: function(nid) {
-      var el = $('#jsxc_notice li[data-nid=' + nid + ']');
-
-      el.remove();
-      $('#jsxc_notice > span').text(--jsxc.notice._num || '');
-
-      var s = jsxc.storage.getUserItem('notices');
-      delete s[nid];
-      jsxc.storage.setUserItem('notices', s);
-   },
-
-   /**
-    * Check if there is already a notice for the given function name.
-    * 
-    * @memberOf jsxc.notice
-    * @param {string} fnName Function name
-    * @returns {boolean} True if there is >0 functions with the given name
-    */
-   has: function(fnName) {
-      var saved = jsxc.storage.getUserItem('notices') || [];
-      var has = false;
-
-      $.each(saved, function(index, val) {
-         if (val.fnName === fnName) {
-            has = true;
+            jsxc.exec(fnName, fnParams);
 
             return false;
-         }
-      });
+        });
 
-      return has;
-   }
+        notice.text(msg + " " + description);
+        notice.attr('title', description || '');
+        notice.attr('data-nid', nid);
+        list.append(notice);
+
+        $('#jsxc_roster .jsxc_menu_notif_number').text(++jsxc.notice._num);
+
+        if (!id) {
+            var saved = jsxc.storage.getUserItem('notices') || {};
+            saved[nid] = {
+                msg: msg,
+                description: description,
+                fnName: fnName,
+                fnParams: fnParams
+            };
+
+            console.log(saved);
+
+            jsxc.storage.setUserItem('notices', saved);
+
+            jsxc.notification.notify(msg, description || '', null, true, jsxc.CONST.SOUNDS.NOTICE);
+        }
+    },
+
+    /**
+     * Removes notice from stack
+     *
+     * @memberOf jsxc.notice
+     * @param nid The notice id
+     */
+    remove: function (nid) {
+        var el = $('#jsxc_notice li[data-nid=' + nid + ']');
+
+        el.remove();
+        $('#jsxc_roster .jsxc_menu_notif_number').text(--jsxc.notice._num || '');
+
+        var s = jsxc.storage.getUserItem('notices');
+        delete s[nid];
+        jsxc.storage.setUserItem('notices', s);
+    },
+
+    /**
+     * Check if there is already a notice for the given function name.
+     *
+     * @memberOf jsxc.notice
+     * @param {string} fnName Function name
+     * @returns {boolean} True if there is >0 functions with the given name
+     */
+    has: function (fnName) {
+        var saved = jsxc.storage.getUserItem('notices') || [];
+        var has = false;
+
+        $.each(saved, function (index, val) {
+            if (val.fnName === fnName) {
+                has = true;
+
+                return false;
+            }
+        });
+
+        return has;
+    }
 };
 </code></pre>
         </article>
@@ -152,13 +158,13 @@ jsxc.notice = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.webrtc.html">webrtc</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li><li><a href="menu.html">menu</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.webrtc.html">webrtc</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li><li><a href="menu.html">menu</a></li></ul><h3>Global</h3><ul><li><a href="global.html#root">root</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateRoomList">updateRoomList</a></li><li><a href="global.html#updateUserList">updateUserList</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Jun 08 2016 15:33:31 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Jun 20 2016 18:51:45 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

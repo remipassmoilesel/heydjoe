@@ -858,6 +858,10 @@ jsxc.muc = {
         $.each(codes, function (index, code) {
             // call code functions and trigger event
 
+            console.log();
+            console.log(arguments);
+            console.log(new Error().stack);
+
             if (typeof self.onStatus[code] === 'function') {
                 self.onStatus[code].call(this, room, nickname, member[nickname] || {}, xdata);
             }
@@ -902,12 +906,6 @@ jsxc.muc = {
      * @memberOf jsxc.muc
      */
     onStatus: {
-
-        log: function (args) {
-            console.log("onStatus log()");
-            console.log((new Error()).stack);
-            console.log(args);
-        },
 
         /** Inform user that presence refers to itself */
         110: function (room, nickname, data) {
@@ -979,10 +977,6 @@ jsxc.muc = {
                     //@TODO display error
                 });
             } else {
-
-                self.conn.muc.createInstantRoom(room);
-                //jsxc.storage.updateUserItem('buddy', room, 'config', self.CONST.ROOMCONFIG.INSTANT);
-
 
                 // launch configuration of room
                 self.conn.muc.configure(room, function (stanza) {
@@ -1531,19 +1525,22 @@ jsxc.muc = {
         }
 
         bud.off('click').click(function () {
-            var data = jsxc.storage.getUserItem('buddy', room);
 
-            if (data.state === self.CONST.ROOMSTATE.INIT || data.state === self.CONST.ROOMSTATE.EXITED) {
-                self.showJoinChat();
+            jsxc.gui.window.open(room);
 
-                $('#jsxc_room').val(Strophe.getNodeFromJid(data.jid));
-                $('#jsxc_nickname').val(data.nickname);
-                $('#jsxc_bookmark').prop('checked', data.bookmarked);
-                $('#jsxc_autojoin').prop('checked', data.autojoin);
-                $('#jsxc_showJoinChat .jsxc_bookmark').hide();
-            } else {
-                jsxc.gui.window.open(room);
-            }
+            // var data = jsxc.storage.getUserItem('buddy', room);
+
+            // if (data.state === self.CONST.ROOMSTATE.INIT || data.state === self.CONST.ROOMSTATE.EXITED) {
+            //     self.showJoinChat();
+            //
+            //     $('#jsxc_room').val(Strophe.getNodeFromJid(data.jid));
+            //     $('#jsxc_nickname').val(data.nickname);
+            //     $('#jsxc_bookmark').prop('checked', data.bookmarked);
+            //     $('#jsxc_autojoin').prop('checked', data.autojoin);
+            //     $('#jsxc_showJoinChat .jsxc_bookmark').hide();
+            // } else {
+            //     jsxc.gui.window.open(room);
+            // }
         });
 
         bud.find('.jsxc_delete').click(function () {

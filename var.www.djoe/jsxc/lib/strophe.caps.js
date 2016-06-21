@@ -182,28 +182,28 @@
         _requestCapabilities: function (to, node, ver) {
             if (to !== this._connection.jid) {
 
-                /*
+
                 // Original code: Here id will be always undefined so handler will not work
 
                 var id = this._connection.disco.info(to, node + '#' + ver);
                 this._connection.addHandler(this._handleDiscoInfoReply.bind(this), Strophe.NS.DISCO_INFO, 'iq', 'result', id, to);
-                */
 
-                var nodeStr = "";
-                if(node){
-                    nodeStr += node;
-                    if(ver){
-                        nodeStr += "#" + ver;
-                    }
-                }
 
-                this._connection.disco.info(to,
-                    nodeStr,
-                    this._handleDiscoInfoReply.bind(this),
-                    function(response){
-                        Strophe.warn("Unable to retrieve disco informations", response);
-                    }
-                );
+                // var nodeStr = "";
+                // if(node){
+                //     nodeStr += node;
+                //     if(ver){
+                //         nodeStr += "#" + ver;
+                //     }
+                // }
+                //
+                // this._connection.disco.info(to,
+                //     nodeStr,
+                //     this._handleDiscoInfoReply.bind(this),
+                //     function(response){
+                //         Strophe.warn("Unable to retrieve disco informations", response);
+                //     }
+                // );
             }
             return true;
         },

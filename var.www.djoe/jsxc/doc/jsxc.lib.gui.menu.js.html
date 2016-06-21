@@ -54,14 +54,14 @@ jsxc.gui.menu = {
             template: "menuWelcome",
             init: function () {
 
-                //&lt;div data-pres="offline" class="actionButton jsxc_offline" data-i18n="Offline">&lt;/div>
+                //&lt;div data-pres="offline" class="jsxc_actionButton jsxc_offline" data-i18n="Offline">&lt;/div>
 
-                $('#jsxc_side_menu_content .jsxc_onlineHelp').click(function () {
+                $('#jsxc_menuWelcome .jsxc_onlineHelp').click(function () {
                     window.open(jsxc.options.onlineHelp, 'onlineHelp');
                 });
 
                 // change presence or logout
-                $('#jsxc_side_menu_content .jsxc_menu_offline').click(function () {
+                $('#jsxc_menuWelcome .jsxc_menu_offline').click(function () {
                     jsxc.xmpp.logout(false);
 
                     // close menu and roster
@@ -69,16 +69,8 @@ jsxc.gui.menu = {
                     jsxc.gui.roster.toggle();
                 });
 
-            }
-        },
-
-        statusPanel: {
-            label: "Statut",
-            template: "menuStatus",
-            init: function () {
-
                 // change presence or logout
-                $('#jsxc_menu_status div').click(function () {
+                $('#jsxc_menuWelcome .jsxc_status_buttons div').click(function () {
                     var self = $(this);
 
                     // pres info is stored in "data-pres" html arg
@@ -91,26 +83,217 @@ jsxc.gui.menu = {
                     }
 
                 });
-            }
+
+            },
+
         },
 
         contactPanel: {
-            label: "Contacts",
+            label: "Recherche d'utilisateurs",
             template: "menuContacts",
             init: function () {
-                $('#jsxc_side_menu_content .jsxc_addBuddy').click(function () {
-                    jsxc.gui.showContactDialog();
+
+                /**
+                 * Add or remove a contact from list
+                 */
+
+                var userList = jsxc.gui.createUserList("#jsxc_contactsUserList");
+
+                // invite user
+                $('#jsxc_menuContacts .jsxc_addBuddyFromList').click(function () {
+
+                    // retrieve first element selected
+                    var selItems = $("#jsxc_contactsUserList .ui-selected");
+
+                    // test if a user is selected
+                    if (selItems.length &lt; 1) {
+                        jsxc.gui.feedback("Vous devez sélectionner un utilisateur", "warn");
+                        return;
+                    }
+
+                    var alreadyBuddy = "";
+                    var added = "";
+
+                    selItems.each(function () {
+
+                        // test if already buddy
+                        if ($(this).hasClass("buddy_item")) {
+                            alreadyBuddy += $(this).data("username") + ", ";
+                            return true;
+                        }
+
+                        // add user
+                        jsxc.xmpp.addBuddy($(this).data("userjid"));
+                        added += $(this).data("username") + ", ";
+
+                    });
+
+                    if (alreadyBuddy.length > 0) {
+                        jsxc.gui.feedback("Déjà dans vos contacts: " + alreadyBuddy.substring(0, alreadyBuddy.length - 2));
+                    }
+
+                    if (added.length > 0) {
+                        jsxc.gui.feedback("Une invitation à été envoyée&lt;br> à " + added.substring(0, added.length - 2));
+                    }
+
+                    // stop propagating
+                    return false;
                 });
-            }
+
+                // remove contact
+                $('#jsxc_menuContacts .jsxc_removeBuddyFromList').click(function () {
+
+                    // retrieve first element selected
+                    var selItems = $("#jsxc_menuContacts .ui-selected");
+
+                    //console.log(selItems);
+
+                    if (selItems.length &lt; 1) {
+                        jsxc.gui.feedback("Vous devez sélectionner un utilisateur", "warn");
+                        return;
+                    }
+
+                    var usersList = "";
+                    selItems.each(function () {
+                        usersList += $(this).data("username") + ", ";
+                    });
+                    usersList = usersList.substring(0, usersList.length - 2);
+
+                    // show confirmation dialog
+                    jsxc.gui.dialog.open(jsxc.gui.template.get('removeManyDialog', null, usersList));
+
+                    $('#jsxc_dialog .jsxc_remove').click(function (ev) {
+                        ev.stopPropagation();
+
+                        selItems.each(function () {
+
+                            if (jsxc.master) {
+                                jsxc.xmpp.removeBuddy($(this).data("userjid"));
+                            } else {
+                                // inform master
+                                jsxc.storage.setUserItem('deletebuddy', $(this).data("userjid"), {
+                                    jid: $(this).data("userjid")
+                                });
+                            }
+
+                        });
+
+                        jsxc.gui.dialog.close();
+                    });
+
+                });
+
+                // refresh list
+                $('#jsxc_menuContacts .jsxc_refreshBuddyList').click(function () {
+
+                    userList.updateUserList("freshList");
+
+                    jsxc.gui.feedback("Mise à jour de la liste d'utilisateurs");
+
+                });
+
+
+            },
         },
 
-        notificationsPanel: {
-            label: "Notifications",
-            template: "menuNotifications",
+        roomsPanel: {
+            label: "Conversations",
+            template: "menuRooms",
+            init: function () {
+
+                // buddy list for room creation
+                var buddyList = jsxc.gui.createBuddyList("#jsxc_roomCreationUsers");
+
+                // update buddy list on click
+                $("#jsxc_menuRooms .jsxc_refreshBuddyList").click(function () {
+
+                    buddyList.updateBuddyList();
+
+                    jsxc.gui.feedback("Mise à jour en cours ...");
+                });
+
+                $("#jsxc_menuRooms .jsxc_createRoom").click(function () {
+
+                    var selItems = $("#jsxc_roomCreationUsers .ui-selected");
+
+                    // check selected elements
+                    if (selItems.length &lt; 1) {
+                        jsxc.gui.feedback("Vous devez sélectionner au moins un contact", "warn");
+                        return;
+                    }
+
+                    // prepare title
+                    var title = $("#jsxc_menuRooms .jsxc_inputRoomTitle").val().trim();
+
+                    // prepare subject
+                    var subject = $("#jsxc_menuRooms .jsxc_inputRoomSubject").val().trim();
+                    
+                    // prepare initial participants
+                    var buddies = [];
+                    selItems.each(function () {
+                        buddies.push($(this).data("userjid"));
+                    });
+                    
+                    jsxc.muc.createNewConversationWith(buddies, title, subject);
+
+                });
+
+                // invite users
+                $(".jsxc_inviteBuddiesOnConversation").click(function(){
+
+                    var selItems = $("#jsxc_roomCreationUsers .ui-selected");
+
+                    // check selected elements
+                    if (selItems.length &lt; 1) {
+                        jsxc.gui.feedback("Vous devez sélectionner au moins un contact", "warn");
+                        return;
+                    }
+
+                    // get user array
+                    var users = [];
+                    selItems.each(function(){
+                       users.push($(this).data("userjid"));
+                    });
+
+                    // show dialog
+                    jsxc.gui.showConversationSelectionDialog()
+
+                        // user clicks OK
+                        .done(function(conversations){
+
+                            // iterate conversations
+                            conversations.each(function(){
+                                var conversJid = $(this).data("conversjid");
+                                jsxc.muc.inviteParticipants(conversJid, users);
+                            });
+
+                        });
+                });
+
+                // // display room dialog
+                // $("#jsxc_menuRooms .jsxc_roomDialog").click(jsxc.muc.showJoinChat);
+
+            },
+
+        },
+
+        toolsPanel: {
+            label: "Outils",
+            template: "menuTools",
+            init: function () {
+
+
+            },
+
+        },
+
+        settingsPanel: {
+            label: "Paramètres",
+            template: "menuSettings",
             init: function () {
 
                 // mute notifications
-                $('#jsxc_side_menu_content .jsxc_muteNotification').click(function () {
+                $('#jsxc_menuSettings .jsxc_muteNotification').click(function () {
 
                     if (jsxc.storage.getUserItem('presence') === 'dnd') {
                         return;
@@ -126,38 +309,17 @@ jsxc.gui.menu = {
                     }
                 });
 
-            }
-        },
-
-        roomsPanel: {
-            label: "Salons et cannaux",
-            template: "menuRooms",
-            init: function () {
-            }
-        },
-
-        toolsPanel: {
-            label: "Outils",
-            template: "menuTools",
-            init: function () {
-
-
-            }
-        },
-
-        settingsPanel: {
-            label: "Paramètres",
-            template: "menuSettings",
-            init: function () {
+                $("#jsxc_menuSettings .jsxc_showNotificationRequestDialog").click(function(){
+                    jsxc.gui.showRequestNotification();
+                });
 
                 // show dialog settings
-                $('#jsxc_side_menu_content .jsxc_dialog_settings').click(function () {
+                $('#jsxc_menuSettings .jsxc_dialog_settings').click(function () {
                     jsxc.gui.showSettings();
                 });
 
-
                 // display or hide offline buddies
-                $('#jsxc_side_menu_content .jsxc_hideOffline').click(function () {
+                $('#jsxc_menuSettings .jsxc_hideOffline').click(function () {
 
                     var hideOffline = !jsxc.options.get('hideOffline');
 
@@ -173,12 +335,12 @@ jsxc.gui.menu = {
                 });
 
                 // about dialog
-                $('#jsxc_side_menu_content .jsxc_about').click(function () {
+                $('#jsxc_menuSettings .jsxc_about').click(function () {
                     jsxc.gui.showAboutDialog();
                 });
 
 
-            }
+            },
         },
 
     },
@@ -215,16 +377,20 @@ jsxc.gui.menu = {
         }
 
         // set accordion menu
-        this.initAccordion();
+        this._initAccordion();
 
         // set foldable
-        this.initFoldableActions();
+        this._initFoldableActions();
+
+        // open at launch
+        $("#jsxc_side_menu_content > h1.ui-accordion-header").eq(2).trigger("click");
+
     },
 
     /**
      * Set menu accordion and searchable
      */
-    initAccordion: function () {
+    _initAccordion: function () {
 
         // voir: http://www.w3schools.com/howto/howto_js_accordion.asp
 
@@ -426,7 +592,7 @@ jsxc.gui.menu = {
         });
 
         // ajouter la classe au résultat actif
-        if(this.currentResults.length > 0){
+        if (this.currentResults.length > 0) {
             this.currentResults.eq(this.currentSearchResultIndex).addClass("jsxc_menu_active_result");
 
             // activer l'accordéon correspondant
@@ -456,7 +622,7 @@ jsxc.gui.menu = {
         self.animate({right: "0px"});
 
         // focus on search text field, but not on small devices
-        if($(window).height() > 700){
+        if ($(window).height() > 700) {
             $("#jsxc_menu_search_text_field").focus();
         }
 
@@ -481,7 +647,7 @@ jsxc.gui.menu = {
     /**
      * Associate click with fold / unfold menu action
      */
-    initFoldableActions: function () {
+    _initFoldableActions: function () {
 
         var sideMenu = $("#jsxc_side_menu");
 
@@ -497,13 +663,7 @@ jsxc.gui.menu = {
 
             // side menu is closed, open it
             else {
-
                 self.openSideMenu();
-
-                // launch timer for closing if no use
-                sideMenu.data('timerForClosing', window.setTimeout(self.closeSideMenu,
-                    jsxc.gui.menu.timeoutBeforeClose));
-
             }
 
             return false;
@@ -523,9 +683,27 @@ jsxc.gui.menu = {
         });
 
         // close side menu when roster is closed
-        $(document).on("toggle.roster.jsxc", function(){
+        $(document).on("toggle.roster.jsxc", function () {
             self.closeSideMenu();
         });
+
+        // click on notification, show first panel
+
+        // when clicking open menu, and launch timer to hide it after inactivity
+        $("#jsxc_roster .jsxc_menu_notif_bottom_roster").click(function () {
+
+            //  side menu is closed, open it
+            if (sideMenu.data("sideMenuEnabled") !== true) {
+                self.openSideMenu();
+            }
+
+            // open first tab
+            $("#jsxc_side_menu_content > h1.ui-accordion-header").eq(0).trigger("click");
+
+            return false;
+
+        });
+
 
     },
 
@@ -540,13 +718,13 @@ jsxc.gui.menu = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.webrtc.html">webrtc</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li><li><a href="menu.html">menu</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.webrtc.html">webrtc</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li><li><a href="menu.html">menu</a></li></ul><h3>Global</h3><ul><li><a href="global.html#root">root</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateRoomList">updateRoomList</a></li><li><a href="global.html#updateUserList">updateUserList</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Jun 08 2016 15:33:31 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Jun 20 2016 18:51:45 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

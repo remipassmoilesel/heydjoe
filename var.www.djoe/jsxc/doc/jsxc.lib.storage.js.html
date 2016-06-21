@@ -28,610 +28,629 @@
         <article>
             <pre class="prettyprint source linenums"><code>/**
  * Handle long-live data
- * 
+ *
  * @namespace jsxc.storage
  */
 jsxc.storage = {
-   /**
-    * Prefix for localstorage
-    * 
-    * @privat
-    */
-   PREFIX: 'jsxc',
+    /**
+     * Prefix for localstorage
+     *
+     * @privat
+     */
+    PREFIX: 'jsxc',
 
-   SEP: ':',
+    SEP: ':',
 
-   /**
-    * @param {type} uk Should we generate a user prefix?
-    * @returns {String} prefix
-    * @memberOf jsxc.storage
-    */
-   getPrefix: function(uk) {
-      var self = jsxc.storage;
+    /**
+     * @param {type} uk Should we generate a user prefix?
+     * @returns {String} prefix
+     * @memberOf jsxc.storage
+     */
+    getPrefix: function (uk) {
+        var self = jsxc.storage;
 
-      if (uk &amp;&amp; !jsxc.bid) {
-         console.trace('Unable to create user prefix');
-      }
+        if (uk &amp;&amp; !jsxc.bid) {
+            console.trace('Unable to create user prefix');
+        }
 
-      return self.PREFIX + self.SEP + ((uk &amp;&amp; jsxc.bid) ? jsxc.bid + self.SEP : '');
-   },
+        return self.PREFIX + self.SEP + ((uk &amp;&amp; jsxc.bid) ? jsxc.bid + self.SEP : '');
+    },
 
-   /**
-    * Save item to storage
-    * 
-    * @function
-    * @param {String} key variablename
-    * @param {Object} value value
-    * @param {String} uk Userkey? Should we add the bid as prefix?
-    */
-   setItem: function(key, value, uk) {
+    /**
+     * Save item to storage
+     *
+     * @function
+     * @param {String} key variablename
+     * @param {Object} value value
+     * @param {String} uk Userkey? Should we add the bid as prefix?
+     */
+    setItem: function (key, value, uk) {
 
-      // Workaround for non-conform browser
-      if (jsxc.storageNotConform > 0 &amp;&amp; key !== 'rid') {
-         if (jsxc.storageNotConform > 1 &amp;&amp; jsxc.toSNC === null) {
-            jsxc.toSNC = window.setTimeout(function() {
-               jsxc.storageNotConform = 0;
-               jsxc.storage.setItem('storageNotConform', 0);
-            }, 1000);
-         }
-
-         jsxc.ls.push(JSON.stringify({
-            key: key,
-            value: value
-         }));
-      }
-
-      if (typeof(value) === 'object') {
-         // exclude jquery objects, because otherwise safari will fail
-         value = JSON.stringify(value, function(key, val) {
-            if (!(val instanceof jQuery)) {
-               return val;
-            }
-         });
-      }
-
-      localStorage.setItem(jsxc.storage.getPrefix(uk) + key, value);
-   },
-
-   setUserItem: function(type, key, value) {
-      var self = jsxc.storage;
-
-      if (arguments.length === 2) {
-         value = key;
-         key = type;
-         type = '';
-      } else if (arguments.length === 3) {
-         key = type + self.SEP + key;
-      }
-
-      return jsxc.storage.setItem(key, value, true);
-   },
-
-   /**
-    * Load item from storage
-    * 
-    * @function
-    * @param {String} key variablename
-    * @param {String} uk Userkey? Should we add the bid as prefix?
-    */
-   getItem: function(key, uk) {
-
-      key = jsxc.storage.getPrefix(uk) + key;
-
-      var value = localStorage.getItem(key);
-      try {
-         return JSON.parse(value);
-      } catch (e) {
-         return value;
-      }
-
-   },
-
-   /**
-    * Get a user item from storage.
-    * 
-    * @param key
-    * @returns user item
-    */
-   getUserItem: function(type, key) {
-      var self = jsxc.storage;
-
-      if (arguments.length === 1) {
-         key = type;
-      } else if (arguments.length === 2) {
-         key = type + self.SEP + key;
-      }
-
-      return jsxc.storage.getItem(key, true);
-   },
-
-   /**
-    * Remove item from storage
-    * 
-    * @function
-    * @param {String} key variablename
-    * @param {String} uk Userkey? Should we add the bid as prefix?
-    */
-   removeItem: function(key, uk) {
-
-      // Workaround for non-conforming browser
-      if (jsxc.storageNotConform &amp;&amp; key !== 'rid') {
-         jsxc.ls.push(JSON.stringify({
-            key: jsxc.storage.prefix + key,
-            value: ''
-         }));
-      }
-
-      localStorage.removeItem(jsxc.storage.getPrefix(uk) + key);
-   },
-
-   /**
-    * Remove user item from storage.
-    * 
-    * @param key
-    */
-   removeUserItem: function(type, key) {
-      var self = jsxc.storage;
-
-      if (arguments.length === 1) {
-         key = type;
-      } else if (arguments.length === 2) {
-         key = type + self.SEP + key;
-      }
-
-      jsxc.storage.removeItem(key, true);
-   },
-
-   /**
-    * Updates value of a variable in a saved object.
-    * 
-    * @function
-    * @param {String} key variablename
-    * @param {String|object} variable variablename in object or object with
-    *        variable/key pairs
-    * @param {Object} [value] value
-    * @param {String} uk Userkey? Should we add the bid as prefix?
-    */
-   updateItem: function(key, variable, value, uk) {
-
-      var data = jsxc.storage.getItem(key, uk) || {};
-
-      if (typeof(variable) === 'object') {
-
-         $.each(variable, function(key, val) {
-            if (typeof(data[key]) === 'undefined') {
-               jsxc.debug('Variable ' + key + ' doesn\'t exist in ' + variable + '. It was created.');
+        // Workaround for non-conform browser
+        if (jsxc.storageNotConform > 0 &amp;&amp; key !== 'rid') {
+            if (jsxc.storageNotConform > 1 &amp;&amp; jsxc.toSNC === null) {
+                jsxc.toSNC = window.setTimeout(function () {
+                    jsxc.storageNotConform = 0;
+                    jsxc.storage.setItem('storageNotConform', 0);
+                }, 1000);
             }
 
-            data[key] = val;
-         });
-      } else {
-         if (typeof(data[variable]) === 'undefined') {
-            jsxc.debug('Variable ' + variable + ' doesn\'t exist. It was created.');
-         }
+            jsxc.ls.push(JSON.stringify({
+                key: key,
+                value: value
+            }));
+        }
 
-         data[variable] = value;
-      }
+        if (typeof(value) === 'object') {
+            // exclude jquery objects, because otherwise safari will fail
+            value = JSON.stringify(value, function (key, val) {
+                if (!(val instanceof jQuery)) {
+                    return val;
+                }
+            });
+        }
 
-      jsxc.storage.setItem(key, data, uk);
-   },
+        localStorage.setItem(jsxc.storage.getPrefix(uk) + key, value);
 
-   /**
-    * Updates value of a variable in a saved user object.
-    * 
-    * @param {String} type variable type (a prefix)
-    * @param {String} key variable name
-    * @param {String|object} variable variable name in object or object with
-    *        variable/key pairs
-    * @param {Object} [value] value (not used if the variable was an object)
-    */
-   updateUserItem: function(type, key, variable, value) {
-      var self = jsxc.storage;
+    },
 
-      if (arguments.length === 4 || (arguments.length === 3 &amp;&amp; typeof variable === 'object')) {
-         key = type + self.SEP + key;
-      } else {
-         value = variable;
-         variable = key;
-         key = type;
-      }
+    setUserItem: function (type, key, value) {
+        var self = jsxc.storage;
 
-      return jsxc.storage.updateItem(key, variable, value, true);
-   },
+        if (arguments.length === 2) {
+            value = key;
+            key = type;
+            type = '';
+        } else if (arguments.length === 3) {
+            key = type + self.SEP + key;
+        }
 
-   /**
-    * Increments value
-    * 
-    * @function
-    * @param {String} key variablename
-    * @param {String} uk Userkey? Should we add the bid as prefix?
-    */
-   ink: function(key, uk) {
+        return jsxc.storage.setItem(key, value, true);
+    },
 
-      jsxc.storage.setItem(key, Number(jsxc.storage.getItem(key, uk)) + 1, uk);
-   },
+    /**
+     * Load item from storage
+     *
+     * @function
+     * @param {String} key variablename
+     * @param {String} uk Userkey? Should we add the bid as prefix?
+     */
+    getItem: function (key, uk) {
 
-   /**
-    * Remove element from array or object
-    * 
-    * @param {string} key name of array or object
-    * @param {string} name name of element in array or object
-    * @param {String} uk Userkey? Should we add the bid as prefix?
-    * @returns {undefined}
-    */
-   removeElement: function(key, name, uk) {
-      var item = jsxc.storage.getItem(key, uk);
+        key = jsxc.storage.getPrefix(uk) + key;
 
-      if ($.isArray(item)) {
-         item = $.grep(item, function(e) {
-            return e !== name;
-         });
-      } else if (typeof(item) === 'object' &amp;&amp; item !== null) {
-         delete item[name];
-      }
+        var value = localStorage.getItem(key);
+        try {
+            return JSON.parse(value);
+        } catch (e) {
+            return value;
+        }
 
-      jsxc.storage.setItem(key, item, uk);
-   },
+    },
 
-   removeUserElement: function(type, key, name) {
-      var self = jsxc.storage;
+    /**
+     * Get a user item from storage.
+     *
+     * @param key
+     * @returns user item
+     */
+    getUserItem: function (type, key) {
+        var self = jsxc.storage;
 
-      if (arguments.length === 2) {
-         name = key;
-         key = type;
-      } else if (arguments.length === 3) {
-         key = type + self.SEP + key;
-      }
+        if (arguments.length === 1) {
+            key = type;
+        } else if (arguments.length === 2) {
+            key = type + self.SEP + key;
+        }
 
-      return jsxc.storage.removeElement(key, name, true);
-   },
+        return jsxc.storage.getItem(key, true);
+    },
 
-   /**
-    * Triggered if changes are recognized
-    * 
-    * @function
-    * @param {event} e Storage event
-    * @param {String} e.key Key name which triggered event
-    * @param {Object} e.oldValue Old Value for key
-    * @param {Object} e.newValue New Value for key
-    * @param {String} e.url
-    */
-   onStorage: function(e) {
+    /**
+     * Remove item from storage
+     *
+     * @function
+     * @param {String} key variablename
+     * @param {String} uk Userkey? Should we add the bid as prefix?
+     */
+    removeItem: function (key, uk) {
 
-      // skip
-      if (e.key === jsxc.storage.PREFIX + jsxc.storage.SEP + 'rid') {
-         return;
-      }
+        // Workaround for non-conforming browser
+        if (jsxc.storageNotConform &amp;&amp; key !== 'rid') {
+            jsxc.ls.push(JSON.stringify({
+                key: jsxc.storage.prefix + key,
+                value: ''
+            }));
+        }
 
-      var re = new RegExp('^' + jsxc.storage.PREFIX + jsxc.storage.SEP + '(?:[^' + jsxc.storage.SEP + ']+@[^' + jsxc.storage.SEP + ']+' + jsxc.storage.SEP + ')?(.*)', 'i');
-      var key = e.key.replace(re, '$1');
+        localStorage.removeItem(jsxc.storage.getPrefix(uk) + key);
+    },
 
-      // Workaround for non-conforming browser, which trigger
-      // events on every page (notably IE): Ignore own writes
-      // (own)
-      if (jsxc.storageNotConform > 0 &amp;&amp; jsxc.ls.length > 0) {
+    /**
+     * Remove user item from storage.
+     *
+     * @param key
+     */
+    removeUserItem: function (type, key) {
+        var self = jsxc.storage;
 
-         var val = e.newValue;
-         try {
-            val = JSON.parse(val);
-         } catch (err) {}
+        if (arguments.length === 1) {
+            key = type;
+        } else if (arguments.length === 2) {
+            key = type + self.SEP + key;
+        }
 
-         var index = $.inArray(JSON.stringify({
-            key: key,
-            value: val
-         }), jsxc.ls);
+        jsxc.storage.removeItem(key, true);
+    },
 
-         if (index >= 0) {
+    /**
+     * Updates value of a variable in a saved object.
+     *
+     * @function
+     * @param {String} key variablename
+     * @param {String|object} variable variablename in object or object with
+     *        variable/key pairs
+     * @param {Object} [value] value
+     * @param {String} uk Userkey? Should we add the bid as prefix?
+     */
+    updateItem: function (key, variable, value, uk) {
 
-            // confirm that the storage event is not fired regularly
-            if (jsxc.storageNotConform > 1) {
-               window.clearTimeout(jsxc.toSNC);
-               jsxc.storageNotConform = 1;
-               jsxc.storage.setItem('storageNotConform', 1);
+        var data = jsxc.storage.getItem(key, uk) || {};
+
+        if (typeof(variable) === 'object') {
+
+            $.each(variable, function (key, val) {
+                if (typeof(data[key]) === 'undefined') {
+                    jsxc.debug('Variable ' + key + ' doesn\'t exist in ' + variable + '. It was created.');
+                }
+
+                data[key] = val;
+            });
+        } else {
+            if (typeof(data[variable]) === 'undefined') {
+                jsxc.debug('Variable ' + variable + ' doesn\'t exist. It was created.');
             }
 
-            jsxc.ls.splice(index, 1);
+            data[variable] = value;
+        }
+
+        jsxc.storage.setItem(key, data, uk);
+    },
+
+    /**
+     * Updates value of a variable in a saved user object.
+     *
+     * @param {String} type variable type (a prefix)
+     * @param {String} key variable name
+     * @param {String|object} variable variable name in object or object with
+     *        variable/key pairs
+     * @param {Object} [value] value (not used if the variable was an object)
+     */
+    updateUserItem: function (type, key, variable, value) {
+        var self = jsxc.storage;
+
+        if (arguments.length === 4 || (arguments.length === 3 &amp;&amp; typeof variable === 'object')) {
+            key = type + self.SEP + key;
+        } else {
+            value = variable;
+            variable = key;
+            key = type;
+        }
+
+        return jsxc.storage.updateItem(key, variable, value, true);
+    },
+
+    /**
+     * Increments value
+     *
+     * @function
+     * @param {String} key variablename
+     * @param {String} uk Userkey? Should we add the bid as prefix?
+     */
+    ink: function (key, uk) {
+
+        jsxc.storage.setItem(key, Number(jsxc.storage.getItem(key, uk)) + 1, uk);
+    },
+
+    /**
+     * Remove element from array or object
+     *
+     * @param {string} key name of array or object
+     * @param {string} name name of element in array or object
+     * @param {String} uk Userkey? Should we add the bid as prefix?
+     * @returns {undefined}
+     */
+    removeElement: function (key, name, uk) {
+        var item = jsxc.storage.getItem(key, uk);
+
+        if ($.isArray(item)) {
+            item = $.grep(item, function (e) {
+                return e !== name;
+            });
+        } else if (typeof(item) === 'object' &amp;&amp; item !== null) {
+            delete item[name];
+        }
+
+        jsxc.storage.setItem(key, item, uk);
+    },
+
+    removeUserElement: function (type, key, name) {
+        var self = jsxc.storage;
+
+        if (arguments.length === 2) {
+            name = key;
+            key = type;
+        } else if (arguments.length === 3) {
+            key = type + self.SEP + key;
+        }
+
+        return jsxc.storage.removeElement(key, name, true);
+    },
+
+    /**
+     * Triggered if changes are recognized
+     *
+     * @function
+     * @param {event} e Storage event
+     * @param {String} e.key Key name which triggered event
+     * @param {Object} e.oldValue Old Value for key
+     * @param {Object} e.newValue New Value for key
+     * @param {String} e.url
+     */
+    onStorage: function (e) {
+
+        // skip
+        if (e.key === jsxc.storage.PREFIX + jsxc.storage.SEP + 'rid') {
             return;
-         }
-      }
+        }
 
-      // Workaround for non-conforming browser
-      if (e.oldValue === e.newValue) {
-         return;
-      }
+        var re = new RegExp('^' + jsxc.storage.PREFIX + jsxc.storage.SEP + '(?:[^' + jsxc.storage.SEP + ']+@[^' + jsxc.storage.SEP + ']+' + jsxc.storage.SEP + ')?(.*)', 'i');
+        var key = e.key.replace(re, '$1');
 
-      var n, o;
-      var bid = key.replace(new RegExp('[^' + jsxc.storage.SEP + ']+' + jsxc.storage.SEP + '(.*)', 'i'), '$1');
+        // Workaround for non-conforming browser, which trigger
+        // events on every page (notably IE): Ignore own writes
+        // (own)
+        if (jsxc.storageNotConform > 0 &amp;&amp; jsxc.ls.length > 0) {
 
-      // react if someone asks whether there is a master
-      if (jsxc.master &amp;&amp; key === 'alive') {
-         jsxc.debug('Master request.');
-
-         jsxc.storage.ink('alive');
-         return;
-      }
-
-      // master alive
-      if (!jsxc.master &amp;&amp; (key === 'alive' || key === 'alive_busy') &amp;&amp; !jsxc.triggeredFromElement) {
-
-         // reset timeouts
-         jsxc.to = $.grep(jsxc.to, function(timeout) {
-            window.clearTimeout(timeout);
-
-            return false;
-         });
-         jsxc.to.push(window.setTimeout(jsxc.checkMaster, ((key === 'alive') ? jsxc.options.timeout : jsxc.options.busyTimeout) + jsxc.random(60)));
-
-         // only call the first time
-         if (!jsxc.role_allocation) {
-            jsxc.onSlave();
-         }
-
-         return;
-      }
-
-      if (key.match(/^notices/)) {
-         jsxc.notice.load();
-      }
-
-      if (key.match(/^presence/)) {
-         jsxc.gui.changePresence(e.newValue, true);
-      }
-
-      if (key.match(/^options/) &amp;&amp; e.newValue) {
-         n = JSON.parse(e.newValue);
-
-         if (typeof n.muteNotification !== 'undefined' &amp;&amp; n.muteNotification) {
-            jsxc.notification.muteSound(true);
-         } else {
-            jsxc.notification.unmuteSound(true);
-         }
-      }
-
-      if (key.match(/^hidden/)) {
-         if (jsxc.master) {
-            clearTimeout(jsxc.toNotification);
-         } else {
-            jsxc.isHidden();
-         }
-      }
-
-      if (key.match(/^focus/)) {
-         if (jsxc.master) {
-            clearTimeout(jsxc.toNotification);
-         } else {
-            jsxc.hasFocus();
-         }
-      }
-
-      if (key.match(new RegExp('^history' + jsxc.storage.SEP))) {
-
-         var history = JSON.parse(e.newValue);
-         var uid, el, message;
-
-         while (history.length > 0) {
-            uid = history.pop();
-
-            message = new jsxc.Message(uid);
-            el = message.getDOM();
-
-            if (el.length === 0) {
-               if (jsxc.master &amp;&amp; message.direction === jsxc.Message.OUT) {
-                  jsxc.xmpp.sendMessage(message.bid, message.msg, message._uid);
-               }
-
-               jsxc.gui.window._postMessage(message, true);
-            } else if (message.isReceived()) {
-               el.addClass('jsxc_received');
+            var val = e.newValue;
+            try {
+                val = JSON.parse(val);
+            } catch (err) {
             }
-         }
-         return;
-      }
 
-      if (key.match(new RegExp('^window' + jsxc.storage.SEP))) {
+            var index = $.inArray(JSON.stringify({
+                key: key,
+                value: val
+            }), jsxc.ls);
 
-         if (!e.newValue) {
-            jsxc.gui.window._close(bid);
+            if (index >= 0) {
+
+                // confirm that the storage event is not fired regularly
+                if (jsxc.storageNotConform > 1) {
+                    window.clearTimeout(jsxc.toSNC);
+                    jsxc.storageNotConform = 1;
+                    jsxc.storage.setItem('storageNotConform', 1);
+                }
+
+                jsxc.ls.splice(index, 1);
+                return;
+            }
+        }
+
+        // Workaround for non-conforming browser
+        if (e.oldValue === e.newValue) {
             return;
-         }
+        }
 
-         if (!e.oldValue) {
-            jsxc.gui.window.open(bid);
+        var n, o;
+        var bid = key.replace(new RegExp('[^' + jsxc.storage.SEP + ']+' + jsxc.storage.SEP + '(.*)', 'i'), '$1');
+
+        // react if someone asks whether there is a master
+        if (jsxc.master &amp;&amp; key === 'alive') {
+            jsxc.debug('Master request.');
+
+            jsxc.storage.ink('alive');
             return;
-         }
+        }
 
-         n = JSON.parse(e.newValue);
-         o = JSON.parse(e.oldValue);
+        // master alive
+        if (!jsxc.master &amp;&amp; (key === 'alive' || key === 'alive_busy') &amp;&amp; !jsxc.triggeredFromElement) {
 
-         if (n.minimize !== o.minimize) {
-            if (n.minimize) {
-               jsxc.gui.window._hide(bid);
+            // reset timeouts
+            jsxc.to = $.grep(jsxc.to, function (timeout) {
+                window.clearTimeout(timeout);
+
+                return false;
+            });
+            jsxc.to.push(window.setTimeout(jsxc.checkMaster, ((key === 'alive') ? jsxc.options.timeout : jsxc.options.busyTimeout) + jsxc.random(60)));
+
+            // only call the first time
+            if (!jsxc.role_allocation) {
+                jsxc.onSlave();
+            }
+
+            return;
+        }
+
+        if (key.match(/^notices/)) {
+            jsxc.notice.load();
+        }
+
+        if (key.match(/^presence/)) {
+            jsxc.gui.changePresence(e.newValue, true);
+        }
+
+        if (key.match(/^options/) &amp;&amp; e.newValue) {
+            n = JSON.parse(e.newValue);
+
+            if (typeof n.muteNotification !== 'undefined' &amp;&amp; n.muteNotification) {
+                jsxc.notification.muteSound(true);
             } else {
-               jsxc.gui.window._show(bid);
+                jsxc.notification.unmuteSound(true);
             }
-         }
+        }
 
-         jsxc.gui.window.setText(bid, n.text);
-
-         if (n.unread !== o.unread) {
-            if (n.unread === 0) {
-               jsxc.gui.readMsg(bid);
-            } else {
-               jsxc.gui._unreadMsg(bid, n.unread);
-            }
-         }
-
-         return;
-      }
-
-      if (key.match(/^unreadMsg/) &amp;&amp; jsxc.gui.favicon) {
-         jsxc.gui.favicon.badge(parseInt(e.newValue) || 0);
-      }
-
-      if (key.match(new RegExp('^smp' + jsxc.storage.SEP))) {
-
-         if (!e.newValue) {
-
-            jsxc.gui.dialog.close('smp');
-            jsxc.gui.window.hideOverlay(bid);
-
+        if (key.match(/^hidden/)) {
             if (jsxc.master) {
-               jsxc.otr.objects[bid].sm.abort();
+                clearTimeout(jsxc.toNotification);
+            } else {
+                jsxc.isHidden();
+            }
+        }
+
+        if (key.match(/^focus/)) {
+            if (jsxc.master) {
+                clearTimeout(jsxc.toNotification);
+            } else {
+                jsxc.hasFocus();
+            }
+        }
+
+        if (key.match(new RegExp('^history' + jsxc.storage.SEP))) {
+
+            var history = JSON.parse(e.newValue);
+            var uid, el, message;
+
+            while (history.length > 0) {
+                uid = history.pop();
+
+                message = new jsxc.Message(uid);
+                el = message.getDOM();
+
+                if (el.length === 0) {
+                    if (jsxc.master &amp;&amp; message.direction === jsxc.Message.OUT) {
+                        jsxc.xmpp.sendMessage(message.bid, message.msg, message._uid);
+                    }
+
+                    jsxc.gui.window._postMessage(message, true);
+                } else if (message.isReceived()) {
+                    el.addClass('jsxc_received');
+                }
+            }
+            return;
+        }
+
+        if (key.match(new RegExp('^window' + jsxc.storage.SEP))) {
+
+            if (!e.newValue) {
+                jsxc.gui.window._close(bid);
+                return;
+            }
+
+            if (!e.oldValue) {
+                jsxc.gui.window.open(bid);
+                return;
+            }
+
+            n = JSON.parse(e.newValue);
+            o = JSON.parse(e.oldValue);
+
+            if (n.minimize !== o.minimize) {
+                if (n.minimize) {
+                    jsxc.gui.window._hide(bid);
+                } else {
+                    jsxc.gui.window._show(bid);
+                }
+            }
+
+            jsxc.gui.window.setText(bid, n.text);
+
+            if (n.unread !== o.unread) {
+                if (n.unread === 0) {
+                    jsxc.gui.readMsg(bid);
+                } else {
+                    jsxc.gui._unreadMsg(bid, n.unread);
+                }
             }
 
             return;
-         }
+        }
 
-         n = JSON.parse(e.newValue);
+        if (key.match(/^unreadMsg/) &amp;&amp; jsxc.gui.favicon) {
+            jsxc.gui.favicon.badge(parseInt(e.newValue) || 0);
+        }
 
-         if (typeof(n.data) !== 'undefined') {
+        if (key.match(new RegExp('^smp' + jsxc.storage.SEP))) {
 
-            jsxc.gui.window.smpRequest(bid, n.data);
+            if (!e.newValue) {
 
-         } else if (jsxc.master &amp;&amp; n.sec) {
-            jsxc.gui.dialog.close('smp');
-            jsxc.gui.window.hideOverlay(bid);
+                jsxc.gui.dialog.close('smp');
+                jsxc.gui.window.hideOverlay(bid);
 
-            jsxc.otr.sendSmpReq(bid, n.sec, n.quest);
-         }
-      }
+                if (jsxc.master) {
+                    jsxc.otr.objects[bid].sm.abort();
+                }
 
-      if (!jsxc.master &amp;&amp; key.match(new RegExp('^buddy' + jsxc.storage.SEP))) {
-
-         if (!e.newValue) {
-            jsxc.gui.roster.purge(bid);
-            return;
-         }
-         if (!e.oldValue) {
-            jsxc.gui.roster.add(bid);
-            return;
-         }
-
-         n = JSON.parse(e.newValue);
-         o = JSON.parse(e.oldValue);
-
-         jsxc.gui.update(bid);
-
-         if (o.status !== n.status || o.sub !== n.sub) {
-            jsxc.gui.roster.reorder(bid);
-         }
-      }
-
-      if (jsxc.master &amp;&amp; key.match(new RegExp('^deletebuddy' + jsxc.storage.SEP)) &amp;&amp; e.newValue) {
-         n = JSON.parse(e.newValue);
-
-         jsxc.xmpp.removeBuddy(n.jid);
-         jsxc.storage.removeUserItem(key);
-      }
-
-      if (jsxc.master &amp;&amp; key.match(new RegExp('^buddy' + jsxc.storage.SEP))) {
-
-         n = JSON.parse(e.newValue);
-         o = JSON.parse(e.oldValue);
-
-         if (o.transferReq !== n.transferReq) {
-            jsxc.storage.updateUserItem('buddy', bid, 'transferReq', -1);
-
-            if (n.transferReq === 0) {
-               jsxc.otr.goPlain(bid);
+                return;
             }
-            if (n.transferReq === 1) {
-               jsxc.otr.goEncrypt(bid);
+
+            n = JSON.parse(e.newValue);
+
+            if (typeof(n.data) !== 'undefined') {
+
+                jsxc.gui.window.smpRequest(bid, n.data);
+
+            } else if (jsxc.master &amp;&amp; n.sec) {
+                jsxc.gui.dialog.close('smp');
+                jsxc.gui.window.hideOverlay(bid);
+
+                jsxc.otr.sendSmpReq(bid, n.sec, n.quest);
             }
-         }
+        }
 
-         if (o.name !== n.name) {
-            jsxc.gui.roster._rename(bid, n.name);
-         }
-      }
+        if (!jsxc.master &amp;&amp; key.match(new RegExp('^buddy' + jsxc.storage.SEP))) {
 
-      // logout
-      if (key === 'sid') {
-         if (!e.newValue) {
-            // if (jsxc.master &amp;&amp; jsxc.xmpp.conn) {
-            // jsxc.xmpp.conn.disconnect();
-            // jsxc.triggeredFromElement = true;
-            // }
-            jsxc.xmpp.logout();
+            if (!e.newValue) {
+                jsxc.gui.roster.purge(bid);
+                return;
+            }
+            if (!e.oldValue) {
+                jsxc.gui.roster.add(bid);
+                return;
+            }
 
-         }
-         return;
-      }
+            n = JSON.parse(e.newValue);
+            o = JSON.parse(e.oldValue);
 
-      if (key === 'friendReq') {
-         n = JSON.parse(e.newValue);
+            jsxc.gui.update(bid);
 
-         if (jsxc.master &amp;&amp; n.approve >= 0) {
-            jsxc.xmpp.resFriendReq(n.jid, n.approve);
-         }
-      }
+            if (o.status !== n.status || o.sub !== n.sub) {
+                jsxc.gui.roster.reorder(bid);
+            }
+        }
 
-      if (jsxc.master &amp;&amp; key.match(new RegExp('^add' + jsxc.storage.SEP))) {
-         n = JSON.parse(e.newValue);
+        if (jsxc.master &amp;&amp; key.match(new RegExp('^deletebuddy' + jsxc.storage.SEP)) &amp;&amp; e.newValue) {
+            n = JSON.parse(e.newValue);
 
-         jsxc.xmpp.addBuddy(n.username, n.alias);
-      }
+            jsxc.xmpp.removeBuddy(n.jid);
+            jsxc.storage.removeUserItem(key);
+        }
 
-      if (key === 'roster') {
-         jsxc.gui.roster.toggle(e.newValue);
-      }
+        if (jsxc.master &amp;&amp; key.match(new RegExp('^buddy' + jsxc.storage.SEP))) {
 
-      if (jsxc.master &amp;&amp; key.match(new RegExp('^vcard' + jsxc.storage.SEP)) &amp;&amp; e.newValue !== null &amp;&amp; e.newValue.match(/^request:/)) {
+            n = JSON.parse(e.newValue);
+            o = JSON.parse(e.oldValue);
 
-         jsxc.xmpp.loadVcard(bid, function(stanza) {
-            jsxc.storage.setUserItem('vcard', bid, {
-               state: 'success',
-               data: $('&lt;div>').append(stanza).html()
+            if (o.transferReq !== n.transferReq) {
+                jsxc.storage.updateUserItem('buddy', bid, 'transferReq', -1);
+
+                if (n.transferReq === 0) {
+                    jsxc.otr.goPlain(bid);
+                }
+                if (n.transferReq === 1) {
+                    jsxc.otr.goEncrypt(bid);
+                }
+            }
+
+            if (o.name !== n.name) {
+                jsxc.gui.roster._rename(bid, n.name);
+            }
+        }
+
+        // logout
+        if (key === 'sid') {
+            if (!e.newValue) {
+                // if (jsxc.master &amp;&amp; jsxc.xmpp.conn) {
+                // jsxc.xmpp.conn.disconnect();
+                // jsxc.triggeredFromElement = true;
+                // }
+                jsxc.xmpp.logout();
+
+            }
+            return;
+        }
+
+        if (key === 'friendReq') {
+            n = JSON.parse(e.newValue);
+
+            if (jsxc.master &amp;&amp; n.approve >= 0) {
+                jsxc.xmpp.resFriendReq(n.jid, n.approve);
+            }
+        }
+
+        if (jsxc.master &amp;&amp; key.match(new RegExp('^add' + jsxc.storage.SEP))) {
+            n = JSON.parse(e.newValue);
+
+            jsxc.xmpp.addBuddy(n.username, n.alias);
+        }
+
+        if (key === 'roster') {
+            jsxc.gui.roster.toggle(e.newValue);
+        }
+
+        if (jsxc.master &amp;&amp; key.match(new RegExp('^vcard' + jsxc.storage.SEP)) &amp;&amp; e.newValue !== null &amp;&amp; e.newValue.match(/^request:/)) {
+
+            jsxc.xmpp.loadVcard(bid, function (stanza) {
+                jsxc.storage.setUserItem('vcard', bid, {
+                    state: 'success',
+                    data: $('&lt;div>').append(stanza).html()
+                });
+            }, function () {
+                jsxc.storage.setUserItem('vcard', bid, {
+                    state: 'error'
+                });
             });
-         }, function() {
-            jsxc.storage.setUserItem('vcard', bid, {
-               state: 'error'
-            });
-         });
-      }
+        }
 
-      if (!jsxc.master &amp;&amp; key.match(new RegExp('^vcard' + jsxc.storage.SEP)) &amp;&amp; e.newValue !== null &amp;&amp; !e.newValue.match(/^request:/)) {
-         n = JSON.parse(e.newValue);
+        if (!jsxc.master &amp;&amp; key.match(new RegExp('^vcard' + jsxc.storage.SEP)) &amp;&amp; e.newValue !== null &amp;&amp; !e.newValue.match(/^request:/)) {
+            n = JSON.parse(e.newValue);
 
-         if (typeof n.state !== 'undefined') {
-            $(document).trigger('loaded.vcard.jsxc', n);
-         }
+            if (typeof n.state !== 'undefined') {
+                $(document).trigger('loaded.vcard.jsxc', n);
+            }
 
-         jsxc.storage.removeUserItem('vcard', bid);
-      }
-   },
+            jsxc.storage.removeUserItem('vcard', bid);
+        }
+    },
 
-   /**
-    * Save or update buddy data.
-    * 
-    * @memberOf jsxc.storage
-    * @param bid
-    * @param data
-    * @returns {String} Updated or created
-    */
-   saveBuddy: function(bid, data) {
+    /**
+     * Save or update buddy data.
+     *
+     * @memberOf jsxc.storage
+     * @param bid
+     * @param data
+     * @returns {String} Updated or created
+     */
+    saveBuddy: function (bid, data) {
 
-      if (jsxc.storage.getUserItem('buddy', bid)) {
-         jsxc.storage.updateUserItem('buddy', bid, data);
+        if (jsxc.storage.getUserItem('buddy', bid)) {
+            jsxc.storage.updateUserItem('buddy', bid, data);
 
-         return 'updated';
-      }
+            return 'updated';
+        }
 
-      jsxc.storage.setUserItem('buddy', bid, $.extend({
-         jid: '',
-         name: '',
-         status: 0,
-         sub: 'none',
-         msgstate: 0,
-         transferReq: -1,
-         trust: false,
-         fingerprint: null,
-         res: [],
-         type: 'chat'
-      }, data));
+        jsxc.storage.setUserItem('buddy', bid, $.extend({
+            jid: '',
+            name: '',
+            status: 0,
+            sub: 'none',
+            msgstate: 0,
+            transferReq: -1,
+            trust: false,
+            fingerprint: null,
+            res: [],
+            type: 'chat'
+        }, data));
 
-      return 'created';
-   }
+        return 'created';
+    },
+
+    /**
+     * Return the local list of buddies, in the form of bare JID
+     *
+     * &lt;p> Sometimes buddies are stocked in form of "node", "node@domain", ...
+     *
+     */
+    getLocaleBuddyListBJID: function () {
+
+        var output = [];
+
+        $.each(jsxc.storage.getUserItem('buddylist'), function (index, item) {
+            output.push(jsxc.jidToBid(item));
+        });
+
+        return output;
+    },
 };
 </code></pre>
         </article>
@@ -643,13 +662,13 @@ jsxc.storage = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.webrtc.html">webrtc</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li><li><a href="menu.html">menu</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.webrtc.html">webrtc</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li><li><a href="menu.html">menu</a></li></ul><h3>Global</h3><ul><li><a href="global.html#root">root</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateRoomList">updateRoomList</a></li><li><a href="global.html#updateUserList">updateUserList</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Jun 08 2016 15:33:31 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Jun 20 2016 18:51:45 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

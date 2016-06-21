@@ -219,6 +219,18 @@ jsxc.gui = {
             status: $.t(jsxc.CONST.STATUS[data.status])
         }));
 
+        // if(window.location.protocol === "https:"){
+        //     we.find('.jsxc_transfer').addClass('jsxc_enc').attr('title', $.t('your_connection_is_encrypted'));
+        //     we.find('.jsxc_settings .jsxc_verification').removeClass('jsxc_disabled');
+        //     we.find('.jsxc_settings .jsxc_transfer').text($.t('close_private'));
+        // }
+        //
+        // else {
+        //     we.find('.jsxc_transfer').removeClass('jsxc_enc jsxc_fin').attr('title', $.t('your_connection_is_unencrypted'));
+        //     we.find('.jsxc_settings .jsxc_verification').addClass('jsxc_disabled');
+        //     we.find('.jsxc_settings .jsxc_transfer').text($.t('start_private'));
+        // }
+
         // Update gui according to encryption state
         switch (data.msgstate) {
             case 0:
@@ -2071,6 +2083,7 @@ jsxc.gui.window = {
         var user = type === "chat" ? Strophe.getNodeFromJid(from) : Strophe.getResourceFromJid(from);
 
         console.log();
+        console.log("Receive composing notif on: ");
         console.log(type);
         console.log(from);
         console.log(user);
@@ -2087,7 +2100,7 @@ jsxc.gui.window = {
             // check conversation
             if (winBid === bid) {
 
-                console.log("Show presence on");
+                console.log("Show on: ");
                 console.log(winBid);
 
                 // add user in array if necessary
@@ -2759,6 +2772,9 @@ jsxc.gui.window = {
         var msg = message.msg;
         var direction = message.direction;
         var uid = message._uid;
+
+        // remove user composing notifications
+        win.find(".jsxc_userComposing").remove();
 
         if (win.find('.jsxc_textinput').is(':not(:focus)') && direction === jsxc.Message.IN && !restore) {
             jsxc.gui.window.highlight(bid);
