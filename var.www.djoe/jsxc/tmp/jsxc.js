@@ -6995,9 +6995,6 @@ jsxc.localization = {
         // shortcut
         jsxc.t = jsxc.i18n.translate;
 
-        console.log(jsxc.i18n);
-        console.log(jsxc.t);
-
         // initialize i18n translator
         jsxc.i18n.init({
             lng: lang,
@@ -7071,7 +7068,7 @@ jsxc.localization = {
 
         var o = jsxc.i18n.options;
 
-        if (key.length === 0){
+        if (key.length === 0) {
             return;
         }
 
@@ -7142,7 +7139,7 @@ jsxc.localization = {
             var keys = key.split(';');
 
             $.each(keys, function (m, k) {
-                if (k !== ''){
+                if (k !== '') {
                     jsxc.localization._parse(target, k, options);
                 }
             });

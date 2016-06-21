@@ -95,10 +95,10 @@ $(function () {
 
     });
 
-    // var id = "remi@" + xmppDomain;
-    //
-    // // connexion et lancement du GUI
-    // jsxc.start(id, "azerty");
+    var id = "remi@" + xmppDomain;
+
+    // connexion et lancement du GUI
+    jsxc.start(id, "azerty");
 
     /*
      // Serveurs STUN publics

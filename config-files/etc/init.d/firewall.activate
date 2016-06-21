@@ -60,6 +60,12 @@ echo "- Autoriser HTTP(s) : [OK]"
 # Etherpad in / out
 iptables  -A OUTPUT -p tcp --dport 445 -j ACCEPT
 iptables  -A INPUT -p tcp --dport 445 -j ACCEPT
+echo "- Autoriser Etherpad(s) : [OK]"
+
+# Silverpeas 
+iptables  -A OUTPUT -p tcp --dport 8000 -j ACCEPT
+iptables  -A INPUT -p tcp --dport 8000 -j ACCEPT
+echo "- Autoriser Silverpeas : [OK]"
 
 # FTP Out
 #iptables  -A OUTPUT -p tcp --dport 21 -j ACCEPT

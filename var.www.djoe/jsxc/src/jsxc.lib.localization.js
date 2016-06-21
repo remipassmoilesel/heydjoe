@@ -42,9 +42,6 @@ jsxc.localization = {
         // shortcut
         jsxc.t = jsxc.i18n.translate;
 
-        console.log(jsxc.i18n);
-        console.log(jsxc.t);
-
         // initialize i18n translator
         jsxc.i18n.init({
             lng: lang,

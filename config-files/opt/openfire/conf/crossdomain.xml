@@ -1,0 +1,10 @@
+
+<?xml version="1.0"?>
+<!DOCTYPE cross-domain-policy SYSTEM "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd">
+<cross-domain-policy>
+    <site-control permitted-cross-domain-policies="all"/>
+    <allow-access-from domain="*" to-ports="7070,7443" secure="true"/>
+    <allow-http-request-headers-from domain="*" headers="X-STKN"/>
+</cross-domain-policy>
+
+
