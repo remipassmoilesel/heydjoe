@@ -152,7 +152,7 @@ jsxc = {
             console.log(msg);
 
             // stack trace
-            if(jsxc.storage.getItem('debug')){
+            if (jsxc.storage.getItem('debug')) {
                 var err = new Error();
                 console.log(err.stack);
             }
@@ -254,26 +254,7 @@ jsxc = {
             jsxc.storageNotConform = 2;
         }
 
-        // detect language
-        var lang;
-        if (jsxc.storage.getItem('lang') !== null) {
-            lang = jsxc.storage.getItem('lang');
-        } else if (jsxc.options.autoLang && navigator.language) {
-            lang = navigator.language.substr(0, 2);
-        } else {
-            lang = jsxc.options.defaultLang;
-        }
-
-        // initialize i18n translator
-        $.i18n.init({
-            lng: lang,
-            fallbackLng: 'en',
-            resStore: I18next,
-            // use localStorage and set expiration to a day
-            useLocalStorage: true,
-            localStorageExpirationTime: 60 * 60 * 24 * 1000,
-            debug: jsxc.storage.getItem('debug') === true
-        });
+        jsxc.localization.init();
 
         if (jsxc.storage.getItem('debug') === true) {
             jsxc.options.otr.debug = true;
@@ -463,7 +444,7 @@ jsxc = {
         password = password || $(jsxc.options.loginForm.pass).val();
 
         if (!jsxc.triggeredFromBox && (jsxc.options.loginForm.onConnecting === 'dialog' || typeof jsxc.options.loginForm.onConnecting === 'undefined')) {
-            jsxc.gui.showWaitAlert($.t('Logging_in'));
+            jsxc.gui.showWaitAlert(jsxc.t('Logging_in'));
         }
 
         var settings;
@@ -949,11 +930,11 @@ jsxc = {
      * Debug tool for printing stack trace
      *
      */
-    stackTrace: function(){
+    stackTrace: function () {
         var time = (new Date()).getTime();
         console.error("Stack trace");
         console.error("Time: " + time);
         console.error((new Error()).stack);
     },
-    
+
 };

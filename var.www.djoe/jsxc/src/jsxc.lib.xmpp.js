@@ -698,7 +698,7 @@ jsxc.xmpp = {
                 jid: jid,
                 approve: -1
             });
-            jsxc.notice.add($.t('Friendship_request'), $.t('from') + ' ' + jid, 'gui.showApproveDialog', [jid]);
+            jsxc.notice.add(jsxc.t('Friendship_request'), jsxc.t('from') + ' ' + jid, 'gui.showApproveDialog', [jid]);
 
             return true;
         } else if (ptype === 'unavailable' || ptype === 'unsubscribed') {
@@ -737,7 +737,7 @@ jsxc.xmpp = {
             // buddy has come online
             jsxc.notification.notify({
                 title: data.name,
-                msg: $.t('has_come_online'),
+                msg: jsxc.t('has_come_online'),
                 source: bid
             });
         }
@@ -844,7 +844,7 @@ jsxc.xmpp = {
         } else if (forwarded) {
             // Someone forwarded a message to us
 
-            body = from + ' ' + $.t('to') + ' ' + $(stanza).attr('to') + '"' + body + '"';
+            body = from + ' ' + jsxc.t('to') + ' ' + $(stanza).attr('to') + '"' + body + '"';
 
             from = $(stanza).attr('from');
         }
@@ -860,7 +860,7 @@ jsxc.xmpp = {
             var chat = jsxc.storage.getUserItem('chat', bid) || [];
 
             if (chat.length === 0) {
-                jsxc.notice.add($.t('Unknown_sender'), $.t('You_received_a_message_from_an_unknown_sender') + ' (' + bid + ').', 'gui.showUnknownSender', [bid]);
+                jsxc.notice.add(jsxc.t('Unknown_sender'), jsxc.t('You_received_a_message_from_an_unknown_sender') + ' (' + bid + ').', 'gui.showUnknownSender', [bid]);
             }
 
             var msg = jsxc.removeHTML(body);

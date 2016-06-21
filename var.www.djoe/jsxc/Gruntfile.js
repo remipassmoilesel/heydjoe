@@ -7,7 +7,7 @@ module.exports = function (grunt) {
     // full with jquery and plugins
     // var dep = grunt.file.readJSON('jsdep-full-jquery.json');
 
-    // full without jquery and jquery ui
+    // full without jquery and jquery ui 
     var dep = grunt.file.readJSON('jsdep-full.json');
 
     var depcss = grunt.file.readJSON('cssdep.json');
@@ -44,6 +44,7 @@ module.exports = function (grunt) {
                     files: [{
                         expand: true,
                         src: [
+                            'jsxc_init.js',
                             'lib/jquery/dist/*.js',
                             'lib/jquery-ui/*.js',
                             'lib/jquery-ui/themes/base/*.css',
@@ -54,7 +55,6 @@ module.exports = function (grunt) {
                             'lib/jquery-toast-plugin/dist/*',
                             'lib/perfect-scrollbar/js/*.js',
                             'lib/perfect-scrollbar/css/*.css',
-                            'lib/i18next/release/i18next-latest.min.js',
                             'lib/jquery.eventconsole.js/*.js',
                             'lib/magnific-popup/dist/*.js',
                             'lib/favico.js/favico.js',
@@ -126,7 +126,7 @@ module.exports = function (grunt) {
                     overwrite: true,
                     replacements: [{
                         from: /^{/g,
-                        to: 'var I18next = {'
+                        to: 'var chatclient_I18next_ressource_store = {'
                     }, {
                         from: /}$/g,
                         to: '};'
@@ -197,7 +197,7 @@ module.exports = function (grunt) {
                         banner: '/*! This file is concatenated for the browser. */\n\n'
                     },
                     src: ['src/jsxc.intro.js', 'src/jsxc.lib.js', 'src/jsxc.lib.xmpp.js', 'src/jsxc.lib.*.js', 'tmp/template.js', 'src/jsxc.outro.js'],
-                    dest: '<%= target %>/jsxc.js'
+                    dest: 'tmp/jsxc.js'
                 }
             },
             uglify: {
@@ -292,8 +292,8 @@ module.exports = function (grunt) {
                     tasks: ['sass', 'autoprefixer', 'replace:imageUrl']
                 },
                 js: {
-                    files: ['src/jsxc.lib.*'],
-                    tasks: ['concat:jsxc']
+                    files: ['src/jsxc.lib.*', "jsxc_init.js"],
+                    tasks: ['concat:jsxc', 'simple-commonjs']
                 },
                 template: {
                     files: ['template/*.html'],
@@ -348,6 +348,64 @@ module.exports = function (grunt) {
                     dest: 'tmp/template.js'
                 }
             },
+
+            'simple-commonjs': {
+                options: {
+                    main: 'tmp/jsxc.js'
+                },
+                all: {
+                    files: {
+                        '<%= target %>/jsxc.js': [
+                            'tmp/jsxc.js',
+                            'lib/i18next/i18next.js'
+                        ]
+                    }
+                },
+            },
+
+            webpack: {
+                jsxc: {
+                    // webpack options
+                    entry: "./tmp/jsxc.js",
+                    output: {
+                        path: "dev/",
+                        filename: "jsxc.js",
+                        overwrite: true
+                    },
+
+                    stats: {
+                        // Configure the console output
+                        colors: true,
+                        modules: true,
+                        reasons: true
+                    },
+                    // stats: false disables the stats output
+
+                    // storeStatsTo: "xyz", // writes the status to a variable named xyz
+                    // you may use it later in grunt i.e. <%= xyz.hash %>
+
+                    progress: true, // Don't show progress
+                    // Defaults to true
+
+                    failOnError: false, // don't report error to grunt if webpack find errors
+                    // Use this if webpack errors are tolerable and grunt should continue
+
+                    // watch: true, // use webpacks watcher
+                    // You need to keep the grunt process alive
+
+                    // keepalive: true, // don't finish the grunt task
+                    // Use this in combination with the watch option
+
+                    // inline: true,  // embed the webpack-dev-server runtime into the bundle
+                    // Defaults to false
+
+                    // hot: true, // adds the HotModuleReplacementPlugin and switch the server to hot mode
+                    // Use this in combination with the inline option
+
+                }
+
+            },
+
             shell: {
                 'precommit-before': {
                     command: 'git diff --cached --name-only',
@@ -358,8 +416,7 @@ module.exports = function (grunt) {
                             cb();
                         }
                     }
-                }
-                ,
+                },
                 'precommit-after': {
                     command: 'git diff --name-only',
                     options: {
@@ -390,8 +447,7 @@ module.exports = function (grunt) {
                 }
             }
         }
-    )
-    ;
+    );
 
 // These plugins provide necessary tasks.
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -416,12 +472,17 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-shell');
     grunt.loadNpmTasks('grunt-concat-css');
 
+    grunt.loadNpmTasks('grunt-webpack');
+    grunt.loadNpmTasks('grunt-simple-commonjs');
+
 //Default task
     grunt.registerTask('default', ['build', 'watch']);
 
     grunt.registerTask('build',
         ['jshint', 'clean', 'sass', 'replace:imageUrl', 'autoprefixer', 'copy',
-            'merge_data', 'replace:locales', 'htmlConvert', 'replace:template', 'concat', 'concat_css']);
+            'merge_data', 'replace:locales', 'htmlConvert', 'replace:template', 'concat',
+            'webpack:jsxc',
+            'concat_css']);
 
     grunt.registerTask('build:prerelease', 'Build a new pre-release', function () {
         grunt.config.set('target', 'build');
@@ -445,5 +506,4 @@ module.exports = function (grunt) {
 // before commit
     grunt.registerTask('commit', ['shell:precommit-before', 'search:console', 'jsbeautifier', 'prettysass',
         'jshint', 'shell:precommit-after']);
-}
-;
+};

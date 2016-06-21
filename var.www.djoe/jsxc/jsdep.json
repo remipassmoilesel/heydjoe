@@ -84,12 +84,6 @@
      "url": "https://arlolra.github.io/otr/"
   },
   {
-     "name": "i18next",
-     "file": "lib/i18next/release/i18next-latest.min.js",
-     "license": "MIT",
-     "url": "http://i18next.com/"
-  },
-  {
      "name": "Magnific Popup",
      "file": "lib/magnific-popup/dist/jquery.magnific-popup.min.js",
      "license": "MIT",

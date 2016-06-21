@@ -26,8 +26,6 @@ jsxc.gui.menu = {
             template: "menuWelcome",
             init: function () {
 
-                //<div data-pres="offline" class="jsxc_actionButton jsxc_offline" data-i18n="Offline"></div>
-
                 $('#jsxc_menuWelcome .jsxc_onlineHelp').click(function () {
                     window.open(jsxc.options.onlineHelp, 'onlineHelp');
                 });
@@ -301,7 +299,7 @@ jsxc.gui.menu = {
                         $('#jsxc_buddylist').removeClass('jsxc_hideOffline');
                     }
 
-                    $(this).text(hideOffline ? $.t('Show_offline') : $.t('Hide_offline'));
+                    $(this).text(hideOffline ? jsxc.t('Show_offline') : jsxc.t('Hide_offline'));
 
                     jsxc.options.set('hideOffline', hideOffline);
                 });

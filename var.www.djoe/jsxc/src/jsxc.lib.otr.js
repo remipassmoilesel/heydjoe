@@ -28,7 +28,7 @@ jsxc.otr = {
          jsxc.gui.window.postMessage({
             bid: bid,
             direction: jsxc.Message.SYS,
-            msg: $.t('Received_an_unencrypted_message') + '. [' + d.msg + ']',
+            msg: jsxc.t('Received_an_unencrypted_message') + '. [' + d.msg + ']',
             encrypted: d.encrypted,
             forwarded: d.forwarded,
             stamp: d.stamp
@@ -104,7 +104,7 @@ jsxc.otr = {
                jsxc.gui.window.postMessage({
                   bid: bid,
                   direction: jsxc.Message.SYS,
-                  msg: $.t('trying_to_start_private_conversation')
+                  msg: jsxc.t('trying_to_start_private_conversation')
                });
                break;
             case OTR.CONST.STATUS_AKE_SUCCESS:
@@ -112,7 +112,7 @@ jsxc.otr = {
                data.msgstate = OTR.CONST.MSGSTATE_ENCRYPTED;
 
                var msg_state = jsxc.otr.objects[bid].trust ? 'Verified' : 'Unverified';
-               var msg = $.t(msg_state + '_private_conversation_started');
+               var msg = jsxc.t(msg_state + '_private_conversation_started');
 
                jsxc.gui.window.postMessage({
                   bid: bid,
@@ -130,7 +130,7 @@ jsxc.otr = {
                   jsxc.gui.window.postMessage({
                      bid: bid,
                      direction: jsxc.Message.SYS,
-                     msg: $.t('private_conversation_aborted')
+                     msg: jsxc.t('private_conversation_aborted')
                   });
 
                } else {
@@ -140,7 +140,7 @@ jsxc.otr = {
                   jsxc.gui.window.postMessage({
                      bid: bid,
                      direction: jsxc.Message.SYS,
-                     msg: $.t('your_buddy_closed_the_private_conversation_you_should_do_the_same')
+                     msg: jsxc.t('your_buddy_closed_the_private_conversation_you_should_do_the_same')
                   });
                }
                break;
@@ -161,7 +161,7 @@ jsxc.otr = {
                jsxc.gui.window.postMessage({
                   bid: bid,
                   direction: jsxc.Message.SYS,
-                  msg: $.t('Authentication_request_received')
+                  msg: jsxc.t('Authentication_request_received')
                });
 
                jsxc.gui.window.smpRequest(bid, data);
@@ -180,13 +180,13 @@ jsxc.otr = {
                   jsxc.gui.window.postMessage({
                      bid: bid,
                      direction: jsxc.Message.SYS,
-                     msg: $.t('conversation_is_now_verified')
+                     msg: jsxc.t('conversation_is_now_verified')
                   });
                } else {
                   jsxc.gui.window.postMessage({
                      bid: bid,
                      direction: jsxc.Message.SYS,
-                     msg: $.t('authentication_failed')
+                     msg: jsxc.t('authentication_failed')
                   });
                }
                jsxc.storage.removeUserItem('smp', bid);
@@ -197,7 +197,7 @@ jsxc.otr = {
                jsxc.gui.window.postMessage({
                   bid: bid,
                   direction: jsxc.Message.SYS,
-                  msg: $.t('Authentication_aborted')
+                  msg: jsxc.t('Authentication_aborted')
                });
                break;
             default:
@@ -231,7 +231,7 @@ jsxc.otr = {
             jsxc.gui.window.postMessage({
                bid: bid,
                direction: jsxc.Message.SYS,
-               msg: '[OTR] ' + $.t(err)
+               msg: '[OTR] ' + jsxc.t(err)
             });
          }
 
@@ -256,11 +256,11 @@ jsxc.otr = {
 
       if (data) {
          $('#jsxc_dialog > div:eq(2)').find('#jsxc_quest').val(data).prop('disabled', true);
-         $('#jsxc_dialog > div:eq(2)').find('.jsxc_submit').text($.t('Answer'));
-         $('#jsxc_dialog > div:eq(2)').find('.jsxc_explanation').text($.t('onsmp_explanation_question'));
+         $('#jsxc_dialog > div:eq(2)').find('.jsxc_submit').text(jsxc.t('Answer'));
+         $('#jsxc_dialog > div:eq(2)').find('.jsxc_explanation').text(jsxc.t('onsmp_explanation_question'));
          $('#jsxc_dialog > div:eq(2)').show();
       } else {
-         $('#jsxc_dialog > div:eq(3)').find('.jsxc_explanation').text($.t('onsmp_explanation_secret'));
+         $('#jsxc_dialog > div:eq(3)').find('.jsxc_explanation').text(jsxc.t('onsmp_explanation_secret'));
          $('#jsxc_dialog > div:eq(3)').show();
       }
 
@@ -432,7 +432,7 @@ jsxc.otr = {
       }
 
       if (jsxc.storage.getUserItem('key') === null) {
-         var msg = $.t('Creating_your_private_key_');
+         var msg = jsxc.t('Creating_your_private_key_');
          var worker = null;
 
          if (Worker) {
