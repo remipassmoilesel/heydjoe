@@ -1026,7 +1026,7 @@ jsxc.xmpp = {
             var type = $(stanza).attr("type");
             var from = $(stanza).attr("from");
 
-            // ignore own notif in groupchat
+            // ignore own notifications in groupchat
             if(type === "groupchat" && Strophe.getResourceFromJid(from) === jsxc.xmpp.getCurrentNode()){
                 return true;
             }

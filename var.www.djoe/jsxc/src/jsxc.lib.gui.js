@@ -2123,6 +2123,9 @@ jsxc.gui.window = {
                 var msg = usersComposing.length > 1 ? " sont en train d'écrire ..." : " est en train d'écrire ...";
                 composingNotif.html(usersComposing.join(", ") + msg);
 
+                // scroll to bottom
+                jsxc.gui.window.scrollDown(winBid);
+
                 // hide notification after delay
 
                 if ($(this).data("composingTimeout")) {
