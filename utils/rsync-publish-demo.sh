@@ -5,5 +5,5 @@ echo "Envoyer les fichiers de ce répertoire vers le serveur via Rsync/SSH..."
 echo
 
 # si des clefs sont utilisées, compléter le fichier ~/.ssh/config
-rsync -avz var/ im.silverpeas.net:/
+rsync -avz var/www/djoe im.silverpeas.net:/var/www/
 

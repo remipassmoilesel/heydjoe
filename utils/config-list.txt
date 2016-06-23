@@ -1,7 +1,6 @@
 etc/apache2/sites-available/
 etc/reTurn/reTurnServer.config
 opt/openfire/conf/openfire.xml
-opt/openfire/conf/crossdomain.xml
 etc/init.d/firewall
 etc/init.d/firewall.activate
 etc/init.d/firewall.deactivate
@@ -10,4 +9,5 @@ etc/turnserver.conf
 etc/ssl/
 opt/openfire/resources/security/
 etc/monitorix/monitorix.conf
+/opt/silverpeas-6.0-SNAPSHOT-wildfly10/.sh
 
