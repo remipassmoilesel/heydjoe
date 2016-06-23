@@ -25,6 +25,7 @@
         * Désactiver "Changer le mot de passe"
         * Désactiver "Connexion anonyme"
         * Puis sauvegarder.
+    * "Serveur / Parametres du serveur / Connexions client" Idle connections Policy > 120s
 
     * "Message hors connexion" > 2000 KB
 
