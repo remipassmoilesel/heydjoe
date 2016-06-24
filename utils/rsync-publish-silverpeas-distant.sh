@@ -4,8 +4,6 @@ echo
 echo "Envoyer l'installation Silverpeas du dossier '/opt' local"
 echo
 
-rsync -avz "/opt/silverpeas-6.0-SNAPSHOT-wildfly10/" im.silverpeas.net:"/opt/silverpeas-6.0-SNAPSHOT-wildfly10/"
+#rsync -avz "/opt/silverpeas-6.0-SNAPSHOT-wildfly10/bin/build/dist/chatclient" im.silverpeas.net:"/opt/silverpeas-6.0-SNAPSHOT-wildfly10/bin/build/dist/"
 
-echo
-
-rsync -avz "/opt/wildfly-10.0.0.Final/" im.silverpeas.net:"/opt/wildfly-10.0.0.Final/"
+rsync -avz "var/www/djoe/jsxc/dev/" im.silverpeas.net:"/opt/silverpeas-6.0-SNAPSHOT-wildfly10/bin/build/dist/chatclient/"
