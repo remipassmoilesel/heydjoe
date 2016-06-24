@@ -10746,7 +10746,7 @@ jsxc.storage = {
 
         var output = [];
 
-        $.each(jsxc.storage.getUserItem('buddylist'), function (index, item) {
+        $.each(jsxc.storage.getUserItem('buddylist') || [], function (index, item) {
             output.push(jsxc.jidToBid(item));
         });
 

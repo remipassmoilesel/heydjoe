@@ -5,11 +5,11 @@ $(function () {
     console.log("Initializing instant messaging");
 
     // page domain
-    var domain = document.location.host;
+    var domain = document.domain;
 
     // service XMPP / HTTP
-    // var boshUrl = "https://" + domain + "/http-bind";
-    var boshUrl = "http://" + domain + "/http-bind";
+    // var boshUrl = "https://" + domain + "/http-bind/";
+    var boshUrl = "https://" + domain + "/http-bind/";
 
     // xmpp domains
     var xmppDomain = domain;
@@ -96,11 +96,11 @@ $(function () {
     });
 
 
-    // // connexion
-    // var id = "remi@" + xmppDomain;
-    //
-    // // connexion et lancement du GUI
-    // jsxc.start(id, "azerty");
+    // connexion
+    var id = "remi@" + xmppDomain;
+
+    // connexion et lancement du GUI
+    jsxc.start(id, "azerty");
 
 
 });
