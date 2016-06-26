@@ -1,0 +1,22 @@
+{
+  "name": "djoe",
+  "authors": [
+    "remi.passmoilesel <remi.passmoilesel@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.0.0",
+    "jquery-ui": "^1.11.4",
+    "chance": "^1.0.3"
+  }
+}

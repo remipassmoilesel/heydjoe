@@ -10,15 +10,17 @@
 
     <link href="css/main.css" media="all" rel="stylesheet" type="text/css"/>
 
-    <link href="jsxc/dev/lib/jquery-ui/themes/silverpeas/jquery-ui.css" media="all" rel="stylesheet" type="text/css"/>
+    <link href="css/jquery-ui.silverpeas/jquery-ui.css" media="all" rel="stylesheet" type="text/css"/>
     <link href="jsxc/dev/css/jsxc.css" media="all" rel="stylesheet" type="text/css"/>
 
-    <script src="jsxc/dev/lib/jquery/dist/jquery.js"></script>
-    <script src="jsxc/dev/lib/jquery-ui/jquery-ui.js"></script>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.js"></script>
 
     <script src="jsxc/dev/lib/jsxc.dep.js"></script>
     <script src="jsxc/dev/jsxc.js"></script>
     <script src="jsxc/dev/jsxc_init.js"></script>
+
+    <script src="bower_components/chance/chance.js"></script>
 
     <script src="js/gui_init.js"></script>
 
@@ -29,6 +31,7 @@
     <script src="jquery.xmppinspector/jquery.xmppinspector.js"></script>
 
     <script src="js/storageConsole.js"></script>
+
 
 </head>
 
@@ -114,24 +117,42 @@
 
         <div id="tabs-3">
 
-            <!-- bouton de connexion -->
-            <div style="margin: 15px">
-
-                <select id="jidTextInput"></select>
-                <button id="connectButton">
-                    Connexion au client JSXC
-                </button>
-                <button id="disconnectButton">
-                    Déconnexion
-                </button>
-
-            </div>
-
-            <div id="feedbackArea" style="margin: 15px;"></div>
+            <h2>Connexion</h2>
 
             <p>
                 JSXC est un client XMPP distribué sous licence MIT. A utiliser de préférence avec Firefox et Chrome /
                 Chromium.</p>
+
+            <!-- bouton de connexion -->
+            <table class="connexionForm">
+
+                <tr>
+                    <td>Chosissez un compte prédéfini:</td>
+                    <td><select id="predefinedJidList"></select></td>
+                    <td><input type="radio" name="loginMode" value="predefined" checked/></td>
+                </tr>
+                <tr>
+                    <td>Ou saisissez le login que vous souhaitez:</td>
+                    <td><input type="text" id="randomLogin"/>
+                        <input type="button" id="refreshRandomLogin" value="*"/></td>
+                    <td><input type="radio" name="loginMode" value="random"/></td>
+                </tr>
+                <tr><td>&nbsp;</td></tr>
+                <tr>
+                    <td colspan="3" class="buttons">
+                        <button id="connectButton">
+                            Connexion au client JSXC
+                        </button>
+                        <button id="disconnectButton">
+                            Déconnexion
+                        </button>
+
+                        <div id="feedbackArea" style="margin: 15px;"></div>
+
+                    </td>
+                </tr>
+            </table>
+
 
             <h2>Suggestions / Signalement d'erreurs</h2>
             N'hésitez pas: <a href="http://im.silverpeas.net:9001/p/suggestions" target="_blank">http://im.silverpeas.net:9001/p/suggestions</a>

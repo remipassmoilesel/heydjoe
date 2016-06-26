@@ -4,6 +4,21 @@ body {
     font-size: 13px;
 }
 
+.connexionForm{
+    margin: 15px;
+    border: none;
+    width: 100%;
+}
+
+.connexionForm td{
+    vertical-align: top;
+    padding: 4px;
+}
+
+.connexionForm .buttons{
+    text-align: right;
+}
+
 #content {
     width: 70%;
     margin: auto;

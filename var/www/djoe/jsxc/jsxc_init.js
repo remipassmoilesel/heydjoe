@@ -9,7 +9,14 @@ $(function () {
 
     // service XMPP / HTTP
     // var boshUrl = "https://" + domain + "/http-bind/";
-    var boshUrl = "https://" + domain + "/http-bind/";
+    var boshUrl;
+    if(domain === "localhost" || domain === "127.0.0.1"){
+        boshUrl = "https://im.silverpeas.net/http-bind/";
+    }
+    else {
+        boshUrl = "https://" + domain + "/http-bind/";
+    }
+
 
     // xmpp domains
     var xmppDomain = domain;
@@ -96,11 +103,19 @@ $(function () {
     });
 
 
-    // connexion
-    var id = "remi@" + xmppDomain;
+    // auto startup on silverpeas
+    if(domain === "im.silverpeas.net"){
 
-    // connexion et lancement du GUI
-    jsxc.start(id, "azerty");
+        console.log("domain");
+        console.log(domain);
+
+        // connexion
+        var id = "remi@" + xmppDomain;
+
+        // connexion et lancement du GUI
+        jsxc.start(id, "azerty");
+        
+    }
 
 
 });

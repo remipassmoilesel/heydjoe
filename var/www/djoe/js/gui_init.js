@@ -8,17 +8,13 @@ $(function () {
      Logins disponibles
      */
     var availablesLogins = [
-        "admin",
         "remi",
         "david",
         "yohann",
         "miguel",
         "aurore",
         "nicolas",
-        "sebastien",
-        "jean",
-        "julescesar",
-        "companioncube"
+        "sebastien"
     ];
 
     var xmppDomain = "im.silverpeas.net";
@@ -30,7 +26,7 @@ $(function () {
 
     var xmppResource = "heyDjoe";
 
-// Initialize consoles
+    // Initialize consoles
     $("#eventsConsole").eventConsole();
     new StorageConsole("storageConsole");
 
@@ -38,51 +34,75 @@ $(function () {
         $("#xmppInspector").xmppInspector(jsxc.xmpp.conn);
     });
 
-
-// index tabs
+    // index tabs
     $("#tabs").tabs();
 
-// Listen connexion fail
+    // Listen connexion fail
     $(document).on("authfail.jsxc ", function () {
         jsxc.xmpp.logout(true);
         $("#feedbackArea").html("<b>Echec de la connexion. Rechargez la page puis rééssayez !</b>");
     });
 
-// listen connexion success
+    // listen connexion success
     $(document).on("attached.jsxc ", function () {
         $("#feedbackArea").html("<i>Connexion établie</i>");
     });
 
+    // random login
+    function showRandomName() {
+        $("#randomLogin").val(chance.first() + "_" + chance.last());
+    }
 
-// connexion button
+    $("#refreshRandomLogin").click(function () {
+        showRandomName();
+        $(".connexionForm input[value='random']").trigger("click");
+    });
+    showRandomName();
+
+    $("#predefinedJidList").click(function () {
+        $(".connexionForm input[value='predefined']").trigger("click");
+    });
+
+    $("#randomLogin").keyup(function () {
+        $(".connexionForm input[value='random']").trigger("click");
+    });
+
+    // connexion button
     $('#connectButton').click(function () {
 
-        var id = $("#jidTextInput").val() + "@" + xmppDomain;
+        var id;
+        if ($(".connexionForm input[value='random']:checked").length === 1) {
+            var id = $("#randomLogin").val() + "@" + xmppDomain;
+        }
+
+        else {
+            id = $("#predefinedJidList").val() + "@" + xmppDomain;
+        }
 
         // connexion et lancement du GUI
         jsxc.start(id, "azerty");
 
     });
 
-// disconnect button
+    // disconnect button
     $('#disconnectButton').click(function () {
         jsxc.xmpp.logout(true);
     });
 
-// create pad
+    // create pad
     $('#newPadButton').click(function () {
         window.open(etherpadUrl + "p/" + $("#newPadName").val(), '_blank');
     });
 
-// show availables accounts
+    // show availables accounts
     for (var i = 0; i < availablesLogins.length; i++) {
         var lg = availablesLogins[i];
 
         // les ajouter à la liste de sélection de pseudo
-        $("#jidTextInput").append("<option value='" + lg + "'>" + lg + "</option>");
+        $("#predefinedJidList").append("<option value='" + lg + "'>" + lg + "</option>");
     }
 
-// utils and informations
+    // utils and informations
     var appendToUtilsInfo = function (name, elmt) {
         $('#infoDisplay').append("<tr><td>" + (name || '') + "</td><td>" + elmt + "</td><tr/>");
     };

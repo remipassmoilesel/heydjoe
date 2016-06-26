@@ -37,6 +37,15 @@ module.exports = function (grunt) {
             },
 
             copy: {
+                init: {
+                    files: [{
+                        expand: true,
+                        src: [
+                            'jsxc_init.js'
+                        ],
+                        dest: '<%= target %>/'
+                    }]
+                },
                 main: {
                     /**
                      Copy dependencies, images, ... to dev/ or build/
@@ -44,7 +53,6 @@ module.exports = function (grunt) {
                     files: [{
                         expand: true,
                         src: [
-                            'jsxc_init.js',
                             'lib/jquery/dist/*.js',
                             'lib/jquery-ui/*.js',
                             'lib/jquery-ui/themes/base/*.css',
