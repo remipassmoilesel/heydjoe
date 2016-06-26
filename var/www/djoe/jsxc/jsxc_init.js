@@ -5,22 +5,28 @@ $(function () {
     console.log("Initializing instant messaging");
 
     // page domain
-    var domain = document.domain;
+    var pageDomain = document.domain;
 
-    // service XMPP / HTTP
-    // var boshUrl = "https://" + domain + "/http-bind/";
+    // xmpp over http url
     var boshUrl;
-    if(domain === "localhost" || domain === "127.0.0.1"){
+    // xmpp server domain
+    var xmppDomain;
+    // domain for search (XEP 0055)
+    var searchDomain;
+
+    // dev mode
+    if (pageDomain === "localhost" || pageDomain === "127.0.0.1") {
         boshUrl = "https://im.silverpeas.net/http-bind/";
+        xmppDomain = "im.silverpeas.net";
+        searchDomain = "search." + "im.silverpeas.net";
     }
+
+    // normal mode
     else {
-        boshUrl = "https://" + domain + "/http-bind/";
+        boshUrl = "https://" + pageDomain + "/http-bind/";
+        xmppDomain = pageDomain;
+        searchDomain = "search." + pageDomain;
     }
-
-
-    // xmpp domains
-    var xmppDomain = domain;
-    var searchDomain = "search." + domain;
 
     // etherpad resource
     var etherpadRes = "https://im.silverpeas.net/etherpad/";
@@ -45,6 +51,13 @@ $(function () {
 
     // Initialize JSXC
     jsxc.init({
+
+        // REST support
+        rest: {
+            apiName: "openfire",
+            apiBaseUrl: "https://im.silverpeas.net:9091/plugins/restapi/v1",
+            apiKey: "ztR2yJWNRu9ffPIw"
+        },
 
         // enable Etherpad support
         etherpad: {
@@ -104,17 +117,17 @@ $(function () {
 
 
     // auto startup on silverpeas
-    if(domain === "im.silverpeas.net"){
+    if (pageDomain === "im.silverpeas.net") {
 
         console.log("domain");
-        console.log(domain);
+        console.log(pageDomain);
 
         // connexion
         var id = "remi@" + xmppDomain;
 
         // connexion et lancement du GUI
         jsxc.start(id, "azerty");
-        
+
     }
 
 

@@ -260,6 +260,9 @@ jsxc = {
             jsxc.options.otr.debug = true;
         }
 
+        // initializing rest api
+        jsxc.rest.init();
+
         // Register event listener for the storage event
         window.addEventListener('storage', jsxc.storage.onStorage, false);
 
@@ -362,8 +365,10 @@ jsxc = {
                 jsxc.checkMaster();
             }
         }
-    }
-    ,
+
+
+
+    },
 
     /**
      * Attach to previous session if jid, sid and rid are available

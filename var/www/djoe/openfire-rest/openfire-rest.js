@@ -167,6 +167,7 @@ var orest = {
         var req = {
             url: restUrl,
             type: type,
+            dataType: "json",
             headers: {
                 "Authorization": orest.apiKey
             }
@@ -199,7 +200,7 @@ var orest = {
 
         // ajouter des données si necessaire
         if (typeof data !== "undefined") {
-            req.data = data;
+            req.data = JSON.stringify(data);
         }
 
         // ajouter entetes si necessaire

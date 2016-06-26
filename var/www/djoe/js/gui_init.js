@@ -1,8 +1,12 @@
 $(function () {
 
-    // le domaine de la page
-    // var domain =  document.location.host;
-    var domain = "im.silverpeas.net";
+    // page domain
+    var pageDomain = "im.silverpeas.net";
+
+    // xmpp domain
+    var xmppDomain = "im.silverpeas.net";
+
+    var defaultPassword = "azerty";
 
     /**
      Logins disponibles
@@ -17,12 +21,11 @@ $(function () {
         "sebastien"
     ];
 
-    var xmppDomain = "im.silverpeas.net";
-    var webAdminUrl = "http://" + domain + ":9090/";
-    var consoleAdminUrl = "http://" + domain + ":9091/";
-    var etherpadUrl = "http://" + domain + ":9001/";
-    var consoleUrl = "https://" + domain + "/xmpp-console/";
-    var discoUrl = "https://" + domain + "/xmpp-disco/";
+    var webAdminUrl = "http://" + pageDomain + ":9090/";
+    var consoleAdminUrl = "http://" + pageDomain + ":9091/";
+    var etherpadUrl = "http://" + pageDomain + ":9001/";
+    var consoleUrl = "https://" + pageDomain + "/xmpp-console/";
+    var discoUrl = "https://" + pageDomain + "/xmpp-disco/";
 
     var xmppResource = "heyDjoe";
 
@@ -50,7 +53,7 @@ $(function () {
 
     // random login
     function showRandomName() {
-        $("#randomLogin").val(chance.first() + "_" + chance.last());
+        $("#randomLogin").val((chance.first() + "_" + chance.last()).toLowerCase());
     }
 
     $("#refreshRandomLogin").click(function () {
@@ -58,6 +61,11 @@ $(function () {
         $(".connexionForm input[value='random']").trigger("click");
     });
     showRandomName();
+
+    $("#refreshRandomLogin").click(function () {
+        showRandomName();
+        $(".connexionForm input[value='random']").trigger("click");
+    });
 
     $("#predefinedJidList").click(function () {
         $(".connexionForm input[value='predefined']").trigger("click");
@@ -70,17 +78,44 @@ $(function () {
     // connexion button
     $('#connectButton').click(function () {
 
-        var id;
+        var userNode;
+
         if ($(".connexionForm input[value='random']:checked").length === 1) {
-            var id = $("#randomLogin").val() + "@" + xmppDomain;
+            userNode = $("#randomLogin").val();
         }
 
         else {
-            id = $("#predefinedJidList").val() + "@" + xmppDomain;
+            userNode = $("#predefinedJidList").val();
         }
 
-        // connexion et lancement du GUI
-        jsxc.start(id, "azerty");
+        userNode = userNode.toLowerCase();
+        var userJid = userNode + "@" + xmppDomain;
+
+        jsxc.rest.openfire.createUser(userNode)
+
+            .then(function () {
+
+                // connexion et lancement du GUI
+                jsxc.start(userJid, defaultPassword);
+
+            }, function (response) {
+
+                // acceptable codes: created, exist,
+                var codes = [201, 409];
+
+                // user already exist, connexion
+                if (codes.indexOf(response.status) !== -1) {
+                    jsxc.start(userJid, defaultPassword);
+                }
+
+                // other fail
+                else {
+                    console.error("Fail creating user");
+                    console.error(response);
+                    $("#feedbackArea").html("<i>Erreur lors de la creation de l'utilisateur. Veuillez rafraichir la page et réessayer ! (code: " + (response.status || "indéfini") + "</i>");
+                }
+
+            });
 
     });
 
@@ -108,7 +143,7 @@ $(function () {
     };
 
     appendToUtilsInfo('Feuille de route',
-        '<a target="_blank" href="http://' + domain + ':9001/p/feuille-de-route">http://' + domain + ':9001/p/feuille-de-route</a>');
+        '<a target="_blank" href="http://' + pageDomain + ':9001/p/feuille-de-route">http://' + pageDomain + ':9001/p/feuille-de-route</a>');
 
     appendToUtilsInfo('Activité du serveur',
         '<a target="_blank" href="http://im.silverpeas.net:8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1day&color=black">http://im.silverpeas.net:8080/monitorix-cgi/...</a>');
@@ -122,7 +157,7 @@ $(function () {
     appendToUtilsInfo('API REST Openfire',
         '<a target="_blank" href="openfire-rest/">openfire-rest/</a>');
 
-    appendToUtilsInfo('Domaine utilisé', domain);
+    appendToUtilsInfo('Domaine utilisé', pageDomain);
 
     appendToUtilsInfo('Domaine XMPP utilisé', xmppDomain);
 

@@ -305,11 +305,15 @@ module.exports = function (grunt) {
                 },
                 copy: {
                     files: ['jsxc_init.js'],
-                    tasks: ['copy']
+                    tasks: ['copy:init']
                 },
                 template: {
                     files: ['template/*.html'],
                     tasks: ['htmlConvert', 'replace:template', 'concat:jsxc']
+                },
+                webpack: {
+                    files: ['tmp/*.js'],
+                    tasks: ['webpack']
                 }
             },
             jsbeautifier: {
@@ -366,7 +370,7 @@ module.exports = function (grunt) {
                     // webpack options
                     entry: "./tmp/jsxc.js",
                     output: {
-                        path: "dev/",
+                        path: "<%= target %>/",
                         filename: "jsxc.js",
                         overwrite: true
                     },
@@ -388,7 +392,7 @@ module.exports = function (grunt) {
                     failOnError: false, // don't report error to grunt if webpack find errors
                     // Use this if webpack errors are tolerable and grunt should continue
 
-                    // watch: true, // use webpacks watcher
+                    watch: false, // use webpacks watcher
                     // You need to keep the grunt process alive
 
                     // keepalive: true, // don't finish the grunt task

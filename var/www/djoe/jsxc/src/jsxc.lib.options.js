@@ -5,6 +5,13 @@
  */
 jsxc.options = {
 
+    // REST support
+    rest: {
+        apiName: "",
+        apiBaseUrl: "",
+        apiKey: ""
+    },
+    
     /** name of container application (e.g. owncloud or SOGo) */
     app_name: 'web applications',
 
