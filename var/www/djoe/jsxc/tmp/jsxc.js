@@ -12584,8 +12584,12 @@ jsxc.xmpp.search = {
         var defer = $.Deferred();
 
         if (!self.conn) {
-            jsxc.debug("Not connected !");
-            throw "Not connected !";
+            jsxc.warn("Search not available: not connected !");
+
+            var falsePromise = defer.promise();
+            falsePromise.fail("Not connected !");
+
+            return falsePromise;
         }
 
         // send request after regitered handler

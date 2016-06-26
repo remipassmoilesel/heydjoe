@@ -5,11 +5,9 @@ echo "Envoyer la version courante à partir de 'dev' vers: "
 echo "'/opt/silverpeas-6.0-SNAPSHOT-wildfly10/bin/build/dist/chatclient/'"
 echo
 
-cd /home/remipassmoilesel/projects/www/djoe
+cd /home/remipassmoilesel/projects/www/djoe/var/www
 
-utils/publish-silverpeas-local.sh
-
-/opt/silverpeas-6.0-SNAPSHOT-wildfly10/publish-distant.sh
+rsync -avz djoe/* im.silverpeas.net:/var/www/djoe
 
 
 

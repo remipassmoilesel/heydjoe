@@ -88,7 +88,7 @@ $(function () {
             userNode = $("#predefinedJidList").val();
         }
 
-        userNode = userNode.toLowerCase();
+        userNode = userNode.trim().toLowerCase();
         var userJid = userNode + "@" + xmppDomain;
 
         jsxc.rest.openfire.createUser(userNode)

@@ -26,6 +26,5 @@ cd /opt/silverpeas-6.0-SNAPSHOT-wildfly10
 
 . ./export-vars.sh
 
-bin/silverpeas install
+bin/silverpeas reload
 
-bin/silverpeas start &

@@ -4,6 +4,8 @@ $(function () {
 
     console.log("Initializing instant messaging");
 
+    var defaultPassword = "azerty";
+
     // page domain
     var pageDomain = document.domain;
 
@@ -55,7 +57,7 @@ $(function () {
         // REST support
         rest: {
             apiName: "openfire",
-            apiBaseUrl: "https://im.silverpeas.net:9091/plugins/restapi/v1",
+            apiBaseUrl: "https://im.silverpeas.net/openfire-rest",
             apiKey: "ztR2yJWNRu9ffPIw"
         },
 
@@ -68,6 +70,10 @@ $(function () {
         // MUST specify muc server to avoid errors
         muc: {
             server: "conference.im.silverpeas.net"
+        },
+
+        favicon: {
+            enable: false,
         },
 
         // xmpp options
@@ -115,18 +121,71 @@ $(function () {
 
     });
 
-
     // auto startup on silverpeas
-    if (pageDomain === "im.silverpeas.net") {
+    if ($.cookie && $.cookie("svpLogin")) {
 
-        console.log("domain");
-        console.log(pageDomain);
+        var userNode = $.cookie("svpLogin").toLowerCase().trim();
+        var userJid = userNode + "@" + xmppDomain;
 
-        // connexion
-        var id = "remi@" + xmppDomain;
+        /**
+         * Create eventually an user if not existing and connect him.
+         */
+        var createUserAndConnect = function(){
 
-        // connexion et lancement du GUI
-        jsxc.start(id, "azerty");
+            jsxc.rest.openfire.createUser(userNode)
+
+                .then(function () {
+
+                    // connexion et lancement du GUI
+                    jsxc.start(userJid, defaultPassword);
+
+                }, function (response) {
+
+                    // acceptable codes: created, exist,
+                    var codes = [201, 409];
+
+                    // not a fatal error, connexion
+                    if (codes.indexOf(response.status) !== -1) {
+                        jsxc.start(userJid, defaultPassword);
+                    }
+
+                    // other fail
+                    else {
+                        console.error("Fail creating user");
+                        console.error(response);
+                    }
+
+                });
+
+        };
+
+
+        // check if not connected with another account
+        if(localStorage && jsxc.storage.getItem('jid')){
+
+            var pNode = Strophe.getNodeFromJid(jsxc.storage.getItem('jid'));
+
+            console.log(pNode);
+            console.log(userNode);
+
+            // need to be improved
+            if(pNode.toLowerCase() !== userNode){
+
+                jsxc.xmpp.logout(true);
+
+                localStorage.clear();
+
+                setTimeout(createUserAndConnect, 700);
+            }
+
+
+
+        }
+
+        else {
+            createUserAndConnect();
+        }
+
 
     }
 
