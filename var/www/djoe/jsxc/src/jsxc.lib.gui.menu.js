@@ -353,7 +353,7 @@ jsxc.gui.menu = {
         this._initFoldableActions();
 
         // open at launch
-        $("#jsxc_side_menu_content > h1.ui-accordion-header").eq(2).trigger("click");
+        $("#jsxc_side_menu_content > h1.ui-accordion-header").eq(0).trigger("click");
 
     },
 
