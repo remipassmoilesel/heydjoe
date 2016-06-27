@@ -1,11 +1,35 @@
-/**
-  Area to print feebacks
-*/
-.jsxc_feedbackArea {
-  color: #3F3F3F;
-  font-size: 11px;
-  font-style: italic;
-  text-align: center;
+.jsxc_filterableList {
+
+  height: 220px;
+  margin: 5px;
+  border: 1px solid #dddddd;
+
+  ol {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+  }
+
+  .ui-selected {
+    background: rgb(126, 183, 59);
+    color: white;
+  }
+
+  li {
+    margin: 3px;
+    padding: 4px;
+    cursor: pointer;
+    height: 2em;
+
+    vertical-align: middle;
+    line-height: 1;
+  }
+
+  .filterableList-result {
+    background: yellow;
+  }
+
 }
 
 /**
@@ -14,37 +38,7 @@
 
 .jsxc_userListContainer {
 
-  position: relative;
-  height: 150px;
-  margin: 5px;
-  border: 1px solid #dddddd;
-
-  .jsxc_userListRefreshButton {
-    position: absolute;
-  }
-
-  .jsxc_userList {
-
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-
-    .ui-selected {
-      background: rgb(126, 183, 59);
-      color: white;
-    }
-
-    li {
-      margin: 3px;
-      padding: 4px;
-      cursor: pointer;
-      height: 2em;
-
-      vertical-align: middle;
-      line-height: 1;
-
-    }
+  ol {
 
     .buddy_item:after {
       content: image-url("user_list_buddy.png");
@@ -56,7 +50,7 @@
 }
 
 /**
-  User selection list
+  Room selection list
 */
 
 .jsxc_roomListContainer {

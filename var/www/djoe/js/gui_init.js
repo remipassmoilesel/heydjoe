@@ -110,7 +110,7 @@ $(function () {
 
                 // other fail
                 else {
-                    console.error("Fail creating user");
+                    console.error("Fail creating chat user");
                     console.error(response);
                     $("#feedbackArea").html("<i>Erreur lors de la creation de l'utilisateur. Veuillez rafraichir la page et réessayer ! (code: " + (response.status || "indéfini") + "</i>");
                 }

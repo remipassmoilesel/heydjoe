@@ -3693,226 +3693,6 @@ div.jsxc_transfer {
 li[data-type="groupchat"] .jsxc_video {
   display: none; }
 
-#jsxc_side_menu {
-  position: fixed;
-  top: 0px;
-  width: 200px;
-  right: -200px;
-  background-color: inherit;
-  height: 90%;
-  box-sizing: border-box;
-  z-index: 80;
-  border-left: 1px solid #e1e1e1; }
-  #jsxc_side_menu input {
-    position: static;
-    height: 1em; }
-  #jsxc_side_menu .jsxc_sideMenuCreateRoomForm {
-    text-align: left;
-    padding: 5px; }
-    #jsxc_side_menu .jsxc_sideMenuCreateRoomForm input[type="checkbox"] {
-      width: 1em;
-      margin: 4px; }
-    #jsxc_side_menu .jsxc_sideMenuCreateRoomForm input[type="text"] {
-      height: 1.8em;
-      padding: 3px;
-      width: 80%;
-      margin: 5px; }
-  #jsxc_side_menu .jsxc_menu_search_results {
-    background: rgba(126, 183, 59, 0.51); }
-  #jsxc_side_menu .jsxc_menu_search_title_mark {
-    font-weight: bolder; }
-  #jsxc_side_menu #jsxc_menu_feedback {
-    text-align: center;
-    font-size: 12px;
-    font-style: italic;
-    color: darkGray; }
-  #jsxc_side_menu .jsxc_menu_active_result {
-    color: blue;
-    font-weight: bolder; }
-  #jsxc_side_menu #jsxc_side_menu_search_bar {
-    margin-top: 0.4em;
-    vertical-align: middle; }
-    #jsxc_side_menu #jsxc_side_menu_search_bar input {
-      position: relative;
-      height: 2.5em; }
-      #jsxc_side_menu #jsxc_side_menu_search_bar input[type="button"] {
-        width: 20px; }
-  #jsxc_side_menu #jsxc_side_menu_content {
-    background: inherit;
-    height: 93%;
-    /** Headers */
-    /** Content */ }
-    #jsxc_side_menu #jsxc_side_menu_content h1 {
-      font-size: 11px; }
-    #jsxc_side_menu #jsxc_side_menu_content > div {
-      font-size: 12px;
-      padding: 5px;
-      text-align: left; }
-    #jsxc_side_menu #jsxc_side_menu_content div.jsxc_actionButton {
-      width: 80%;
-      margin: auto;
-      cursor: pointer;
-      border-radius: 5px;
-      color: #333;
-      text-decoration: none;
-      padding: 0.5em 1em;
-      /*
-      background-color: #fff;
-      background-image: linear-gradient(to bottom, #ffffff, #e5e5e5);
-      */
-      border: 1px solid #CCC;
-      font-size: 90%;
-      margin-bottom: 0.5em; }
-      #jsxc_side_menu #jsxc_side_menu_content div.jsxc_actionButton:hover {
-        border: 1px solid #6fa800;
-        background: #7eb73b;
-        color: #fff; }
-      #jsxc_side_menu #jsxc_side_menu_content div.jsxc_actionButton.notImplementedYet {
-        cursor: not-allowed; }
-    #jsxc_side_menu #jsxc_side_menu_content .ui-accordion-content {
-      position: relative;
-      /** Needed to avoid perfectscroll problems */ }
-  #jsxc_side_menu .jsxc_menuAdvice {
-    font-size: 0.9em;
-    color: darkgray;
-    font-style: italic;
-    text-align: center;
-    padding: 5px; }
-
-#jsxc_menu {
-  height: 44px;
-  width: 44px;
-  cursor: pointer;
-  float: right;
-  text-align: center;
-  /** Menu button for open / close */
-  /** Menu button for open / close */ }
-  #jsxc_menu:hover > span {
-    opacity: 1; }
-  #jsxc_menu > span {
-    opacity: 0.5;
-    display: block;
-    width: 100%;
-    height: 100%;
-    background-image: url('../img/menu_black.svg');
-    background-repeat: no-repeat;
-    background-position: center 10px;
-    background-size: 17px; }
-  @media (min-width: 768px) {
-    #jsxc_menu {
-      height: 30px;
-      width: 30px; } }
-
-/**
-  Area to print feebacks
-*/
-.jsxc_feedbackArea {
-  color: #3F3F3F;
-  font-size: 11px;
-  font-style: italic;
-  text-align: center; }
-
-/**
-  User selection list
-*/
-.jsxc_userListContainer {
-  position: relative;
-  height: 150px;
-  margin: 5px;
-  border: 1px solid #dddddd; }
-  .jsxc_userListContainer .jsxc_userListRefreshButton {
-    position: absolute; }
-  .jsxc_userListContainer .jsxc_userList {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    width: 100%; }
-    .jsxc_userListContainer .jsxc_userList .ui-selected {
-      background: #7eb73b;
-      color: white; }
-    .jsxc_userListContainer .jsxc_userList li {
-      margin: 3px;
-      padding: 4px;
-      cursor: pointer;
-      height: 2em;
-      vertical-align: middle;
-      line-height: 1; }
-    .jsxc_userListContainer .jsxc_userList .buddy_item:after {
-      content: url('../img/user_list_buddy.png');
-      vertical-align: -30%; }
-
-/**
-  User selection list
-*/
-.jsxc_roomListContainer {
-  position: relative;
-  height: 150px;
-  margin: 5px;
-  border: 1px solid #dddddd; }
-  .jsxc_roomListContainer .jsxc_roomList {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    width: 100%; }
-    .jsxc_roomListContainer .jsxc_roomList .ui-selected {
-      background: #7eb73b;
-      color: white; }
-    .jsxc_roomListContainer .jsxc_roomList li {
-      margin: 3px;
-      padding: 4px;
-      cursor: pointer;
-      height: 2em;
-      vertical-align: middle;
-      line-height: 1; }
-
-/**
-  Buddy selection list
-*/
-.jsxc_buddyListContainer {
-  position: relative;
-  height: 150px;
-  margin: 5px;
-  border: 1px solid #dddddd; }
-  .jsxc_buddyListContainer .jsxc_buddyList {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    width: 100%; }
-    .jsxc_buddyListContainer .jsxc_buddyList .ui-selected {
-      background: #7eb73b;
-      color: white; }
-    .jsxc_buddyListContainer .jsxc_buddyList li {
-      margin: 3px;
-      padding: 4px;
-      cursor: pointer;
-      height: 2em;
-      vertical-align: middle;
-      line-height: 1; }
-
-/**
-  Conversation selection list
-*/
-.jsxc_conversationListContainer {
-  position: relative;
-  height: 150px;
-  margin: 5px;
-  border: 1px solid #dddddd; }
-  .jsxc_conversationListContainer .jsxc_conversationList {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    width: 100%; }
-    .jsxc_conversationListContainer .jsxc_conversationList .ui-selected {
-      background: #7eb73b;
-      color: white; }
-    .jsxc_conversationListContainer .jsxc_conversationList li {
-      margin: 3px;
-      padding: 4px;
-      cursor: pointer;
-      height: 2em;
-      vertical-align: middle;
-      line-height: 1; }
-
 .jsxc_right {
   text-align: right; }
 
@@ -4590,3 +4370,214 @@ div.jsxc_video {
 
 .jsxc_videoSuitable .jsxc_name {
   font-style: italic; }
+
+#jsxc_side_menu {
+  position: fixed;
+  top: 0px;
+  width: 200px;
+  right: -200px;
+  background-color: inherit;
+  height: 90%;
+  box-sizing: border-box;
+  z-index: 80;
+  border-left: 1px solid #e1e1e1; }
+  #jsxc_side_menu input {
+    position: static;
+    height: 1em; }
+  #jsxc_side_menu .jsxc_sideMenuCreateRoomForm {
+    text-align: left;
+    padding: 5px; }
+    #jsxc_side_menu .jsxc_sideMenuCreateRoomForm input[type="checkbox"] {
+      width: 1em;
+      margin: 4px; }
+    #jsxc_side_menu .jsxc_sideMenuCreateRoomForm input[type="text"] {
+      height: 1.8em;
+      padding: 3px;
+      width: 80%;
+      margin: 5px; }
+  #jsxc_side_menu .jsxc_menu_search_results {
+    background: rgba(126, 183, 59, 0.51); }
+  #jsxc_side_menu .jsxc_menu_search_title_mark {
+    font-weight: bolder; }
+  #jsxc_side_menu #jsxc_menu_feedback {
+    text-align: center;
+    font-size: 12px;
+    font-style: italic;
+    color: darkGray; }
+  #jsxc_side_menu .jsxc_menu_active_result {
+    color: blue;
+    font-weight: bolder; }
+  #jsxc_side_menu #jsxc_side_menu_search_bar {
+    margin-top: 0.4em;
+    vertical-align: middle; }
+    #jsxc_side_menu #jsxc_side_menu_search_bar input {
+      position: relative;
+      height: 2.5em; }
+      #jsxc_side_menu #jsxc_side_menu_search_bar input[type="button"] {
+        width: 20px; }
+  #jsxc_side_menu #jsxc_side_menu_content {
+    background: inherit;
+    height: 93%;
+    /** Headers */
+    /** Content */ }
+    #jsxc_side_menu #jsxc_side_menu_content h1 {
+      font-size: 11px; }
+    #jsxc_side_menu #jsxc_side_menu_content > div {
+      font-size: 12px;
+      padding: 5px;
+      text-align: left; }
+    #jsxc_side_menu #jsxc_side_menu_content div.jsxc_actionButton {
+      width: 80%;
+      margin: auto;
+      cursor: pointer;
+      border-radius: 5px;
+      color: #333;
+      text-decoration: none;
+      padding: 0.5em 1em;
+      /*
+      background-color: #fff;
+      background-image: linear-gradient(to bottom, #ffffff, #e5e5e5);
+      */
+      border: 1px solid #CCC;
+      font-size: 90%;
+      margin-bottom: 0.5em; }
+      #jsxc_side_menu #jsxc_side_menu_content div.jsxc_actionButton:hover {
+        border: 1px solid #6fa800;
+        background: #7eb73b;
+        color: #fff; }
+      #jsxc_side_menu #jsxc_side_menu_content div.jsxc_actionButton.notImplementedYet {
+        cursor: not-allowed; }
+    #jsxc_side_menu #jsxc_side_menu_content .ui-accordion-content {
+      position: relative;
+      /** Needed to avoid perfectscroll problems */ }
+  #jsxc_side_menu .jsxc_menuAdvice {
+    font-size: 0.9em;
+    color: darkgray;
+    font-style: italic;
+    text-align: center;
+    padding: 5px; }
+
+#jsxc_menu {
+  height: 44px;
+  width: 44px;
+  cursor: pointer;
+  float: right;
+  text-align: center;
+  /** Menu button for open / close */
+  /** Menu button for open / close */ }
+  #jsxc_menu:hover > span {
+    opacity: 1; }
+  #jsxc_menu > span {
+    opacity: 0.5;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-image: url('../img/menu_black.svg');
+    background-repeat: no-repeat;
+    background-position: center 10px;
+    background-size: 17px; }
+  @media (min-width: 768px) {
+    #jsxc_menu {
+      height: 30px;
+      width: 30px; } }
+
+.jsxc_filterableList {
+  height: 220px;
+  margin: 5px;
+  border: 1px solid #dddddd; }
+  .jsxc_filterableList ol {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    width: 100%; }
+  .jsxc_filterableList .ui-selected {
+    background: #7eb73b;
+    color: white; }
+  .jsxc_filterableList li {
+    margin: 3px;
+    padding: 4px;
+    cursor: pointer;
+    height: 2em;
+    vertical-align: middle;
+    line-height: 1; }
+  .jsxc_filterableList .filterableList-result {
+    background: yellow; }
+
+/**
+  User selection list
+*/
+.jsxc_userListContainer ol .buddy_item:after {
+  content: url('../img/user_list_buddy.png');
+  vertical-align: -30%; }
+
+/**
+  Room selection list
+*/
+.jsxc_roomListContainer {
+  position: relative;
+  height: 150px;
+  margin: 5px;
+  border: 1px solid #dddddd; }
+  .jsxc_roomListContainer .jsxc_roomList {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%; }
+    .jsxc_roomListContainer .jsxc_roomList .ui-selected {
+      background: #7eb73b;
+      color: white; }
+    .jsxc_roomListContainer .jsxc_roomList li {
+      margin: 3px;
+      padding: 4px;
+      cursor: pointer;
+      height: 2em;
+      vertical-align: middle;
+      line-height: 1; }
+
+/**
+  Buddy selection list
+*/
+.jsxc_buddyListContainer {
+  position: relative;
+  height: 150px;
+  margin: 5px;
+  border: 1px solid #dddddd; }
+  .jsxc_buddyListContainer .jsxc_buddyList {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%; }
+    .jsxc_buddyListContainer .jsxc_buddyList .ui-selected {
+      background: #7eb73b;
+      color: white; }
+    .jsxc_buddyListContainer .jsxc_buddyList li {
+      margin: 3px;
+      padding: 4px;
+      cursor: pointer;
+      height: 2em;
+      vertical-align: middle;
+      line-height: 1; }
+
+/**
+  Conversation selection list
+*/
+.jsxc_conversationListContainer {
+  position: relative;
+  height: 150px;
+  margin: 5px;
+  border: 1px solid #dddddd; }
+  .jsxc_conversationListContainer .jsxc_conversationList {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%; }
+    .jsxc_conversationListContainer .jsxc_conversationList .ui-selected {
+      background: #7eb73b;
+      color: white; }
+    .jsxc_conversationListContainer .jsxc_conversationList li {
+      margin: 3px;
+      padding: 4px;
+      cursor: pointer;
+      height: 2em;
+      vertical-align: middle;
+      line-height: 1; }

@@ -1,0 +1,24 @@
+{
+  "name": "playground",
+  "authors": [
+    "remi.passmoilesel <remi.passmoilesel@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery-ui": "^1.11.4",
+    "jquery": "^2.2.4",
+    "jquery-highlight": "^3.3.0",
+    "chance": "^1.0.3",
+    "perfect-scrollbar": "^0.6.11"
+  }
+}

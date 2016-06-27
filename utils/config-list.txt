@@ -18,7 +18,8 @@ etc/monitorix/monitorix.conf
 opt/openfire/conf/openfire.xml
 opt/openfire/resources/security/
 
-opt/silverpeas-6.0-SNAPSHOT-wildfly10/set-env.sh
+opt/silverpeas-6.0-SNAPSHOT-wildfly10/export-vars.sh
+opt/silverpeas-6.0-SNAPSHOT-wildfly10/bin/settings.gradle
 opt/silverpeas-6.0-SNAPSHOT-wildfly10/configuration/config.properties
 
 opt/etherpad-lite/settings.json

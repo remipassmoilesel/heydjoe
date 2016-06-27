@@ -151,7 +151,7 @@ $(function () {
 
                     // other fail
                     else {
-                        console.error("Fail creating user");
+                        console.error("Fail creating chat user");
                         console.error(response);
                     }
 
@@ -161,15 +161,15 @@ $(function () {
 
 
         // check if not connected with another account
-        if(localStorage && jsxc.storage.getItem('jid')){
+        if(localStorage && jsxc && jsxc.storage && jsxc.storage.getItem && jsxc.storage.getItem('jid')){
 
             var pNode = Strophe.getNodeFromJid(jsxc.storage.getItem('jid'));
 
-            console.log(pNode);
-            console.log(userNode);
-
             // need to be improved
             if(pNode.toLowerCase() !== userNode){
+
+                console.log("Connecting with another profile, clearing data storage.");
+                console.log(pNode, userNode);
 
                 jsxc.xmpp.logout(true);
 
@@ -178,12 +178,21 @@ $(function () {
                 setTimeout(createUserAndConnect, 700);
             }
 
+            else {
 
+                console.log("Connexion");
+
+                createUserAndConnect();
+            }
 
         }
 
         else {
+
+            console.log("Connexion");
+
             createUserAndConnect();
+
         }
 
 

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Liste avec recherche</title>
+
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="bower_components/perfect-scrollbar/css/perfect-scrollbar.css">
+
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+    <script src="bower_components/chance/chance.js"></script>
+    <script src="bower_components/jquery-highlight/jquery.highlight.js"></script>
+    <script src="bower_components/perfect-scrollbar/js/perfect-scrollbar.jquery.js"></script>
+
+    <style>
+
+        .ui-searchableSelectable .ui-selecting {
+            background: #FECA40;
+        }
+
+        .ui-searchableSelectable .ui-selected {
+            background: #F39814;
+            color: white;
+        }
+
+        .ui-searchableSelectable {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 60%;
+        }
+
+        .ui-searchableSelectable li {
+            margin: 3px;
+            padding: 0.4em;
+            font-size: 1.4em;
+            height: 18px;
+        }
+
+        #newList {
+            height: 300px;
+            width: 300px;
+            margin: auto;
+        }
+
+        .filterableList-result {
+            background: yellow;
+        }
+
+    </style>
+
+    <script type="text/javascript">
+
+        "use strict";
+
+
+
+
+        $(function () {
+
+            // root of list
+            var root = $("#newList");
+
+            // must have position arg to avoid error with perfectscrollbar
+            root.css({
+                position: "relative",
+            });
+
+            // append search text field
+            var searchTxt = $("<input type='text' class='searchTextField' placeholder='Rechercher...'/>");
+            searchTxt.css({
+                width: "100%"
+            });
+            searchTxt.appendTo(root);
+
+            // append list container
+            // must have position arg to avoid error with perfectscrollbar
+            var list = $("<ol class='ui-searchableSelectable'></ol>")
+            list.css({
+                width: "100%",
+                height: "100%",
+                position: "relative",
+            });
+            list.appendTo(root);
+
+            // fake items
+            for (var i = 0; i < 300; i++) {
+                list.append("<li class='ui-widget-content'>" + chance.name() + "</li>");
+            }
+
+            list.selectable();
+
+            list.perfectScrollbar();
+
+            var highlightSettings = {
+                caseSensitive: false,
+                className: 'searchableSelectable-result'
+            };
+
+            var resetHighlight = function () {
+                list.unhighlight(highlightSettings);
+            };
+
+            var searchInList = function (rawTerms) {
+
+                var terms = rawTerms.trim();
+
+                console.log();
+                console.log(terms);
+
+                resetHighlight();
+
+                if (terms === "") {
+                    root.find("li").css({"display": "block"});
+                    return;
+                }
+
+                // search terms
+                list.highlight(terms, highlightSettings);
+
+                // hide others
+                root.find("li").each(function(){
+                    if($(this).has("span.searchableSelectable-result").length === 0){
+                        $(this).css({'display': 'none'});
+                    }
+                    else {
+                        $(this).css({'display': 'block'});
+                    }
+                });
+
+
+            }
+
+            searchTxt.keyup(function () {
+                searchInList(searchTxt.val());
+            })
+
+        });
+
+
+        $(function(){
+
+            $("#newList").filterableList();
+
+        });
+
+        /**
+         * Jquery plugin to create filterable lists.
+         *
+         * Need jquery.highlight.js
+         *
+         */
+
+        ;(function($){
+            $.fn.extend({
+
+                filterableList: function(options) {
+
+
+
+                    return $(this);
+                }
+            });
+        })(jQuery);
+
+
+    </script>
+
+</head>
+<body>
+
+<div id="newList">
+
+</div>
+
+
+</body>
+</html>

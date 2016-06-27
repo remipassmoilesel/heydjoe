@@ -21,15 +21,127 @@ jsxc.gui.feedback = function (message, type, timeout) {
     $.toast({
         text: message, // Text that is to be shown in the toast
         icon: icons[type || defaultType], // Type of toast icon
-        showHideTransition: 'fade', // fade, slide or plain
+        showHideTransition: 'slide', // fade, slide or plain
         allowToastClose: true, // Boolean value true or false
         hideAfter: timeout || 3000, // false to make it sticky or number representing the miliseconds as time after which toast needs to be hidden
         stack: 3, // false if there should be only one toast at a time or a number representing the maximum number of toasts to be shown at a time
-        position: 'top-right', // bottom-left or bottom-right or bottom-center or top-left or top-right or top-center or mid-center or an object representing the left, right, top, bottom values
+        position: 'top-center', // bottom-left or bottom-right or bottom-center or top-left or top-right or top-center or mid-center or an object representing the left, right, top, bottom values
         textAlign: 'left',  // Text alignment i.e. left, right or center
         loader: false,  // Whether to show loader or not. True by default
         bgColor: bgColors[type || defaultType], // background color of toast
     });
+
+};
+
+/**
+ * Create a filterable list. Need jquery.highlight.js.
+ *
+ * @param options
+ */
+jsxc.gui._createFilterableList = function (selector, options) {
+
+    this.defaultOptions = {
+
+        highlightClass: "filterableList-result",
+        searchPlaceholder: "Rechercher ..."
+
+    };
+
+    var settings = $.extend({}, this.defaultOptions, options);
+
+    // root of list
+    var root = $(selector);
+    root.addClass("jsxc_filterableList");
+
+    // // must have position arg to avoid error with perfectscrollbar
+    // root.css({
+    //     position: "relative",
+    // });
+
+    // append search text field
+    var searchTxt = $("<input type='text' class='filterTextField' placeholder='" + settings.searchPlaceholder + "'/>");
+    searchTxt.css({
+        height: "26px",
+        width: "100%"
+    });
+    searchTxt.appendTo(root);
+
+    // list in a container for perfect scrollabr
+    var container = $("<div class='list_container'></div>");
+    container.css({
+        position: "relative",
+        width: "100%",
+        height: '85%'
+    });
+
+    // append list to container
+    var list = $("<ol></ol>");
+    list.appendTo(container);
+
+    // // fake items
+    // for (var i = 0; i < 300; i++) {
+    //     list.append("<li class='ui-widget-content'>" + chance.name() + "</li>");
+    // }
+
+    list.selectable();
+
+    root.append(container);
+    container.perfectScrollbar();
+
+    // settings for highlight search results
+    var highlightSettings = {
+        caseSensitive: false,
+        className: settings.highlightClass
+    };
+
+    // undo highlight
+    var resetHighlight = function () {
+        list.unhighlight(highlightSettings);
+    };
+
+    // search terms when user type
+    var searchInList = function (rawTerms) {
+
+        var terms = rawTerms.trim();
+
+        // reset list
+        list.find(".filterableNoResult").remove();
+        resetHighlight();
+
+        if (terms === "") {
+            root.find("li").css({"display": "block"});
+            list.perfectScrollbar("update");
+            return;
+        }
+
+        // search terms
+        list.highlight(terms, highlightSettings);
+
+        // hide others
+        var result = 0;
+        root.find("li").each(function () {
+            if ($(this).has("span." + settings.highlightClass).length === 0) {
+                $(this).css({'display': 'none'});
+            }
+            else {
+                $(this).css({'display': 'block'});
+                result++;
+            }
+        });
+
+        if (result < 1) {
+            list.append("<li class='filterableNoResult'>Aucun résultat</li>");
+        }
+
+        list.perfectScrollbar("update");
+
+    };
+
+    searchTxt.keyup(function () {
+        searchInList(searchTxt.val());
+    });
+
+    return root;
 
 };
 
@@ -158,19 +270,14 @@ jsxc.gui.createRoomList = function (selector) {
  */
 jsxc.gui.createUserList = function (selector) {
 
-    var root = $(selector);
+    // var root = $(selector);
 
+    console.log(selector);
+
+    var root = jsxc.gui._createFilterableList(selector);
     root.addClass("jsxc_userListContainer");
 
-    root.append("<ol class='jsxc_userList'></ol>");
-
-    var list = $(selector + " .jsxc_userList");
-
-    // make selectable list
-    list.selectable();
-
-    // make list scrollable
-    root.perfectScrollbar();
+    var list = root.find("ol");
 
     // update lists
     var updateUserList = function (freshList) {
