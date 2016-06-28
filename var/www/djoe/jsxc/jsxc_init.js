@@ -51,8 +51,84 @@ $(function () {
         }
     };
 
+    function silverpeasConnexion() {
+
+        var userNode = $.cookie("svpLogin").toLowerCase().trim();
+        var userJid = userNode + "@" + xmppDomain;
+
+        /**
+         * Create eventually an user if not existing and connect him.
+         */
+        var createUserAndConnect = function () {
+
+            jsxc.rest.openfire.createUser(userNode)
+
+                .then(function () {
+
+                    // connexion et lancement du GUI
+                    jsxc.start(userJid, defaultPassword);
+
+                }, function (response) {
+
+                    // acceptable codes: created, exist,
+                    var codes = [201, 409];
+
+                    // not a fatal error, connexion
+                    if (codes.indexOf(response.status) !== -1) {
+                        jsxc.start(userJid, defaultPassword);
+                    }
+
+                    // other fail
+                    else {
+                        console.error("Fail creating chat user");
+                        console.error(response);
+                    }
+
+                });
+
+        };
+
+
+        // check if not connected with another account
+        if (localStorage && jsxc && jsxc.storage && jsxc.storage.getItem && jsxc.storage.getItem('jid')) {
+
+            var pNode = Strophe.getNodeFromJid(jsxc.storage.getItem('jid'));
+
+            // need to be improved
+            if (pNode.toLowerCase() !== userNode) {
+
+                console.log("Connecting with another profile, clearing data storage.");
+                console.log(pNode, userNode);
+
+                jsxc.xmpp.logout(true);
+
+                localStorage.clear();
+
+                setTimeout(createUserAndConnect, 700);
+            }
+
+            else {
+
+                console.log("Connexion");
+
+                createUserAndConnect();
+            }
+
+        }
+
+        else {
+
+            console.log("Connexion");
+
+            createUserAndConnect();
+
+        }
+
+
+    }
+
     // Initialize JSXC
-    jsxc.init({
+    var options = {
 
         // REST support
         rest: {
@@ -119,85 +195,21 @@ $(function () {
             ]
         }
 
-    });
+    };
 
-    // auto startup on silverpeas
+
     if ($.cookie && $.cookie("svpLogin")) {
-
-        var userNode = $.cookie("svpLogin").toLowerCase().trim();
-        var userJid = userNode + "@" + xmppDomain;
-
-        /**
-         * Create eventually an user if not existing and connect him.
-         */
-        var createUserAndConnect = function(){
-
-            jsxc.rest.openfire.createUser(userNode)
-
-                .then(function () {
-
-                    // connexion et lancement du GUI
-                    jsxc.start(userJid, defaultPassword);
-
-                }, function (response) {
-
-                    // acceptable codes: created, exist,
-                    var codes = [201, 409];
-
-                    // not a fatal error, connexion
-                    if (codes.indexOf(response.status) !== -1) {
-                        jsxc.start(userJid, defaultPassword);
-                    }
-
-                    // other fail
-                    else {
-                        console.error("Fail creating chat user");
-                        console.error(response);
-                    }
-
-                });
-
+        options.callbacks = {
+            reconnectCb: silverpeasConnexion
         };
-
-
-        // check if not connected with another account
-        if(localStorage && jsxc && jsxc.storage && jsxc.storage.getItem && jsxc.storage.getItem('jid')){
-
-            var pNode = Strophe.getNodeFromJid(jsxc.storage.getItem('jid'));
-
-            // need to be improved
-            if(pNode.toLowerCase() !== userNode){
-
-                console.log("Connecting with another profile, clearing data storage.");
-                console.log(pNode, userNode);
-
-                jsxc.xmpp.logout(true);
-
-                localStorage.clear();
-
-                setTimeout(createUserAndConnect, 700);
-            }
-
-            else {
-
-                console.log("Connexion");
-
-                createUserAndConnect();
-            }
-
-        }
-
-        else {
-
-            console.log("Connexion");
-
-            createUserAndConnect();
-
-        }
-
-
     }
 
+    jsxc.init(options);
+    
+    // auto startup on silverpeas
+    if ($.cookie && $.cookie("svpLogin")) {
+        silverpeasConnexion();
+    }
 
 });
 

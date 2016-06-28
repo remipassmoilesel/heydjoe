@@ -133,7 +133,12 @@ jsxc.gui._createFilterableList = function (selector, options) {
             list.append("<li class='filterableNoResult'>Aucun résultat</li>");
         }
 
+        // scroll to top
+        list[0].scrollTop = 0;
+
         list.perfectScrollbar("update");
+
+
 
     };
 

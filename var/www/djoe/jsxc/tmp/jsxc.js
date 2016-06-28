@@ -4461,12 +4461,24 @@ jsxc.gui.roster = {
      * Shows a text with link to a login box that no connection exists.
      */
     noConnection: function () {
+
         $('#jsxc_roster').addClass('jsxc_noConnection');
 
         $('#jsxc_buddylist').empty();
 
+        $('#jsxc_roster').find(".jsxc_rosterIsEmptyMessage").remove();
+
         $('#jsxc_roster').append($('<p>' + jsxc.t('no_connection') + '</p>').append(' <a>' + jsxc.t('relogin') + '</a>').click(function () {
-            jsxc.gui.showLoginBox();
+
+            var reconnectCallback = jsxc.options.get("callbacks") || {};
+            reconnectCallback = reconnectCallback.reconnectCb || null;
+            if (reconnectCallback) {
+                reconnectCallback.call(window);
+            }
+
+            else {
+                jsxc.gui.showLoginBox();
+            }
         }));
     },
 
@@ -4480,7 +4492,8 @@ jsxc.gui.roster = {
         var link = text.find('a');
 
         link.click(function () {
-            jsxc.gui.showContactDialog();
+            //jsxc.gui.showContactDialog();
+            jsxc.gui.menu.openSideMenu();
         });
         text.append(link);
         text.append('.');
@@ -6641,7 +6654,12 @@ jsxc.gui._createFilterableList = function (selector, options) {
             list.append("<li class='filterableNoResult'>Aucun résultat</li>");
         }
 
+        // scroll to top
+        list[0].scrollTop = 0;
+
         list.perfectScrollbar("update");
+
+
 
     };
 
@@ -9491,6 +9509,10 @@ jsxc.options = {
         away: 0,
         xa: 0,
         dnd: 0
+    },
+    
+    callbacks: {
+        reconnectCb: null
     },
 
     /**

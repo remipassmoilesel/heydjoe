@@ -78,6 +78,10 @@ jsxc.options = {
         xa: 0,
         dnd: 0
     },
+    
+    callbacks: {
+        reconnectCb: null
+    },
 
     /**
      * This function is called if a login form was found, but before any
