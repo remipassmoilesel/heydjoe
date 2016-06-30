@@ -6,7 +6,7 @@ echo
 
 cd /home/remipassmoilesel/projects/www/djoe/var/www
 
-rsync -avz --exclude="jsxc.original" djoe/* im.silverpeas.net:/var/www/djoe
+rsync -avz djoe/* im.silverpeas.net:/var/www/djoe
 
 
 
