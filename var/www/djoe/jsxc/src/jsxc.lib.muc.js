@@ -864,10 +864,6 @@ jsxc.muc = {
         $.each(codes, function (index, code) {
             // call code functions and trigger event
 
-            console.log();
-            console.log(arguments);
-            console.log(new Error().stack);
-
             if (typeof self.onStatus[code] === 'function') {
                 self.onStatus[code].call(this, room, nickname, member[nickname] || {}, xdata);
             }
@@ -1181,10 +1177,6 @@ jsxc.muc = {
      */
     inviteParticipants: function (room, jidArray) {
 
-        console.log("Sending invitations");
-        console.log(room);
-        console.log(jidArray);
-
         var self = jsxc.muc;
 
         $.each(jidArray, function (index, jid) {
@@ -1452,8 +1444,6 @@ jsxc.muc = {
 
         var d = new Date();
 
-        console.log(buddies);
-
         // prepare title of room. If no title, using all usernames sorted.
         if (title.length < 1) {
 
@@ -1471,7 +1461,9 @@ jsxc.muc = {
         }
 
         // prepare id of room, all in lower case, otherwise problem will appear with local storage
-        var roomjid = jsxc.xmpp.getCurrentNode() + "-" + d.toISOString().replace(/[^a-z0-9]+/gi, "") + "@" + jsxc.options.get('muc').server;
+        var datestamp = d.toISOString().replace(/[^0-9]+/gi, "");
+
+        var roomjid = datestamp + "_" + jsxc.xmpp.getCurrentNode() + "@" + jsxc.options.get('muc').server;
 
         // all in lower case, otherwise problem will appear with local storage
         // all in lower case, otherwise problem will appear with local storage

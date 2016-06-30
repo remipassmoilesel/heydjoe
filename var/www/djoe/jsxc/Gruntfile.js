@@ -80,6 +80,7 @@ module.exports = function (grunt) {
                             'lib/otr/lib/helpers.js',
                             'lib/otr/lib/dsa.js',
                             'lib/otr/vendor/*.js',
+                            'lib/sha1.js',
                             'lib/*.js',
                             'LICENSE',
                             'img/**',

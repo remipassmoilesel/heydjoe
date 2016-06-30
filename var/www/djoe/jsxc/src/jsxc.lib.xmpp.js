@@ -1216,11 +1216,6 @@ jsxc.xmpp = {
 
         $(document).on('strophe.caps', function (ev, j, capabilities) {
 
-            console.log(arguments);
-            console.log(arguments);
-            console.log(arguments);
-            console.log(arguments);
-
             if (j === jid) {
                 cb(check(capabilities));
 

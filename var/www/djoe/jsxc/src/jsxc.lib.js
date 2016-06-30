@@ -260,6 +260,9 @@ jsxc = {
             jsxc.options.otr.debug = true;
         }
 
+        // initailizing sha 1 tool
+        jsxc.sha1 = require("../lib/sha1.js");
+        
         // initializing rest api
         jsxc.rest.init();
 

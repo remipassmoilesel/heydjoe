@@ -2204,7 +2204,11 @@ jsxc.gui.window = {
         // open a pad
         win.find(".jsxc_openpad").click(function () {
 
-            var padId = bid.replace(/[^a-z0-9]+/gi, "");
+            var padId = bid.substr(0,26).replace(/[^a-z0-9]+/gi, "") + "_" + jsxc.sha1.hash(bid).substr(0,22);
+
+            var padId = padId.toLocaleLowerCase();
+
+            console.log(padId);
 
             jsxc.gui.openpad(padId);
         });
