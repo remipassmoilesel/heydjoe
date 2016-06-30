@@ -2206,7 +2206,7 @@ jsxc.gui.window = {
 
             var padId = bid.substr(0,26).replace(/[^a-z0-9]+/gi, "") + "_" + jsxc.sha1.hash(bid).substr(0,22);
 
-            var padId = padId.toLocaleLowerCase();
+            padId = padId.toLocaleLowerCase();
 
             console.log(padId);
 

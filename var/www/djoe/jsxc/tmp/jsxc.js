@@ -4735,7 +4735,7 @@ jsxc.gui.window = {
 
             var padId = bid.substr(0,26).replace(/[^a-z0-9]+/gi, "") + "_" + jsxc.sha1.hash(bid).substr(0,22);
 
-            var padId = padId.toLocaleLowerCase();
+            padId = padId.toLocaleLowerCase();
 
             console.log(padId);
 
@@ -6622,7 +6622,11 @@ jsxc.gui._createFilterableList = function (selector, options) {
 
         if (terms === "") {
             root.find("li").css({"display": "block"});
-            list.perfectScrollbar("update");
+
+            container.perfectScrollbar("update");
+
+            container.scrollTop(0);
+
             return;
         }
 
@@ -6642,14 +6646,13 @@ jsxc.gui._createFilterableList = function (selector, options) {
         });
 
         if (result < 1) {
-            list.append("<li class='filterableNoResult'>Aucun résultat</li>");
+            list.prepend("<li class='filterableNoResult'>Aucun résultat</li>");
         }
 
+        container.perfectScrollbar("update");
+
         // scroll to top
-        list[0].scrollTop = 0;
-
-        list.perfectScrollbar("update");
-
+        container.scrollTop(0);
 
 
     };
