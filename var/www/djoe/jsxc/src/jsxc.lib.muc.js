@@ -1141,14 +1141,21 @@ jsxc.muc = {
         // parse form from stanza
         var form = Strophe.x.Form.fromXML(stanza);
 
-        $.each(form.fields, function (index, item) {
+        // if no form, take default
+        if (!form) {
+            form = fieldValues;
+        }
+        else {
+            
+            $.each(form.fields, function (index, item) {
 
-            if (typeof fieldValues[item.var] !== "undefined") {
-                item.values = [fieldValues[item.var]];
-            }
+                if (typeof fieldValues[item.var] !== "undefined") {
+                    item.values = [fieldValues[item.var]];
+                }
 
-        });
+            });
 
+        }
         // self.conn.muc.cancelConfigure(room);
 
         // send configuration to server
@@ -1440,7 +1447,7 @@ jsxc.muc = {
      *
      * @param buddiesId
      */
-    createNewConversationWith: function(buddies, title, subject){
+    createNewConversationWith: function (buddies, title, subject) {
 
         var d = new Date();
 
