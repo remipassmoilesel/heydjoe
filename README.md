@@ -3,10 +3,10 @@
 Instant communication system using XMPP, WebRTC and WebSockets.
 
 Working with:
-    * JSXC
-    * Etherpad
-    * Openfire
-    * RFC-5766 TURN Server
+* JSXC
+* Etherpad
+* Openfire
+* RFC-5766 TURN Server
     
 Docker file will be updated ASAP :)
 
