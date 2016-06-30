@@ -4633,13 +4633,6 @@ jsxc.gui.window = {
         var bid = Strophe.getBareJidFromJid(from);
         var user = type === "chat" ? Strophe.getNodeFromJid(from) : Strophe.getResourceFromJid(from);
 
-        console.log();
-        console.log("Receive composing notif on: ");
-        console.log(type);
-        console.log(from);
-        console.log(user);
-        console.log(bid);
-
         // iterate window list
         $('#jsxc_windowList .jsxc_windowItem').each(function () {
 
@@ -4650,9 +4643,6 @@ jsxc.gui.window = {
 
             // check conversation
             if (winBid === bid) {
-
-                console.log("Show on: ");
-                console.log(winBid);
 
                 // add user in array if necessary
                 var usersComposing = self.data("usersComposing") || [];
@@ -4678,7 +4668,6 @@ jsxc.gui.window = {
                 jsxc.gui.window.scrollDown(winBid);
 
                 // hide notification after delay
-
                 if ($(this).data("composingTimeout")) {
                     clearTimeout($(this).data("composingTimeout"));
                 }

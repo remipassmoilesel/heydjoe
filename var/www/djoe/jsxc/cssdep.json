@@ -1,7 +1,6 @@
 [
   "lib/jquery-toast-plugin/src/jquery.toast.css",
   "lib/perfect-scrollbar/css/perfect-scrollbar.css",
-  "tmp/jsxc.css",
   "lib/magnific-popup/dist/magnific-popup.css",
-  "lib/*.css"
+  "tmp/jsxc.css"
 ]
