@@ -3994,7 +3994,7 @@ div.jsxc_video {
   top: 0px;
   width: 200px;
   right: -200px;
-  background-color: inherit;
+  background-color: white;
   height: 90%;
   box-sizing: border-box;
   z-index: 80;
@@ -4002,6 +4002,11 @@ div.jsxc_video {
   #jsxc_side_menu input {
     position: static;
     height: 1em; }
+  #jsxc_side_menu #jsxc_menuTools input[type="text"] {
+    height: 1.8em;
+    padding: 3px;
+    width: 80%;
+    margin: 5px; }
   #jsxc_side_menu .jsxc_sideMenuCreateRoomForm {
     text-align: left;
     padding: 5px; }

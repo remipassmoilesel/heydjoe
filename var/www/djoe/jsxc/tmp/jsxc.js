@@ -2527,6 +2527,58 @@ jsxc.Message.OUT = 'out';
  */
 jsxc.Message.SYS = 'sys';
 
+/**
+ * Etherpad integration
+ * @type {{openpad: jsxc.etherpad.openpad}}
+ */
+
+jsxc.etherpad = {
+
+    /**
+     * Return true if Etherpad is enabled
+     * @returns {boolean}
+     */
+    isEtherpadEnabled: function () {
+        var opts = jsxc.options.get("etherpad");
+        return opts.enabled === true;
+    },
+
+    getEtherpadLinkFor: function (padId) {
+        var opts = jsxc.options.get("etherpad");
+        return opts.ressource + 'p/' + padId + '?showControls=true&showChat=false&showLineNumbers=true&useMonospaceFont=true';
+    },
+
+
+    /**
+     * Open a new pad in a window
+     * @param bid
+     */
+    openpad: function (padId) {
+
+        if (jsxc.etherpad.isEtherpadEnabled() === false) {
+            jsxc.warn('Etherpad not enabled');
+            jsxc.gui.feedback("Etherpad n'est pas activé.");
+            return;
+        }
+
+
+        // embedable code of pad
+        var embedCode = '<iframe name="embed_readwrite" src="' + jsxc.etherpad.getEtherpadLinkFor(padId) + '" style="width: 100%; height: 100%"></iframe>';        // container for pad
+        var dialogId = "jsxc_pad_" + padId;
+        var dialog = $("<div></div>").attr('id', dialogId);
+        dialog.append(embedCode);
+
+        // add and show dialog
+        $("body").append(dialog);
+
+        dialog.dialog({
+            height: 400,
+            width: 600
+        });
+
+    }
+
+};
 /* global Favico, emojione*/
 /**
  * Handle functions for chat window's and buddylist
@@ -2575,35 +2627,6 @@ jsxc.gui = {
             ':owncloud:': ['owncloud']
         },
         'emojione': emojione.emojioneList
-    },
-
-    /**
-     * Open a new pad in a window
-     * @param bid
-     */
-    openpad: function (padId) {
-
-        var opts = jsxc.options.get("etherpad");
-        if (opts.enabled !== true) {
-            jsxc.warn('Etherpad not enabled');
-            jsxc.gui.feedback("Etherpad n'est pas activé.");
-            return;
-        }
-
-        // embedable code of pad
-        var embedCode = '<iframe name="embed_readwrite" src="' + opts.ressource + '/p/' + padId + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" style="width: 100%; height: 100%"></iframe>';        // container for pad
-        var dialogId = "jsxc_pad_" + padId;
-        var dialog = $("<div></div>").attr('id', dialogId);
-        dialog.append(embedCode);
-
-        // add and show dialog
-        $("body").append(dialog);
-
-        dialog.dialog({
-            height: 400,
-            width: 600
-        });
-
     },
 
     /**
@@ -4739,7 +4762,7 @@ jsxc.gui.window = {
 
             console.log(padId);
 
-            jsxc.gui.openpad(padId);
+            jsxc.etherpad.openpad(padId);
         });
 
         win.find('.jsxc_verification').click(function () {
@@ -6028,19 +6051,19 @@ jsxc.gui.menu = {
 
                     // prepare subject
                     var subject = $("#jsxc_menuRooms .jsxc_inputRoomSubject").val().trim();
-                    
+
                     // prepare initial participants
                     var buddies = [];
                     selItems.each(function () {
                         buddies.push($(this).data("userjid"));
                     });
-                    
+
                     jsxc.muc.createNewConversationWith(buddies, title, subject);
 
                 });
 
                 // invite users
-                $(".jsxc_inviteBuddiesOnConversation").click(function(){
+                $(".jsxc_inviteBuddiesOnConversation").click(function () {
 
                     var selItems = $("#jsxc_roomCreationUsers .ui-selected");
 
@@ -6052,18 +6075,18 @@ jsxc.gui.menu = {
 
                     // get user array
                     var users = [];
-                    selItems.each(function(){
-                       users.push($(this).data("userjid"));
+                    selItems.each(function () {
+                        users.push($(this).data("userjid"));
                     });
 
                     // show dialog
                     jsxc.gui.showConversationSelectionDialog()
 
-                        // user clicks OK
-                        .done(function(conversations){
+                    // user clicks OK
+                        .done(function (conversations) {
 
                             // iterate conversations
-                            conversations.each(function(){
+                            conversations.each(function () {
                                 var conversJid = $(this).data("conversjid");
                                 jsxc.muc.inviteParticipants(conversJid, users);
                             });
@@ -6082,6 +6105,36 @@ jsxc.gui.menu = {
             label: "Outils",
             template: "menuTools",
             init: function () {
+
+                // show share link
+                var links = $("#jsxc_menuTools .jsxc_etherpad_sharelink");
+                var txtFields = $("#jsxc_menuTools .jsxc_etherpad_sharetextfield");
+                var nameInputField = $("#jsxc_etherpad_name");
+
+                nameInputField.keyup(function () {
+
+                    var hrefLink = jsxc.etherpad.getEtherpadLinkFor(nameInputField.val());
+
+                    links.attr({
+                        href: hrefLink
+                    });
+
+                    txtFields.val(hrefLink);
+                });
+
+                // create Etherpad documents
+                $("#jsxc_menuTools .jsxc_openpad").click(function () {
+
+                    var etherpadId = $("#jsxc_etherpad_name").val().toLowerCase();
+
+                    if (!etherpadId.match(/^[a-z0-9_-]{5,50}$/i)) {
+                        jsxc.gui.feedback("Nom invalide: /^[a-z0-9_-]{5,50}$/i");
+                        return true;
+                    }
+
+                    jsxc.etherpad.openpad(etherpadId);
+
+                });
 
 
             },
@@ -6110,7 +6163,7 @@ jsxc.gui.menu = {
                     }
                 });
 
-                $("#jsxc_menuSettings .jsxc_showNotificationRequestDialog").click(function(){
+                $("#jsxc_menuSettings .jsxc_showNotificationRequestDialog").click(function () {
                     jsxc.gui.showRequestNotification();
                 });
 
@@ -8428,14 +8481,21 @@ jsxc.muc = {
         // parse form from stanza
         var form = Strophe.x.Form.fromXML(stanza);
 
-        $.each(form.fields, function (index, item) {
+        // if no form, take default
+        if (!form) {
+            form = fieldValues;
+        }
+        else {
+            
+            $.each(form.fields, function (index, item) {
 
-            if (typeof fieldValues[item.var] !== "undefined") {
-                item.values = [fieldValues[item.var]];
-            }
+                if (typeof fieldValues[item.var] !== "undefined") {
+                    item.values = [fieldValues[item.var]];
+                }
 
-        });
+            });
 
+        }
         // self.conn.muc.cancelConfigure(room);
 
         // send configuration to server
@@ -8727,7 +8787,7 @@ jsxc.muc = {
      *
      * @param buddiesId
      */
-    createNewConversationWith: function(buddies, title, subject){
+    createNewConversationWith: function (buddies, title, subject) {
 
         var d = new Date();
 
@@ -13284,11 +13344,19 @@ jsxc.gui.template['menuSettings'] = '<div id="jsxc_menuSettings">\n' +
 '</div>\n' +
 '';
 
-jsxc.gui.template['menuTools'] = '<div>\n' +
+jsxc.gui.template['menuTools'] = '<div id="jsxc_menuTools">\n' +
 '\n' +
-'    <div class="jsxc_actionButton notImplementedYet">Ouvrir un pad</div>\n' +
+'    <div>\n' +
+'        <p>Choisissez un nom pour votre pad, et partagez le !\n' +
+'            <input id="jsxc_etherpad_name" type="text" placeholder="Nom du pad"/>\n' +
+'        </p>\n' +
+'        <p>Lien de partage:\n' +
+'            <input type="text" class="jsxc_etherpad_sharetextfield"/>\n' +
+'            <a href="#" class="jsxc_etherpad_sharelink" target="_blank">>></a></p>\n' +
+'    </div>\n' +
 '\n' +
-'    <div class="jsxc_actionButton notImplementedYet">Créer un pad</div>\n' +
+'    <div class="jsxc_actionButton jsxc_openpad">Ouvrir un pad</div>\n' +
+'\n' +
 '\n' +
 '    <div class="jsxc_actionButton notImplementedYet">Liste des pads</div>\n' +
 '\n' +

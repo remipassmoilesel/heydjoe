@@ -451,11 +451,19 @@ jsxc.gui.template['menuSettings'] = '<div id="jsxc_menuSettings">\n' +
 '</div>\n' +
 '';
 
-jsxc.gui.template['menuTools'] = '<div>\n' +
+jsxc.gui.template['menuTools'] = '<div id="jsxc_menuTools">\n' +
 '\n' +
-'    <div class="jsxc_actionButton notImplementedYet">Ouvrir un pad</div>\n' +
+'    <div>\n' +
+'        <p>Choisissez un nom pour votre pad, et partagez le !\n' +
+'            <input id="jsxc_etherpad_name" type="text" placeholder="Nom du pad"/>\n' +
+'        </p>\n' +
+'        <p>Lien de partage:\n' +
+'            <input type="text" class="jsxc_etherpad_sharetextfield"/>\n' +
+'            <a href="#" class="jsxc_etherpad_sharelink" target="_blank">>></a></p>\n' +
+'    </div>\n' +
 '\n' +
-'    <div class="jsxc_actionButton notImplementedYet">Créer un pad</div>\n' +
+'    <div class="jsxc_actionButton jsxc_openpad">Ouvrir un pad</div>\n' +
+'\n' +
 '\n' +
 '    <div class="jsxc_actionButton notImplementedYet">Liste des pads</div>\n' +
 '\n' +

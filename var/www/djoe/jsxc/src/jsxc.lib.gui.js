@@ -49,35 +49,6 @@ jsxc.gui = {
     },
 
     /**
-     * Open a new pad in a window
-     * @param bid
-     */
-    openpad: function (padId) {
-
-        var opts = jsxc.options.get("etherpad");
-        if (opts.enabled !== true) {
-            jsxc.warn('Etherpad not enabled');
-            jsxc.gui.feedback("Etherpad n'est pas activé.");
-            return;
-        }
-
-        // embedable code of pad
-        var embedCode = '<iframe name="embed_readwrite" src="' + opts.ressource + '/p/' + padId + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" style="width: 100%; height: 100%"></iframe>';        // container for pad
-        var dialogId = "jsxc_pad_" + padId;
-        var dialog = $("<div></div>").attr('id', dialogId);
-        dialog.append(embedCode);
-
-        // add and show dialog
-        $("body").append(dialog);
-
-        dialog.dialog({
-            height: 400,
-            width: 600
-        });
-
-    },
-
-    /**
      * Different uri query actions as defined in XEP-0147.
      *
      * @namespace jsxc.gui.queryActions
@@ -2210,7 +2181,7 @@ jsxc.gui.window = {
 
             console.log(padId);
 
-            jsxc.gui.openpad(padId);
+            jsxc.etherpad.openpad(padId);
         });
 
         win.find('.jsxc_verification').click(function () {

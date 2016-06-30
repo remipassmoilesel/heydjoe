@@ -197,19 +197,19 @@ jsxc.gui.menu = {
 
                     // prepare subject
                     var subject = $("#jsxc_menuRooms .jsxc_inputRoomSubject").val().trim();
-                    
+
                     // prepare initial participants
                     var buddies = [];
                     selItems.each(function () {
                         buddies.push($(this).data("userjid"));
                     });
-                    
+
                     jsxc.muc.createNewConversationWith(buddies, title, subject);
 
                 });
 
                 // invite users
-                $(".jsxc_inviteBuddiesOnConversation").click(function(){
+                $(".jsxc_inviteBuddiesOnConversation").click(function () {
 
                     var selItems = $("#jsxc_roomCreationUsers .ui-selected");
 
@@ -221,18 +221,18 @@ jsxc.gui.menu = {
 
                     // get user array
                     var users = [];
-                    selItems.each(function(){
-                       users.push($(this).data("userjid"));
+                    selItems.each(function () {
+                        users.push($(this).data("userjid"));
                     });
 
                     // show dialog
                     jsxc.gui.showConversationSelectionDialog()
 
-                        // user clicks OK
-                        .done(function(conversations){
+                    // user clicks OK
+                        .done(function (conversations) {
 
                             // iterate conversations
-                            conversations.each(function(){
+                            conversations.each(function () {
                                 var conversJid = $(this).data("conversjid");
                                 jsxc.muc.inviteParticipants(conversJid, users);
                             });
@@ -251,6 +251,36 @@ jsxc.gui.menu = {
             label: "Outils",
             template: "menuTools",
             init: function () {
+
+                // show share link
+                var links = $("#jsxc_menuTools .jsxc_etherpad_sharelink");
+                var txtFields = $("#jsxc_menuTools .jsxc_etherpad_sharetextfield");
+                var nameInputField = $("#jsxc_etherpad_name");
+
+                nameInputField.keyup(function () {
+
+                    var hrefLink = jsxc.etherpad.getEtherpadLinkFor(nameInputField.val());
+
+                    links.attr({
+                        href: hrefLink
+                    });
+
+                    txtFields.val(hrefLink);
+                });
+
+                // create Etherpad documents
+                $("#jsxc_menuTools .jsxc_openpad").click(function () {
+
+                    var etherpadId = $("#jsxc_etherpad_name").val().toLowerCase();
+
+                    if (!etherpadId.match(/^[a-z0-9_-]{5,50}$/i)) {
+                        jsxc.gui.feedback("Nom invalide: /^[a-z0-9_-]{5,50}$/i");
+                        return true;
+                    }
+
+                    jsxc.etherpad.openpad(etherpadId);
+
+                });
 
 
             },
@@ -279,7 +309,7 @@ jsxc.gui.menu = {
                     }
                 });
 
-                $("#jsxc_menuSettings .jsxc_showNotificationRequestDialog").click(function(){
+                $("#jsxc_menuSettings .jsxc_showNotificationRequestDialog").click(function () {
                     jsxc.gui.showRequestNotification();
                 });
 
