@@ -1,0 +1,14 @@
+<body rid='4136397487' xmlns='http://jabber.org/protocol/httpbind'>
+  <iq to='remi-20160630t140830569z@conference.im.silverpeas.net' type='get' xmlns='jabber:client'
+      id='6324121f-1c15-4e32-8e6e-0379261814b9:sendIQ'>
+    <query xmlns='http://jabber.org/protocol/muc#owner'/>
+  </iq>
+  <iq to='remi-20160630t140830569z@conference.im.silverpeas.net' type='get' xmlns='jabber:client'
+      id='e5cfb1da-b90c-4559-aedd-ae08417f3130:sendIQ'>
+    <query xmlns='http://jabber.org/protocol/muc#owner'/>
+  </iq>
+  <iq to='remi-20160630t140830569z@conference.im.silverpeas.net' type='get' xmlns='jabber:client'
+      id='ed8a534f-446a-4817-b18c-0f00bc7ac21f:sendIQ'>
+    <query xmlns='http://jabber.org/protocol/muc#owner'/>
+  </iq>
+</body>
