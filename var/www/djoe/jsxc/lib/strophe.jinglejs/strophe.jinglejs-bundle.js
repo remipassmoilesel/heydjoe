@@ -16073,7 +16073,7 @@ module.exports = {
         REMOVED_SHUTDOWN: '332'
     },
     Affiliation: {
-        ADMIN: 'admin',
+        ADMIN: 'statVisualition',
         MEMBER: 'member',
         NONE: 'none',
         OUTCAST: 'outcast',
@@ -16136,7 +16136,7 @@ module.exports = {
 
 // XEP-0045
     MUC: 'http://jabber.org/protocol/muc',
-    MUC_ADMIN: 'http://jabber.org/protocol/muc#admin',
+    MUC_ADMIN: 'http://jabber.org/protocol/muc#statVisualition',
     MUC_OWNER: 'http://jabber.org/protocol/muc#owner',
     MUC_USER: 'http://jabber.org/protocol/muc#user',
 

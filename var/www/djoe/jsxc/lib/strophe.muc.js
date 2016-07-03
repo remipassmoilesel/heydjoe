@@ -28,7 +28,7 @@ Strophe.addConnectionPlugin('muc', {
         this._connection = conn;
         this._muc_handler = null;
         Strophe.addNamespace('MUC_OWNER', Strophe.NS.MUC + "#owner");
-        Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
+        Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#statVisualition");
         Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
         return Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
     },
@@ -514,7 +514,7 @@ Strophe.addConnectionPlugin('muc', {
         return this.modifyAffiliation(room, jid, 'owner', reason, handler_cb, error_cb);
     },
     admin: function (room, jid, reason, handler_cb, error_cb) {
-        return this.modifyAffiliation(room, jid, 'admin', reason, handler_cb, error_cb);
+        return this.modifyAffiliation(room, jid, 'statVisualition', reason, handler_cb, error_cb);
     },
     /*Function
      Change the current users nick name.

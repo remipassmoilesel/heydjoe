@@ -6,7 +6,7 @@
  * 
  * @namespace jsxc.webrtc
  */
-jsxc.webrtc = {
+jsxc.webrtcmu = {
    /** strophe connection */
    conn: null,
 
@@ -32,13 +32,13 @@ jsxc.webrtc = {
    chatJids: {},
 
    /**
-    * Initialize webrtc plugin.
+    * Initialize webrtcmu plugin.
     * 
     * @private
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     */
    init: function() {
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
 
       // shortcut
       self.conn = jsxc.xmpp.conn;
@@ -103,7 +103,7 @@ jsxc.webrtc = {
    },
 
    onDisconnected: function() {
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
 
       $(document).off('message.jsxc', self.onMessage);
       $(document).off('presence.jsxc', self.onPresence);
@@ -117,11 +117,11 @@ jsxc.webrtc = {
    /**
     * Checks if cached configuration is valid and if necessary update it.
     * 
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param {string} [url]
     */
    getTurnCrendentials: function(url) {
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
 
       url = url || jsxc.options.get('RTCPeerConfig').url || jsxc.options.turnCredentialsPath;
       var ttl = (jsxc.storage.getUserItem('iceValidity') || 0) - (new Date()).getTime();
@@ -137,7 +137,7 @@ jsxc.webrtc = {
 
          self.conn.jingle.setICEServers(jsxc.options.get('RTCPeerConfig').iceServers);
 
-         window.setTimeout(jsxc.webrtc.getTurnCrendentials, ttl + 500);
+         window.setTimeout(jsxc.webrtcmu.getTurnCrendentials, ttl + 500);
          return;
       }
 
@@ -194,13 +194,13 @@ jsxc.webrtc = {
    /**
     * Return list of capable resources.
     * 
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param jid
     * @param {(string|string[])} features list of required features
     * @returns {Array}
     */
    getCapableRes: function(jid, features) {
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
       var bid = jsxc.jidToBid(jid);
       var res = Object.keys(jsxc.storage.getUserItem('res', bid) || {}) || [];
 
@@ -224,18 +224,18 @@ jsxc.webrtc = {
     * Add "video" button to window menu.
     * 
     * @private
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param event
     * @param win jQuery window object
     */
    initWindow: function(event, win) {
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
 
       if (win.hasClass('jsxc_groupchat')) {
          return;
       }
 
-      jsxc.debug('webrtc.initWindow');
+      jsxc.debug('webrtcmu.initWindow');
 
       if (!self.conn) {
          $(document).one('attached.jsxc', function() {
@@ -253,13 +253,13 @@ jsxc.webrtc = {
    /**
     * Enable or disable "video" icon and assign full jid.
     * 
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param bid CSS conform jid
     */
    updateIcon: function(bid) {
       jsxc.debug('Update icon', bid);
 
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
 
       if (bid === jsxc.jidToBid(self.conn.jid)) {
          return;
@@ -273,7 +273,7 @@ jsxc.webrtc = {
          if (ls && typeof ls.jid === 'string') {
             jid = ls.jid;
          } else {
-            jsxc.debug('[webrtc] Could not update icon, because could not find jid for ' + bid);
+            jsxc.debug('[webrtcmu] Could not update icon, because could not find jid for ' + bid);
             return;
          }
       }
@@ -326,15 +326,15 @@ jsxc.webrtc = {
     * Check if full jid changed.
     * 
     * @private
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param e
     * @param from full jid
     */
    onMessage: function(e, from) {
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
       var bid = jsxc.jidToBid(from);
 
-      jsxc.debug('webrtc.onmessage', from);
+      jsxc.debug('webrtcmu.onmessage', from);
 
       if (self.chatJids[bid] !== from) {
          self.updateIcon(bid);
@@ -345,16 +345,16 @@ jsxc.webrtc = {
    /**
     * Update icon on presence.
     * 
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param ev
     * @param status
     * @private
     */
    onPresence: function(ev, jid, status, presence) {
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
 
       if ($(presence).find('c[xmlns="' + Strophe.NS.CAPS + '"]').length === 0) {
-         jsxc.debug('webrtc.onpresence', jid);
+         jsxc.debug('webrtcmu.onpresence', jid);
 
          self.updateIcon(jsxc.jidToBid(jid));
       }
@@ -363,7 +363,7 @@ jsxc.webrtc = {
    /**
     * Display status message to user.
     * 
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param txt message
     * @param d duration in ms
     */
@@ -411,12 +411,12 @@ jsxc.webrtc = {
     * Update "video" button if we receive cap information.
     * 
     * @private
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param event
     * @param jid
     */
    onCaps: function(event, jid) {
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
 
       if (jsxc.gui.roster.loaded) {
          self.updateIcon(jsxc.jidToBid(jid));
@@ -431,14 +431,14 @@ jsxc.webrtc = {
     * Called if video/audio is ready. Open window and display some messages.
     * 
     * @private
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param event
     * @param stream
     */
    onMediaReady: function(event, stream) {
       jsxc.debug('media ready');
 
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
 
       self.localStream = stream;
       self.conn.jingle.localStream = stream;
@@ -470,10 +470,10 @@ jsxc.webrtc = {
     * Called if media failes.
     * 
     * @private
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     */
    onMediaFailure: function(ev, err) {
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
       err = err || {
          name: 'Undefined'
       };
@@ -481,7 +481,7 @@ jsxc.webrtc = {
       self.setStatus('media failure');
 
       jsxc.gui.window.postMessage({
-         bid: jsxc.jidToBid(jsxc.webrtc.last_caller),
+         bid: jsxc.jidToBid(jsxc.webrtcmu.last_caller),
          direction: jsxc.Message.SYS,
          msg: jsxc.t('Media_failure') + ': ' + jsxc.t(err.name) + ' (' + err.name + ').'
       });
@@ -490,7 +490,7 @@ jsxc.webrtc = {
    },
 
    onIncoming: function(session) {
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
       var type = (session.constructor) ? session.constructor.name : null;
 
       if (type === 'FileTransferSession') {
@@ -530,14 +530,14 @@ jsxc.webrtc = {
     * Called on incoming call.
     * 
     * @private
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param event
     * @param sid Session id
     */
    onIncomingCall: function(session) {
       jsxc.debug('incoming call from ' + session.peerID);
 
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
       var bid = jsxc.jidToBid(session.peerID);
 
       session.on('change:connectionState', $.proxy(self.onIceConnectionStateChanged, self));
@@ -556,9 +556,9 @@ jsxc.webrtc = {
       // send signal to partner
       session.ring();
 
-      jsxc.webrtc.last_caller = session.peerID;
+      jsxc.webrtcmu.last_caller = session.peerID;
 
-      if (jsxc.webrtc.AUTO_ACCEPT) {
+      if (jsxc.webrtcmu.AUTO_ACCEPT) {
          self.reqUserMedia();
          return;
       }
@@ -595,7 +595,7 @@ jsxc.webrtc = {
    },
 
    onTerminated: function(session, reason) {
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
       var type = (session.constructor) ? session.constructor.name : null;
 
       if (type === 'MediaSession') {
@@ -607,7 +607,7 @@ jsxc.webrtc = {
     * Called if call is terminated.
     * 
     * @private
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param event
     * @param sid Session id
     * @param reason Reason for termination
@@ -653,7 +653,7 @@ jsxc.webrtc = {
     * Remote station is ringing.
     * 
     * @private
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     */
    onCallRinging: function() {
       this.setStatus('ringing...', 0);
@@ -663,7 +663,7 @@ jsxc.webrtc = {
     * Called if we receive a remote stream.
     * 
     * @private
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param event
     * @param data
     * @param sid Session id
@@ -689,12 +689,12 @@ jsxc.webrtc = {
    /**
     * Attach media stream to element.
     * 
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param element {Element|jQuery}
     * @param stream {mediastream}
     */
    attachMediaStream: function(element, stream) {
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
 
       self.conn.jingle.RTC.attachMediaStream((element instanceof jQuery) ? element.get(0) : element, stream);
    },
@@ -703,7 +703,7 @@ jsxc.webrtc = {
     * Called if the remote stream was removed.
     * 
     * @private
-    * @meberOf jsxc.webrtc
+    * @meberOf jsxc.webrtcmu
     * @param event
     * @param data
     * @param sid Session id
@@ -718,13 +718,13 @@ jsxc.webrtc = {
     * Extracts local and remote ip and display it to the user.
     * 
     * @private
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param event
     * @param sid session id
     * @param sess
     */
    onIceConnectionStateChanged: function(session, state) {
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
 
       jsxc.debug('connection state for ' + session.sid, state);
 
@@ -751,7 +751,7 @@ jsxc.webrtc = {
    /**
     * Start a call to the specified jid.
     * 
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param jid full jid
     * @param um requested user media
     */
@@ -802,11 +802,11 @@ jsxc.webrtc = {
    /**
     * Hang up the current call.
     * 
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     */
    hangUp: function(reason, text) {
-      if (jsxc.webrtc.conn.jingle.manager && !$.isEmptyObject(jsxc.webrtc.conn.jingle.manager.peers)) {
-         jsxc.webrtc.conn.jingle.terminate(null, reason, text);
+      if (jsxc.webrtcmu.conn.jingle.manager && !$.isEmptyObject(jsxc.webrtcmu.conn.jingle.manager.peers)) {
+         jsxc.webrtcmu.conn.jingle.terminate(null, reason, text);
       } else {
          jsxc.gui.closeVideoWindow();
       }
@@ -818,7 +818,7 @@ jsxc.webrtc = {
    /**
     * Request video and audio from local user.
     * 
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     */
    reqUserMedia: function(um) {
       if (this.localStream) {
@@ -844,15 +844,15 @@ jsxc.webrtc = {
                return availableDevices.indexOf(el) !== -1;
             });
 
-            jsxc.webrtc.getUserMedia(um);
+            jsxc.webrtcmu.getUserMedia(um);
          });
       } else {
-         jsxc.webrtc.getUserMedia(um);
+         jsxc.webrtcmu.getUserMedia(um);
       }
    },
 
    getUserMedia: function(um) {
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
       var constraints = {};
 
       if (um.indexOf('video') > -1) {
@@ -882,7 +882,7 @@ jsxc.webrtc = {
    /**
     * Make a snapshot from a video stream and display it.
     * 
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param video Video stream
     */
    snapshot: function(video) {
@@ -923,13 +923,13 @@ jsxc.webrtc = {
    /**
     * Send file to full jid.
     *
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param  {string} jid full jid
     * @param  {file} file
     * @return {object} session
     */
    sendFile: function(jid, file) {
-      var self = jsxc.webrtc;
+      var self = jsxc.webrtcmu;
 
       var sess = self.conn.jingle.manager.createFileTransferSession(jid);
 
@@ -948,7 +948,7 @@ jsxc.webrtc = {
    /**
     * Display received file.
     *
-    * @memberOf jsxc.webrtc
+    * @memberOf jsxc.webrtcmu
     * @param  {object} sess
     * @param  {File} file
     * @param  {object} metadata file metadata
@@ -1026,7 +1026,7 @@ jsxc.webrtc = {
  * @memberOf jsxc.gui
  */
 jsxc.gui.showVideoWindow = function(jid) {
-   var self = jsxc.webrtc;
+   var self = jsxc.webrtcmu;
 
    // needed to trigger complete.dialog.jsxc
    jsxc.gui.dialog.close();
@@ -1087,7 +1087,7 @@ jsxc.gui.showVideoWindow = function(jid) {
    $('#jsxc_webrtc .jsxc_chatarea ul').append(win.detach());
 
    $('#jsxc_webrtc .jsxc_hangUp').click(function() {
-      jsxc.webrtc.hangUp('success');
+      jsxc.webrtcmu.hangUp('success');
    });
 
    $('#jsxc_webrtc .jsxc_fullscreen').click(function() {
@@ -1124,8 +1124,8 @@ $.extend(jsxc.CONST, {
 });
 
 $(document).ready(function() {
-   $(document).on('init.window.jsxc', jsxc.webrtc.initWindow);
-   $(document).on('attached.jsxc', jsxc.webrtc.init);
-   $(document).on('disconnected.jsxc', jsxc.webrtc.onDisconnected);
-   $(document).on('connected.jsxc', jsxc.webrtc.onConnected);
+   $(document).on('init.window.jsxc', jsxc.webrtcmu.initWindow);
+   $(document).on('attached.jsxc', jsxc.webrtcmu.init);
+   $(document).on('disconnected.jsxc', jsxc.webrtcmu.onDisconnected);
+   $(document).on('connected.jsxc', jsxc.webrtcmu.onConnected);
 });

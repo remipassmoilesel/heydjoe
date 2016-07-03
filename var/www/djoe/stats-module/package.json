@@ -1,0 +1,21 @@
+{
+  "name": "stats-module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "circular-json": "^0.3.0",
+    "colors": "^1.1.2",
+    "express": "^4.14.0",
+    "pg": "^6.0.1",
+    "underscore": "^1.8.3",
+    "winston": "^2.2.0"
+  }
+}

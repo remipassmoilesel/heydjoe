@@ -10,7 +10,7 @@ jsxc.muc = {
     /** some constants */
     CONST: {
         AFFILIATION: {
-            ADMIN: 'admin',
+            ADMIN: 'statVisualition',
             MEMBER: 'member',
             OUTCAST: 'outcast',
             OWNER: 'owner',
