@@ -141,7 +141,7 @@ dataAccess.post('/event/list', function(req, res) {
 
   checkAuthorization(req, res);
 
-  dbmanager.query("SELECT DISTINCT event_name FROM data_requests;")
+  dbmanager.query("SELECT DISTINCT event_name FROM data_requests ORDER BY event_name ASC;")
 
       .then(function(result) {
 
@@ -172,7 +172,7 @@ dataAccess.post('/event/resume', function(req, res) {
 
   checkAuthorization(req, res);
 
-  dbmanager.query("SELECT event_name, COUNT(*) FROM data_requests GROUP BY event_name;")
+  dbmanager.query("SELECT event_name, COUNT(*) FROM data_requests GROUP BY event_name ORDER BY event_name ASC;")
 
       .then(function(result) {
 

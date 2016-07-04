@@ -17,6 +17,8 @@
   "dependencies": {
     "jquery": "^3.0.0",
     "jquery-ui": "^1.11.4",
-    "chance": "^1.0.3"
+    "chance": "^1.0.3",
+    "angular": "^1.5.7",
+    "angular-ui": "^0.4.0"
   }
 }

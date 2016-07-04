@@ -4204,3 +4204,11 @@ div.jsxc_video {
       height: 2em;
       vertical-align: middle;
       line-height: 1; }
+
+/**
+
+Only for demonstration purpose
+
+*/
+#jsxc_roster .ui-widget-content {
+  background: white; }

@@ -4,32 +4,6 @@ $(function() {
 
   console.log("Initializing instant messaging");
 
-  var defaultPassword = "azerty";
-
-  // page domain
-  var pageDomain = document.domain;
-
-  // xmpp over http url
-  var boshUrl;
-  // xmpp server domain
-  var xmppDomain;
-  // domain for search (XEP 0055)
-  var searchDomain;
-
-  // dev mode
-  if (pageDomain === "localhost" || pageDomain === "127.0.0.1") {
-    boshUrl = "https://im.silverpeas.net/http-bind/";
-    xmppDomain = "im.silverpeas.net";
-    searchDomain = "search." + "im.silverpeas.net";
-  }
-
-  // normal mode
-  else {
-    boshUrl = "https://" + pageDomain + "/http-bind/";
-    xmppDomain = pageDomain;
-    searchDomain = "search." + pageDomain;
-  }
-
   // etherpad resource
   var etherpadRes = "https://im.silverpeas.net/etherpad/";
 
@@ -37,11 +11,9 @@ $(function() {
   var xmppResource = "heyDjoe";
 
   // jsxc debug mode
-  //jsxc.storage.setItem('debug', true)
   jsxc.storage.setItem('debug', false)
 
   // afficher les erreurs de Strophe, indispensable
-  // var stLogLevel = Strophe.LogLevel.INFO;
   var stLogLevel = Strophe.LogLevel.WARN;
 
   Strophe.log = function(level, msg) {
@@ -50,85 +22,6 @@ $(function() {
       console.error((new Error()).stack);
     }
   };
-
-  function silverpeasConnexion() {
-
-    var userNode = $.cookie("svpLogin").toLowerCase().trim();
-    var userJid = userNode + "@" + xmppDomain;
-
-    /**
-     * Create eventually an user if not existing and connect him.
-     */
-    var createUserAndConnect = function() {
-
-      jsxc.rest.openfire.createUser(userNode)
-
-          .then(function() {
-
-            // connexion et lancement du GUI
-            jsxc.start(userJid, defaultPassword);
-
-            jsxc.gui.roster.toggle('shown');
-
-          }, function(response) {
-
-            // acceptable codes: created, exist,
-            var codes = [201, 409];
-
-            // not a fatal error, connexion
-            if (codes.indexOf(response.status) !== -1) {
-              jsxc.start(userJid, defaultPassword);
-
-              jsxc.gui.roster.toggle('shown');
-            }
-
-            // other fail
-            else {
-              console.error("Fail creating chat user");
-              console.error(response);
-            }
-
-          });
-
-    };
-
-    // check if not connected with another account
-    if (localStorage && jsxc && jsxc.storage && jsxc.storage.getItem &&
-        jsxc.storage.getItem('jid')) {
-
-      var pNode = Strophe.getNodeFromJid(jsxc.storage.getItem('jid'));
-
-      // need to be improved
-      if (pNode.toLowerCase() !== userNode) {
-
-        console.log("Connecting with another profile, clearing data storage.");
-        console.log(pNode, userNode);
-
-        jsxc.xmpp.logout(true);
-
-        localStorage.clear();
-
-        setTimeout(createUserAndConnect, 700);
-      }
-
-      else {
-
-        console.log("Connexion");
-
-        createUserAndConnect();
-      }
-
-    }
-
-    else {
-
-      console.log("Connexion");
-
-      createUserAndConnect();
-
-    }
-
-  }
 
   // Initialize JSXC
   var options = {
@@ -142,7 +35,9 @@ $(function() {
 
     // enable Etherpad support
     etherpad : {
-      enabled : true, ressource : etherpadRes
+      enabled : true,
+
+      ressource : etherpadRes
     },
 
     // MUST specify muc server to avoid errors
@@ -156,11 +51,11 @@ $(function() {
 
     // xmpp options
     xmpp : {
-      url : boshUrl,
-      domain : xmppDomain,
+      url : "https://im.silverpeas.net/http-bind/",
+      domain : "im.silverpeas.net",
       resource : xmppResource,
       overwrite : true,
-      searchDomain : searchDomain,
+      searchDomain : "search.im.silverpeas.net",
     },
 
     // disable otr because of display disturbing
@@ -194,21 +89,44 @@ $(function() {
           credentialType : "password",
           username : "djoe"
         }]
-    }
+    },
 
   };
 
-  if ($.cookie && $.cookie("svpLogin")) {
+  /**
+   * Silverpeas connexion
+   */
+  if (window.jsxcConnexionCredentials) {
+
+    // credential must be stored on page
+    var cred = window.jsxcConnexionCredentials;
+
+    var silverpeasConnexion = function() {
+
+      var jid = cred.userLogin.toLowerCase() + "@" + cred.xmppDomain;
+
+      jsxc.start(jid, cred.userPassword);
+      jsxc.gui.roster.toggle('shown');
+
+    };
+
+    /** Correction JSXC Options */
+    options.xmpp.url = cred.httpBindUrl;
+    options.xmpp.domain = cred.xmppDomain;
     options.callbacks = {
       reconnectCb : silverpeasConnexion
     };
+
+    // initialisation
+    jsxc.init(options);
+
+    silverpeasConnexion();
+
   }
 
-  jsxc.init(options);
-
-  // auto startup on silverpeas
-  if ($.cookie && $.cookie("svpLogin")) {
-    silverpeasConnexion();
+  else {
+    // initialisation
+    jsxc.init(options);
   }
 
 });

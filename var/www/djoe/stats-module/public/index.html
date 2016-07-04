@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="visualizationModule">
 <head>
   <meta charset="UTF-8">
 
-  <link rel="stylesheet" href="../bower_components/jquery-ui/themes/base/jquery-ui.css" />
+  <link rel="stylesheet" href="dist/styles/bundle.css" />
 
-  <script src="../bower_components/jquery/dist/jquery.js"></script>
-  <script src="../bower_components/jquery-ui/jquery-ui.js"></script>
-
-  <script src="build/bundle.js"></script>
+  <script src="dist/scripts/visualization.dep.js"></script>
+  <script src="dist/scripts/visualization.js"></script>
 
   <title>Stats !</title>
 
@@ -17,12 +15,12 @@
 
 <h1>Stats !</h1>
 
-<h2>Keywords</h2>
-<select id="keywordList"></select>
+<event-list></event-list>
 
-<h2>Charts</h2>
-<div id="eventResume"></div>
-<canvas id="eventResumeChart" width="400" height="400"></canvas>
+<event-resume></event-resume>
+
+<pie-chart></pie-chart>
+
 
 </body>
 </html>

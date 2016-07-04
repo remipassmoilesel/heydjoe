@@ -77,28 +77,6 @@ jsxc.gui = {
     },
 
     /**
-     * Open a new pad in a window
-     * @param bid
-     */
-    openpad: function (padId) {
-
-        // embedable code of pad
-        var embedCode = '&lt;iframe name="embed_readwrite" src="https://im.silverpeas.net:9002/p/' + padId + '?showControls=true&amp;showChat=true&amp;showLineNumbers=true&amp;useMonospaceFont=false" style="width: 100%; height: 100%">&lt;/iframe>';        // container for pad
-        var dialogId = "jsxc_pad_" + padId;
-        var dialog = $("&lt;div>&lt;/div>").attr('id', dialogId);
-        dialog.append(embedCode);
-        
-        // add and show dialog
-        $("body").append(dialog);
-
-        dialog.dialog({
-            height: 400,
-            width: 600
-        });
-
-    },
-
-    /**
      * Different uri query actions as defined in XEP-0147.
      *
      * @namespace jsxc.gui.queryActions
@@ -243,44 +221,44 @@ jsxc.gui = {
         jsxc.gui.updatePresence(bid, jsxc.CONST.STATUS[data.status]);
 
         // Change name and add title
-        ue.find('.jsxc_name:first').add(spot).text(data.name).attr('title', $.t('is_', {
-            status: $.t(jsxc.CONST.STATUS[data.status])
+        ue.find('.jsxc_name:first').add(spot).text(data.name).attr('title', jsxc.t('is_', {
+            status: jsxc.t(jsxc.CONST.STATUS[data.status])
         }));
 
         // if(window.location.protocol === "https:"){
-        //     we.find('.jsxc_transfer').addClass('jsxc_enc').attr('title', $.t('your_connection_is_encrypted'));
+        //     we.find('.jsxc_transfer').addClass('jsxc_enc').attr('title', jsxc.t('your_connection_is_encrypted'));
         //     we.find('.jsxc_settings .jsxc_verification').removeClass('jsxc_disabled');
-        //     we.find('.jsxc_settings .jsxc_transfer').text($.t('close_private'));
+        //     we.find('.jsxc_settings .jsxc_transfer').text(jsxc.t('close_private'));
         // }
         //
         // else {
-        //     we.find('.jsxc_transfer').removeClass('jsxc_enc jsxc_fin').attr('title', $.t('your_connection_is_unencrypted'));
+        //     we.find('.jsxc_transfer').removeClass('jsxc_enc jsxc_fin').attr('title', jsxc.t('your_connection_is_unencrypted'));
         //     we.find('.jsxc_settings .jsxc_verification').addClass('jsxc_disabled');
-        //     we.find('.jsxc_settings .jsxc_transfer').text($.t('start_private'));
+        //     we.find('.jsxc_settings .jsxc_transfer').text(jsxc.t('start_private'));
         // }
 
         // Update gui according to encryption state
         switch (data.msgstate) {
             case 0:
-                we.find('.jsxc_transfer').removeClass('jsxc_enc jsxc_fin').attr('title', $.t('your_connection_is_unencrypted'));
+                we.find('.jsxc_transfer').removeClass('jsxc_enc jsxc_fin').attr('title', jsxc.t('your_connection_is_unencrypted'));
                 we.find('.jsxc_settings .jsxc_verification').addClass('jsxc_disabled');
-                we.find('.jsxc_settings .jsxc_transfer').text($.t('start_private'));
+                we.find('.jsxc_settings .jsxc_transfer').text(jsxc.t('start_private'));
                 break;
             case 1:
-                we.find('.jsxc_transfer').addClass('jsxc_enc').attr('title', $.t('your_connection_is_encrypted'));
+                we.find('.jsxc_transfer').addClass('jsxc_enc').attr('title', jsxc.t('your_connection_is_encrypted'));
                 we.find('.jsxc_settings .jsxc_verification').removeClass('jsxc_disabled');
-                we.find('.jsxc_settings .jsxc_transfer').text($.t('close_private'));
+                we.find('.jsxc_settings .jsxc_transfer').text(jsxc.t('close_private'));
                 break;
             case 2:
                 we.find('.jsxc_settings .jsxc_verification').addClass('jsxc_disabled');
-                we.find('.jsxc_transfer').removeClass('jsxc_enc').addClass('jsxc_fin').attr('title', $.t('your_buddy_closed_the_private_connection'));
-                we.find('.jsxc_settings .jsxc_transfer').text($.t('close_private'));
+                we.find('.jsxc_transfer').removeClass('jsxc_enc').addClass('jsxc_fin').attr('title', jsxc.t('your_buddy_closed_the_private_connection'));
+                we.find('.jsxc_settings .jsxc_transfer').text(jsxc.t('close_private'));
                 break;
         }
 
         // update gui according to verification state
         if (data.trust) {
-            we.find('.jsxc_transfer').addClass('jsxc_trust').attr('title', $.t('your_buddy_is_verificated'));
+            we.find('.jsxc_transfer').addClass('jsxc_trust').attr('title', jsxc.t('your_buddy_is_verificated'));
         } else {
             we.find('.jsxc_transfer').removeClass('jsxc_trust');
         }
@@ -293,8 +271,8 @@ jsxc.gui = {
         }
 
         var info = Strophe.getBareJidFromJid(data.jid) + '\n';
-        info += $.t('Subscription') + ': ' + $.t(data.sub) + '\n';
-        info += $.t('Status') + ': ' + $.t(jsxc.CONST.STATUS[data.status]);
+        info += jsxc.t('Subscription') + ': ' + jsxc.t(data.sub) + '\n';
+        info += jsxc.t('Status') + ': ' + jsxc.t(jsxc.CONST.STATUS[data.status]);
 
         ri.find('.jsxc_name').attr('title', info);
 
@@ -604,7 +582,7 @@ jsxc.gui = {
             jsxc.gui.window.postMessage({
                 bid: bid,
                 direction: jsxc.Message.SYS,
-                msg: $.t('conversation_is_now_verified')
+                msg: jsxc.t('conversation_is_now_verified')
             });
             jsxc.gui.update(bid);
         });
@@ -639,7 +617,7 @@ jsxc.gui = {
             jsxc.gui.window.postMessage({
                 bid: bid,
                 direction: jsxc.Message.SYS,
-                msg: $.t('authentication_query_sent')
+                msg: jsxc.t('authentication_query_sent')
             });
         });
 
@@ -672,7 +650,7 @@ jsxc.gui = {
             jsxc.gui.window.postMessage({
                 bid: bid,
                 direction: 'sys',
-                msg: $.t('authentication_query_sent')
+                msg: jsxc.t('authentication_query_sent')
             });
         });
     },
@@ -1036,9 +1014,9 @@ jsxc.gui = {
 
                 var status = jsxc.storage.getUserItem('res', bid)[res];
 
-                $('#jsxc_dialog ul.jsxc_vCard').append('&lt;li class="jsxc_sep">&lt;strong>' + $.t('Resource') + ':&lt;/strong> ' + res + '&lt;/li>');
-                $('#jsxc_dialog ul.jsxc_vCard').append('&lt;li>&lt;strong>' + $.t('Client') + ':&lt;/strong> ' + client + '&lt;/li>');
-                $('#jsxc_dialog ul.jsxc_vCard').append('&lt;li>&lt;strong>' + $.t('Status') + ':&lt;/strong> ' + $.t(jsxc.CONST.STATUS[status]) + '&lt;/li>');
+                $('#jsxc_dialog ul.jsxc_vCard').append('&lt;li class="jsxc_sep">&lt;strong>' + jsxc.t('Resource') + ':&lt;/strong> ' + res + '&lt;/li>');
+                $('#jsxc_dialog ul.jsxc_vCard').append('&lt;li>&lt;strong>' + jsxc.t('Client') + ':&lt;/strong> ' + client + '&lt;/li>');
+                $('#jsxc_dialog ul.jsxc_vCard').append('&lt;li>&lt;strong>' + jsxc.t('Status') + ':&lt;/strong> ' + jsxc.t(jsxc.CONST.STATUS[status]) + '&lt;/li>');
             }
         }
 
@@ -1051,7 +1029,7 @@ jsxc.gui = {
 
                 content += '&lt;li>';
 
-                var prop = $.t(item[0].tagName);
+                var prop = jsxc.t(item[0].tagName);
 
                 if (prop !== ' ') {
                     content += '&lt;strong>' + prop + ':&lt;/strong> ';
@@ -1092,7 +1070,7 @@ jsxc.gui = {
             $('#jsxc_dialog p').remove();
 
             var content = '&lt;p>';
-            content += $.t('Sorry_your_buddy_doesnt_provide_any_information');
+            content += jsxc.t('Sorry_your_buddy_doesnt_provide_any_information');
             content += '&lt;/p>';
 
             $('#jsxc_dialog').append(content);
@@ -1243,7 +1221,7 @@ jsxc.gui = {
             }
         });
 
-        jsxc.gui.showConfirmDialog($.t('Should_we_notify_you_'), function () {
+        jsxc.gui.showConfirmDialog(jsxc.t('Should_we_notify_you_'), function () {
             jsxc.gui.dialog.open(jsxc.gui.template.get('pleaseAccept'), {
                 noClose: true
             });
@@ -1255,7 +1233,7 @@ jsxc.gui = {
     },
 
     showUnknownSender: function (bid) {
-        var confirmationText = $.t('You_received_a_message_from_an_unknown_sender_', {
+        var confirmationText = jsxc.t('You_received_a_message_from_an_unknown_sender_', {
             sender: bid
         });
         jsxc.gui.showConfirmDialog(confirmationText, function () {
@@ -1637,7 +1615,7 @@ jsxc.gui.roster = {
 
         // display or hide offline buddies
         if (jsxc.options.get('hideOffline')) {
-            $('#jsxc_menu .jsxc_hideOffline').text($.t('Show_offline'));
+            $('#jsxc_menu .jsxc_hideOffline').text(jsxc.t('Show_offline'));
             $('#jsxc_buddylist').addClass('jsxc_hideOffline');
         }
 
@@ -1951,12 +1929,24 @@ jsxc.gui.roster = {
      * Shows a text with link to a login box that no connection exists.
      */
     noConnection: function () {
+
         $('#jsxc_roster').addClass('jsxc_noConnection');
 
         $('#jsxc_buddylist').empty();
 
-        $('#jsxc_roster').append($('&lt;p>' + $.t('no_connection') + '&lt;/p>').append(' &lt;a>' + $.t('relogin') + '&lt;/a>').click(function () {
-            jsxc.gui.showLoginBox();
+        $('#jsxc_roster').find(".jsxc_rosterIsEmptyMessage").remove();
+
+        $('#jsxc_roster').append($('&lt;p>' + jsxc.t('no_connection') + '&lt;/p>').append(' &lt;a>' + jsxc.t('relogin') + '&lt;/a>').click(function () {
+
+            var reconnectCallback = jsxc.options.get("callbacks") || {};
+            reconnectCallback = reconnectCallback.reconnectCb || null;
+            if (reconnectCallback) {
+                reconnectCallback.call(window);
+            }
+
+            else {
+                jsxc.gui.showLoginBox();
+            }
         }));
     },
 
@@ -1966,11 +1956,12 @@ jsxc.gui.roster = {
      * @memberOf jsxc.gui.roster
      */
     empty: function () {
-        var text = $('&lt;p class="jsxc_rosterIsEmptyMessage">' + $.t('Your_roster_is_empty_add_') + '&lt;/p>');
+        var text = $('&lt;p class="jsxc_rosterIsEmptyMessage">' + jsxc.t('Your_roster_is_empty_add_') + '&lt;/p>');
         var link = text.find('a');
 
         link.click(function () {
-            jsxc.gui.showContactDialog();
+            //jsxc.gui.showContactDialog();
+            jsxc.gui.menu.openSideMenu();
         });
         text.append(link);
         text.append('.');
@@ -2110,12 +2101,6 @@ jsxc.gui.window = {
         var bid = Strophe.getBareJidFromJid(from);
         var user = type === "chat" ? Strophe.getNodeFromJid(from) : Strophe.getResourceFromJid(from);
 
-        console.log();
-        console.log(type);
-        console.log(from);
-        console.log(user);
-        console.log(bid);
-
         // iterate window list
         $('#jsxc_windowList .jsxc_windowItem').each(function () {
 
@@ -2126,9 +2111,6 @@ jsxc.gui.window = {
 
             // check conversation
             if (winBid === bid) {
-
-                console.log("Show presence on");
-                console.log(winBid);
 
                 // add user in array if necessary
                 var usersComposing = self.data("usersComposing") || [];
@@ -2150,8 +2132,10 @@ jsxc.gui.window = {
                 var msg = usersComposing.length > 1 ? " sont en train d'écrire ..." : " est en train d'écrire ...";
                 composingNotif.html(usersComposing.join(", ") + msg);
 
-                // hide notification after delay
+                // scroll to bottom
+                jsxc.gui.window.scrollDown(winBid);
 
+                // hide notification after delay
                 if ($(this).data("composingTimeout")) {
                     clearTimeout($(this).data("composingTimeout"));
                 }
@@ -2219,9 +2203,13 @@ jsxc.gui.window = {
         // open a pad
         win.find(".jsxc_openpad").click(function () {
 
-            var padId = bid.replace(/[^a-z0-9]+/gi,"");
+            var padId = bid.substr(0,26).replace(/[^a-z0-9]+/gi, "") + "_" + jsxc.sha1.hash(bid).substr(0,22);
 
-            jsxc.gui.openpad(padId);
+            padId = padId.toLocaleLowerCase();
+
+            console.log(padId);
+
+            jsxc.etherpad.openpad(padId);
         });
 
         win.find('.jsxc_verification').click(function () {
@@ -2738,12 +2726,12 @@ jsxc.gui.window = {
 
         if (message.direction === jsxc.Message.OUT &amp;&amp; data.msgstate === OTR.CONST.MSGSTATE_FINISHED &amp;&amp; message.forwarded !== true) {
             message.direction = jsxc.Message.SYS;
-            message.msg = $.t('your_message_wasnt_send_please_end_your_private_conversation');
+            message.msg = jsxc.t('your_message_wasnt_send_please_end_your_private_conversation');
         }
 
         if (message.direction === jsxc.Message.OUT &amp;&amp; data.msgstate === OTR.CONST.MSGSTATE_FINISHED) {
             message.direction = 'sys';
-            message.msg = $.t('unencrypted_message_received') + ' ' + message.msg;
+            message.msg = jsxc.t('unencrypted_message_received') + ' ' + message.msg;
         }
 
         message.encrypted = message.encrypted || data.msgstate === OTR.CONST.MSGSTATE_ENCRYPTED;
@@ -3122,11 +3110,11 @@ jsxc.gui.window = {
         var content = $('&lt;div>');
 
         var p = $('&lt;p>');
-        p.text($.t('smpRequestReceived'));
+        p.text(jsxc.t('smpRequestReceived'));
         p.appendTo(content);
 
         var abort = $('&lt;button>');
-        abort.text($.t('Abort'));
+        abort.text(jsxc.t('Abort'));
         abort.click(function () {
             jsxc.gui.window.hideOverlay(bid);
             jsxc.storage.removeUserItem('smp', bid);
@@ -3138,7 +3126,7 @@ jsxc.gui.window = {
         abort.appendTo(content);
 
         var verify = $('&lt;button>');
-        verify.text($.t('Verify'));
+        verify.text(jsxc.t('Verify'));
         verify.addClass('jsxc_btn jsxc_btn-primary');
         verify.click(function () {
             jsxc.gui.window.hideOverlay(bid);
@@ -3166,7 +3154,7 @@ jsxc.gui.window = {
                 res = fileCapableRes[0];
                 jid = bid + '/' + res;
             } else if (fileCapableRes.indexOf(res) &lt; 0) {
-                jsxc.gui.window.selectResource(bid, $.t('Your_contact_uses_multiple_clients_'), function (data) {
+                jsxc.gui.window.selectResource(bid, jsxc.t('Your_contact_uses_multiple_clients_'), function (data) {
                     if (data.status === 'unavailable') {
                         jsxc.gui.window.hideOverlay(bid);
                     } else if (data.status === 'selected') {
@@ -3215,7 +3203,7 @@ jsxc.gui.window = {
                 attachment.text(file.name + ' (' + file.size + ' byte)');
             }
 
-            $('&lt;button>').addClass('jsxc_btn jsxc_btn-primary').text($.t('Send')).click(function () {
+            $('&lt;button>').addClass('jsxc_btn jsxc_btn-primary').text(jsxc.t('Send')).click(function () {
                 var sess = jsxc.webrtc.sendFile(jid, file);
 
                 jsxc.gui.window.hideOverlay(bid);
@@ -3240,7 +3228,7 @@ jsxc.gui.window = {
 
             }).appendTo(msg);
 
-            $('&lt;button>').addClass('jsxc_btn jsxc_btn-default').text($.t('Abort')).click(function () {
+            $('&lt;button>').addClass('jsxc_btn jsxc_btn-default').text(jsxc.t('Abort')).click(function () {
                 jsxc.gui.window.hideOverlay(bid);
             }).appendTo(msg);
         });
@@ -3262,7 +3250,7 @@ jsxc.gui.template.get = function (name, bid, msg) {
 
     // common placeholder
     var ph = {
-        my_priv_fingerprint: jsxc.storage.getUserItem('priv_fingerprint') ? jsxc.storage.getUserItem('priv_fingerprint').replace(/(.{8})/g, '$1 ') : $.t('not_available'),
+        my_priv_fingerprint: jsxc.storage.getUserItem('priv_fingerprint') ? jsxc.storage.getUserItem('priv_fingerprint').replace(/(.{8})/g, '$1 ') : jsxc.t('not_available'),
         my_jid: jsxc.storage.getItem('jid') || '',
         my_node: Strophe.getNodeFromJid(jsxc.storage.getItem('jid') || '') || '',
         root: jsxc.options.root,
@@ -3275,7 +3263,7 @@ jsxc.gui.template.get = function (name, bid, msg) {
         var data = jsxc.storage.getUserItem('buddy', bid);
 
         $.extend(ph, {
-            bid_priv_fingerprint: (data &amp;&amp; data.fingerprint) ? data.fingerprint.replace(/(.{8})/g, '$1 ') : $.t('not_available'),
+            bid_priv_fingerprint: (data &amp;&amp; data.fingerprint) ? data.fingerprint.replace(/(.{8})/g, '$1 ') : jsxc.t('not_available'),
             bid_jid: bid,
             bid_name: (data &amp;&amp; data.name) ? data.name : bid
         });
@@ -3295,7 +3283,9 @@ jsxc.gui.template.get = function (name, bid, msg) {
         ret = ret.replace(/\{\{root\}\}/g, ph.root);
 
         // convert to string
-        ret = $('&lt;div>').append($(ret).i18n()).html();
+
+        // ret = $('&lt;div>').append($(ret).i18n()).html();
+        ret = $('&lt;div>').append(jsxc.localization.processHtmlString(ret)).html();
 
         // replace placeholders
         ret = ret.replace(/\{\{([a-zA-Z0-9_\-]+)\}\}/g, function (s, key) {
@@ -3324,7 +3314,7 @@ jsxc.gui.template.get = function (name, bid, msg) {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Jun 20 2016 18:51:45 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Jul 05 2016 00:44:42 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>
