@@ -45,10 +45,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	
+
 	/**
-	 
-	  Here goes heavy dependencies
-	 
+	 * Here goes heavy dependencies to light Gulp process
 	 */
 
 	$ = __webpack_require__(1);

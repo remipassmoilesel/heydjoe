@@ -8,11 +8,13 @@ var sass = require('gulp-sass');
 var browserSync = require('browser-sync');
 var webpack = require('webpack-stream');
 var concatCss = require('gulp-concat-css');
+var shell = require('gulp-shell')
+
 
 gulp.task('browser-sync', function() {
   browserSync({
     server : {
-      baseDir : "./"
+      baseDir : "./public/"
     }
   });
 });
@@ -21,8 +23,11 @@ gulp.task('bs-reload', function() {
   browserSync.reload();
 });
 
+gulp.task('send-distant',
+    shell.task(['rsync -av . im.silverpeas.net:/opt/stats-module/']));
+
 gulp.task('images', function() {
-  gulp.src('src/images/**/*')
+  gulp.src('public/src/images/**/*')
       .pipe(cache(imagemin({optimizationLevel : 3, progressive : true, interlaced : true})))
       .pipe(gulp.dest('dist/images/'));
 });
@@ -30,11 +35,11 @@ gulp.task('images', function() {
 gulp.task('styles', function() {
   gulp.src([
 
-    'bower_components/jquery-ui/themes/base/jquery-ui.css',
+    'public/bower_components/jquery-ui/themes/base/jquery-ui.css',
 
-    'bower_components/angular-material/angular-material.css',
+    'public/bower_components/angular-material/angular-material.css',
 
-    'src/styles/**/*.scss',
+    'public/src/styles/**/*.scss',
 
   ])
       .pipe(plumber({
@@ -46,17 +51,17 @@ gulp.task('styles', function() {
       .pipe(sass())
       .pipe(autoprefixer('last 2 versions'))
       .pipe(concatCss("bundle.css"))
-      .pipe(gulp.dest('dist/styles/'))
+      .pipe(gulp.dest('public/dist/styles/'))
       .pipe(rename({suffix : '.min'}))
       .pipe(minifycss())
-      .pipe(gulp.dest('dist/styles/'))
+      .pipe(gulp.dest('public/dist/styles/'))
       .pipe(browserSync.reload({stream : true}))
 
 });
 
 gulp.task('scripts-dependencies', function() {
 
-  return gulp.src('./visualization.dep.js')
+  return gulp.src('./public/visualization.dep.js')
       .pipe(plumber({
         errorHandler : function(error) {
           console.log(error.message);
@@ -65,7 +70,7 @@ gulp.task('scripts-dependencies', function() {
       }))
       .pipe(webpack({
 
-        entry : './visualization.dep.js',
+        entry : './public/visualization.dep.js',
 
         resolve : {
           modulesDirectories : ["web_modules", "node_modules", "bower_components"]
@@ -76,15 +81,15 @@ gulp.task('scripts-dependencies', function() {
         }
 
       }))
-      .pipe(gulp.dest('dist/scripts/'))
+      .pipe(gulp.dest('public/dist/scripts/'))
       .pipe(rename({suffix : '.min'}))
       .pipe(uglify())
-      .pipe(gulp.dest('dist/scripts/'))
+      .pipe(gulp.dest('public/dist/scripts/'))
       .pipe(browserSync.reload({stream : true}))
 });
 
 gulp.task('scripts', function() {
-  return gulp.src('src/scripts/**/*.js')
+  return gulp.src('public/src/scripts/**/*.js')
 
       .pipe(plumber({
         errorHandler : function(error) {
@@ -94,7 +99,7 @@ gulp.task('scripts', function() {
       }))
       .pipe(webpack({
 
-        entry : './src/scripts/visualization.js',
+        entry : './public/src/scripts/visualization.js',
 
         loaders: [
           { test: /\.html$/, loader: "extract-loader" }
@@ -109,16 +114,16 @@ gulp.task('scripts', function() {
         }
 
       }))
-      .pipe(gulp.dest('dist/scripts/'))
+      .pipe(gulp.dest('public/dist/scripts/'))
       .pipe(rename({suffix : '.min'}))
       .pipe(uglify())
-      .pipe(gulp.dest('dist/scripts/'))
+      .pipe(gulp.dest('public/dist/scripts/'))
       .pipe(browserSync.reload({stream : true}))
 });
 
 gulp.task('default', ['browser-sync', 'scripts-dependencies', "scripts", "styles"], function() {
 
-  gulp.watch("src/styles/**/*.scss", ['styles']);
-  gulp.watch("src/scripts/**/*", ['scripts']);
+  gulp.watch("public/src/styles/**/*.scss", ['styles']);
+  gulp.watch("public/src/scripts/**/*", ['scripts']);
   gulp.watch("*.html", ['bs-reload']);
 });

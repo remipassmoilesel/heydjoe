@@ -92,6 +92,40 @@ function checkAuthorization(req, res) {
 
 }
 
+var embedScript;
+fs.readFile('../public/src/scripts/Stats-embed.js', function(err, data){
+
+  if(err){
+    throw err;
+  }
+
+  embedScript = data;
+
+});
+
+
+
+/**
+ * Static data access
+ */
+app.get('/script', function(req, res) {
+
+  res.status(200);
+  res.set({
+    'Content-Type': 'text/javascript',
+  });
+
+  res.send(embedScript);
+
+
+});
+
+app.use('/visualization', express.static('../public'));
+app.use('/bower_components', express.static('../bower_components'));
+app.use('/embed', express.static('../embed'));
+
+
+
 /**
  * Requests persistence
  */
@@ -121,12 +155,6 @@ statPersistence.post('/persist', function(req, res) {
 
 app.use('/', statPersistence); // mount the sub app
 
-/**
- * Static data visualization
- */
-app.use('/visualization', express.static('../public'));
-app.use('/bower_components', express.static('../bower_components'));
-app.use('/embed', express.static('../embed'));
 
 /**
  * Where clients can see datas and charts
