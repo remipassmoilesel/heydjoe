@@ -25,7 +25,7 @@ gulp.task('mirror-local', shell.task(
       'rsync -az "var/www/djoe/jsxc/dev/" "/opt/silverpeas-6.0-SNAPSHOT-wildfly10/bin/build/dist/chatclient/"']));
 
 gulp.task('mirror-distant', shell.task(
-    ['rsync -az "var/www/djoe/jsxc/dev/" im.silverpeas.net:"/opt/silverpeas/sources/Silverpeas-Core/core-war/src/main/webapp/chatclient/"',
+    ['rsync -az "var/www/djoe/jsxc/dev/" im.silverpeas.net:"/opt/silverpeas-sources/Silverpeas-Core/core-war/src/main/webapp/chatclient/"',
       'rsync -az "var/www/djoe/jsxc/dev/" im.silverpeas.net:"/opt/silverpeas-6.0-SNAPSHOT-wildfly10/bin/build/dist/chatclient/"',]));
 
 gulp.task('mirror-demo',

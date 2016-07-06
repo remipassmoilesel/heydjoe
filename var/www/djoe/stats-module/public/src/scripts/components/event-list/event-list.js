@@ -3,13 +3,7 @@
  */
 var template = require('html!./event-list-template.html');
 
-var stats = require("../../Stats-embed.js")({
-  autosend : false,
-  destinationUrl : "http://127.0.0.1:3000",
-  authorization : "DK5I4-0yl9N2KN64Pg5YcEAsdnCXeamr"
-});
-
-var EventListController = function($http, $scope) {
+var EventListController = function($http, $scope, stats) {
 
   var self = this;
 
@@ -23,7 +17,7 @@ var EventListController = function($http, $scope) {
 
 };
 
-EventListController.$inject = ["$http", "$scope"];
+EventListController.$inject = ["$http", "$scope", 'stats'];
 
 module.exports = function(angularMod) {
 

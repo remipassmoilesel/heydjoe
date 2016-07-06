@@ -6,6 +6,8 @@
  */
 jsxc.gui.feedback = function (message, type, timeout) {
 
+    jsxc.stats.addEvent("jsxc.feedback.toast");
+  
     var defaultType = "info";
 
     var bgColors = {

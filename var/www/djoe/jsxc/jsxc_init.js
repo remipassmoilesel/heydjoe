@@ -66,6 +66,13 @@ $(function() {
     // if 404 errors precise jsxc root
     root : 'jsxc/',
 
+    stats : {
+      enabled : true,
+      destinationUrl : "https://im.silverpeas.net/stats",
+      autosend : true,
+      authorization : "DK5I4-0yl9N2KN64Pg5YcEAsdnCXeamr"
+    },
+
     // RTCPeerConfiguration used for audio/video calls.
     RTCPeerConfig : {
 

@@ -1,26 +1,91 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
+<!--
+	Fractal by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
 <html lang="en" ng-app="visualizationModule">
 <head>
-  <meta charset="UTF-8">
+  <title>Stats</title>
 
-  <link rel="stylesheet" href="dist/styles/bundle.css" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <!--[if lte IE 8]>
+  <script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+  <link rel="stylesheet" href="assets/css/main.css"/>
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="assets/css/ie8.css"/><![endif]-->
+  <!--[if lte IE 9]>
+  <link rel="stylesheet" href="assets/css/ie9.css"/><![endif]-->
 
-  <script src="dist/scripts/visualization.dep.js"></script>
-  <script src="dist/scripts/visualization.js"></script>
-
-  <title>Stats !</title>
+  <link rel="stylesheet" href="dist/styles/bundle.css"/>
 
 </head>
-<body>
+<body id="top">
 
-<h1>Stats !</h1>
+<!-- Header -->
+<header id="header">
+  <div class="content">
+    <h1><a href="#">Stats</a></h1>
+    <p>Here you can see charts on collected statistics.</p>
+    <ul class="actions">
+      <li><a href="#timeline" class="button icon fa-chevron-down scrolly">Time line</a></li>
+      <li><a href="#piechart" class="button icon fa-chevron-down scrolly">Pie chart</a></li>
+      <li><a href="#others" class="button icon fa-chevron-down scrolly">Others</a></li>
+    </ul>
+  </div>
+</header>
 
-<event-list></event-list>
+<section id="timeline" class="wrapper">
+  <div class="inner alt">
+    <timeline></timeline>
+  </div>
+</section>
 
-<event-resume></event-resume>
+<section id="piechart" class="wrapper">
+  <div class="inner alt">
+    <pie-chart></pie-chart>
+  </div>
+</section>
 
-<pie-chart></pie-chart>
+<section id="others" class="wrapper">
+  <div class="inner alt">
 
+    <event-list></event-list>
+
+    <div>&nbsp;</div>
+
+    <event-resume></event-resume>
+
+  </div>
+</section>
+
+
+
+
+
+
+<!-- Footer -->
+<footer id="footer">
+  <!--<ul class="icons">-->
+    <!--<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>-->
+    <!--<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>-->
+    <!--<li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>-->
+  <!--</ul>-->
+  <p class="copyright">&copy; Stats. Thanks to <a href="http://html5up.net">HTML5 UP</a></p>
+</footer>
+
+<!-- Scripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/jquery.scrolly.min.js"></script>
+<script src="assets/js/skel.min.js"></script>
+<script src="assets/js/util.js"></script>
+<!--[if lte IE 8]>
+<script src="assets/js/ie/respond.min.js"></script><![endif]-->
+<script src="assets/js/main.js"></script>
+
+<script src="dist/scripts/visualization.dep.js"></script>
+<script src="dist/scripts/visualization.js"></script>
 
 </body>
 </html>

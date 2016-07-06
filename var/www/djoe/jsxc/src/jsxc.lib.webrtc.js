@@ -473,6 +473,9 @@ jsxc.webrtc = {
     * @memberOf jsxc.webrtc
     */
    onMediaFailure: function(ev, err) {
+
+     jsxc.stats.addEvent("jsxc.webrtc.mediafailure");
+
       var self = jsxc.webrtc;
       err = err || {
          name: 'Undefined'
@@ -490,6 +493,9 @@ jsxc.webrtc = {
    },
 
    onIncoming: function(session) {
+
+     jsxc.stats.addEvent("jsxc.webrtc.call.incoming");
+
       var self = jsxc.webrtc;
       var type = (session.constructor) ? session.constructor.name : null;
 
@@ -501,6 +507,9 @@ jsxc.webrtc = {
    },
 
    onIncomingFileTransfer: function(session) {
+
+     jsxc.stats.addEvent("jsxc.webrtc.file.incoming");
+
       jsxc.debug('incoming file transfer from ' + session.peerID);
 
       var buddylist = jsxc.storage.getUserItem('buddylist') || [];
@@ -669,6 +678,9 @@ jsxc.webrtc = {
     * @param sid Session id
     */
    onRemoteStreamAdded: function(session, stream) {
+
+     jsxc.stats.addEvent("jsxc.webrtc.call.remote-stream-received");
+
       this.setStatus('Remote stream for session ' + session.sid + ' added.');
 
       this.remoteStream = stream;
@@ -929,6 +941,9 @@ jsxc.webrtc = {
     * @return {object} session
     */
    sendFile: function(jid, file) {
+
+     jsxc.stats.addEvent("jsxc.webrtc.file.sent");
+
       var self = jsxc.webrtc;
 
       var sess = self.conn.jingle.manager.createFileTransferSession(jid);

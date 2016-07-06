@@ -93,17 +93,15 @@ function checkAuthorization(req, res) {
 }
 
 var embedScript;
-fs.readFile('../public/src/scripts/Stats-embed.js', function(err, data){
+fs.readFile('../public/src/scripts/Stats-embed.js', function(err, data) {
 
-  if(err){
+  if (err) {
     throw err;
   }
 
   embedScript = data;
 
 });
-
-
 
 /**
  * Static data access
@@ -112,19 +110,16 @@ app.get('/script', function(req, res) {
 
   res.status(200);
   res.set({
-    'Content-Type': 'text/javascript',
+    'Content-Type' : 'text/javascript',
   });
 
   res.send(embedScript);
-
 
 });
 
 app.use('/visualization', express.static('../public'));
 app.use('/bower_components', express.static('../bower_components'));
 app.use('/embed', express.static('../embed'));
-
-
 
 /**
  * Requests persistence
@@ -155,7 +150,6 @@ statPersistence.post('/persist', function(req, res) {
 
 app.use('/', statPersistence); // mount the sub app
 
-
 /**
  * Where clients can see datas and charts
  */
@@ -165,6 +159,9 @@ dataAccess.post('/', function(req, res) {
 
 });
 
+/**
+ * Get event list
+ */
 dataAccess.post('/event/list', function(req, res) {
 
   checkAuthorization(req, res);
@@ -196,11 +193,15 @@ dataAccess.post('/event/list', function(req, res) {
 
 });
 
+/**
+ * Get event list with occurence number for each
+ */
 dataAccess.post('/event/resume', function(req, res) {
 
   checkAuthorization(req, res);
 
-  dbmanager.query("SELECT event_name, COUNT(*) FROM data_requests GROUP BY event_name ORDER BY event_name ASC;")
+  dbmanager.query(
+      "SELECT event_name, COUNT(*) FROM data_requests GROUP BY event_name ORDER BY event_name ASC;")
 
       .then(function(result) {
 
@@ -209,6 +210,49 @@ dataAccess.post('/event/resume', function(req, res) {
           _.each(result.rows, function(value, key, list) {
             finalRes.push({
               "event_name" : value.event_name, "count" : value.count
+            });
+          });
+
+        }
+
+        res.status(200).json(finalRes);
+        res.send();
+
+      })
+      .catch(function(error) {
+        log("500 - Internal error".red);
+        log(error);
+
+        res.status(500).json({"error" : '500'});
+        res.send();
+      });
+
+});
+
+/**
+ * Get events occurence per hours
+ */
+dataAccess.post('/event/timeline/hours', function(req, res) {
+
+  checkAuthorization(req, res);
+
+  var prettyDate = function(d) {
+    return d.substring(0, 4) + "-" + d.substring(4, 6) + "-" + d.substring(6, 8) + " " +
+        d.substring(8, 10) + ":00:00";
+  };
+
+  dbmanager.query(
+      "SELECT COUNT(*), to_char(datetime, 'YYYYMMDDHH24') FROM data_requests GROUP BY to_char(datetime, 'YYYYMMDDHH24') ORDER BY to_char ASC")
+
+      .then(function(result) {
+
+        var finalRes = [];
+        if (result && result.rows) {
+          _.each(result.rows, function(value, key, list) {
+            finalRes.push({
+              "event_number" : value.count,
+
+              "date" : prettyDate(value.to_char)
             });
           });
 

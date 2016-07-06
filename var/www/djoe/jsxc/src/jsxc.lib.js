@@ -4,945 +4,958 @@
  * @namespace jsxc
  */
 jsxc = {
-    /** Version of jsxc */
-    version: '< $ app.version $ >',
+  /** Version of jsxc */
+  version : '< $ app.version $ >',
 
-    /** True if i'm the master */
-    master: false,
+  /** True if i'm the master */
+  master : false,
 
-    /** True if the role allocation is finished */
-    role_allocation: false,
+  /** True if the role allocation is finished */
+  role_allocation : false,
 
-    /** Timeout for keepalive */
-    to: [],
+  /** Timeout for keepalive */
+  to : [],
 
-    /** Timeout after normal keepalive starts */
-    toBusy: null,
+  /** Timeout after normal keepalive starts */
+  toBusy : null,
 
-    /** Timeout for notification */
-    toNotification: null,
+  /** Timeout for notification */
+  toNotification : null,
 
-    /** Timeout delay for notification */
-    toNotificationDelay: 500,
+  /** Timeout delay for notification */
+  toNotificationDelay : 500,
 
-    /** Interval for keep-alive */
-    keepalive: null,
+  /** Interval for keep-alive */
+  keepalive : null,
 
-    /** True if jid, sid and rid was used to connect */
-    reconnect: false,
+  /** True if jid, sid and rid was used to connect */
+  reconnect : false,
 
-    /** True if restore is complete */
-    restoreCompleted: false,
+  /** True if restore is complete */
+  restoreCompleted : false,
 
-    /** True if login through box */
-    triggeredFromBox: false,
+  /** True if login through box */
+  triggeredFromBox : false,
 
-    /** True if logout through element click */
-    triggeredFromElement: false,
+  /** True if logout through element click */
+  triggeredFromElement : false,
 
-    /** True if logout through logout click */
-    triggeredFromLogout: false,
+  /** True if logout through logout click */
+  triggeredFromLogout : false,
 
-    /** last values which we wrote into localstorage (IE workaround) */
-    ls: [],
+  /** last values which we wrote into localstorage (IE workaround) */
+  ls : [],
 
-    /**
-     * storage event is even fired if I write something into storage (IE
-     * workaround) 0: conform, 1: not conform, 2: not shure
-     */
-    storageNotConform: null,
+  stats : null,
 
-    /** Timeout for storageNotConform test */
-    toSNC: null,
+  /**
+   * storage event is even fired if I write something into storage (IE
+   * workaround) 0: conform, 1: not conform, 2: not shure
+   */
+  storageNotConform : null,
 
-    /** My bar id */
-    bid: null,
+  /** Timeout for storageNotConform test */
+  toSNC : null,
 
-    /** Some constants */
-    CONST: {
-        NOTIFICATION_DEFAULT: 'default',
-        NOTIFICATION_GRANTED: 'granted',
-        NOTIFICATION_DENIED: 'denied',
-        STATUS: ['offline', 'dnd', 'xa', 'away', 'chat', 'online'],
-        SOUNDS: {
-            MSG: 'incomingMessage.wav',
-            CALL: 'Rotary-Phone6.mp3',
-            NOTICE: 'Ping1.mp3'
-        },
-        REGEX: {
-            JID: new RegExp('\\b[^"&\'\\/:<>@\\s]+@[\\w-_.]+\\b', 'ig'),
-            URL: new RegExp(/(https?:\/\/|www\.)[^\s<>'"]+/gi)
-        },
-        NS: {
-            CARBONS: 'urn:xmpp:carbons:2',
-            FORWARD: 'urn:xmpp:forward:0'
-        },
-        HIDDEN: 'hidden',
-        SHOWN: 'shown'
+  /** My bar id */
+  bid : null,
+
+  /** Some constants */
+  CONST : {
+    NOTIFICATION_DEFAULT : 'default',
+    NOTIFICATION_GRANTED : 'granted',
+    NOTIFICATION_DENIED : 'denied',
+    STATUS : ['offline', 'dnd', 'xa', 'away', 'chat', 'online'],
+    SOUNDS : {
+      MSG : 'incomingMessage.wav', CALL : 'Rotary-Phone6.mp3', NOTICE : 'Ping1.mp3'
     },
+    REGEX : {
+      JID : new RegExp('\\b[^"&\'\\/:<>@\\s]+@[\\w-_.]+\\b', 'ig'),
+      URL : new RegExp(/(https?:\/\/|www\.)[^\s<>'"]+/gi)
+    },
+    NS : {
+      CARBONS : 'urn:xmpp:carbons:2', FORWARD : 'urn:xmpp:forward:0'
+    },
+    HIDDEN : 'hidden',
+    SHOWN : 'shown'
+  },
 
+  /**
+   * Parse a unix timestamp and return a formatted time string
+   *
+   * @memberOf jsxc
+   * @param {Object} unixtime
+   * @returns time of day and/or date
+   */
+  getFormattedTime : function(unixtime) {
+    var msgDate = new Date(parseInt(unixtime));
+    var day = ('0' + msgDate.getDate()).slice(-2);
+    var month = ('0' + (msgDate.getMonth() + 1)).slice(-2);
+    var year = msgDate.getFullYear();
+    var hours = ('0' + msgDate.getHours()).slice(-2);
+    var minutes = ('0' + msgDate.getMinutes()).slice(-2);
+    var dateNow = new Date();
 
-    /**
-     * Parse a unix timestamp and return a formatted time string
-     *
-     * @memberOf jsxc
-     * @param {Object} unixtime
-     * @returns time of day and/or date
-     */
-    getFormattedTime: function (unixtime) {
-        var msgDate = new Date(parseInt(unixtime));
-        var day = ('0' + msgDate.getDate()).slice(-2);
-        var month = ('0' + (msgDate.getMonth() + 1)).slice(-2);
-        var year = msgDate.getFullYear();
-        var hours = ('0' + msgDate.getHours()).slice(-2);
-        var minutes = ('0' + msgDate.getMinutes()).slice(-2);
-        var dateNow = new Date();
+    var date = (typeof msgDate.toLocaleDateString === 'function') ? msgDate.toLocaleDateString() :
+    day + '.' + month + '.' + year;
+    var time = (typeof msgDate.toLocaleTimeString === 'function') ? msgDate.toLocaleTimeString() :
+    hours + ':' + minutes;
 
-        var date = (typeof msgDate.toLocaleDateString === 'function') ? msgDate.toLocaleDateString() : day + '.' + month + '.' + year;
-        var time = (typeof msgDate.toLocaleTimeString === 'function') ? msgDate.toLocaleTimeString() : hours + ':' + minutes;
+    // compare dates only
+    dateNow.setHours(0, 0, 0, 0);
+    msgDate.setHours(0, 0, 0, 0);
 
-        // compare dates only
-        dateNow.setHours(0, 0, 0, 0);
-        msgDate.setHours(0, 0, 0, 0);
-
-        if (dateNow.getTime() !== msgDate.getTime()) {
-            return date + ' ' + time;
-        }
-        return time;
+    if (dateNow.getTime() !== msgDate.getTime()) {
+      return date + ' ' + time;
     }
-    ,
+    return time;
+  },
 
-    /**
-     * Write debug message to console and to log.
-     *
-     * @memberOf jsxc
-     * @param {String} msg Debug message
-     * @param {Object} data
-     * @param {String} Could be warn|error|null
-     */
-    debug: function (msg, data, level) {
+  /**
+   * Write debug message to console and to log.
+   *
+   * @memberOf jsxc
+   * @param {String} msg Debug message
+   * @param {Object} data
+   * @param {String} Could be warn|error|null
+   */
+  debug : function(msg, data, level) {
 
-        if (level) {
-            msg = '[' + level + '] ' + msg;
-        }
-
-        if (data) {
-            if (jsxc.storage.getItem('debug') === true) {
-                console.log(msg, data);
-            }
-
-            // try to convert data to string
-            var d;
-            try {
-                // clone html snippet
-                d = $("<span>").prepend($(data).clone()).html();
-            } catch (err) {
-                try {
-                    d = JSON.stringify(data);
-                } catch (err2) {
-                    d = 'error while stringify, see js console';
-                }
-            }
-
-            jsxc.log = jsxc.log + '$ ' + msg + ': ' + d + '\n';
-
-            console.log(msg, data);
-
-        } else {
-            console.log(msg);
-
-            // stack trace
-            if (jsxc.storage.getItem('debug')) {
-                var err = new Error();
-                console.log(err.stack);
-            }
-
-            jsxc.log = jsxc.log + '$ ' + msg + '\n';
-        }
+    if (level) {
+      msg = '[' + level + '] ' + msg;
     }
-    ,
 
-    /**
-     * Write warn message.
-     *
-     * @memberOf jsxc
-     * @param {String} msg Warn message
-     * @param {Object} data
-     */
-    warn: function (msg, data) {
-        jsxc.debug(msg, data, 'WARN');
-    }
-    ,
+    if (data) {
+      if (jsxc.storage.getItem('debug') === true) {
+        console.log(msg, data);
+      }
 
-    /**
-     * Write error message.
-     *
-     * @memberOf jsxc
-     * @param {String} msg Error message
-     * @param {Object} data
-     */
-    error: function (msg, data) {
-        jsxc.debug(msg, data, 'ERROR');
-    }
-    ,
-
-    /** debug log */
-    log: '',
-
-    /**
-     * This function initializes important core functions and event handlers.
-     * Afterwards it performs the following actions in the given order:
-     *
-     * <ol>
-     *  <li>If (loginForm.ifFound = 'force' and form was found) or (jid or rid or
-     *    sid was not found) intercept form, and listen for credentials.</li>
-     *  <li>Attach with jid, rid and sid from storage, if no form was found or
-     *    loginForm.ifFound = 'attach'</li>
-     *  <li>Attach with jid, rid and sid from options.xmpp, if no form was found or
-     *    loginForm.ifFound = 'attach'</li>
-     * </ol>
-     *
-     * @memberOf jsxc
-     * @param {object} options See {@link jsxc.options}
-     */
-    init: function (options) {
-
-        if (options && options.loginForm && typeof options.loginForm.attachIfFound === 'boolean' && !options.loginForm.ifFound) {
-            // translate deprated option attachIfFound found to new ifFound
-            options.loginForm.ifFound = (options.loginForm.attachIfFound) ? 'attach' : 'pause';
+      // try to convert data to string
+      var d;
+      try {
+        // clone html snippet
+        d = $("<span>").prepend($(data).clone()).html();
+      } catch (err) {
+        try {
+          d = JSON.stringify(data);
+        } catch (err2) {
+          d = 'error while stringify, see js console';
         }
+      }
 
-        if (options) {
-            // override default options
-            $.extend(true, jsxc.options, options);
-        }
+      jsxc.log = jsxc.log + '$ ' + msg + ': ' + d + '\n';
 
-        // Check localStorage
-        if (typeof(localStorage) === 'undefined') {
-            jsxc.warn("Browser doesn't support localStorage.");
+      console.log(msg, data);
+
+    } else {
+      console.log(msg);
+
+      // stack trace
+      if (jsxc.storage.getItem('debug')) {
+        var err = new Error();
+        console.log(err.stack);
+      }
+
+      jsxc.log = jsxc.log + '$ ' + msg + '\n';
+    }
+  },
+
+  /**
+   * Write warn message.
+   *
+   * @memberOf jsxc
+   * @param {String} msg Warn message
+   * @param {Object} data
+   */
+  warn : function(msg, data) {
+    jsxc.debug(msg, data, 'WARN');
+  },
+
+  /**
+   * Write error message.
+   *
+   * @memberOf jsxc
+   * @param {String} msg Error message
+   * @param {Object} data
+   */
+  error : function(msg, data) {
+    jsxc.debug(msg, data, 'ERROR');
+  },
+
+  /** debug log */
+  log : '',
+
+  /**
+   * This function initializes important core functions and event handlers.
+   * Afterwards it performs the following actions in the given order:
+   *
+   * <ol>
+   *  <li>If (loginForm.ifFound = 'force' and form was found) or (jid or rid or
+   *    sid was not found) intercept form, and listen for credentials.</li>
+   *  <li>Attach with jid, rid and sid from storage, if no form was found or
+   *    loginForm.ifFound = 'attach'</li>
+   *  <li>Attach with jid, rid and sid from options.xmpp, if no form was found or
+   *    loginForm.ifFound = 'attach'</li>
+   * </ol>
+   *
+   * @memberOf jsxc
+   * @param {object} options See {@link jsxc.options}
+   */
+  init : function(options) {
+
+    if (options && options.loginForm && typeof options.loginForm.attachIfFound === 'boolean' &&
+        !options.loginForm.ifFound) {
+      // translate deprated option attachIfFound found to new ifFound
+      options.loginForm.ifFound = (options.loginForm.attachIfFound) ? 'attach' : 'pause';
+    }
+
+    if (options) {
+      // override default options
+      $.extend(true, jsxc.options, options);
+    }
+
+    // Check localStorage
+    if (typeof(localStorage) === 'undefined') {
+      jsxc.warn("Browser doesn't support localStorage.");
+      return;
+    }
+
+    /**
+     * Getter method for options. Saved options will override default one.
+     *
+     * @param {string} key option key
+     * @returns default or saved option value
+     */
+    jsxc.options.get = function(key) {
+      if (jsxc.bid) {
+        var local = jsxc.storage.getUserItem('options') || {};
+
+        return (typeof local[key] !== 'undefined') ? local[key] : jsxc.options[key];
+      }
+
+      return jsxc.options[key];
+    };
+
+    /**
+     * Setter method for options. Will write into localstorage.
+     *
+     * @param {string} key option key
+     * @param {object} value option value
+     */
+    jsxc.options.set = function(key, value) {
+      jsxc.storage.updateItem('options', key, value, true);
+    };
+
+    jsxc.storageNotConform = jsxc.storage.getItem('storageNotConform');
+    if (jsxc.storageNotConform === null) {
+      jsxc.storageNotConform = 2;
+    }
+
+    /**
+     * Initialize i18n
+     */
+    jsxc.localization.init();
+
+    /**
+     * Initialize stat module
+     * @type {default}
+     */
+    var statsOptions = jsxc.options.get("stats");
+    if (statsOptions && statsOptions.enabled) {
+
+      var _statsManager = require("../lib/stats-module/scripts/Stats-embed.js")({
+
+        destinationUrl : statsOptions.destinationUrl,
+
+        authorization : statsOptions.authorization,
+
+        interval : 2000,
+
+        autosend : true,
+
+      });
+
+      jsxc.stats = {
+        addEvent: _statsManager.addEvent.bind(_statsManager)
+      }
+
+    }
+
+    else {
+      jsxc.stats = {
+        addEvent: function(){}
+      }
+    }
+
+    jsxc.stats.addEvent('jsxc.init');
+
+    if (jsxc.storage.getItem('debug') === true) {
+      jsxc.options.otr.debug = true;
+    }
+
+    // initailizing sha 1 tool
+    jsxc.sha1 = require("../lib/sha1.js");
+
+    // initializing rest api
+    jsxc.rest.init();
+
+    // Register event listener for the storage event
+    window.addEventListener('storage', jsxc.storage.onStorage, false);
+
+    $(document).on('attached.jsxc', function() {
+      // Looking for logout element
+      if (jsxc.options.logoutElement !== null && $(jsxc.options.logoutElement).length > 0) {
+        var logout = function(ev) {
+          if (!jsxc.xmpp.conn || !jsxc.xmpp.conn.authenticated) {
             return;
-        }
+          }
 
-        /**
-         * Getter method for options. Saved options will override default one.
-         *
-         * @param {string} key option key
-         * @returns default or saved option value
-         */
-        jsxc.options.get = function (key) {
-            if (jsxc.bid) {
-                var local = jsxc.storage.getUserItem('options') || {};
+          ev.stopPropagation();
+          ev.preventDefault();
 
-                return (typeof local[key] !== 'undefined') ? local[key] : jsxc.options[key];
-            }
+          jsxc.options.logoutElement = $(this);
+          jsxc.triggeredFromLogout = true;
 
-            return jsxc.options[key];
+          jsxc.xmpp.logout();
         };
 
-        /**
-         * Setter method for options. Will write into localstorage.
-         *
-         * @param {string} key option key
-         * @param {object} value option value
-         */
-        jsxc.options.set = function (key, value) {
-            jsxc.storage.updateItem('options', key, value, true);
-        };
+        jsxc.options.logoutElement = $(jsxc.options.logoutElement);
 
-        jsxc.storageNotConform = jsxc.storage.getItem('storageNotConform');
-        if (jsxc.storageNotConform === null) {
-            jsxc.storageNotConform = 2;
+        jsxc.options.logoutElement.off('click', null, logout).one('click', logout);
+      }
+    });
+
+    var isStorageAttachParameters = jsxc.storage.getItem('rid') && jsxc.storage.getItem('sid') &&
+        jsxc.storage.getItem('jid');
+    var isOptionsAttachParameters = jsxc.options.xmpp.rid && jsxc.options.xmpp.sid &&
+        jsxc.options.xmpp.jid;
+    var isForceLoginForm = jsxc.options.loginForm && jsxc.options.loginForm.ifFound === 'force' &&
+        jsxc.isLoginForm();
+
+    // Check if we have to establish a new connection
+    if ((!isStorageAttachParameters && !isOptionsAttachParameters) || isForceLoginForm) {
+
+      // clean up rid and sid
+      jsxc.storage.removeItem('rid');
+      jsxc.storage.removeItem('sid');
+
+      // Looking for a login form
+      if (!jsxc.isLoginForm()) {
+
+        if (jsxc.options.displayRosterMinimized()) {
+          // Show minimized roster
+          jsxc.storage.setUserItem('roster', 'hidden');
+          jsxc.gui.roster.init();
+          jsxc.gui.roster.noConnection();
         }
 
-        jsxc.localization.init();
+        return;
+      }
 
-        if (jsxc.storage.getItem('debug') === true) {
-            jsxc.options.otr.debug = true;
-        }
+      if (typeof jsxc.options.formFound === 'function') {
+        jsxc.options.formFound.call();
+      }
 
-        // initailizing sha 1 tool
-        jsxc.sha1 = require("../lib/sha1.js");
-        
-        // initializing rest api
-        jsxc.rest.init();
+      // create jquery object
+      var form = jsxc.options.loginForm.form = $(jsxc.options.loginForm.form);
+      var events = form.data('events') || {
+            submit : []
+          };
+      var submits = [];
 
-        // Register event listener for the storage event
-        window.addEventListener('storage', jsxc.storage.onStorage, false);
+      // save attached submit events and remove them. Will be reattached
+      // in jsxc.submitLoginForm
+      $.each(events.submit, function(index, val) {
+        submits.push(val.handler);
+      });
 
-        $(document).on('attached.jsxc', function () {
-            // Looking for logout element
-            if (jsxc.options.logoutElement !== null && $(jsxc.options.logoutElement).length > 0) {
-                var logout = function (ev) {
-                    if (!jsxc.xmpp.conn || !jsxc.xmpp.conn.authenticated) {
-                        return;
-                    }
+      form.data('submits', submits);
+      form.off('submit');
 
-                    ev.stopPropagation();
-                    ev.preventDefault();
+      // Add jsxc login action to form
+      form.submit(function() {
+        jsxc.prepareLogin(function(settings) {
+          if (settings !== false) {
+            // settings.xmpp.onlogin is deprecated since v2.1.0
+            var enabled = (settings.loginForm && settings.loginForm.enable) ||
+                (settings.xmpp && settings.xmpp.onlogin);
+            enabled = enabled === "true" || enabled === true;
 
-                    jsxc.options.logoutElement = $(this);
-                    jsxc.triggeredFromLogout = true;
+            if (enabled) {
+              jsxc.options.loginForm.triggered = true;
 
-                    jsxc.xmpp.logout();
-                };
-
-                jsxc.options.logoutElement = $(jsxc.options.logoutElement);
-
-                jsxc.options.logoutElement.off('click', null, logout).one('click', logout);
+              jsxc.xmpp.login(jsxc.options.xmpp.jid, jsxc.options.xmpp.password);
             }
+          } else {
+            jsxc.submitLoginForm();
+          }
         });
 
-        var isStorageAttachParameters = jsxc.storage.getItem('rid') && jsxc.storage.getItem('sid') && jsxc.storage.getItem('jid');
-        var isOptionsAttachParameters = jsxc.options.xmpp.rid && jsxc.options.xmpp.sid && jsxc.options.xmpp.jid;
-        var isForceLoginForm = jsxc.options.loginForm && jsxc.options.loginForm.ifFound === 'force' && jsxc.isLoginForm();
+        // Trigger submit in jsxc.xmpp.connected()
+        return false;
+      });
 
-        // Check if we have to establish a new connection
-        if ((!isStorageAttachParameters && !isOptionsAttachParameters) || isForceLoginForm) {
+    } else if (!jsxc.isLoginForm() ||
+        (jsxc.options.loginForm && jsxc.options.loginForm.ifFound === 'attach')) {
 
-            // clean up rid and sid
-            jsxc.storage.removeItem('rid');
-            jsxc.storage.removeItem('sid');
+      // Restore old connection
 
-            // Looking for a login form
-            if (!jsxc.isLoginForm()) {
-
-                if (jsxc.options.displayRosterMinimized()) {
-                    // Show minimized roster
-                    jsxc.storage.setUserItem('roster', 'hidden');
-                    jsxc.gui.roster.init();
-                    jsxc.gui.roster.noConnection();
-                }
-
-                return;
-            }
-
-            if (typeof jsxc.options.formFound === 'function') {
-                jsxc.options.formFound.call();
-            }
-
-            // create jquery object
-            var form = jsxc.options.loginForm.form = $(jsxc.options.loginForm.form);
-            var events = form.data('events') || {
-                    submit: []
-                };
-            var submits = [];
-
-            // save attached submit events and remove them. Will be reattached
-            // in jsxc.submitLoginForm
-            $.each(events.submit, function (index, val) {
-                submits.push(val.handler);
-            });
-
-            form.data('submits', submits);
-            form.off('submit');
-
-            // Add jsxc login action to form
-            form.submit(function () {
-                jsxc.prepareLogin(function (settings) {
-                    if (settings !== false) {
-                        // settings.xmpp.onlogin is deprecated since v2.1.0
-                        var enabled = (settings.loginForm && settings.loginForm.enable) || (settings.xmpp && settings.xmpp.onlogin);
-                        enabled = enabled === "true" || enabled === true;
-
-                        if (enabled) {
-                            jsxc.options.loginForm.triggered = true;
-
-                            jsxc.xmpp.login(jsxc.options.xmpp.jid, jsxc.options.xmpp.password);
-                        }
-                    } else {
-                        jsxc.submitLoginForm();
-                    }
-                });
-
-                // Trigger submit in jsxc.xmpp.connected()
-                return false;
-            });
-
-        } else if (!jsxc.isLoginForm() || (jsxc.options.loginForm && jsxc.options.loginForm.ifFound === 'attach')) {
-
-            // Restore old connection
-
-            if (typeof jsxc.storage.getItem('alive') !== 'number') {
-                jsxc.onMaster();
-            } else {
-                jsxc.checkMaster();
-            }
-        }
-
-
-
-    },
-
-    /**
-     * Attach to previous session if jid, sid and rid are available
-     * in storage or options (default behaviour also for {@link jsxc.init}).
-     *
-     * @memberOf jsxc
-     */
-    /**
-     * Start new chat session with given jid and password.
-     *
-     * @memberOf jsxc
-     * @param {string} jid Jabber Id
-     * @param {string} password Jabber password
-     */
-    /**
-     * Attach to new chat session with jid, sid and rid.
-     *
-     * @memberOf jsxc
-     * @param {string} jid Jabber Id
-     * @param {string} sid Session Id
-     * @param {string} rid Request Id
-     */
-    start: function () {
-        var args = arguments;
-
-        if (jsxc.role_allocation && !jsxc.master) {
-            jsxc.debug('There is an other master tab');
-
-            return false;
-        }
-
-        if (jsxc.xmpp.conn && jsxc.xmpp.connected) {
-            jsxc.debug('We are already connected');
-
-            return false;
-        }
-
-        if (args.length === 3) {
-            $(document).one('attached.jsxc', function () {
-                // save rid after first attachment
-                jsxc.xmpp.onRidChange(jsxc.xmpp.conn._proto.rid);
-
-                jsxc.onMaster();
-            });
-        }
-
-        jsxc.checkMaster(function () {
-            jsxc.xmpp.login.apply(this, args);
-        });
+      if (typeof jsxc.storage.getItem('alive') !== 'number') {
+        jsxc.onMaster();
+      } else {
+        jsxc.checkMaster();
+      }
     }
-    ,
 
-    /**
-     * Returns true if login form is found.
-     *
-     * @memberOf jsxc
-     * @returns {boolean} True if login form was found.
-     */
-    isLoginForm: function () {
-        return jsxc.options.loginForm.form && jsxc.el_exists(jsxc.options.loginForm.form) && jsxc.el_exists(jsxc.options.loginForm.jid) && jsxc.el_exists(jsxc.options.loginForm.pass);
+  },
+
+  /**
+   * Attach to previous session if jid, sid and rid are available
+   * in storage or options (default behaviour also for {@link jsxc.init}).
+   *
+   * @memberOf jsxc
+   */
+  /**
+   * Start new chat session with given jid and password.
+   *
+   * @memberOf jsxc
+   * @param {string} jid Jabber Id
+   * @param {string} password Jabber password
+   */
+  /**
+   * Attach to new chat session with jid, sid and rid.
+   *
+   * @memberOf jsxc
+   * @param {string} jid Jabber Id
+   * @param {string} sid Session Id
+   * @param {string} rid Request Id
+   */
+  start : function() {
+    var args = arguments;
+
+    if (jsxc.role_allocation && !jsxc.master) {
+      jsxc.debug('There is an other master tab');
+
+      return false;
     }
-    ,
 
-    /**
-     * Load settings and prepare jid.
-     *
-     * @memberOf jsxc
-     * @param {string} username
-     * @param {string} password
-     * @param {function} cb Called after login is prepared with result as param
-     */
-    prepareLogin: function (username, password, cb) {
-        if (typeof username === 'function') {
-            cb = username;
-            username = null;
-        }
-        username = username || $(jsxc.options.loginForm.jid).val();
-        password = password || $(jsxc.options.loginForm.pass).val();
+    if (jsxc.xmpp.conn && jsxc.xmpp.connected) {
+      jsxc.debug('We are already connected');
 
-        if (!jsxc.triggeredFromBox && (jsxc.options.loginForm.onConnecting === 'dialog' || typeof jsxc.options.loginForm.onConnecting === 'undefined')) {
-            jsxc.gui.showWaitAlert(jsxc.t('Logging_in'));
-        }
-
-        var settings;
-
-        if (typeof jsxc.options.loadSettings === 'function') {
-            settings = jsxc.options.loadSettings.call(this, username, password, function (s) {
-                jsxc._prepareLogin(username, password, cb, s);
-            });
-
-            if (typeof settings !== 'undefined') {
-                jsxc._prepareLogin(username, password, cb, settings);
-            }
-        } else {
-            jsxc._prepareLogin(username, password, cb);
-        }
+      return false;
     }
-    ,
 
-    /**
-     * Process xmpp settings and save loaded settings.
-     *
-     * @private
-     * @memberOf jsxc
-     * @param {string} username
-     * @param {string} password
-     * @param {function} cb Called after login is prepared with result as param
-     * @param {object} [loadedSettings] additonal options
-     */
-    _prepareLogin: function (username, password, cb, loadedSettings) {
-        if (loadedSettings === false) {
-            jsxc.warn('No settings provided');
+    if (args.length === 3) {
+      $(document).one('attached.jsxc', function() {
+        // save rid after first attachment
+        jsxc.xmpp.onRidChange(jsxc.xmpp.conn._proto.rid);
 
-            cb(false);
-            return;
-        }
-
-        // prevent to modify the original object
-        var settings = $.extend(true, {}, jsxc.options);
-
-        if (loadedSettings) {
-            // overwrite current options with loaded settings;
-            settings = $.extend(true, settings, loadedSettings);
-        } else {
-            loadedSettings = {};
-        }
-
-        if (typeof settings.xmpp.username === 'string') {
-            username = settings.xmpp.username;
-        }
-
-        var resource = (settings.xmpp.resource) ? '/' + settings.xmpp.resource : '';
-        var domain = settings.xmpp.domain;
-        var jid;
-
-        if (username.match(/@(.*)$/)) {
-            jid = (username.match(/\/(.*)$/)) ? username : username + resource;
-        } else {
-            jid = username + '@' + domain + resource;
-        }
-
-        if (typeof jsxc.options.loginForm.preJid === 'function') {
-            jid = jsxc.options.loginForm.preJid(jid);
-        }
-
-        jsxc.bid = jsxc.jidToBid(jid);
-
-        settings.xmpp.username = jid.split('@')[0];
-        settings.xmpp.domain = jid.split('@')[1].split('/')[0];
-        settings.xmpp.resource = jid.split('@')[1].split('/')[1] || "";
-
-        if (!loadedSettings.xmpp) {
-            // force xmpp settings to be saved to storage
-            loadedSettings.xmpp = {};
-        }
-
-        // save loaded settings to storage
-        $.each(loadedSettings, function (key) {
-            var old = jsxc.options.get(key);
-            var val = settings[key];
-            val = $.extend(true, old, val);
-
-            jsxc.options.set(key, val);
-        });
-
-        jsxc.options.xmpp.jid = jid;
-        jsxc.options.xmpp.password = password;
-
-        cb(settings);
+        jsxc.onMaster();
+      });
     }
-    ,
 
-    /**
-     * Called if the script is a slave
-     */
-    onSlave: function () {
-        jsxc.debug('I am the slave.');
+    jsxc.checkMaster(function() {
+      jsxc.xmpp.login.apply(this, args);
+    });
+  },
 
-        jsxc.role_allocation = true;
-        jsxc.bid = jsxc.jidToBid(jsxc.storage.getItem('jid'));
+  /**
+   * Returns true if login form is found.
+   *
+   * @memberOf jsxc
+   * @returns {boolean} True if login form was found.
+   */
+  isLoginForm : function() {
+    return jsxc.options.loginForm.form && jsxc.el_exists(jsxc.options.loginForm.form) &&
+        jsxc.el_exists(jsxc.options.loginForm.jid) && jsxc.el_exists(jsxc.options.loginForm.pass);
+  },
 
-        jsxc.gui.init();
-
-        jsxc.restoreRoster();
-        jsxc.restoreWindows();
-        jsxc.restoreCompleted = true;
-
-        $(document).trigger('restoreCompleted.jsxc');
+  /**
+   * Load settings and prepare jid.
+   *
+   * @memberOf jsxc
+   * @param {string} username
+   * @param {string} password
+   * @param {function} cb Called after login is prepared with result as param
+   */
+  prepareLogin : function(username, password, cb) {
+    if (typeof username === 'function') {
+      cb = username;
+      username = null;
     }
-    ,
+    username = username || $(jsxc.options.loginForm.jid).val();
+    password = password || $(jsxc.options.loginForm.pass).val();
 
-    /**
-     * Called if the script is the master
-     */
-    onMaster: function () {
-        jsxc.debug('I am master.');
-
-        jsxc.master = true;
-
-        // Init local storage
-        jsxc.storage.setItem('alive', 0);
-        jsxc.storage.setItem('alive_busy', 0);
-
-        // Sending keepalive signal
-        jsxc.startKeepAlive();
-
-        jsxc.role_allocation = true;
-
-        jsxc.xmpp.login();
+    if (!jsxc.triggeredFromBox && (jsxc.options.loginForm.onConnecting === 'dialog' ||
+        typeof jsxc.options.loginForm.onConnecting === 'undefined')) {
+      jsxc.gui.showWaitAlert(jsxc.t('Logging_in'));
     }
-    ,
 
-    /**
-     * Checks if there is a master
-     *
-     * @param {function} [cb] Called if no master was found.
-     */
-    checkMaster: function (cb) {
-        jsxc.debug('check master');
+    var settings;
 
-        cb = (cb && typeof cb === 'function') ? cb : jsxc.onMaster;
+    if (typeof jsxc.options.loadSettings === 'function') {
+      settings = jsxc.options.loadSettings.call(this, username, password, function(s) {
+        jsxc._prepareLogin(username, password, cb, s);
+      });
 
-        if (typeof jsxc.storage.getItem('alive') !== 'number') {
-            cb.call();
-        } else {
-            jsxc.to.push(window.setTimeout(cb, 1000));
-            jsxc.storage.ink('alive');
-        }
+      if (typeof settings !== 'undefined') {
+        jsxc._prepareLogin(username, password, cb, settings);
+      }
+    } else {
+      jsxc._prepareLogin(username, password, cb);
     }
-    ,
+  },
 
-    masterActions: function () {
+  /**
+   * Process xmpp settings and save loaded settings.
+   *
+   * @private
+   * @memberOf jsxc
+   * @param {string} username
+   * @param {string} password
+   * @param {function} cb Called after login is prepared with result as param
+   * @param {object} [loadedSettings] additonal options
+   */
+  _prepareLogin : function(username, password, cb, loadedSettings) {
+    if (loadedSettings === false) {
+      jsxc.warn('No settings provided');
 
-        if (!jsxc.xmpp.conn || !jsxc.xmpp.conn.authenticated) {
-            return;
-        }
-
-        //prepare notifications
-        var noti = jsxc.storage.getUserItem('notification');
-        noti = (typeof noti === 'number') ? noti : 2;
-        if (jsxc.options.notification && noti > 0 && jsxc.notification.hasSupport()) {
-            if (jsxc.notification.hasPermission()) {
-                jsxc.notification.init();
-            } else {
-                jsxc.notification.prepareRequest();
-            }
-        } else {
-            // No support => disable
-            jsxc.options.notification = false;
-        }
-
-        if (jsxc.options.get('otr').enable) {
-            // create or load DSA key
-            jsxc.otr.createDSA();
-        }
-
-        jsxc.gui.updateAvatar($('#jsxc_roster > .jsxc_bottom'), jsxc.jidToBid(jsxc.storage.getItem('jid')), 'own');
+      cb(false);
+      return;
     }
-    ,
 
-    /**
-     * Start sending keep-alive signal
-     */
-    startKeepAlive: function () {
-        jsxc.keepalive = window.setInterval(jsxc.keepAlive, jsxc.options.timeout - 1000);
+    // prevent to modify the original object
+    var settings = $.extend(true, {}, jsxc.options);
+
+    if (loadedSettings) {
+      // overwrite current options with loaded settings;
+      settings = $.extend(true, settings, loadedSettings);
+    } else {
+      loadedSettings = {};
     }
-    ,
 
-    /**
-     * Sends the keep-alive signal to signal that the master is still there.
-     */
-    keepAlive: function () {
-        jsxc.storage.ink('alive');
+    if (typeof settings.xmpp.username === 'string') {
+      username = settings.xmpp.username;
     }
-    ,
 
-    /**
-     * Send one keep-alive signal with higher timeout, and than resume with
-     * normal signal
-     */
-    keepBusyAlive: function () {
-        if (jsxc.toBusy) {
-            window.clearTimeout(jsxc.toBusy);
-        }
+    var resource = (settings.xmpp.resource) ? '/' + settings.xmpp.resource : '';
+    var domain = settings.xmpp.domain;
+    var jid;
 
-        if (jsxc.keepalive) {
-            window.clearInterval(jsxc.keepalive);
-        }
-
-        jsxc.storage.ink('alive_busy');
-        jsxc.toBusy = window.setTimeout(jsxc.startKeepAlive, jsxc.options.busyTimeout - 1000);
+    if (username.match(/@(.*)$/)) {
+      jid = (username.match(/\/(.*)$/)) ? username : username + resource;
+    } else {
+      jid = username + '@' + domain + resource;
     }
-    ,
 
-    /**
-     * Generates a random integer number between 0 and max
-     *
-     * @param {Integer} max
-     * @return {Integer} random integer between 0 and max
-     */
-    random: function (max) {
-        return Math.floor(Math.random() * max);
+    if (typeof jsxc.options.loginForm.preJid === 'function') {
+      jid = jsxc.options.loginForm.preJid(jid);
     }
-    ,
 
-    /**
-     * Checks if there is a element with the given selector
-     *
-     * @param {String} selector jQuery selector
-     * @return {Boolean}
-     */
-    el_exists: function (selector) {
-        return $(selector).length > 0;
+    jsxc.bid = jsxc.jidToBid(jid);
+
+    settings.xmpp.username = jid.split('@')[0];
+    settings.xmpp.domain = jid.split('@')[1].split('/')[0];
+    settings.xmpp.resource = jid.split('@')[1].split('/')[1] || "";
+
+    if (!loadedSettings.xmpp) {
+      // force xmpp settings to be saved to storage
+      loadedSettings.xmpp = {};
     }
-    ,
 
-    /**
-     * Creates a CSS compatible string from a JID
-     *
-     * @param {type} jid Valid Jabber ID
-     * @returns {String} css Compatible string
-     */
-    jidToCid: function (jid) {
-        jsxc.warn('jsxc.jidToCid is deprecated!');
+    // save loaded settings to storage
+    $.each(loadedSettings, function(key) {
+      var old = jsxc.options.get(key);
+      var val = settings[key];
+      val = $.extend(true, old, val);
 
-        var cid = Strophe.getBareJidFromJid(jid).replace('@', '-').replace(/\./g, '-').toLowerCase();
+      jsxc.options.set(key, val);
+    });
 
-        return cid;
+    jsxc.options.xmpp.jid = jid;
+    jsxc.options.xmpp.password = password;
+
+    cb(settings);
+  },
+
+  /**
+   * Called if the script is a slave
+   */
+  onSlave : function() {
+    jsxc.debug('I am the slave.');
+
+    jsxc.role_allocation = true;
+    jsxc.bid = jsxc.jidToBid(jsxc.storage.getItem('jid'));
+
+    jsxc.gui.init();
+
+    jsxc.restoreRoster();
+    jsxc.restoreWindows();
+    jsxc.restoreCompleted = true;
+
+    $(document).trigger('restoreCompleted.jsxc');
+  },
+
+  /**
+   * Called if the script is the master
+   */
+  onMaster : function() {
+    jsxc.debug('I am master.');
+
+    jsxc.master = true;
+
+    // Init local storage
+    jsxc.storage.setItem('alive', 0);
+    jsxc.storage.setItem('alive_busy', 0);
+
+    // Sending keepalive signal
+    jsxc.startKeepAlive();
+
+    jsxc.role_allocation = true;
+
+    jsxc.xmpp.login();
+  },
+
+  /**
+   * Checks if there is a master
+   *
+   * @param {function} [cb] Called if no master was found.
+   */
+  checkMaster : function(cb) {
+    jsxc.debug('check master');
+
+    cb = (cb && typeof cb === 'function') ? cb : jsxc.onMaster;
+
+    if (typeof jsxc.storage.getItem('alive') !== 'number') {
+      cb.call();
+    } else {
+      jsxc.to.push(window.setTimeout(cb, 1000));
+      jsxc.storage.ink('alive');
     }
-    ,
+  },
 
-    /**
-     * Create comparable bar jid.
-     *
-     * @memberOf jsxc
-     * @param jid
-     * @returns comparable bar jid
-     */
-    jidToBid: function (jid) {
-        return Strophe.unescapeNode(Strophe.getBareJidFromJid(jid).toLowerCase());
+  masterActions : function() {
+
+    if (!jsxc.xmpp.conn || !jsxc.xmpp.conn.authenticated) {
+      return;
     }
-    ,
 
-    /**
-     * Restore roster
-     */
-    restoreRoster: function () {
-        var buddies = jsxc.storage.getUserItem('buddylist');
-
-        if (!buddies || buddies.length === 0) {
-            jsxc.debug('No saved buddylist.');
-
-            jsxc.gui.roster.empty();
-
-            return;
-        }
-
-        $.each(buddies, function (index, value) {
-            jsxc.gui.roster.add(value);
-        });
-
-        jsxc.gui.roster.loaded = true;
-        $(document).trigger('cloaded.roster.jsxc');
+    //prepare notifications
+    var noti = jsxc.storage.getUserItem('notification');
+    noti = (typeof noti === 'number') ? noti : 2;
+    if (jsxc.options.notification && noti > 0 && jsxc.notification.hasSupport()) {
+      if (jsxc.notification.hasPermission()) {
+        jsxc.notification.init();
+      } else {
+        jsxc.notification.prepareRequest();
+      }
+    } else {
+      // No support => disable
+      jsxc.options.notification = false;
     }
-    ,
 
-    /**
-     * Restore all windows
-     */
-    restoreWindows: function () {
-        var windows = jsxc.storage.getUserItem('windowlist');
-
-        if (windows === null) {
-            return;
-        }
-
-        $.each(windows, function (index, bid) {
-            var win = jsxc.storage.getUserItem('window', bid);
-
-            if (!win) {
-                jsxc.debug('Associated window-element is missing: ' + bid);
-                return true;
-            }
-
-            jsxc.gui.window.init(bid);
-
-            if (!win.minimize) {
-                jsxc.gui.window.show(bid);
-            } else {
-                jsxc.gui.window.hide(bid);
-            }
-
-            jsxc.gui.window.setText(bid, win.text);
-        });
+    if (jsxc.options.get('otr').enable) {
+      // create or load DSA key
+      jsxc.otr.createDSA();
     }
-    ,
 
-    /**
-     * This method submits the specified login form.
-     */
-    submitLoginForm: function () {
-        var form = jsxc.options.loginForm.form.off('submit');
+    jsxc.gui.updateAvatar($('#jsxc_roster > .jsxc_bottom'),
+        jsxc.jidToBid(jsxc.storage.getItem('jid')), 'own');
+  },
 
-        // Attach original events
-        var submits = form.data('submits') || [];
-        $.each(submits, function (index, val) {
-            form.submit(val);
-        });
+  /**
+   * Start sending keep-alive signal
+   */
+  startKeepAlive : function() {
+    jsxc.keepalive = window.setInterval(jsxc.keepAlive, jsxc.options.timeout - 1000);
+  },
 
-        if (form.find('#submit').length > 0) {
-            form.find('#submit').click();
-        } else {
-            form.submit();
-        }
+  /**
+   * Sends the keep-alive signal to signal that the master is still there.
+   */
+  keepAlive : function() {
+    jsxc.storage.ink('alive');
+  },
+
+  /**
+   * Send one keep-alive signal with higher timeout, and than resume with
+   * normal signal
+   */
+  keepBusyAlive : function() {
+    if (jsxc.toBusy) {
+      window.clearTimeout(jsxc.toBusy);
     }
-    ,
 
-    /**
-     * Escapes some characters to HTML character
-     */
-    escapeHTML: function (text) {
-        text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-        return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    if (jsxc.keepalive) {
+      window.clearInterval(jsxc.keepalive);
     }
-    ,
 
-    /**
-     * Removes all html tags.
-     *
-     * @memberOf jsxc
-     * @param text
-     * @returns stripped text
-     */
-    removeHTML: function (text) {
-        return $('<span>').html(text).text();
+    jsxc.storage.ink('alive_busy');
+    jsxc.toBusy = window.setTimeout(jsxc.startKeepAlive, jsxc.options.busyTimeout - 1000);
+  },
+
+  /**
+   * Generates a random integer number between 0 and max
+   *
+   * @param {Integer} max
+   * @return {Integer} random integer between 0 and max
+   */
+  random : function(max) {
+    return Math.floor(Math.random() * max);
+  },
+
+  /**
+   * Checks if there is a element with the given selector
+   *
+   * @param {String} selector jQuery selector
+   * @return {Boolean}
+   */
+  el_exists : function(selector) {
+    return $(selector).length > 0;
+  },
+
+  /**
+   * Creates a CSS compatible string from a JID
+   *
+   * @param {type} jid Valid Jabber ID
+   * @returns {String} css Compatible string
+   */
+  jidToCid : function(jid) {
+    jsxc.warn('jsxc.jidToCid is deprecated!');
+
+    var cid = Strophe.getBareJidFromJid(jid).replace('@', '-').replace(/\./g, '-').toLowerCase();
+
+    return cid;
+  },
+
+  /**
+   * Create comparable bar jid.
+   *
+   * @memberOf jsxc
+   * @param jid
+   * @returns comparable bar jid
+   */
+  jidToBid : function(jid) {
+    return Strophe.unescapeNode(Strophe.getBareJidFromJid(jid).toLowerCase());
+  },
+
+  /**
+   * Restore roster
+   */
+  restoreRoster : function() {
+    var buddies = jsxc.storage.getUserItem('buddylist');
+
+    if (!buddies || buddies.length === 0) {
+      jsxc.debug('No saved buddylist.');
+
+      jsxc.gui.roster.empty();
+
+      return;
     }
-    ,
 
-    /**
-     * Executes only one of the given events
-     *
-     * @param {string} obj.key event name
-     * @param {function} obj.value function to execute
-     * @returns {string} namespace of all events
-     */
-    switchEvents: function (obj) {
-        var ns = Math.random().toString(36).substr(2, 12);
-        var self = this;
+    $.each(buddies, function(index, value) {
+      jsxc.gui.roster.add(value);
+    });
 
-        $.each(obj, function (key, val) {
-            $(document).one(key + '.' + ns, function () {
-                $(document).off('.' + ns);
+    jsxc.gui.roster.loaded = true;
+    $(document).trigger('cloaded.roster.jsxc');
+  },
 
-                val.apply(self, arguments);
-            });
-        });
+  /**
+   * Restore all windows
+   */
+  restoreWindows : function() {
+    var windows = jsxc.storage.getUserItem('windowlist');
 
-        return ns;
+    if (windows === null) {
+      return;
     }
-    ,
 
-    /**
-     * Checks if tab is hidden.
-     *
-     * @returns {boolean} True if tab is hidden
-     */
-    isHidden: function () {
-        var hidden = false;
+    $.each(windows, function(index, bid) {
+      var win = jsxc.storage.getUserItem('window', bid);
 
-        if (typeof document.hidden !== 'undefined') {
-            hidden = document.hidden;
-        } else if (typeof document.webkitHidden !== 'undefined') {
-            hidden = document.webkitHidden;
-        } else if (typeof document.mozHidden !== 'undefined') {
-            hidden = document.mozHidden;
-        } else if (typeof document.msHidden !== 'undefined') {
-            hidden = document.msHidden;
-        }
+      if (!win) {
+        jsxc.debug('Associated window-element is missing: ' + bid);
+        return true;
+      }
 
-        // handle multiple tabs
-        if (hidden && jsxc.master) {
-            jsxc.storage.ink('hidden', 0);
-        } else if (!hidden && !jsxc.master) {
-            jsxc.storage.ink('hidden');
-        }
+      jsxc.gui.window.init(bid);
 
-        return hidden;
+      if (!win.minimize) {
+        jsxc.gui.window.show(bid);
+      } else {
+        jsxc.gui.window.hide(bid);
+      }
+
+      jsxc.gui.window.setText(bid, win.text);
+    });
+  },
+
+  /**
+   * This method submits the specified login form.
+   */
+  submitLoginForm : function() {
+    var form = jsxc.options.loginForm.form.off('submit');
+
+    // Attach original events
+    var submits = form.data('submits') || [];
+    $.each(submits, function(index, val) {
+      form.submit(val);
+    });
+
+    if (form.find('#submit').length > 0) {
+      form.find('#submit').click();
+    } else {
+      form.submit();
     }
-    ,
+  },
 
-    /**
-     * Checks if tab has focus.
-     *
-     * @returns {boolean} True if tabs has focus
-     */
-    hasFocus: function () {
-        var focus = true;
+  /**
+   * Escapes some characters to HTML character
+   */
+  escapeHTML : function(text) {
+    text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  },
 
-        if (typeof document.hasFocus === 'function') {
-            focus = document.hasFocus();
-        }
+  /**
+   * Removes all html tags.
+   *
+   * @memberOf jsxc
+   * @param text
+   * @returns stripped text
+   */
+  removeHTML : function(text) {
+    return $('<span>').html(text).text();
+  },
 
-        if (!focus && jsxc.master) {
-            jsxc.storage.ink('focus', 0);
-        } else if (focus && !jsxc.master) {
-            jsxc.storage.ink('focus');
-        }
+  /**
+   * Executes only one of the given events
+   *
+   * @param {string} obj.key event name
+   * @param {function} obj.value function to execute
+   * @returns {string} namespace of all events
+   */
+  switchEvents : function(obj) {
+    var ns = Math.random().toString(36).substr(2, 12);
+    var self = this;
 
-        return focus;
+    $.each(obj, function(key, val) {
+      $(document).one(key + '.' + ns, function() {
+        $(document).off('.' + ns);
+
+        val.apply(self, arguments);
+      });
+    });
+
+    return ns;
+  },
+
+  /**
+   * Checks if tab is hidden.
+   *
+   * @returns {boolean} True if tab is hidden
+   */
+  isHidden : function() {
+    var hidden = false;
+
+    if (typeof document.hidden !== 'undefined') {
+      hidden = document.hidden;
+    } else if (typeof document.webkitHidden !== 'undefined') {
+      hidden = document.webkitHidden;
+    } else if (typeof document.mozHidden !== 'undefined') {
+      hidden = document.mozHidden;
+    } else if (typeof document.msHidden !== 'undefined') {
+      hidden = document.msHidden;
     }
-    ,
 
-    /**
-     * Executes the given function in jsxc namespace.
-     *
-     * @memberOf jsxc
-     * @param {string} fnName Function name
-     * @param {array} fnParams Function parameters
-     * @returns Function return value
-     */
-    exec: function (fnName, fnParams) {
-        var fnList = fnName.split('.');
-        var fn = jsxc[fnList[0]];
-        var i;
-        for (i = 1; i < fnList.length; i++) {
-            fn = fn[fnList[i]];
-        }
-
-        if (typeof fn === 'function') {
-            return fn.apply(null, fnParams);
-        }
+    // handle multiple tabs
+    if (hidden && jsxc.master) {
+      jsxc.storage.ink('hidden', 0);
+    } else if (!hidden && !jsxc.master) {
+      jsxc.storage.ink('hidden');
     }
-    ,
 
-    /**
-     * Hash string into 32-bit signed integer.
-     *
-     * @memberOf jsxc
-     * @param {string} str input string
-     * @returns {integer} 32-bit signed integer
-     */
-    hashStr: function (str) {
-        var hash = 0,
-            i;
+    return hidden;
+  },
 
-        if (str.length === 0) {
-            return hash;
-        }
+  /**
+   * Checks if tab has focus.
+   *
+   * @returns {boolean} True if tabs has focus
+   */
+  hasFocus : function() {
+    var focus = true;
 
-        for (i = 0; i < str.length; i++) {
-            hash = ((hash << 5) - hash) + str.charCodeAt(i);
-            hash |= 0; // Convert to 32bit integer
-        }
-
-        return hash;
+    if (typeof document.hasFocus === 'function') {
+      focus = document.hasFocus();
     }
-    ,
 
-    isExtraSmallDevice: function () {
-        return $(window).width() < 500;
-    },
+    if (!focus && jsxc.master) {
+      jsxc.storage.ink('focus', 0);
+    } else if (focus && !jsxc.master) {
+      jsxc.storage.ink('focus');
+    }
 
-    /**
-     * Debug tool for printing stack trace
-     *
-     */
-    stackTrace: function () {
-        var time = (new Date()).getTime();
-        console.error("Stack trace");
-        console.error("Time: " + time);
-        console.error((new Error()).stack);
-    },
+    return focus;
+  },
+
+  /**
+   * Executes the given function in jsxc namespace.
+   *
+   * @memberOf jsxc
+   * @param {string} fnName Function name
+   * @param {array} fnParams Function parameters
+   * @returns Function return value
+   */
+  exec : function(fnName, fnParams) {
+    var fnList = fnName.split('.');
+    var fn = jsxc[fnList[0]];
+    var i;
+    for (i = 1; i < fnList.length; i++) {
+      fn = fn[fnList[i]];
+    }
+
+    if (typeof fn === 'function') {
+      return fn.apply(null, fnParams);
+    }
+  },
+
+  /**
+   * Hash string into 32-bit signed integer.
+   *
+   * @memberOf jsxc
+   * @param {string} str input string
+   * @returns {integer} 32-bit signed integer
+   */
+  hashStr : function(str) {
+    var hash = 0, i;
+
+    if (str.length === 0) {
+      return hash;
+    }
+
+    for (i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash |= 0; // Convert to 32bit integer
+    }
+
+    return hash;
+  },
+
+  isExtraSmallDevice : function() {
+    return $(window).width() < 500;
+  },
+
+  /**
+   * Debug tool for printing stack trace
+   *
+   */
+  stackTrace : function() {
+    var time = (new Date()).getTime();
+    console.error("Stack trace");
+    console.error("Time: " + time);
+    console.error((new Error()).stack);
+  },
 
 };

@@ -1,34 +1,53 @@
 # Simple statistic module
 
-To save and monitor events.
+To save and monitor events. Based on Node, Angular and Chartjs.
+
+Work in progress.
+
+## Getting started
+
+Edit and adapt "configuration.js".
 
 Server side:
 
     $ git clone "..."
-    $ cd "..."
+    $ cd web-stats
     $ npm install
-    $ bower install
+    $ cd public
+    $ bower instaTB4qIxSR6YsL0YUl5KP35yvEUG27wYBVll
     
     $ cd server
     $ node server.js
+   
     
+On client where you want to grab statistics:
     
-Client side:
+    <script src="../public/bower_components/jquery/dist/jquery.js"></script>
+    <script src="../public/bower_components/jquery-ui/jquery-ui.js"></script>
+    <script src="../public/dist/Stats-embed.js"></script>
     
-    <script src=".../jquery.js"/>
-    <script src=".../embed/Stats.js"/>
-    
-    var stat = new Stats({
-        destinationUrl: 'http://127.0.0.1:3000
+    var stats = new Stats({
+      destinationUrl: "http://127.0.0.1:3000",
+      authorization: "DK5I4-0yl9N2KN64Pg5YcEAsdnCXeamr",
+      autosend: true
     });
     
-    stat.addEvent("document.button1.clicked");
+    stats.addEvent("document.loaded", {});
+    stats.addEvent("instant-messaging.new-video-call", {});
+    stats.addEvent("instant-messaging.error", {message: 'Error: ...'});
     
     // performed automatically every n milliseconds
     stat.sendDataBuffer();
     
 Visualize datas and charts on:
 
-    http://127.0.0.1:3000/visualization/
+    http://.../visualization/
+
          
-        
+## Screenshots
+
+
+![alt=Screenshot 1](https://github.com/remipassmoilesel/web-stats/blob/master/images/screenshot_1.png)
+
+
+![alt=Screenshot 2](https://github.com/remipassmoilesel/web-stats/blob/master/images/screenshot_2.png)

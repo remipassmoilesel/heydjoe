@@ -9,7 +9,9 @@ var browserSync = require('browser-sync');
 var webpack = require('webpack-stream');
 var concatCss = require('gulp-concat-css');
 var shell = require('gulp-shell')
-
+var merge = require('gulp-merge')
+var jshint = require('gulp-jshint');
+var stylish = require('jshint-stylish');
 
 gulp.task('browser-sync', function() {
   browserSync({
@@ -23,8 +25,10 @@ gulp.task('bs-reload', function() {
   browserSync.reload();
 });
 
-gulp.task('send-distant',
-    shell.task(['rsync -av . im.silverpeas.net:/opt/stats-module/']));
+gulp.task('start-server',
+    shell.task(['cd server && export PATH=$PATH:/opt/nodejs4/bin/ ' + '&& node server.js']));
+
+gulp.task('send-distant', shell.task(['rsync -av . im.silverpeas.net:/opt/stats-module/']));
 
 gulp.task('images', function() {
   gulp.src('public/src/images/**/*')
@@ -32,23 +36,40 @@ gulp.task('images', function() {
       .pipe(gulp.dest('dist/images/'));
 });
 
-gulp.task('styles', function() {
-  gulp.src([
+gulp.task('lint', function() {
+  return gulp.src('public/src/scripts/**/*.js')
+      .pipe(jshint())
+      .pipe(jshint.reporter(stylish));
+});
 
+gulp.task('styles', function() {
+
+  var sassStream, cssStream;
+
+  var errorHandler = {
+    errorHandler : function(error) {
+      console.log(error.message);
+      this.emit('end');
+    }
+  };
+
+  //compile sass
+  sassStream = gulp.src(['public/src/styles/**/*.scss'])
+      .pipe(plumber(errorHandler))
+      .pipe(sass({
+        errLogToConsole : true
+      }));
+
+  //select additional css files
+  cssStream = gulp.src([// css files must be loaded seprately
     'public/bower_components/jquery-ui/themes/base/jquery-ui.css',
 
-    'public/bower_components/angular-material/angular-material.css',
+    'public/bower_components/angular-material/angular-material.css'
 
-    'public/src/styles/**/*.scss',
+  ]);
 
-  ])
-      .pipe(plumber({
-        errorHandler : function(error) {
-          console.log(error.message);
-          this.emit('end');
-        }
-      }))
-      .pipe(sass())
+  //merge the two streams and concatenate their contents into a single file
+  return merge(cssStream, sassStream)
       .pipe(autoprefixer('last 2 versions'))
       .pipe(concatCss("bundle.css"))
       .pipe(gulp.dest('public/dist/styles/'))
@@ -61,7 +82,7 @@ gulp.task('styles', function() {
 
 gulp.task('scripts-dependencies', function() {
 
-  return gulp.src('./public/visualization.dep.js')
+  return gulp.src('./public/src/scripts/visualization.dep.js')
       .pipe(plumber({
         errorHandler : function(error) {
           console.log(error.message);
@@ -70,7 +91,7 @@ gulp.task('scripts-dependencies', function() {
       }))
       .pipe(webpack({
 
-        entry : './public/visualization.dep.js',
+        entry : './public/src/scripts/visualization.dep.js',
 
         resolve : {
           modulesDirectories : ["web_modules", "node_modules", "bower_components"]
@@ -88,8 +109,12 @@ gulp.task('scripts-dependencies', function() {
       .pipe(browserSync.reload({stream : true}))
 });
 
-gulp.task('scripts', function() {
-  return gulp.src('public/src/scripts/**/*.js')
+gulp.task('scripts', ['lint'], function() {
+  
+  gulp.src("public/src/scripts/Stats-embed.js")
+      .pipe(gulp.dest('public/dist/scripts/'));
+
+  gulp.src('public/src/scripts/**/*.js')
 
       .pipe(plumber({
         errorHandler : function(error) {
@@ -101,9 +126,7 @@ gulp.task('scripts', function() {
 
         entry : './public/src/scripts/visualization.js',
 
-        loaders: [
-          { test: /\.html$/, loader: "extract-loader" }
-        ],
+        loaders : [{test : /\.html$/, loader : "extract-loader"}],
 
         resolve : {
           modulesDirectories : ["web_modules", "node_modules", "bower_components"]
@@ -118,12 +141,14 @@ gulp.task('scripts', function() {
       .pipe(rename({suffix : '.min'}))
       .pipe(uglify())
       .pipe(gulp.dest('public/dist/scripts/'))
-      .pipe(browserSync.reload({stream : true}))
+      .pipe(browserSync.reload({stream : true}));
+
 });
 
-gulp.task('default', ['browser-sync', 'scripts-dependencies', "scripts", "styles"], function() {
+gulp.task('default', ['scripts-dependencies', "scripts", "styles", 'browser-sync'], function() {
 
   gulp.watch("public/src/styles/**/*.scss", ['styles']);
   gulp.watch("public/src/scripts/**/*", ['scripts']);
-  gulp.watch("*.html", ['bs-reload']);
+  gulp.watch("public/**/*.html", ['bs-reload']);
+
 });

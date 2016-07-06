@@ -9,15 +9,16 @@
 
   <link rel="stylesheet" href="../bower_components/jquery-ui/themes/base/jquery-ui.css" />
 
-  <script src="../bower_components/jquery/dist/jquery.js"></script>
-  <script src="../bower_components/jquery-ui/jquery-ui.js"></script>
-  <script src="../embed/Stats.js"></script>
+  <script src="../public/bower_components/jquery/dist/jquery.js"></script>
+  <script src="../public/bower_components/jquery-ui/jquery-ui.js"></script>
+  <script src="../public/dist/Stats-embed.js"></script>
 
   <script>
 
     var stats = new Stats({
       destinationUrl: "http://127.0.0.1:3000",
-      authorization: "DK5I4-0yl9N2KN64Pg5YcEAsdnCXeamr"
+      authorization: "DK5I4-0yl9N2KN64Pg5YcEAsdnCXeamr",
+      autosend: true
     });
 
     console.log(stats);

@@ -1,6 +1,11 @@
 module.exports = {
 
   /**
+   *
+   *  SERVER CONFIGURATION
+   *
+   */
+  /**
    * Port to listen
    */
   PORT : 3000,
@@ -22,6 +27,14 @@ module.exports = {
    * Cross origin policy settings
    */
   ACCES_CONTROL_ALLOW_ORIGN : "*",
-  ACCESS_CONTROL_ALLOW_HEADERS: "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  ACCESS_CONTROL_ALLOW_HEADERS: "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+
+  /**
+   * CLIENT CONFIGURATION
+   */
+  /**
+   * Root url. Without trailing slash
+   */
+  DESTINATION_URL: "https://im.silverpeas.net/stats"
 
 };

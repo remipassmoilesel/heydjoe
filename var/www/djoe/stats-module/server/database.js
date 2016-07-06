@@ -8,7 +8,7 @@ var pg = require('pg');
 var fs = require('fs');
 var _ = require('underscore');
 
-var config = require("./configuration.js");
+var config = require("../configuration.js");
 var sql_templates = ['create-tables.sql'];
 
 var DBManager = function() {
@@ -133,8 +133,10 @@ DBManager.prototype.saveRequest = function(req) {
         var req = "INSERT INTO data_requests (request_from, event_name, event_data)"
         req += " VALUES ($1, $2, $3)";
 
+        console.log(value);
+
         var event = value.event;
-        var value = Object.keys(value.data).length > 0 ? JSON.stringify(value.data) : "";
+        var value = Object.keys(value).length > 0 ? JSON.stringify(value.data) : "";
 
         client.query(req, [from, event, value], function(err, result) {
           //call `done()` to release the client back to the pool
