@@ -112,8 +112,13 @@ DBManager.prototype.saveRequest = function(req) {
   var self = this;
 
   var remoteaddr = req.connection.remoteAddress;
+
   var indexOfColon = remoteaddr.lastIndexOf(':');
   var from = remoteaddr.substring(indexOfColon + 1, remoteaddr.length);
+
+  console.log(remoteaddr);
+  console.log(indexOfColon);
+  console.log(from);
 
   var datas = req.body;
 

@@ -10994,6 +10994,7 @@ jsxc.storage = {
  * @namespace jsxc.webrtc
  */
 jsxc.webrtc = {
+
    /** strophe connection */
    conn: null,
 
@@ -11830,6 +11831,7 @@ jsxc.webrtc = {
       jsxc.gui.dialog.open(jsxc.gui.template.get('allowMediaAccess'), {
          noClose: true
       });
+
       this.setStatus('please allow access to microphone and camera');
 
       if (typeof MediaStreamTrack !== 'undefined' && typeof MediaStreamTrack.getSources !== 'undefined') {

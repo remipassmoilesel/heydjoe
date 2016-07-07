@@ -1,9 +1,7 @@
 /**
  * Utils to inspect XMPP exchanges through StropheJS
  *
- * Need google-code-prettify
- *
- * Only work with BOSH transport for now.
+ * Only work with StropheJS and BOSH transport for now.
  *
  * Prettify code from "XMPP professionnal programming"
  *

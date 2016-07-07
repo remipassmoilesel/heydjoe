@@ -5668,13 +5668,13 @@
 	        var chance = new Chance();
 	        $.each(datas, function(){
 
-	          var c1 = chance.color();
+	          var c1 = chance.color({format: 'shorthex'});
 	          while(backgrounds.indexOf(c1) > 0){
-	            c1 = chance.color();
+	            c1 = chance.color({format: 'shorthex'});
 	          }
-	          var c2 = chance.color();
+	          var c2 = chance.color({format: 'shorthex'});
 	          while(borders.indexOf(c2) > 0){
-	            c2 = chance.color();
+	            c2 = "#333333";
 	          }
 
 	          backgrounds.push(c1);
