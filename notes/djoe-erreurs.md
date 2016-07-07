@@ -1,5 +1,12 @@
 # Erreurs possibles
 
+* Envoi de message mais pas de réaction du serveur ? Erreurs 503 service unavailable ? Ou erreurs non expliquées juste après connexion:
+ Envoyer une première présence au serveur pour signaler son activité !
+ 
+    
+    // signaler son activité au serveur 
+    conn.send($pres())
+
 * Openfire (à nouveau !) et OpenJDK. Etonnament, si le serveur Openfire démarre mais qu'il ne prend en charge aucun message,
 c'est peut être du à l'utilisation d'OpenJDK 1.7. Une fois utilisant Oracle 1.8 ce comportement gênant à disparu.
 Erreurs pt liées ? 

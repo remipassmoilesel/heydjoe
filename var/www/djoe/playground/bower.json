@@ -19,6 +19,7 @@
     "jquery": "^2.2.4",
     "jquery-highlight": "^3.3.0",
     "chance": "^1.0.3",
-    "perfect-scrollbar": "^0.6.11"
+    "perfect-scrollbar": "^0.6.11",
+    "urijs": "uri.js#^1.18.1"
   }
 }

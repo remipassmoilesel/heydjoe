@@ -504,6 +504,8 @@ jsxc.webrtc = {
          self.onIncomingFileTransfer(session);
       } else if (type === 'MediaSession') {
          self.onIncomingCall(session);
+      } else {
+        jsxc.error("Unknown session type: " + type, session);
       }
    },
 

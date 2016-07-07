@@ -41,13 +41,18 @@ iptables  -A INPUT -p tcp --dport 53 -j ACCEPT
 iptables  -A INPUT -p udp --dport 53 -j ACCEPT
 echo "- Autoriser DNS : [OK]"
 
-# HTTP + HTTPS Out
-iptables  -A OUTPUT -p tcp --dport 80 -j ACCEPT
-iptables  -A OUTPUT -p tcp --dport 443 -j ACCEPT
+# HTTP + HTTPS + STUN + TURN out
+iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT
+iptables -A OUTPUT -p udp --dport 80 -j ACCEPT
+iptables -A OUTPUT -p udp --dport 443 -j ACCEPT
 
-# HTTP + HTTPS In
+# HTTP + HTTPS + STUN + TURN in
 iptables  -A INPUT -p tcp --dport 80 -j ACCEPT
 iptables  -A INPUT -p tcp --dport 443 -j ACCEPT
+iptables  -A INPUT -p udp --dport 80 -j ACCEPT
+iptables  -A INPUT -p udp --dport 443 -j ACCEPT
+
 echo "- Autoriser HTTP(s) : [OK]"
 
 # Silverpeas HTTP
@@ -56,16 +61,11 @@ iptables  -A INPUT -p tcp --dport 8000 -j ACCEPT
 echo "- Autoriser Silverpeas : [OK]"
 
 # STUN / TURN out
-iptables  -A OUTPUT -p udp --dport 80 -j ACCEPT
-iptables  -A OUTPUT -p udp --dport 443 -j ACCEPT
-iptables  -A OUTPUT -p tcp --dport 49152:65535 -j ACCEPT
 iptables  -A OUTPUT -p udp --dport 49152:65535 -j ACCEPT
+iptables  -A INPUT  -p udp --dport 49152:65535 -j ACCEPT
+iptables  -A OUTPUT -p tcp --dport 49152:65535 -j ACCEPT
+iptables  -A INPUT  -p tcp --dport 49152:65535 -j ACCEPT
 
-# STUN / TURN in
-iptables  -A INPUT -p udp --dport 80 -j ACCEPT
-iptables  -A INPUT -p udp --dport 443 -j ACCEPT
-iptables  -A INPUT -p tcp --dport 49152:65535 -j ACCEPT
-iptables  -A INPUT -p udp --dport 49152:65535 -j ACCEPT
 
 echo "- Autoriser STUN / TURN : [OK]"
 
@@ -92,5 +92,9 @@ iptables  -A OUTPUT -p tcp --dport 9091 -j ACCEPT
 iptables  -A INPUT -p tcp --dport 9090 -j ACCEPT
 iptables  -A OUTPUT -p tcp --dport 9090 -j ACCEPT
 
+
+# Lister les règles
 iptables -v -L
+
+
 

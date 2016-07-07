@@ -15,6 +15,8 @@
   <script src="../jsxc/lib/strophe.caps.js"></script>
   <script src="../jsxc/lib/strophe.jinglejs/strophe.jinglejs-bundle.js"></script>
 
+  <script src="bower_components/webrtc-adapter/adapter-1.4.0.js"></script>
+
   <script type="text/javascript">
 
     /**
@@ -24,6 +26,62 @@
      */
 
     var multivideo = {
+
+      /**
+       * Called when connected
+       * @param conn
+       */
+      connected : function(conn) {
+
+        console.log("Connected");
+
+        navigator.getUserMedia = navigator.getUserMedia ||
+            navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+        var constraints = {
+          audio: true,
+          video: true
+        };
+
+        function successCallback(stream) {
+          console.log(arguments);
+
+          console.log(stream.getAudioTracks());
+          console.log(stream.getVideoTracks());
+
+          window.stream = stream; // stream available to console
+        }
+
+        function errorCallback(error) {
+          console.log('navigator.getUserMedia error: ', error);
+        }
+
+        navigator.getUserMedia(constraints, successCallback, errorCallback);
+
+
+//        if (typeof MediaStreamTrack !== 'undefined' &&
+//            typeof MediaStreamTrack.getSources !== 'undefined') {
+//
+//          MediaStreamTrack.getSources(function(sourceInfo) {
+//
+//            var availableDevices = sourceInfo.map(function(el) {
+//
+//              return el.kind;
+//            });
+//
+//            um = um.filter(function(el) {
+//              return availableDevices.indexOf(el) !== -1;
+//            });
+//
+//            jsxc.webrtc.getUserMedia(um);
+//          });
+//        }
+
+//        var session = conn.jingle.initiate("nicolas@im.silverpeas.net");
+
+//        console.log(session);
+
+      },
 
       /**
        * Configure and connect
@@ -57,37 +115,7 @@
 
       },
 
-      /**
-       * Called when connected
-       * @param conn
-       */
-      connected : function(conn) {
 
-        console.log("Connected");
-
-        if (typeof MediaStreamTrack !== 'undefined' &&
-            typeof MediaStreamTrack.getSources !== 'undefined') {
-
-          MediaStreamTrack.getSources(function(sourceInfo) {
-
-            var availableDevices = sourceInfo.map(function(el) {
-
-              return el.kind;
-            });
-
-            um = um.filter(function(el) {
-              return availableDevices.indexOf(el) !== -1;
-            });
-
-            jsxc.webrtc.getUserMedia(um);
-          });
-        }
-
-//        var session = conn.jingle.initiate("nicolas@im.silverpeas.net");
-
-        console.log(session);
-
-      }
 
     };
 

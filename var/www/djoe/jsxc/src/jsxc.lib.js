@@ -276,14 +276,15 @@ jsxc = {
       });
 
       jsxc.stats = {
-        addEvent: _statsManager.addEvent.bind(_statsManager)
+        addEvent : _statsManager.addEvent.bind(_statsManager)
       }
 
     }
 
     else {
       jsxc.stats = {
-        addEvent: function(){}
+        addEvent : function() {
+        }
       }
     }
 
