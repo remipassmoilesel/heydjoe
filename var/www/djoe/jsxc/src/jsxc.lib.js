@@ -4,6 +4,12 @@
  * @namespace jsxc
  */
 jsxc = {
+
+  /**
+   * Video and file transfer system
+   */
+  multimediaStreamSystem: "original", // "original" || "multistream"
+
   /** Version of jsxc */
   version : '< $ app.version $ >',
 

@@ -1,12 +1,6 @@
 /* global module:false */
 module.exports = function (grunt) {
 
-    // original
-    //var dep = grunt.file.readJSON('jsdep.json');
-
-    // full with jquery and plugins
-    // var dep = grunt.file.readJSON('jsdep-full-jquery.json');
-
     // full without jquery and jquery ui 
     var dep = grunt.file.readJSON('jsdep-full.json');
 
