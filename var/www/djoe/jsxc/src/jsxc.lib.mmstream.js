@@ -4,7 +4,7 @@
 
 jsxc.mmstream = {
 
-  auto_acept : true,
+  auto_accept : true,
 
   localVideoShown : false,
 
@@ -56,7 +56,11 @@ jsxc.mmstream = {
     var self = jsxc.mmstream;
 
     // create strophe connexion
-    self.conn = new Strophe.Connection(self.boshUrl);
+    self.conn = jsxc.xmpp.conn;
+
+    if (self.conn.caps) {
+      $(document).on('caps.strophe', self.onCaps);
+    }
 
     // check if jingle strophe plugin exist
     if (!self.conn.jingle) {
@@ -120,17 +124,20 @@ jsxc.mmstream = {
       id : session.peerID, when : new Date()
     });
 
-    var sessionAccept = function(localStream) {
+    var acceptRemoteSession = function(localStream) {
       session.addStream(localStream);
       session.accept();
     };
 
     // auto accept calls if specified
-    if (self.auto_acept) {
+    if (self.auto_accept === true) {
 
       self._requireLocalStream()
           .done(function(localStream) {
-            sessionAccept(localStream);
+
+            console.log(localStream);
+
+            acceptRemoteSession(localStream);
           })
           .fail(function() {
             session.decline();
@@ -284,14 +291,17 @@ jsxc.mmstream = {
     var dialog = $("<video></video>");
     dialog.appendTo($("body"));
 
-    dialog.dialog({
-      title : title, height : 400, width : 'auto'
-    });
-
     self.videoDialogs.push(dialog);
 
     // attach stream
     self.conn.jingle.RTC.attachMediaStream(dialog.get(0), stream);
+
+    dialog.dialog({
+      title : title, height : '400', width : 'auto'
+    });
+
+    console.log("heyeyheyyeheyyehe");
+
 
   },
 
@@ -299,7 +309,7 @@ jsxc.mmstream = {
    * Create a new video call
    * @param fullJid
    */
-  newVideoCall : function(fullJid) {
+  startCall : function(fullJid) {
 
     var self = jsxc.mmstream;
 
@@ -321,6 +331,8 @@ jsxc.mmstream = {
           // console.log('onUserMediaSuccess');
 
           self._newVideoDialog(stream, "Local stream");
+
+          console.log("heyeyheyyeheyyehe");
 
           // here we must verify if tracks are enought
           // var audioTracks = stream.getAudioTracks();
@@ -349,12 +361,174 @@ jsxc.mmstream = {
   },
 
   /**
+   * Update "video" button if we receive cap information.
+   *
+   * @private
+   * @memberOf jsxc.mmstream
+   * @param event
+   * @param jid
+   */
+  onCaps : function(event, jid) {
+
+    var self = jsxc.mmstream;
+
+    if (jsxc.gui.roster.loaded) {
+      self.updateIcon(jsxc.jidToBid(jid));
+    } else {
+      $(document).on('cloaded.roster.jsxc', function() {
+        self.updateIcon(jsxc.jidToBid(jid));
+      });
+    }
+
+  },
+
+  /**
+   * Enable or disable "video" icon and assign full jid.
+   *
+   * @memberOf jsxc.mmstream
+   * @param bid CSS conform jid
+   */
+  updateIcon : function(bid) {
+
+    jsxc.debug('Update icon', bid);
+
+    var self = jsxc.mmstream;
+
+    if (bid === jsxc.jidToBid(self.conn.jid)) {
+      return;
+    }
+
+    var win = jsxc.gui.window.get(bid);
+    var jid = win.data('jid');
+    var ls = jsxc.storage.getUserItem('buddy', bid);
+
+    if (typeof jid !== 'string') {
+      if (ls && typeof ls.jid === 'string') {
+        jid = ls.jid;
+      } else {
+        jsxc.debug('[mmstream] Could not update icon, because could not find jid for ' + bid);
+        return;
+      }
+    }
+
+    var res = Strophe.getResourceFromJid(jid);
+
+    var el = win.find('.jsxc_video');
+
+    var capableRes = self.getCapableRes(jid, self.reqVideoFeatures);
+    var targetRes = res;
+
+    if (targetRes === null) {
+      $.each(jsxc.storage.getUserItem('buddy', bid).res || [], function(index, val) {
+        if (capableRes.indexOf(val) > -1) {
+          targetRes = val;
+          return false;
+        }
+      });
+
+      jid = jid + '/' + targetRes;
+    }
+
+    el.off('click');
+
+    if (capableRes.indexOf(targetRes) > -1) {
+      el.click(function() {
+        self.startCall(jid);
+      });
+
+      el.removeClass('jsxc_disabled');
+
+      el.attr('title', jsxc.t('Start_video_call'));
+    } else {
+      el.addClass('jsxc_disabled');
+
+      el.attr('title', jsxc.t('Video_call_not_possible'));
+    }
+
+    var fileCapableRes = self.getCapableRes(jid, self.reqFileFeatures);
+    var resources = Object.keys(jsxc.storage.getUserItem('res', bid) || {}) || [];
+
+    if (fileCapableRes.indexOf(res) > -1 ||
+        (res === null && fileCapableRes.length === 1 && resources.length === 1)) {
+      win.find('.jsxc_sendFile').removeClass('jsxc_disabled');
+    } else {
+      win.find('.jsxc_sendFile').addClass('jsxc_disabled');
+    }
+  },
+
+  /**
+   * Return list of capable resources.
+   *
+   * @memberOf jsxc.mmstream
+   * @param jid
+   * @param {(string|string[])} features list of required features
+   * @returns {Array}
+   */
+  getCapableRes : function(jid, features) {
+
+    var self = jsxc.mmstream;
+    var bid = jsxc.jidToBid(jid);
+    var res = Object.keys(jsxc.storage.getUserItem('res', bid) || {}) || [];
+
+    if (!features) {
+      return res;
+    } else if (typeof features === 'string') {
+      features = [features];
+    }
+
+    var available = [];
+    $.each(res, function(i, r) {
+      if (self.conn.caps.hasFeatureByJid(bid + '/' + r, features)) {
+        available.push(r);
+      }
+    });
+
+    return available;
+  },
+
+  /**
+   * Add "video" button to window menu.
+   *
+   * @private
+   * @memberOf jsxc.mmstream
+   * @param event
+   * @param win jQuery window object
+   */
+  initWindow : function(event, win) {
+    var self = jsxc.mmstream;
+
+    // if (win.hasClass('jsxc_groupchat')) {
+    //   return;
+    // }
+
+    jsxc.debug('mmstream.initWindow');
+
+    if (!self.conn) {
+      $(document).one('attached.jsxc', function() {
+        self.initWindow(null, win);
+      });
+      return;
+    }
+
+    var div = $('<div>').addClass('jsxc_video');
+    win.find('.jsxc_tools .jsxc_settings').after(div);
+
+    self.updateIcon(win.data('bid'));
+  },
+  
+  /**
    * Called when
    */
   onDisconnected : function() {
 
-    // TODO remove here all listeners on document
     // TODO close all dialogs
+
+    var self = jsxc.mmstream;
+
+    $(document).off('attached.jsxc', self.init);
+    $(document).off('disconnected.jsxc', self.onDisconnected);
+    $(document).off('caps.strophe', self.onCaps);
+
 
   }
 
@@ -362,7 +536,12 @@ jsxc.mmstream = {
 
 $(document).ready(function() {
   if (jsxc.multimediaStreamSystem && jsxc.multimediaStreamSystem === "multistream") {
-    $(document).on('attached.jsxc', jsxc.mmstream.init);
-    $(document).on('disconnected.jsxc', jsxc.mmstream.onDisconnected);
+
+    var self = jsxc.mmstream;
+
+    $(document).on('attached.jsxc', self.init);
+    $(document).on('disconnected.jsxc', self.onDisconnected);
+    $(document).on('init.window.jsxc', self.initWindow);
+
   }
 });
