@@ -97,6 +97,21 @@ jsxc.webrtc = {
 
       self.conn.jingle.setICEServers(peerConfig.iceServers);
     }
+
+    /**
+     * Sound notifications
+     */
+    $(document).on('callincoming.jingle', self._ringOnIncomming);
+    $(document).on('accept.call.jsxc reject.call.jsxc',self._stopRinging);
+
+  },
+
+  _ringOnIncomming: function(){
+    jsxc.notification.playSound(jsxc.CONST.SOUNDS.CALL, true, true);
+  },
+
+  _stopRinging: function(){
+    jsxc.notification.stopSound();
   },
 
   onConnected : function() {
@@ -114,6 +129,12 @@ jsxc.webrtc = {
     $(document).off('mediafailure.jingle', self.onMediaFailure);
 
     $(document).off('caps.strophe', self.onCaps);
+    
+    /**
+     * Sound notifications
+     */
+    $(document).off('callincoming.jingle', self._ringOnIncomming);
+    $(document).off('accept.call.jsxc reject.call.jsxc',self._stopRinging);
   },
 
   /**
