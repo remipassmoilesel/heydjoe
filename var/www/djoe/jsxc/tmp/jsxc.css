@@ -4205,6 +4205,54 @@ div.jsxc_video {
       vertical-align: middle;
       line-height: 1; }
 
+#jsxc_videoPanel {
+  font-size: 13px;
+  position: fixed;
+  top: 0px;
+  bottom: 0;
+  left: 0;
+  width: 200px;
+  overflow: visible;
+  border-right: 1px solid #e1e1e1;
+  z-index: 80;
+  background-color: whitesmoke;
+  display: block; }
+  #jsxc_videoPanel.jsxc_state_hidden {
+    display: block;
+    left: -200px;
+    -webkit-transition: left 0.5s;
+            transition: left 0.5s; }
+    #jsxc_videoPanel.jsxc_state_hidden #jsxc_toggleRoster:before {
+      -webkit-transform: rotate(0deg);
+              transform: rotate(0deg); }
+  #jsxc_videoPanel.jsxc_state_shown {
+    display: block;
+    left: 0px;
+    -webkit-transition: left 0.5s;
+            transition: left 0.5s; }
+  #jsxc_videoPanel #jsxc_toggleVideoPanel {
+    width: 14px;
+    height: 100%;
+    position: absolute;
+    right: -14px !important;
+    top: 0;
+    z-index: 110;
+    background-color: transparent;
+    cursor: pointer;
+    display: block; }
+    #jsxc_videoPanel #jsxc_toggleVideoPanel:before {
+      content: '';
+      position: absolute;
+      display: block;
+      width: 0;
+      top: 50%;
+      right: 0px;
+      border-style: solid;
+      border-width: 6px 0 6px 4px;
+      border-color: transparent whitesmoke; }
+    #jsxc_videoPanel #jsxc_toggleVideoPanel:hover {
+      background-color: rgba(153, 153, 153, 0.5); }
+
 /**
 
 Only for demonstration purpose

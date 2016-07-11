@@ -26,6 +26,11 @@ jsxc.mmstream = {
   lastCallers : [],
 
   /**
+   * JQuery object that represent the side panel on left
+   */
+  videoPanel : null,
+
+  /**
    *  Current remote session and stream objects
    */
   remoteSessions : [],
@@ -68,6 +73,8 @@ jsxc.mmstream = {
       return;
     }
 
+    self._initGui();
+
     var manager = self.conn.jingle.manager;
 
     // listen for incoming jingle calls
@@ -75,6 +82,59 @@ jsxc.mmstream = {
 
     manager.on('peerStreamAdded', self._onRemoteStreamAdded.bind(self));
     manager.on('peerStreamRemoved', self._onRemoteStreamRemoved.bind(self));
+
+  },
+
+  /**
+   * Create gui and add it to the main window
+   *
+   * @private
+   */
+  _initGui : function() {
+
+    var self = jsxc.mmstream;
+
+    // create GUI
+    self.videoPanel = $(jsxc.gui.template.get('videoPanel'));
+    self.videoPanel.addClass("jsxc_state_hidden");
+
+    // button for opening
+    self.videoPanel.find("#jsxc_toggleVideoPanel").click(function() {
+      self.toggleVideoPanel();
+    });
+
+    $('body').append(self.videoPanel);
+
+  },
+
+  /**
+   * Open or close video panel
+   * 
+   * State can be 'true' or 'false'
+   * 
+   */
+  toggleVideoPanel : function(state) {
+
+    var self = jsxc.mmstream;
+    var panel = self.videoPanel;
+
+    if (!state) {
+      state = !panel.hasClass('jsxc_state_shown');
+    }
+
+    panel.removeClass('jsxc_state_hidden jsxc_state_shown');
+
+    // show window
+    if(state === true){
+      panel.addClass('jsxc_state_shown');
+    }
+
+    // close window
+    else {
+      panel.addClass('jsxc_state_hidden');
+    }
+
+    $(document).trigger('toggle.videoPanel.jsxc', [state]);
 
   },
 
@@ -300,9 +360,6 @@ jsxc.mmstream = {
       title : title, height : '400', width : 'auto'
     });
 
-    console.log("heyeyheyyeheyyehe");
-
-
   },
 
   /**
@@ -332,8 +389,6 @@ jsxc.mmstream = {
 
           self._newVideoDialog(stream, "Local stream");
 
-          console.log("heyeyheyyeheyyehe");
-
           // here we must verify if tracks are enought
           // var audioTracks = stream.getAudioTracks();
           // var videoTracks = stream.getVideoTracks();
@@ -346,7 +401,7 @@ jsxc.mmstream = {
           var session = self.conn.jingle.initiate(fullJid, stream);
 
           session.on('change:connectionState', function() {
-            console.log("change:connectionState");
+            console.log("[JINGLE] change:connectionState");
             console.log(arguments);
           });
 
@@ -515,7 +570,7 @@ jsxc.mmstream = {
 
     self.updateIcon(win.data('bid'));
   },
-  
+
   /**
    * Called when
    */
@@ -528,7 +583,6 @@ jsxc.mmstream = {
     $(document).off('attached.jsxc', self.init);
     $(document).off('disconnected.jsxc', self.onDisconnected);
     $(document).off('caps.strophe', self.onCaps);
-
 
   }
 

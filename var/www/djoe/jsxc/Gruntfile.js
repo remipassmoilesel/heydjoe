@@ -292,7 +292,7 @@ module.exports = function (grunt) {
                 },
                 css: {
                     files: ['scss/*'],
-                    tasks: ['sass', 'autoprefixer', 'replace:imageUrl']
+                    tasks: ['sass', 'autoprefixer', 'replace:imageUrl', 'concat_css']
                 },
                 js: {
                     files: ['src/jsxc.lib.*'],
