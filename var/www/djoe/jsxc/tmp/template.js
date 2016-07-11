@@ -793,12 +793,13 @@ jsxc.gui.template['vCard'] = '<h3>\n' +
 
 jsxc.gui.template['videoPanel'] = '<div id="jsxc_videoPanel">\n' +
 '\n' +
+'  <div>\n' +
+'    <h3 style="margin: 20px;">Appels vidéo</h3>\n' +
+'  </div>\n' +
+'\n' +
 '  <!-- Side bar with local and remote videos -->\n' +
+'  <div class="jsxc_videoPanelContent">\n' +
 '\n' +
-'\n' +
-'  <div class="jsxc_videoPanelContent" style="background: red">\n' +
-'\n' +
-'    <b>Hey hey hey hey !</b>\n' +
 '\n' +
 '  </div>\n' +
 '\n' +

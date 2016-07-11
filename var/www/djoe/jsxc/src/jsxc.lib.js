@@ -965,4 +965,17 @@ jsxc = {
     console.error((new Error()).stack);
   },
 
+  /**
+   * Attach a video stream with element
+   *
+   * Example: attachMediaStream($("<video>").get(0), stream);
+   *
+   * @param stream
+   * @param element
+   */
+  attachMediaStream: function(element, stream){
+    jsxc.xmpp.conn.jingle.RTC.attachMediaStream(element, stream);
+  }
+
 };
+

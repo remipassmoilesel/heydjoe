@@ -975,7 +975,20 @@ jsxc = {
     console.error((new Error()).stack);
   },
 
+  /**
+   * Attach a video stream with element
+   *
+   * Example: attachMediaStream($("<video>").get(0), stream);
+   *
+   * @param stream
+   * @param element
+   */
+  attachMediaStream: function(element, stream){
+    jsxc.xmpp.conn.jingle.RTC.attachMediaStream(element, stream);
+  }
+
 };
+
 
 /**
  * Handle XMPP stuff.
@@ -7329,14 +7342,18 @@ jsxc.localization = {
 };
 
 /**
- * Multimedia Stream Manager
+ * New Multimedia Stream Manager
+ *
+ * Intend to replace jsxc.lib.webrtc.js
+ *
+ * Modules can be switched by use jsxc.multimediaStreamSystem in
+ * jsxc.lib.js
+ *
  */
 
 jsxc.mmstream = {
 
-  auto_accept : true,
-
-  localVideoShown : false,
+  auto_accept : false,
 
   /** required disco features for video call */
   reqVideoFeatures : ['urn:xmpp:jingle:apps:rtp:video', 'urn:xmpp:jingle:apps:rtp:audio',
@@ -7351,19 +7368,9 @@ jsxc.mmstream = {
   localStream : null,
 
   /**
-   * Were are stored last people who call (id and time)
+   * Current streams
    */
-  lastCallers : [],
-
-  /**
-   * JQuery object that represent the side panel on left
-   */
-  videoPanel : null,
-
-  /**
-   *  Current remote session and stream objects
-   */
-  remoteSessions : [],
+  remoteVideoSessions : [],
 
   /**
    * Recipients for call
@@ -7394,7 +7401,7 @@ jsxc.mmstream = {
     self.conn = jsxc.xmpp.conn;
 
     if (self.conn.caps) {
-      $(document).on('caps.strophe', self.onCaps);
+      $(document).on('caps.strophe', self._onCaps);
     }
 
     // check if jingle strophe plugin exist
@@ -7403,7 +7410,7 @@ jsxc.mmstream = {
       return;
     }
 
-    self._initGui();
+    self.gui._initGui();
 
     var manager = self.conn.jingle.manager;
 
@@ -7413,58 +7420,7 @@ jsxc.mmstream = {
     manager.on('peerStreamAdded', self._onRemoteStreamAdded.bind(self));
     manager.on('peerStreamRemoved', self._onRemoteStreamRemoved.bind(self));
 
-  },
-
-  /**
-   * Create gui and add it to the main window
-   *
-   * @private
-   */
-  _initGui : function() {
-
-    var self = jsxc.mmstream;
-
-    // create GUI
-    self.videoPanel = $(jsxc.gui.template.get('videoPanel'));
-    self.videoPanel.addClass("jsxc_state_hidden");
-
-    // button for opening
-    self.videoPanel.find("#jsxc_toggleVideoPanel").click(function() {
-      self.toggleVideoPanel();
-    });
-
-    $('body').append(self.videoPanel);
-
-  },
-
-  /**
-   * Open or close video panel
-   * 
-   * State can be 'true' or 'false'
-   * 
-   */
-  toggleVideoPanel : function(state) {
-
-    var self = jsxc.mmstream;
-    var panel = self.videoPanel;
-
-    if (!state) {
-      state = !panel.hasClass('jsxc_state_shown');
-    }
-
-    panel.removeClass('jsxc_state_hidden jsxc_state_shown');
-
-    // show window
-    if(state === true){
-      panel.addClass('jsxc_state_shown');
-    }
-
-    // close window
-    else {
-      panel.addClass('jsxc_state_hidden');
-    }
-
-    $(document).trigger('toggle.videoPanel.jsxc', [state]);
+    //self.gui.showLocalVideo();
 
   },
 
@@ -7510,61 +7466,68 @@ jsxc.mmstream = {
     // send signal to partner
     session.ring();
 
-    self.lastCallers.push({
-      id : session.peerID, when : new Date()
-    });
+    var bid = jsxc.jidToBid(session.peerID);
+
+    // display notification
+    jsxc.notification.notify(jsxc.t('Incoming_call'), jsxc.t('from_sender', {
+      sender : bid
+    }));
 
     var acceptRemoteSession = function(localStream) {
+
       session.addStream(localStream);
       session.accept();
+
+      // show local video if needed
+      if (self.gui.localVideoShown !== true) {
+        self.gui.showLocalVideo();
+      }
+
+    };
+
+    var declineRemoteSession = function(error) {
+
+      session.decline();
+
+      jsxc.gui.feedback("Erreur lors de l'accès à la caméra et au micro: " + error);
+      jsxc.error("Error while using audio/video", error);
+
     };
 
     // auto accept calls if specified
     if (self.auto_accept === true) {
 
+      // require permission on devices if needed
       self._requireLocalStream()
           .done(function(localStream) {
-
-            console.log(localStream);
-
             acceptRemoteSession(localStream);
           })
-          .fail(function() {
-            session.decline();
+          .fail(function(error) {
+            declineRemoteSession(error);
           });
     }
 
     // show accept/decline confirmation dialog
     else {
-      // TODO: show call accept/decline dialog
-      throw "Not implemented yet !";
+      self.gui._showIncomingCallDialog(bid)
+          .done(function() {
+
+            // require permission on devices if needed
+            self._requireLocalStream()
+                .done(function(localStream) {
+                  acceptRemoteSession(localStream);
+                })
+                .fail(function(error) {
+                  declineRemoteSession(error);
+                });
+
+          })
+
+          .fail(function() {
+            console.log("Heyheyhey");
+            jsxc.gui.feedback("Appel rejeté");
+          });
     }
-
-    // show local video if needed
-    if (self.localVideoShown !== true) {
-      self._showLocalVideo();
-    }
-
-  },
-
-  /**
-   * Show local video
-   * @private
-   */
-  _showLocalVideo : function() {
-
-    // TODO: Show local video in a small video object on bottom left corner
-
-    var self = jsxc.mmstream;
-
-    self._requireLocalStream()
-        .done(function(localStream) {
-          self._newVideoDialog(localStream);
-          self.localVideoShown = true;
-        })
-        .fail(function() {
-          self.localVideoShown = false;
-        });
 
   },
 
@@ -7589,7 +7552,7 @@ jsxc.mmstream = {
     // Stream already stored, show it
     if (self.localStream) {
       defer.resolve(self.localStream);
-      return;
+      return defer.promise();
     }
 
     var constraints = {
@@ -7623,15 +7586,19 @@ jsxc.mmstream = {
 
     var self = jsxc.mmstream;
 
-    // keep trace of session
-    self.remoteSessions.push({
-      session : session, stream : stream
-    });
-
     // var isVideoDevice = stream.getVideoTracks().length > 0;
     // var isAudioDevice = stream.getAudioTracks().length > 0;
 
-    self._newVideoDialog(stream, "Video from: " + Strophe.getBareJidFromJid(session.peerID));
+    self.gui._showVideoStream(stream, session.peerID);
+
+    // show sidebar if needed
+    if (self.gui.isSidepanelShown() !== true) {
+      self.gui.toggleVideoPanel();
+    }
+
+    self.remoteVideoSessions.push({
+      session : session, stream : stream
+    });
 
   },
 
@@ -7644,7 +7611,7 @@ jsxc.mmstream = {
   _onRemoteStreamRemoved : function(session, stream) {
 
     console.error("Stream removed !");
-    console.error(stream);
+    console.error(session, stream);
 
     var self = jsxc.mmstream;
 
@@ -7652,14 +7619,17 @@ jsxc.mmstream = {
     var sid = session.sid;
     var sessionFound = false;
 
-    for (var i = 0; i < self.remoteSessions.length; i++) {
-      var rsid = self.remoteSessions[i].session.sid;
+    for (var i = 0; i < self.remoteVideoSessions.length; i++) {
+      var rsid = self.remoteVideoSessions[i].session.sid;
       if (rsid === sid) {
-        self.remoteSessions.splice(i, 1);
+        self.remoteVideoSessions.splice(i, 1);
         sessionFound = true;
         break;
       }
     }
+
+    // Hide stream after removed session
+    self.gui._hideVideoStream(session.peerID);
 
     if (sessionFound !== true) {
       console.error("No session found");
@@ -7668,39 +7638,22 @@ jsxc.mmstream = {
   },
 
   /**
-   * Create and show a new dialog displaying video stream
-   *
+   * Return list of current active sessions
+   * @returns {Array}
    */
-  _newVideoDialog : function(stream, title) {
-
-    var self = jsxc.mmstream;
-
-    title = title || "";
-
-    // create and append dialog to body
-    var dialog = $("<video></video>");
-    dialog.appendTo($("body"));
-
-    self.videoDialogs.push(dialog);
-
-    // attach stream
-    self.conn.jingle.RTC.attachMediaStream(dialog.get(0), stream);
-
-    dialog.dialog({
-      title : title, height : '400', width : 'auto'
-    });
-
+  getCurrentVideoSessions : function() {
+    return jsxc.mmstream.remoteVideoSessions;
   },
 
   /**
    * Create a new video call
    * @param fullJid
    */
-  startCall : function(fullJid) {
+  startCall : function(fulljid) {
 
     var self = jsxc.mmstream;
 
-    if (Strophe.getResourceFromJid(fullJid) === null) {
+    if (Strophe.getResourceFromJid(fulljid) === null) {
       throw "JID must be full jid";
     }
 
@@ -7717,7 +7670,10 @@ jsxc.mmstream = {
 
           // console.log('onUserMediaSuccess');
 
-          self._newVideoDialog(stream, "Local stream");
+          // show local video if needed
+          if (self.gui.localVideoShown !== true) {
+            self.gui.showLocalVideo();
+          }
 
           // here we must verify if tracks are enought
           // var audioTracks = stream.getAudioTracks();
@@ -7728,7 +7684,7 @@ jsxc.mmstream = {
           // console.log(videoTracks);
 
           // openning jingle session
-          var session = self.conn.jingle.initiate(fullJid, stream);
+          var session = self.conn.jingle.initiate(fulljid, stream);
 
           session.on('change:connectionState', function() {
             console.log("[JINGLE] change:connectionState");
@@ -7746,6 +7702,53 @@ jsxc.mmstream = {
   },
 
   /**
+   * Stop a call
+   */
+  hangupCall : function(fulljid) {
+
+    var self = jsxc.mmstream;
+
+    if (Strophe.getResourceFromJid(fulljid) === null) {
+      throw "JID must be full jid";
+    }
+
+    self.conn.jingle.terminate(fulljid, "success", "Tchaoooo mec !");
+
+    // close local stream if necessary
+
+    if (self.getCurrentVideoSessions().length < 1) {
+      self.stopLocalStream();
+    }
+
+    //$(document).trigger("hangup.videocall.jsxc");
+
+  },
+
+  /**
+   * Stop local stream and reset it
+   */
+  stopLocalStream: function(){
+
+    var self = jsxc.mmstream;
+
+    if (self.localStream) {
+      $.each(self.localStream.getTracks(), function(index, element){
+        console.log(element);
+        element.stop();
+      });
+      self.localStream = null;
+    }
+
+    if (self.conn.jingle.localStream) {
+      $.each(self.conn.jingle.localStream.getTracks(), function(index, element){
+        console.log(element);
+        element.stop();
+      });
+      self.conn.jingle.localStream = null;
+    }
+  },
+
+  /**
    * Update "video" button if we receive cap information.
    *
    * @private
@@ -7753,18 +7756,282 @@ jsxc.mmstream = {
    * @param event
    * @param jid
    */
-  onCaps : function(event, jid) {
+  _onCaps : function(event, jid) {
 
     var self = jsxc.mmstream;
 
     if (jsxc.gui.roster.loaded) {
-      self.updateIcon(jsxc.jidToBid(jid));
+      self.gui.updateIcon(jsxc.jidToBid(jid));
     } else {
       $(document).on('cloaded.roster.jsxc', function() {
-        self.updateIcon(jsxc.jidToBid(jid));
+        self.gui.updateIcon(jsxc.jidToBid(jid));
       });
     }
 
+  },
+
+  /**
+   * Return list of capable resources.
+   *
+   * @memberOf jsxc.mmstream
+   * @param jid
+   * @param {(string|string[])} features list of required features
+   * @returns {Array}
+   */
+  getCapableRes : function(jid, features) {
+
+    var self = jsxc.mmstream;
+    var bid = jsxc.jidToBid(jid);
+    var res = Object.keys(jsxc.storage.getUserItem('res', bid) || {}) || [];
+
+    if (!features) {
+      return res;
+    } else if (typeof features === 'string') {
+      features = [features];
+    }
+
+    var available = [];
+    $.each(res, function(i, r) {
+      if (self.conn.caps.hasFeatureByJid(bid + '/' + r, features)) {
+        available.push(r);
+      }
+    });
+
+    return available;
+  },
+
+  /**
+   * Called when
+   */
+  _onDisconnected : function() {
+
+    var self = jsxc.mmstream;
+
+    /**
+     * Remove listeners
+     */
+    $(document).off('disconnected.jsxc', self._onDisconnected);
+    $(document).off('caps.strophe', self._onCaps);
+
+    /**
+     * Remove all videos
+     */
+    $("#jsxc_videoPanel .jsxc_videoThumbContainer").remove();
+
+    self.stopLocalStream();
+
+  },
+
+};
+
+/**
+ * Gui part of the manager
+ *
+ * @type {{videoPanel: null, localVideoShown: boolean, _initGui: jsxc.mmstream.gui._initGui,
+ *     _showVideoStream: jsxc.mmstream.gui._showVideoStream, _hideVideoStream:
+ *     jsxc.mmstream.gui._hideVideoStream, showLocalVideo: jsxc.mmstream.gui.showLocalVideo,
+ *     _initChatWindow: jsxc.mmstream._initChatWindow, updateIcon: jsxc.mmstream.updateIcon,
+ *     _newVideoDialog: jsxc.mmstream.gui._newVideoDialog, isSidepanelShown:
+ *     jsxc.mmstream.gui.isSidepanelShown, toggleVideoPanel: jsxc.mmstream.gui.toggleVideoPanel,
+ *     _showIncomingCallDialog: jsxc.mmstream.gui._showIncomingCallDialog}}
+ */
+jsxc.mmstream.gui = {
+
+  /**
+   * JQuery object that represent the side panel on left
+   */
+  videoPanel : null,
+
+  /**
+   * True if local video is displayed
+   */
+  localVideoShown : false,
+
+  /**
+   * Create gui and add it to the main window
+   *
+   * @private
+   */
+  _initGui : function() {
+
+    var self = jsxc.mmstream.gui;
+
+    self.localVideoShown = false;
+
+    // create GUI
+    self.videoPanel = $(jsxc.gui.template.get('videoPanel'));
+    self.videoPanel.addClass("jsxc_state_hidden");
+
+    // button for opening
+    self.videoPanel.find("#jsxc_toggleVideoPanel").click(function() {
+      jsxc.mmstream.gui.toggleVideoPanel();
+    });
+
+    self.videoPanel.find(".jsxc_videoPanelContent").perfectScrollbar();
+
+    $('body').append(self.videoPanel);
+
+  },
+
+  /**
+   * Add a stream to the side panel
+   * @param stream
+   * @param jid
+   * @param title
+   * @private
+   */
+  _showVideoStream : function(stream, fulljid, options) {
+
+    var self = jsxc.mmstream.gui;
+
+    var jid = Strophe.getBareJidFromJid(fulljid);
+
+    if (Strophe.getResourceFromJid(fulljid) === null) {
+      throw "JID must be full jid";
+    }
+
+    var defaultOptions = {
+
+      /**
+       * Title of video thumb
+       */
+      title : "From " + jid,
+
+      /**
+       * If true, thumb will be append in first position
+       */
+      prepend : false,
+
+      /**
+       * If false, no hang up button will be displayed
+       */
+      hangupButton : true,
+    };
+
+    options = $.extend(defaultOptions, options);
+
+    // create container for video and title
+    var videoCtr = $("<div>").addClass('jsxc_videoThumbContainer');
+    videoCtr.data("fromjid", fulljid);
+
+    $("<h2>").text(options.title).addClass("jsxc_videoThumb_title").appendTo(videoCtr);
+
+    // create video element and attach media stream
+    var video = $("<video>").addClass("jsxc_videoThumb").appendTo(videoCtr);
+    jsxc.attachMediaStream(video.get(0), stream);
+
+    // controls
+    if (options.hangupButton === true) {
+      var hangup = $("<div>").addClass('jsxc_hangUp jsxc_videoControl').click(function() {
+        jsxc.mmstream.hangupCall(fulljid);
+      });
+
+      hangup.appendTo(videoCtr);
+    }
+
+    // append video on first position if needed
+    if (options.prepend === true) {
+      self.videoPanel.find(".jsxc_videoPanelContent").prepend(videoCtr);
+    }
+    // append video at end
+    else {
+      self.videoPanel.find(".jsxc_videoPanelContent").append(videoCtr);
+    }
+
+  },
+
+  /**
+   * Hide video stream with optionnal message
+   * @private
+   */
+  _hideVideoStream : function(fulljid) {
+
+    var mmstream = jsxc.mmstream;
+    var self = jsxc.mmstream.gui;
+
+    if (Strophe.getResourceFromJid(fulljid) === null) {
+      throw "JID must be full jid";
+    }
+
+    // search element to remove
+    self.videoPanel.find(".jsxc_videoThumbContainer").each(function() {
+
+      var cjid = $(this).data("fromjid");
+      if (cjid === fulljid) {
+
+        // remove element
+        $(this).remove();
+
+        // display message
+        var node = Strophe.getNodeFromJid(fulljid);
+        var mess = "Connexion interrompue avec " + node;
+
+        jsxc.gui.feedback(mess);
+
+        return false;
+      }
+
+    });
+
+    // hide localvideo if necessary
+    if(mmstream.getCurrentVideoSessions().length < 1){
+      $("#jsxc_videoPanel .jsxc_videoThumbContainer").remove();
+    }
+
+  },
+
+  /**
+   * Show local video
+   * @private
+   */
+  showLocalVideo : function() {
+
+    var mmstream = jsxc.mmstream;
+    var self = jsxc.mmstream.gui;
+
+    mmstream._requireLocalStream()
+        .done(function(localStream) {
+          self._showVideoStream(localStream, jsxc.xmpp.conn.jid, {
+            title : "Local video stream", prepend : true, hangupButton : false,
+          });
+
+          self.localVideoShown = true;
+        })
+        .fail(function() {
+          self.localVideoShown = false;
+        });
+
+  },
+
+  /**
+   * Add "video" button to a window chat menu when open.
+   *
+   * @private
+   * @memberOf jsxc.mmstream
+   * @param event
+   * @param win jQuery window object
+   */
+  _initChatWindow : function(event, win) {
+
+    var self = jsxc.mmstream;
+
+    if (win.hasClass('jsxc_groupchat')) {
+      return;
+    }
+
+    jsxc.debug('mmstream._initChatWindow');
+
+    if (!self.conn) {
+      $(document).one('attached.jsxc', function() {
+        self.gui._initChatWindow(null, win);
+      });
+      return;
+    }
+
+    var div = $('<div>').addClass('jsxc_video');
+    win.find('.jsxc_tools .jsxc_settings').after(div);
+
+    self.gui.updateIcon(win.data('bid'));
   },
 
   /**
@@ -7842,77 +8109,113 @@ jsxc.mmstream = {
   },
 
   /**
-   * Return list of capable resources.
+   * Create and show a new dialog displaying video stream
    *
-   * @memberOf jsxc.mmstream
-   * @param jid
-   * @param {(string|string[])} features list of required features
-   * @returns {Array}
    */
-  getCapableRes : function(jid, features) {
+  _newVideoDialog : function(stream, title) {
 
     var self = jsxc.mmstream;
-    var bid = jsxc.jidToBid(jid);
-    var res = Object.keys(jsxc.storage.getUserItem('res', bid) || {}) || [];
 
-    if (!features) {
-      return res;
-    } else if (typeof features === 'string') {
-      features = [features];
-    }
+    title = title || "";
 
-    var available = [];
-    $.each(res, function(i, r) {
-      if (self.conn.caps.hasFeatureByJid(bid + '/' + r, features)) {
-        available.push(r);
-      }
+    // create and append dialog to body
+    var dialog = $("<video>");
+    dialog.appendTo($("body"));
+
+    self.videoDialogs.push(dialog);
+
+    // attach stream
+    jsxc.attachMediaStream(dialog.get(0), stream);
+
+    dialog.dialog({
+      title : title, height : '400', width : 'auto'
     });
 
-    return available;
   },
 
   /**
-   * Add "video" button to window menu.
-   *
-   * @private
-   * @memberOf jsxc.mmstream
-   * @param event
-   * @param win jQuery window object
+   * Return true if sidebar is shown
    */
-  initWindow : function(event, win) {
-    var self = jsxc.mmstream;
+  isSidepanelShown : function() {
+    var self = jsxc.mmstream.gui;
+    return self.videoPanel && self.videoPanel.hasClass('jsxc_state_shown');
+  },
 
-    // if (win.hasClass('jsxc_groupchat')) {
-    //   return;
-    // }
+  /**
+   * Open or close video panel
+   *
+   * State can be 'true' or 'false'
+   *
+   */
+  toggleVideoPanel : function(state) {
 
-    jsxc.debug('mmstream.initWindow');
+    var self = jsxc.mmstream.gui;
+    var panel = self.videoPanel;
 
-    if (!self.conn) {
-      $(document).one('attached.jsxc', function() {
-        self.initWindow(null, win);
-      });
-      return;
+    if (!state) {
+      state = !panel.hasClass('jsxc_state_shown');
     }
 
-    var div = $('<div>').addClass('jsxc_video');
-    win.find('.jsxc_tools .jsxc_settings').after(div);
+    panel.removeClass('jsxc_state_hidden jsxc_state_shown');
 
-    self.updateIcon(win.data('bid'));
+    // show window
+    if (state === true) {
+      panel.addClass('jsxc_state_shown');
+    }
+
+    // close window
+    else {
+      panel.addClass('jsxc_state_hidden');
+    }
+
+    $(document).trigger('toggle.videoPanel.jsxc', [state]);
+
+  },
+
+  _ringOnIncomming : function() {
+    jsxc.notification.playSound(jsxc.CONST.SOUNDS.CALL, true, true);
+  },
+
+  _stopRinging : function() {
+    jsxc.notification.stopSound();
   },
 
   /**
-   * Called when
+   * Show an "accept / decline" dialog for an incoming call
    */
-  onDisconnected : function() {
+  _showIncomingCallDialog : function(bid) {
 
-    // TODO close all dialogs
+    var self = jsxc.mmstream.gui;
 
-    var self = jsxc.mmstream;
+    var defer = $.Deferred();
 
-    $(document).off('attached.jsxc', self.init);
-    $(document).off('disconnected.jsxc', self.onDisconnected);
-    $(document).off('caps.strophe', self.onCaps);
+    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('incomingCall', bid), {
+      noClose : true
+    });
+
+    self._ringOnIncomming();
+
+    dialog.find('.jsxc_accept').click(function() {
+
+      self._stopRinging();
+
+      defer.resolve("ACCEPT");
+
+      jsxc.gui.dialog.close();
+
+    });
+
+    dialog.find('.jsxc_reject').click(function() {
+
+      self._stopRinging();
+
+      defer.fail("REJECT");
+
+      jsxc.gui.dialog.close();
+
+    });
+
+    return defer.promise();
 
   }
 
@@ -7924,8 +8227,8 @@ $(document).ready(function() {
     var self = jsxc.mmstream;
 
     $(document).on('attached.jsxc', self.init);
-    $(document).on('disconnected.jsxc', self.onDisconnected);
-    $(document).on('init.window.jsxc', self.initWindow);
+    $(document).on('disconnected.jsxc', self._onDisconnected);
+    $(document).on('init.window.jsxc', self.gui._initChatWindow);
 
   }
 });
@@ -9749,14 +10052,6 @@ jsxc.notification = {
             soundFile: jsxc.CONST.SOUNDS.MSG,
             source: bid
          });
-      });
-
-      $(document).on('callincoming.jingle', function() {
-         jsxc.notification.playSound(jsxc.CONST.SOUNDS.CALL, true, true);
-      });
-
-      $(document).on('accept.call.jsxc reject.call.jsxc', function() {
-         jsxc.notification.stopSound();
       });
    },
 
@@ -11692,6 +11987,21 @@ jsxc.webrtc = {
 
       self.conn.jingle.setICEServers(peerConfig.iceServers);
     }
+
+    /**
+     * Sound notifications
+     */
+    $(document).on('callincoming.jingle', self._ringOnIncomming);
+    $(document).on('accept.call.jsxc reject.call.jsxc',self._stopRinging);
+
+  },
+
+  _ringOnIncomming: function(){
+    jsxc.notification.playSound(jsxc.CONST.SOUNDS.CALL, true, true);
+  },
+
+  _stopRinging: function(){
+    jsxc.notification.stopSound();
   },
 
   onConnected : function() {
@@ -11709,6 +12019,12 @@ jsxc.webrtc = {
     $(document).off('mediafailure.jingle', self.onMediaFailure);
 
     $(document).off('caps.strophe', self.onCaps);
+    
+    /**
+     * Sound notifications
+     */
+    $(document).off('callincoming.jingle', self._ringOnIncomming);
+    $(document).off('accept.call.jsxc reject.call.jsxc',self._stopRinging);
   },
 
   /**
@@ -14222,12 +14538,13 @@ jsxc.gui.template['vCard'] = '<h3>\n' +
 
 jsxc.gui.template['videoPanel'] = '<div id="jsxc_videoPanel">\n' +
 '\n' +
+'  <div>\n' +
+'    <h3 style="margin: 20px;">Appels vidéo</h3>\n' +
+'  </div>\n' +
+'\n' +
 '  <!-- Side bar with local and remote videos -->\n' +
+'  <div class="jsxc_videoPanelContent">\n' +
 '\n' +
-'\n' +
-'  <div class="jsxc_videoPanelContent" style="background: red">\n' +
-'\n' +
-'    <b>Hey hey hey hey !</b>\n' +
 '\n' +
 '  </div>\n' +
 '\n' +
