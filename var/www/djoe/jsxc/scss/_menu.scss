@@ -16,6 +16,13 @@
     height: 1em;
   }
 
+  h2{
+    font-size: 14px;
+    margin-left: 15px;
+    margin-top: 17px;
+    margin-bottom: 7px;
+  }
+
   #jsxc_menuTools{
 
     input[type="text"]{
@@ -25,6 +32,11 @@
       margin: 5px;
     }
 
+  }
+
+  .jsxc_videoPanelContent{
+    position: relative;
+    height: 100%;
   }
 
   .jsxc_sideMenuCreateRoomForm{

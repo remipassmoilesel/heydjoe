@@ -4002,11 +4002,19 @@ div.jsxc_video {
   #jsxc_side_menu input {
     position: static;
     height: 1em; }
+  #jsxc_side_menu h2 {
+    font-size: 14px;
+    margin-left: 15px;
+    margin-top: 17px;
+    margin-bottom: 7px; }
   #jsxc_side_menu #jsxc_menuTools input[type="text"] {
     height: 1.8em;
     padding: 3px;
     width: 80%;
     margin: 5px; }
+  #jsxc_side_menu .jsxc_videoPanelContent {
+    position: relative;
+    height: 100%; }
   #jsxc_side_menu .jsxc_sideMenuCreateRoomForm {
     text-align: left;
     padding: 5px; }
@@ -4265,6 +4273,8 @@ div.jsxc_video {
     border: solid 1px darkgray;
     margin-bottom: 4px; }
   #jsxc_videoPanel .jsxc_videoPanelContent {
+    position: relative;
+    height: 85%;
     padding: 10px; }
     #jsxc_videoPanel .jsxc_videoPanelContent .jsxc_videoControl {
       height: 25px;

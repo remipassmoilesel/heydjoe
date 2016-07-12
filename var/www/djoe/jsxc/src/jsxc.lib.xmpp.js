@@ -1037,7 +1037,6 @@ jsxc.xmpp = {
             return true;
         }
 
-
         // check if invitation to conference
         var invitation = $(stanza).find("x[xmlns='jabber:x:conference']");
 

@@ -245,6 +245,66 @@ jsxc.gui.menu = {
     toolsPanel : {
       label : "Outils", template : "menuTools", init : function() {
 
+        /**
+         * Video conference
+         *
+         */
+
+        // buddy list for room creation
+        var buddyList = jsxc.gui.createBuddyList("#jsxc_videoConferenceCallUsers");
+
+        // update buddy list on click
+        $("#jsxc_menuRooms .jsxc_refreshBuddyList").click(function() {
+
+          buddyList.updateBuddyList();
+
+          jsxc.gui.feedback("Mise à jour en cours ...");
+        });
+        
+        $("#jsxc_menuTools .jsxc_createConference").click(function() {
+
+          var selItems = $("#jsxc_videoConferenceCallUsers .ui-selected");
+
+          // check selected elements
+          if (selItems.length < 1) {
+            jsxc.gui.feedback("Vous devez sélectionner au moins un contact", "warn");
+            return;
+          }
+
+          /**
+           * Get full jid of people to call
+           */
+          var toCall = [];
+
+          $.each(selItems, function() {
+
+            var bid = $(this).data("userjid");
+
+            var data = jsxc.storage.getUserItem('buddy', bid);
+
+            if (data) {
+
+              if (data.res && data.res.length > 0) {
+                toCall.push(bid + "/" + data.res[0]);
+              }
+            }
+
+          });
+
+          jsxc.mmstream.startVideoconference(toCall);
+          
+          // // call people
+          // $.each(toCall, function(index, fjid) {
+          //   jsxc.mmstream.startCall(fjid);
+          // });
+
+        });
+
+        /**
+         * Etherpad
+         *
+         */
+
         // show share link
         var links = $("#jsxc_menuTools .jsxc_etherpad_sharelink");
         var txtFields = $("#jsxc_menuTools .jsxc_etherpad_sharetextfield");

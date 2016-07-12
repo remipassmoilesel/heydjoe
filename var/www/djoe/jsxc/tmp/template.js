@@ -282,6 +282,15 @@ jsxc.gui.template['incomingCall'] = '<h3 data-i18n="Incoming_call"></h3>\n' +
 '<button class="btn btn-default jsxc_reject pull-right" data-i18n="Reject"></button>\n' +
 '';
 
+jsxc.gui.template['incomingVideoconference'] = '<h3 data-i18n="Incoming_call"></h3>\n' +
+'<p>\n' +
+'   <span>{{bid_name}} vous invite à participer à une vidéo conférence.</span>\n' +
+'</p>\n' +
+'\n' +
+'<button class="btn btn-primary jsxc_accept pull-right" data-i18n="Accept"></button>\n' +
+'<button class="btn btn-default jsxc_reject pull-right" data-i18n="Reject"></button>\n' +
+'';
+
 jsxc.gui.template['joinChat'] = '<h3 data-i18n="Join_chat"></h3>\n' +
 '<p class=".jsxc_explanation" data-i18n="muc_explanation"></p>\n' +
 '<div class="form-horizontal">\n' +
@@ -453,19 +462,35 @@ jsxc.gui.template['menuSettings'] = '<div id="jsxc_menuSettings">\n' +
 
 jsxc.gui.template['menuTools'] = '<div id="jsxc_menuTools">\n' +
 '\n' +
-'    <div>\n' +
-'        <p>Choisissez un nom pour votre pad, et partagez le !\n' +
-'            <input id="jsxc_etherpad_name" type="text" placeholder="Nom du pad"/>\n' +
-'        </p>\n' +
-'        <p>Lien de partage:\n' +
-'            <input type="text" class="jsxc_etherpad_sharetextfield"/>\n' +
-'            <a href="#" class="jsxc_etherpad_sharelink" target="_blank">>></a></p>\n' +
-'    </div>\n' +
+'  <div>\n' +
+'\n' +
+'    <h2>Vidéoconférence</h2>\n' +
+'\n' +
+'    <div id="jsxc_videoConferenceCallUsers"></div>\n' +
+'\n' +
+'    <div class="jsxc_actionButton jsxc_refreshBuddyList">Rafraichir la liste</div>\n' +
+'    <div class="jsxc_actionButton jsxc_createConference">Appeler les contacts</div>\n' +
+'\n' +
+'  </div>\n' +
+'\n' +
+'  <div>\n' +
+'\n' +
+'    <h2>Etherpad</h2>\n' +
+'\n' +
+'    <p>Choisissez un nom pour votre pad, et partagez le !\n' +
+'      <input id="jsxc_etherpad_name" type="text" placeholder="Nom du pad"/>\n' +
+'    </p>\n' +
+'    <p>Lien de partage:\n' +
+'      <input type="text" class="jsxc_etherpad_sharetextfield"/>\n' +
+'      <a href="#" class="jsxc_etherpad_sharelink" target="_blank">>></a></p>\n' +
 '\n' +
 '    <div class="jsxc_actionButton jsxc_openpad">Ouvrir un pad</div>\n' +
 '\n' +
 '\n' +
 '    <div class="jsxc_actionButton notImplementedYet">Liste des pads</div>\n' +
+'\n' +
+'  </div>\n' +
+'\n' +
 '\n' +
 '</div>';
 
