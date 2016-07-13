@@ -306,6 +306,9 @@ jsxc = {
     // initializing rest api
     jsxc.rest.init();
 
+    // help
+    jsxc.help.init();
+
     // Register event listener for the storage event
     window.addEventListener('storage', jsxc.storage.onStorage, false);
 

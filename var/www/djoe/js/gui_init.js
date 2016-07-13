@@ -41,6 +41,12 @@ $(function() {
   // listen connexion success
   $(document).on("attached.jsxc ", function() {
     $("#feedbackArea").html("<i>Connexion établie</i>");
+
+    $("#startDemoTour").prop("disabled", false);
+  });
+
+  $("#startDemoTour").click(function(){
+    jsxc.help.launchTutorial("demotour");
   });
 
   // random login

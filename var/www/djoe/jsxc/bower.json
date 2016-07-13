@@ -33,6 +33,7 @@
     "strophe.x": "https://raw.githubusercontent.com/strophe/strophejs-plugins/master/dataforms/src/strophe.x.js",
     "jquery": "^2.1.1",
     "jquery-ui": "^1.11.4",
-    "intro.js": "^2.2.0"
+    "intro.js": "^2.2.0",
+    "tether-shepherd": "^1.8.0"
   }
 }

@@ -1269,7 +1269,7 @@ jsxc.mmstream.gui = {
     var self = jsxc.mmstream.gui;
     var panel = self.videoPanel;
 
-    if (!state) {
+    if (typeof state === "undefined") {
       state = !panel.hasClass('jsxc_state_shown');
     }
 

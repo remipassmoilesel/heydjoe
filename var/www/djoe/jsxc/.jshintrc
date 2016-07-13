@@ -35,6 +35,8 @@
     "getUserMediaWithConstraints": true,
     "setupRTC": true,
     "SDPUtil": true,
+    "introJs": true,
+    "Shepherd": true,
     "getSelection": true
   }
 }

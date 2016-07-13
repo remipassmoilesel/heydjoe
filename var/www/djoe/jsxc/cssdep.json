@@ -2,5 +2,7 @@
   "lib/jquery-toast-plugin/src/jquery.toast.css",
   "lib/perfect-scrollbar/css/perfect-scrollbar.css",
   "lib/magnific-popup/dist/magnific-popup.css",
+  "lib/intro.js/introjs.css",
+  "lib/tether-sheperd/dist/css/shepherd-theme-arrows.css",
   "tmp/jsxc.css"
 ]

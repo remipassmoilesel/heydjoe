@@ -1847,7 +1847,7 @@ jsxc.gui.roster = {
    */
   toggle : function(state) {
 
-    jsxc.stats.addEvent('jsxc.toggleroster.' + state);
+    jsxc.stats.addEvent('jsxc.toggleroster.' + state || 'toggle');
 
     var duration;
 

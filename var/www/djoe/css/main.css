@@ -4,6 +4,12 @@ body {
     font-size: 13px;
 }
 
+.tabBlock{
+  margin-top: 10px;
+  margin-bottom: 25px;
+
+}
+
 .connexionForm{
     margin: 15px;
     border: none;

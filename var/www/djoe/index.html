@@ -2,35 +2,35 @@
 <html>
 
 <head>
-    <title>Prototype JSXC / Etherpad / Openfire</title>
+  <title>Prototype JSXC / Etherpad / Openfire</title>
 
-    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link href="css/main.css" media="all" rel="stylesheet" type="text/css"/>
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 
-    <link href="css/jquery-ui.silverpeas/jquery-ui.css" media="all" rel="stylesheet" type="text/css"/>
-    <link href="jsxc/dev/css/jsxc.css" media="all" rel="stylesheet" type="text/css"/>
+  <link href="css/main.css" media="all" rel="stylesheet" type="text/css"/>
 
-    <script src="bower_components/jquery/dist/jquery.js"></script>
-    <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+  <link href="css/jquery-ui.silverpeas/jquery-ui.css" media="all" rel="stylesheet" type="text/css"/>
+  <link href="jsxc/dev/css/jsxc.css" media="all" rel="stylesheet" type="text/css"/>
 
-    <script src="jsxc/dev/lib/jsxc.dep.js"></script>
-    <script src="jsxc/dev/jsxc.js"></script>
-    <script src="jsxc/dev/jsxc_init.js"></script>
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="bower_components/jquery-ui/jquery-ui.js"></script>
 
-    <script src="bower_components/chance/chance.js"></script>
+  <script src="jsxc/dev/lib/jsxc.dep.js"></script>
+  <script src="jsxc/dev/jsxc.js"></script>
+  <script src="jsxc/dev/jsxc_init.js"></script>
 
-    <script src="js/gui_init.js"></script>
+  <script src="bower_components/chance/chance.js"></script>
 
-    <!-- dev dependencies -->
-    <script src="jquery.eventconsole/jquery.eventconsole.js"></script>
+  <script src="js/gui_init.js"></script>
 
-    <link href="jquery.xmppinspector/jquery.xmppinspector.css" media="all" rel="stylesheet" type="text/css"/>
-    <script src="jquery.xmppinspector/jquery.xmppinspector.js"></script>
+  <script src="jquery.eventconsole/jquery.eventconsole.js"></script>
 
-    <script src="js/storageConsole.js"></script>
+  <link href="jquery.xmppinspector/jquery.xmppinspector.css" media="all" rel="stylesheet" type="text/css"/>
+  <script src="jquery.xmppinspector/jquery.xmppinspector.js"></script>
+
+  <script src="js/storageConsole.js"></script>
 
 
 </head>
@@ -39,185 +39,224 @@
 
 <div id="content">
 
-    <!-- Bandeau -->
-    <img src="images/logo.jpg" style="float: left; width: 20%"/>
+  <!-- Bandeau -->
+  <img src="images/logo.jpg" style="float: left; width: 20%"/>
 
-    <div class="textContent">
+  <div class="textContent">
 
-        <h1>Prototype JSXC / Etherpad / Openfire</h1>
+    <h1>Prototype JSXC / Etherpad / Openfire</h1>
 
-        Destiné à la découverte d'outils de communication en temps réel.
+    Destiné à la découverte d'outils de communication en temps réel.
+
+  </div>
+
+  <div id="tabs" style="margin-bottom: 100px; clear: both; margin-top: 40px;">
+
+    <ul>
+      <li><a href="#tabs-3">Client JSXC</a></li>
+      <li><a href="#tabs-2">Informations utiles</a></li>
+    </ul>
+
+    <!--
+    *
+    *
+    *
+    *
+    *
+    Informations utiles
+    *
+    *
+    *
+    *
+    *
+    *
+    -->
+    <div id="tabs-2">
+
+      <table class="table-striped" id="infoDisplay">
+
+        <tr>
+          <th>Nom</th>
+          <th>Valeur</th>
+        </tr>
+
+        <!-- voir dans le script js/jsxc_init.js -->
+
+      </table>
+
+      <!-- inspecteur XMPP -->
+      <p>&nbsp;</p>
+      <div id="xmppInspector"></div>
+
+      <!-- console JQuery -->
+      <p>&nbsp;</p>
+      <div id="eventsConsole"></div>
+
+      <!-- console Storage-->
+      <p>&nbsp;</p>
+      <div id="storageConsole"></div>
 
     </div>
 
-    <div id="tabs" style="margin-bottom: 100px; clear: both; margin-top: 40px;">
+    <!--
+    *
+    *
+    *
+    *
+    *
+    *
+    Introduction à JSXC
+    *
+    *
+    *
+    *
+    *
+    *
+    -->
+
+    <div id="tabs-3">
+
+      <div class="tabBlock">
+
+        <h2>Bienvenue !</h2>
+
+        Ce site est un espace de démonstration et de développement dédié aux technologies de
+        communication en temps réel. Vous pourrez essayer ici:
 
         <ul>
-            <li><a href="#tabs-3">Client JSXC</a></li>
-            <li><a href="#tabs-4">Etherpad</a></li>
-            <li><a href="#tabs-2">Informations utiles</a></li>
+          <li>JSXC: un client XMPP modifié permettant la messagerie instantanée texte et vidéo</li>
+          <li>Etherpad: une solution d'édition en ligne collaborative</li>
+          <li>Openfire: un serveur XMPP libre</li>
         </ul>
 
-        <!--
-        *
-        *
-        *
-        *
-        *
-        Informations utiles
-        *
-        *
-        *
-        *
-        *
-        *
-        -->
-        <div id="tabs-2">
-            <table class="table-striped" id="infoDisplay">
 
-                <tr>
-                    <th>Nom</th>
-                    <th>Valeur</th>
-                </tr>
-
-                <!-- voir dans le script js/jsxc_init.js -->
-
-            </table>
-
-            <!-- inspecteur XMPP -->
-            <p>&nbsp;</p>
-            <div id="xmppInspector"></div>
-
-            <!-- console JQuery -->
-            <p>&nbsp;</p>
-            <div id="eventsConsole"></div>
+        Ces outils en libre accès pour démonstration alors n'hésitez pas !
+      </div>
 
 
-            <!-- console Storage-->
-            <p>&nbsp;</p>
-            <div id="storageConsole"></div>
 
+
+
+
+      <div class="tabBlock">
+        <h2>Connexion</h2>
+
+        <!-- Connexion form-->
+        <table class="connexionForm">
+
+          <tr>
+            <td>Chosissez un compte prédéfini:</td>
+            <td><select id="predefinedJidList"></select></td>
+            <td><input type="radio" name="loginMode" value="predefined" checked/></td>
+
+            <td rowspan="3" class="buttons">
+              <button id="connectButton">
+                Connexion au client JSXC
+              </button>
+              <br/>
+              <br/>
+              <button id="disconnectButton">
+                Déconnexion
+              </button>
+
+              <div id="feedbackArea" style="margin: 15px;"></div>
+
+            </td>
+          </tr>
+
+          <tr>
+            <td>Ou saisissez le login que vous souhaitez:</td>
+            <td><input type="text" id="randomLogin"/>
+              <input type="button" id="refreshRandomLogin" value="*"/></td>
+            <td><input type="radio" name="loginMode" value="random"/></td>
+          </tr>
+
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+
+        </table>
+
+      </div>
+
+
+
+
+
+
+      <div class="tabBlock">
+
+        <h2>Visite guidée</h2>
+        Une fois connecté au client essayez la visite guidée pour découvrir les fonctionnalités
+        offertes:
+
+        <button disabled id="startDemoTour">Commener la visite guidée</button>
+
+      </div>
+
+
+
+
+
+      <div class="tabBlock">
+
+        <h2>Suggestions / Signalement d'erreurs</h2>
+        N'hésitez pas: <a href="http://im.silverpeas.net:9001/p/suggestions" target="_blank">http://im.silverpeas.net:9001/p/suggestions</a>
+
+      </div>
+
+
+
+
+
+      <div class="tabBlock">
+
+        <h2>Nouveautés ?</h2>
+        Regardez la feuille de route:
+        <a href="http://im.silverpeas.net:9001/p/feuille-de-route" target="_blank">http://im.silverpeas.net:9001/p/feuille-de-route</a>
+
+      </div>
+
+
+
+
+
+      <div class="tabBlock">
+        <h2>Ajouter un contact</h2>
+        <div>
+          <p>
+            Pour communiquer avec quelqu'un vous devez d'abord l'ajouter à vos contacts:
+          </p>
+
+          <pre>Menu > Rechercher "Ajouter" > Ajouter un contact</pre>
+
+          <img src="images/add-contact.png"/>
         </div>
 
-        <!--
-        *
-        *
-        *
-        *
-        *
-        *
-        Introduction à JSXC
-        *
-        *
-        *
-        *
-        *
-        *
-        -->
-
-        <div id="tabs-3">
-
-            <h2>Connexion</h2>
-
-            <p>
-                JSXC est un client XMPP distribué sous licence MIT. A utiliser de préférence avec Firefox et Chrome /
-                Chromium.</p>
-
-            <!-- Connexion form-->
-            <table class="connexionForm">
-
-                <tr>
-                    <td>Chosissez un compte prédéfini:</td>
-                    <td><select id="predefinedJidList"></select></td>
-                    <td><input type="radio" name="loginMode" value="predefined" checked/></td>
-                </tr>
-                <tr>
-                    <td>Ou saisissez le login que vous souhaitez:</td>
-                    <td><input type="text" id="randomLogin"/>
-                        <input type="button" id="refreshRandomLogin" value="*"/></td>
-                    <td><input type="radio" name="loginMode" value="random"/></td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td colspan="3" class="buttons">
-                        <button id="connectButton">
-                            Connexion au client JSXC
-                        </button>
-                        <button id="disconnectButton">
-                            Déconnexion
-                        </button>
-
-                        <div id="feedbackArea" style="margin: 15px;"></div>
-
-                    </td>
-                </tr>
-            </table>
+      </div>
 
 
-            <h2>Suggestions / Signalement d'erreurs</h2>
-            N'hésitez pas: <a href="http://im.silverpeas.net:9001/p/suggestions" target="_blank">http://im.silverpeas.net:9001/p/suggestions</a>
+      <div class="tabBlock">
+        <h2>Discuter</h2>
 
-            <h2>Nouveautés ?</h2>
-            Regardez la feuille de route: <a href="http://im.silverpeas.net:9001/p/feuille-de-route" target="_blank">http://im.silverpeas.net:9001/p/feuille-de-route</a>
-
-            <h2>Connexion</h2>
-            <div>
-                <ol>
-                    <li>Choisissez un compte</li>
-                    <li>Cliquez sur le bouton "Connexion au client JSXC"</li>
-                    <li>Ouvrez et refermez JSXC en cliquant sur la barre de fermeture transparente à la droite de
-                        l'écran
-                    </li>
-                </ol>
-            </div>
+        <p>
+          Pour discuter avec quelqu'un, ajoutez le à vos contacts puis cliquez sur son nom à droite
+          de
+          l'écran.
+          Si vous utilisez Chrome ou Firefox vous pouvez essayer de démarer une vidéo conférence.
+          Cliquez sur l'icône en forme de caméra en haut de l'espace de conversation.
+        </p>
+        <p>
+          Cette fonctionnalité n'est pas encore correctement configurée, les connexions échouent
+          selon la configuration réseau.
+        </p>
 
 
-            <h2>Ajouter un contact</h2>
-            <div>
-                <p>
-                    Pour communiquer avec quelqu'un vous devez d'abord l'ajouter à vos contacts:
-                </p>
+      </div>
 
-                <pre>Menu > Rechercher "Ajouter" > Ajouter un contact</pre>
-
-                <img src="images/add-contact.png"/>
-            </div>
-
-            <h2>Discuter</h2>
-            <div>
-                <p>
-                    Pour discuter avec quelqu'un, ajoutez le à vos contacts puis cliquez sur son nom à droite de
-                    l'écran.
-                    Si vous utilisez Chrome ou Firefox vous pouvez essayer de démarer une vidéo conférence.
-                    Cliquez sur l'icône en forme de caméra en haut de l'espace de conversation.
-                </p>
-                <p>
-                    Cette fonctionnalité n'est pas encore correctement configurée, les connexions échouent
-                    selon la configuration réseau.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div id="tabs-4">
-
-            <h2>Présentation</h2>
-
-            <p>Etherpad est un outil qui permet de créer et d'éditer des documents texte en temps réel.
-            <p>Les pads sont sauvegardés automatiquement, peuvent être embarqués facilement et manipulés par une API
-                !</p>
-
-            <h2>Créer un pad</h2>
-            <p>Nom du pad: <input type="text" id="newPadName" placeholder="Hey hey !"/>
-                <input type="button" id="newPadButton" value="Créer un nouveau pad !"/>
-            </p>
-
-        </div>
     </div>
+
+  </div>
 
 </div>
 
