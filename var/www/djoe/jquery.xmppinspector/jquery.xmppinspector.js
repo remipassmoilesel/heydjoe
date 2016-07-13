@@ -22,7 +22,7 @@
     // make resizable
     $(this).resizable();
 
-    var title = $("<div>JQuery Events: </div>")
+    var title = $("<div>XMPP Inspector: </div>")
         .css({
           'font-weight' : 'bolder', 'margin' : "10px"
         });

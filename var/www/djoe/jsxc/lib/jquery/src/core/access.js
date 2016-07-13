@@ -1,19 +1,19 @@
-define( [
+define([
 	"../core"
 ], function( jQuery ) {
 
 // Multifunctional method to get and set values of a collection
 // The value/s can optionally be executed if it's a function
-var access = function( elems, fn, key, value, chainable, emptyGet, raw ) {
+var access = jQuery.access = function( elems, fn, key, value, chainable, emptyGet, raw ) {
 	var i = 0,
-		len = elems.length,
+		length = elems.length,
 		bulk = key == null;
 
 	// Sets many values
 	if ( jQuery.type( key ) === "object" ) {
 		chainable = true;
 		for ( i in key ) {
-			access( elems, fn, i, key[ i ], true, emptyGet, raw );
+			jQuery.access( elems, fn, i, key[i], true, emptyGet, raw );
 		}
 
 	// Sets one value
@@ -25,7 +25,6 @@ var access = function( elems, fn, key, value, chainable, emptyGet, raw ) {
 		}
 
 		if ( bulk ) {
-
 			// Bulk operations run against the entire set
 			if ( raw ) {
 				fn.call( elems, value );
@@ -41,12 +40,8 @@ var access = function( elems, fn, key, value, chainable, emptyGet, raw ) {
 		}
 
 		if ( fn ) {
-			for ( ; i < len; i++ ) {
-				fn(
-					elems[ i ], key, raw ?
-					value :
-					value.call( elems[ i ], i, fn( elems[ i ], key ) )
-				);
+			for ( ; i < length; i++ ) {
+				fn( elems[i], key, raw ? value : value.call( elems[i], i, fn( elems[i], key ) ) );
 			}
 		}
 	}
@@ -57,9 +52,9 @@ var access = function( elems, fn, key, value, chainable, emptyGet, raw ) {
 		// Gets
 		bulk ?
 			fn.call( elems ) :
-			len ? fn( elems[ 0 ], key ) : emptyGet;
+			length ? fn( elems[0], key ) : emptyGet;
 };
 
 return access;
 
-} );
+});

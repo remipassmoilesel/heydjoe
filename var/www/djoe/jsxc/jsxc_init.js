@@ -66,6 +66,7 @@ $(function() {
     // if 404 errors precise jsxc root
     root : 'jsxc/',
 
+    // stat module. save and monitor events
     stats : {
       enabled : true,
       destinationUrl : "https://im.silverpeas.net/stats",

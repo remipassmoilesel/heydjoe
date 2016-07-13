@@ -3998,33 +3998,45 @@ div.jsxc_video {
   height: 90%;
   box-sizing: border-box;
   z-index: 80;
-  border-left: 1px solid #e1e1e1; }
+  border-left: 1px solid #e1e1e1;
+  /**
+  Bottom of each accordion panel
+  */
+  /**
+    Underlined text result in menu
+  */
+  /**
+    Small text area indicating if results or no
+  */
+  /**
+    Underlined text result in menu, active
+  */
+  /**
+    Text search bar on top of menu
+  */ }
   #jsxc_side_menu input {
     position: static;
     height: 1em; }
-  #jsxc_side_menu #jsxc_menuTools input[type="text"] {
+  #jsxc_side_menu input[type="text"] {
+    font-size: 1em;
     height: 1.8em;
     padding: 3px;
     width: 80%;
     margin: 5px; }
-  #jsxc_side_menu .jsxc_sideMenuCreateRoomForm {
-    text-align: left;
-    padding: 5px; }
-    #jsxc_side_menu .jsxc_sideMenuCreateRoomForm input[type="checkbox"] {
-      width: 1em;
-      margin: 4px; }
-    #jsxc_side_menu .jsxc_sideMenuCreateRoomForm input[type="text"] {
-      height: 1.8em;
-      padding: 3px;
-      width: 80%;
-      margin: 5px; }
+  #jsxc_side_menu input[type="checkbox"] {
+    width: 1em;
+    margin: 4px; }
+  #jsxc_side_menu p {
+    padding: 7px; }
+  #jsxc_side_menu .jsxc_sideMenuBottom {
+    height: 70px; }
   #jsxc_side_menu .jsxc_menu_search_results {
     background: rgba(126, 183, 59, 0.51); }
   #jsxc_side_menu .jsxc_menu_search_title_mark {
     font-weight: bolder; }
   #jsxc_side_menu #jsxc_menu_feedback {
     text-align: center;
-    font-size: 12px;
+    font-size: 10px;
     font-style: italic;
     color: darkGray; }
   #jsxc_side_menu .jsxc_menu_active_result {
@@ -4038,9 +4050,11 @@ div.jsxc_video {
       height: 2.5em; }
       #jsxc_side_menu #jsxc_side_menu_search_bar input[type="button"] {
         width: 20px; }
+    #jsxc_side_menu #jsxc_side_menu_search_bar #jsxc_menu_search_text_field {
+      width: 130px; }
   #jsxc_side_menu #jsxc_side_menu_content {
     background: inherit;
-    height: 93%;
+    height: 90%;
     /** Headers */
     /** Content */ }
     #jsxc_side_menu #jsxc_side_menu_content h1 {
@@ -4080,6 +4094,11 @@ div.jsxc_video {
     text-align: center;
     padding: 5px; }
 
+/**
+
+  Original JSXC menu style
+
+*/
 #jsxc_menu {
   height: 44px;
   width: 44px;
@@ -4123,6 +4142,8 @@ div.jsxc_video {
     height: 2em;
     vertical-align: middle;
     line-height: 1; }
+  .jsxc_filterableList .jsxc_filterTextField {
+    width: 94% !important; }
   .jsxc_filterableList .filterableList-result {
     background: yellow; }
 
@@ -4206,9 +4227,105 @@ div.jsxc_video {
       line-height: 1; }
 
 /**
+  Sive video panel where shown videos thumbs
+
+*/
+#jsxc_videoPanel {
+  font-size: 13px;
+  position: fixed;
+  top: 0px;
+  bottom: 0;
+  left: 0;
+  width: 300px;
+  overflow: visible;
+  border-right: 1px solid #e1e1e1;
+  z-index: 80;
+  background-color: whitesmoke;
+  display: block; }
+  #jsxc_videoPanel.jsxc_state_hidden {
+    display: block;
+    left: -300px;
+    -webkit-transition: left 0.5s;
+            transition: left 0.5s; }
+    #jsxc_videoPanel.jsxc_state_hidden #jsxc_toggleRoster:before {
+      -webkit-transform: rotate(0deg);
+              transform: rotate(0deg); }
+  #jsxc_videoPanel.jsxc_state_shown {
+    display: block;
+    left: 0px;
+    -webkit-transition: left 0.5s;
+            transition: left 0.5s; }
+  #jsxc_videoPanel #jsxc_toggleVideoPanel {
+    width: 14px;
+    height: 100%;
+    position: absolute;
+    right: -14px !important;
+    top: 0;
+    z-index: 110;
+    background-color: transparent;
+    cursor: pointer;
+    display: block; }
+    #jsxc_videoPanel #jsxc_toggleVideoPanel:before {
+      content: '';
+      position: absolute;
+      display: block;
+      width: 0;
+      top: 50%;
+      right: 0px;
+      border-style: solid;
+      border-width: 6px 0 6px 4px;
+      border-color: transparent whitesmoke; }
+    #jsxc_videoPanel #jsxc_toggleVideoPanel:hover {
+      background-color: rgba(153, 153, 153, 0.5); }
+  #jsxc_videoPanel .jsxc_videoMessage {
+    margin: 20px;
+    text-align: center;
+    font-style: italic; }
+  #jsxc_videoPanel .jsxc_videoThumbContainer {
+    padding: 4px;
+    border: solid 1px darkgray;
+    margin-bottom: 4px; }
+  #jsxc_videoPanel .jsxc_videoPanelContent {
+    position: relative;
+    height: 85%;
+    padding: 10px; }
+    #jsxc_videoPanel .jsxc_videoPanelContent .jsxc_videoControl {
+      height: 25px;
+      width: 25px;
+      margin: auto;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 80%;
+      cursor: pointer;
+      display: inline-block;
+      opacity: 0.8; }
+      #jsxc_videoPanel .jsxc_videoPanelContent .jsxc_videoControl:hover {
+        opacity: 1.0; }
+    #jsxc_videoPanel .jsxc_videoPanelContent .jsxc_hangUp {
+      background-image: url('../img/hang_up_red.svg');
+      height: 20px;
+      width: 40px;
+      cursor: pointer; }
+  #jsxc_videoPanel .jsxc_videoThumb {
+    width: 100%; }
+  #jsxc_videoPanel .jsxc_videoThumb_title {
+    text-align: center;
+    font-weight: bolder;
+    font-size: 13px; }
+
+/**
 
 Only for demonstration purpose
 
 */
+#jsxc_videoPanel .ui-accordion-content {
+  background: white; }
+
+#jsxc_videoPanel .ps-container > .ps-scrollbar-y-rail {
+  opacity: 0.6; }
+
 #jsxc_roster .ui-accordion-content {
   background: white; }
+
+#jsxc_roster .ps-container > .ps-scrollbar-y-rail {
+  opacity: 0.6; }

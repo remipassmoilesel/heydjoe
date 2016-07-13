@@ -54,6 +54,14 @@
 
       sessionPassword : "azerty",
 
+
+      /** required disco features for video call */
+      reqVideoFeatures: ['urn:xmpp:jingle:apps:rtp:video', 'urn:xmpp:jingle:apps:rtp:audio', 'urn:xmpp:jingle:transports:ice-udp:1', 'urn:xmpp:jingle:apps:dtls:0'],
+
+      /** required disco features for file transfer */
+      reqFileFeatures: ['urn:xmpp:jingle:1', 'urn:xmpp:jingle:apps:file-transfer:3'],
+
+
       boshUrl : "https://im.silverpeas.net/http-bind/",
 
       iceServers : [
@@ -75,9 +83,9 @@
       lastCallers : [],
 
       /**
-       *  Current remote stream objects
+       *  Current remote session and stream objects
        */
-      remoteStreams : [],
+      remoteSessions : [],
 
       /**
        * Recipients for call
@@ -90,7 +98,7 @@
        * Video dialogs
        *
        */
-      videoDialogs: [],
+      videoDialogs : [],
 
       /**
        *
@@ -143,7 +151,14 @@
       },
 
       /**
-       * Called when incoming call is a
+       * Called when incoming file transfer
+       */
+      _onIncomingFileTransfer : function() {
+        //TODO
+      },
+
+      /**
+       * Called when incoming call
        */
       _onIncomingCall : function(session) {
 
@@ -165,8 +180,6 @@
 
             function(localStream) {
 
-              console.log('stream ok');
-
               // accept automatically calls
               session.addStream(localStream);
               session.accept();
@@ -185,10 +198,13 @@
 
         var self = multimediaStreamManager;
 
-        self.remoteStreams.push(stream);
+        // keep trace of session
+        self.remoteSessions.push({
+          session : session, stream : stream
+        });
 
-        var isVideoDevice = stream.getVideoTracks().length > 0;
-        var isAudioDevice = stream.getAudioTracks().length > 0;
+        // var isVideoDevice = stream.getVideoTracks().length > 0;
+        // var isAudioDevice = stream.getAudioTracks().length > 0;
 
         self._newVideoDialog(stream, "Stream from: " + session.peerID);
 
@@ -200,12 +216,22 @@
 
         var self = multimediaStreamManager;
 
-        //        self.remoteStreams.push(stream);
-        //
-        //        var isVideoDevice = stream.getVideoTracks().length > 0;
-        //        var isAudioDevice = stream.getAudioTracks().length > 0;
-        //
-        //        self._newVideoDialog(stream, "Stream from: " + session.peerID);
+        var sessionFound = false;
+        var sid = session.sid;
+
+        // found session and remove it
+        for (var i = 0; i < self.remoteSessions.length; i++) {
+          var rsid = self.remoteSessions[i].session.sid;
+          if (rsid === sid) {
+            self.remoteSessions.splice(i, 1);
+            sessionFound = true;
+            break;
+          }
+        }
+
+        if(sessionFound !== true){
+          console.error("No session found");
+        }
 
       },
 
@@ -224,7 +250,7 @@
         dialog.appendTo($("body"));
 
         dialog.dialog({
-          title : title, height : 400, width: 'auto'
+          title : title, height : 400, width : 'auto'
         });
 
         self.videoDialogs.push(dialog);
@@ -298,6 +324,13 @@
         // create strophe connexion
         self.conn = new Strophe.Connection(self.boshUrl);
 
+        if (!self.conn.jingle) {
+          jsxc.error('No jingle plugin found!');
+          return;
+        }
+
+
+
         self.enableLog(true);
 
         // connexion to XMPP server
@@ -311,7 +344,7 @@
             self.onConnected();
 
             // call first recipient if necessary
-            for(var recip of self.recipients) {
+            for (var recip of self.recipients) {
               self.videoCall(recip);
             }
 
@@ -349,9 +382,9 @@
           };
 
           // log jingle plugin activity
-          manager.on('*', function(level, msg) {
-            console.log('----------------- [JINGLE]', arguments);
-          });
+          //manager.on('*', function(level, msg) {
+          //  console.log('----------------- [JINGLE]', arguments);
+          //});
 
           // monitor traffic
           $("#xmppInspector").xmppInspector(self.conn);

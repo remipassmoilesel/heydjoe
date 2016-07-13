@@ -27,14 +27,6 @@ jsxc.notification = {
             source: bid
          });
       });
-
-      $(document).on('callincoming.jingle', function() {
-         jsxc.notification.playSound(jsxc.CONST.SOUNDS.CALL, true, true);
-      });
-
-      $(document).on('accept.call.jsxc reject.call.jsxc', function() {
-         jsxc.notification.stopSound();
-      });
    },
 
    /**

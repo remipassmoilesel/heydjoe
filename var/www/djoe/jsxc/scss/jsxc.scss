@@ -19,11 +19,25 @@ $font_serif: serif;
 @import "menu";
 @import "widgets";
 
+@import "videoPanel";
+
 /**
 
 Only for demonstration purpose
 
 */
+
+#jsxc_videoPanel {
+
+  .ui-accordion-content {
+    background: white;
+  }
+
+  .ps-container > .ps-scrollbar-y-rail {
+    opacity: 0.6;
+  }
+
+}
 
 #jsxc_roster {
 
@@ -31,4 +45,10 @@ Only for demonstration purpose
     background: white;
   }
 
+  .ps-container > .ps-scrollbar-y-rail {
+    opacity: 0.6;
+  }
+
 }
+
+
