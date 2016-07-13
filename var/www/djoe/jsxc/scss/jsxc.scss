@@ -27,10 +27,28 @@ Only for demonstration purpose
 
 */
 
+#jsxc_videoPanel {
+
+  .ui-accordion-content {
+    background: white;
+  }
+
+  .ps-container > .ps-scrollbar-y-rail {
+    opacity: 0.6;
+  }
+
+}
+
 #jsxc_roster {
 
   .ui-accordion-content {
     background: white;
   }
 
+  .ps-container > .ps-scrollbar-y-rail {
+    opacity: 0.6;
+  }
+
 }
+
+

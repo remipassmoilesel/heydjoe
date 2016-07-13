@@ -61,7 +61,7 @@ jsxc.gui._createFilterableList = function (selector, options) {
     // });
 
     // append search text field
-    var searchTxt = $("<input type='text' class='filterTextField' placeholder='" + settings.searchPlaceholder + "'/>");
+    var searchTxt = $("<input type='text' class='jsxc_filterTextField' placeholder='" + settings.searchPlaceholder + "'/>");
     searchTxt.css({
         height: "26px",
         width: "100%"

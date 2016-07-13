@@ -3998,41 +3998,45 @@ div.jsxc_video {
   height: 90%;
   box-sizing: border-box;
   z-index: 80;
-  border-left: 1px solid #e1e1e1; }
+  border-left: 1px solid #e1e1e1;
+  /**
+  Bottom of each accordion panel
+  */
+  /**
+    Underlined text result in menu
+  */
+  /**
+    Small text area indicating if results or no
+  */
+  /**
+    Underlined text result in menu, active
+  */
+  /**
+    Text search bar on top of menu
+  */ }
   #jsxc_side_menu input {
     position: static;
     height: 1em; }
-  #jsxc_side_menu h2 {
-    font-size: 14px;
-    margin-left: 15px;
-    margin-top: 17px;
-    margin-bottom: 7px; }
-  #jsxc_side_menu #jsxc_menuTools input[type="text"] {
+  #jsxc_side_menu input[type="text"] {
+    font-size: 1em;
     height: 1.8em;
     padding: 3px;
     width: 80%;
     margin: 5px; }
-  #jsxc_side_menu .jsxc_videoPanelContent {
-    position: relative;
-    height: 100%; }
-  #jsxc_side_menu .jsxc_sideMenuCreateRoomForm {
-    text-align: left;
-    padding: 5px; }
-    #jsxc_side_menu .jsxc_sideMenuCreateRoomForm input[type="checkbox"] {
-      width: 1em;
-      margin: 4px; }
-    #jsxc_side_menu .jsxc_sideMenuCreateRoomForm input[type="text"] {
-      height: 1.8em;
-      padding: 3px;
-      width: 80%;
-      margin: 5px; }
+  #jsxc_side_menu input[type="checkbox"] {
+    width: 1em;
+    margin: 4px; }
+  #jsxc_side_menu p {
+    padding: 7px; }
+  #jsxc_side_menu .jsxc_sideMenuBottom {
+    height: 70px; }
   #jsxc_side_menu .jsxc_menu_search_results {
     background: rgba(126, 183, 59, 0.51); }
   #jsxc_side_menu .jsxc_menu_search_title_mark {
     font-weight: bolder; }
   #jsxc_side_menu #jsxc_menu_feedback {
     text-align: center;
-    font-size: 12px;
+    font-size: 10px;
     font-style: italic;
     color: darkGray; }
   #jsxc_side_menu .jsxc_menu_active_result {
@@ -4046,9 +4050,11 @@ div.jsxc_video {
       height: 2.5em; }
       #jsxc_side_menu #jsxc_side_menu_search_bar input[type="button"] {
         width: 20px; }
+    #jsxc_side_menu #jsxc_side_menu_search_bar #jsxc_menu_search_text_field {
+      width: 130px; }
   #jsxc_side_menu #jsxc_side_menu_content {
     background: inherit;
-    height: 93%;
+    height: 90%;
     /** Headers */
     /** Content */ }
     #jsxc_side_menu #jsxc_side_menu_content h1 {
@@ -4088,6 +4094,11 @@ div.jsxc_video {
     text-align: center;
     padding: 5px; }
 
+/**
+
+  Original JSXC menu style
+
+*/
 #jsxc_menu {
   height: 44px;
   width: 44px;
@@ -4131,6 +4142,8 @@ div.jsxc_video {
     height: 2em;
     vertical-align: middle;
     line-height: 1; }
+  .jsxc_filterableList .jsxc_filterTextField {
+    width: 94% !important; }
   .jsxc_filterableList .filterableList-result {
     background: yellow; }
 
@@ -4305,5 +4318,14 @@ div.jsxc_video {
 Only for demonstration purpose
 
 */
+#jsxc_videoPanel .ui-accordion-content {
+  background: white; }
+
+#jsxc_videoPanel .ps-container > .ps-scrollbar-y-rail {
+  opacity: 0.6; }
+
 #jsxc_roster .ui-accordion-content {
   background: white; }
+
+#jsxc_roster .ps-container > .ps-scrollbar-y-rail {
+  opacity: 0.6; }

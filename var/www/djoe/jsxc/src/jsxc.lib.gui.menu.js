@@ -21,12 +21,17 @@ jsxc.gui.menu = {
    */
   elements : {
 
+    /**
+     *
+     *
+     *
+     *  WELCOME PANEL
+     *
+     *
+     *
+     */
     welcomePanel : {
-      label : "Menu", template : "menuWelcome", init : function() {
-
-        $('#jsxc_menuWelcome .jsxc_onlineHelp').click(function() {
-          window.open(jsxc.options.onlineHelp, 'onlineHelp');
-        });
+      label : "Accueil", template : "menuWelcome", init : function() {
 
         // change presence or logout
         $('#jsxc_menuWelcome .jsxc_menu_offline').click(function() {
@@ -52,21 +57,10 @@ jsxc.gui.menu = {
 
         });
 
-      },
-
-    },
-
-    contactPanel : {
-      label : "Recherche d'utilisateurs", template : "menuContacts", init : function() {
-
-        /**
-         * Add or remove a contact from list
-         */
-
         var userList = jsxc.gui.createUserList("#jsxc_contactsUserList");
 
         // invite user
-        $('#jsxc_menuContacts .jsxc_addBuddyFromList').click(function() {
+        $('#jsxc_menuWelcome .jsxc_addBuddyFromList').click(function() {
 
           // retrieve first element selected
           var selItems = $("#jsxc_contactsUserList .ui-selected");
@@ -109,10 +103,10 @@ jsxc.gui.menu = {
         });
 
         // remove contact
-        $('#jsxc_menuContacts .jsxc_removeBuddyFromList').click(function() {
+        $('#jsxc_menuWelcome .jsxc_removeBuddyFromList').click(function() {
 
           // retrieve first element selected
-          var selItems = $("#jsxc_menuContacts .ui-selected");
+          var selItems = $("#jsxc_menuWelcome .ui-selected");
 
           //console.log(selItems);
 
@@ -152,7 +146,7 @@ jsxc.gui.menu = {
         });
 
         // refresh list
-        $('#jsxc_menuContacts .jsxc_refreshBuddyList').click(function() {
+        $('#jsxc_menuWelcome .jsxc_refreshBuddyList').click(function() {
 
           userList.updateUserList("freshList");
 
@@ -163,23 +157,31 @@ jsxc.gui.menu = {
       },
     },
 
-    roomsPanel : {
-      label : "Conversations", template : "menuRooms", init : function() {
+    /**
+     *
+     * CONVERSATION PANEL
+     *
+     *
+     *
+     */
+
+    conversationPanel : {
+      label : "Conversations", template : "menuConversations", init : function() {
 
         // buddy list for room creation
-        var buddyList = jsxc.gui.createBuddyList("#jsxc_roomCreationUsers");
+        var buddyList = jsxc.gui.createBuddyList("#jsxc_conversationUserList");
 
         // update buddy list on click
-        $("#jsxc_menuRooms .jsxc_refreshBuddyList").click(function() {
+        $("#jsxc_menuConversation .jsxc_refreshBuddyList").click(function() {
 
           buddyList.updateBuddyList();
 
           jsxc.gui.feedback("Mise à jour en cours ...");
         });
 
-        $("#jsxc_menuRooms .jsxc_createRoom").click(function() {
+        $("#jsxc_menuConversation .jsxc_createConversation").click(function() {
 
-          var selItems = $("#jsxc_roomCreationUsers .ui-selected");
+          var selItems = $("#jsxc_conversationUserList .ui-selected");
 
           // check selected elements
           if (selItems.length < 1) {
@@ -188,10 +190,10 @@ jsxc.gui.menu = {
           }
 
           // prepare title
-          var title = $("#jsxc_menuRooms .jsxc_inputRoomTitle").val().trim();
+          // var title = $("#jsxc_menuConversation .jsxc_inputRoomTitle").val().trim();
 
           // prepare subject
-          var subject = $("#jsxc_menuRooms .jsxc_inputRoomSubject").val().trim();
+          // var subject = $("#jsxc_menuConversation .jsxc_inputRoomSubject").val().trim();
 
           // prepare initial participants
           var buddies = [];
@@ -199,14 +201,15 @@ jsxc.gui.menu = {
             buddies.push($(this).data("userjid"));
           });
 
-          jsxc.muc.createNewConversationWith(buddies, title, subject);
+          // jsxc.muc.createNewConversationWith(buddies, title, subject);
+          jsxc.muc.createNewConversationWith(buddies);
 
         });
 
         // invite users
         $(".jsxc_inviteBuddiesOnConversation").click(function() {
 
-          var selItems = $("#jsxc_roomCreationUsers .ui-selected");
+          var selItems = $("#jsxc_conversationUserList .ui-selected");
 
           // check selected elements
           if (selItems.length < 1) {
@@ -236,34 +239,21 @@ jsxc.gui.menu = {
         });
 
         // // display room dialog
-        // $("#jsxc_menuRooms .jsxc_roomDialog").click(jsxc.muc.showJoinChat);
-
-      },
-
-    },
-
-    toolsPanel : {
-      label : "Outils", template : "menuTools", init : function() {
+        // $("#jsxc_menuConversation .jsxc_roomDialog").click(jsxc.muc.showJoinChat);
 
         /**
          * Video conference
          *
          */
 
-        // buddy list for room creation
-        var buddyList = jsxc.gui.createBuddyList("#jsxc_videoConferenceCallUsers");
+        /**
+         * Get selected contacts and return array of FULL jids
+         * @returns {Array}
+         * @private
+         */
+        var _getSelectedContactsForVideo = function() {
 
-        // update buddy list on click
-        $("#jsxc_menuRooms .jsxc_refreshBuddyList").click(function() {
-
-          buddyList.updateBuddyList();
-
-          jsxc.gui.feedback("Mise à jour en cours ...");
-        });
-        
-        $("#jsxc_menuTools .jsxc_createConference").click(function() {
-
-          var selItems = $("#jsxc_videoConferenceCallUsers .ui-selected");
+          var selItems = $("#jsxc_conversationUserList .ui-selected");
 
           // check selected elements
           if (selItems.length < 1) {
@@ -278,25 +268,62 @@ jsxc.gui.menu = {
 
           $.each(selItems, function() {
 
+            // get informations about buddy
             var bid = $(this).data("userjid");
-
             var data = jsxc.storage.getUserItem('buddy', bid);
 
-            if (data) {
+            // search available ressource
+            var resAvailable = false;
+            if (data && data.res && data.res.length > 0) {
+              $.each(data.res, function(index, element) {
+                if (element !== null && element !== "null") {
+                  toCall.push(bid + "/" + element);
+                  resAvailable = true;
+                  // stop loop
+                  return false;
+                }
+              });
+            }
 
-              if (data.res && data.res.length > 0) {
-                toCall.push(bid + "/" + data.res[0]);
-              }
+            // no ressource available
+            if (resAvailable !== true) {
+
+              var node = Strophe.getNodeFromJid(bid);
+
+              jsxc.error("Invalid buddy for video call", {bid : bid, localStorageDatas : data});
+
+              jsxc.gui.feedback("Impossible de contacter " + node +
+                  ". Vérifiez votre contact est bien connecté et rafraichissez la page.");
+
+              // stop loop
+              return false;
             }
 
           });
 
+          return toCall;
+        };
+
+        // create video conference
+
+        $("#jsxc_menuConversation .jsxc_createConference").click(function() {
+
+          var toCall = _getSelectedContactsForVideo();
+
           jsxc.mmstream.startVideoconference(toCall);
-          
-          // // call people
-          // $.each(toCall, function(index, fjid) {
-          //   jsxc.mmstream.startCall(fjid);
-          // });
+
+        });
+
+        // call contacts separately
+
+        $("#jsxc_menuConversation .jsxc_callContacts").click(function() {
+
+          var toCall = _getSelectedContactsForVideo();
+
+          // call each participant
+          $.each(toCall, function(index, element) {
+            jsxc.mmstream.startCall(element);
+          });
 
         });
 
@@ -306,23 +333,23 @@ jsxc.gui.menu = {
          */
 
         // show share link
-        var links = $("#jsxc_menuTools .jsxc_etherpad_sharelink");
-        var txtFields = $("#jsxc_menuTools .jsxc_etherpad_sharetextfield");
-        var nameInputField = $("#jsxc_etherpad_name");
+        var etherpadNameTxt = $("#jsxc_etherpad_name");
+        var etherpadShareLink = $("#jsxc_menuConversation .jsxc_etherpad_sharelink");
+        var etherpadShareLinkTxt = $("#jsxc_menuConversation .jsxc_etherpad_sharetextfield");
 
-        nameInputField.keyup(function() {
+        etherpadNameTxt.keyup(function() {
 
-          var hrefLink = jsxc.etherpad.getEtherpadLinkFor(nameInputField.val());
+          var hrefLink = jsxc.etherpad.getEtherpadLinkFor(etherpadNameTxt.val());
 
-          links.attr({
+          etherpadShareLink.attr({
             href : hrefLink
           });
 
-          txtFields.val(hrefLink);
+          etherpadShareLinkTxt.val(hrefLink);
         });
 
         // create Etherpad documents
-        $("#jsxc_menuTools .jsxc_openpad").click(function() {
+        $("#jsxc_menuConversation .jsxc_openpad").click(function() {
 
           var etherpadId = $("#jsxc_etherpad_name").val().toLowerCase();
 

@@ -391,142 +391,146 @@ jsxc.gui.template['loginBox'] = '<h3 data-i18n="Login"></h3>\n' +
 '</form>\n' +
 '';
 
-jsxc.gui.template['menuContacts'] = '<div id="jsxc_menuContacts">\n' +
+jsxc.gui.template['menuConversations'] = '<div id="jsxc_menuConversation">\n' +
 '\n' +
-'    <p>Utilisateurs disponibles:</p>\n' +
+'  <p>Liste de contacts:</p>\n' +
 '\n' +
-'    <div id="jsxc_contactsUserList"></div>\n' +
+'  <!-- Select users for start a conversation -->\n' +
+'  <div id="jsxc_conversationUserList"></div>\n' +
 '\n' +
-'    <div class="jsxc_menuAdvice">Touche \'Control\' pour sélectionner plusieurs utilisateurs</div>\n' +
+'  <div class="jsxc_menuAdvice">Touche \'Control\' pour sélectionner plusieurs utilisateurs</div>\n' +
 '\n' +
-'    <div class="jsxc_addBuddyFromList jsxc_actionButton">Inviter un/des utilisateur(s)</div>\n' +
+'  <div class="jsxc_actionButton jsxc_refreshBuddyList">Rafraichir la liste</div>\n' +
 '\n' +
-'    <div class="jsxc_removeBuddyFromList jsxc_actionButton">Supprimer un/des contact(s)</div>\n' +
+'  <div class="jsxc_actionButton jsxc_createConversation">Nouvelle conversation</div>\n' +
 '\n' +
-'    <div class="jsxc_refreshBuddyList jsxc_actionButton">Rafraichir la liste</div>\n' +
+'  <div class="jsxc_actionButton jsxc_inviteBuddiesOnConversation">\n' +
+'    Inviter dans une conversation existante\n' +
+'  </div>\n' +
 '\n' +
-'</div>';
-
-jsxc.gui.template['menuRooms'] = '<div id="jsxc_menuRooms">\n' +
+'  <!--&lt;!&ndash; Conversation form &ndash;&gt;-->\n' +
+'  <!--<div class="jsxc_sideMenuCreateRoomForm">-->\n' +
 '\n' +
-'    <p>Démarrer une conversation:</p>\n' +
+'  <!--<input type="text" class="jsxc_inputRoomTitle" placeholder="Titre de la conversation"/>-->\n' +
 '\n' +
-'    <!-- Select users for start a conversation -->\n' +
-'    <div id="jsxc_roomCreationUsers"></div>\n' +
+'  <!--<input type="text" class="jsxc_inputRoomSubject" placeholder="Sujet"/>-->\n' +
 '\n' +
-'    <div class="jsxc_menuAdvice">Touche \'Control\' pour sélectionner plusieurs utilisateurs</div>\n' +
+'  <!--</div>-->\n' +
 '\n' +
-'    <div class="jsxc_refreshBuddyList jsxc_actionButton">Rafraichir la liste</div>\n' +
 '\n' +
-'    <div class="jsxc_inviteBuddiesOnConversation jsxc_actionButton">Inviter dans une conversation existante</div>\n' +
 '\n' +
-'    <!-- Conversation form -->\n' +
-'    <div class="jsxc_sideMenuCreateRoomForm">\n' +
+'  <!--<div class="jsxc_roomDialog jsxc_actionButton" >Boite de dialogue "salons"</div>-->\n' +
 '\n' +
-'        <input type="text" class="jsxc_inputRoomTitle" placeholder="Titre de la conversation"/>\n' +
 '\n' +
-'        <input type="text" class="jsxc_inputRoomSubject" placeholder="Sujet"/>\n' +
+'  <p>Appels vidéo:</p>\n' +
 '\n' +
-'    </div>\n' +
+'  <div id="jsxc_videoConferenceCallUsers"></div>\n' +
 '\n' +
-'    <div class="jsxc_createRoom jsxc_actionButton">Nouvelle conversation</div>\n' +
+'  <div class="jsxc_actionButton jsxc_callContacts">Appeler les contacts</div>\n' +
+'  <div class="jsxc_actionButton jsxc_createConference">Créer une conférence</div>\n' +
 '\n' +
-'    <p>&nbsp;</p>\n' +
 '\n' +
-'    <!--<div class="jsxc_roomDialog jsxc_actionButton" >Boite de dialogue "salons"</div>-->\n' +
+'  <p>Etherpad: </p>\n' +
 '\n' +
-'</div>';
-
-jsxc.gui.template['menuSettings'] = '<div id="jsxc_menuSettings">\n' +
+'  <p>\n' +
 '\n' +
-'    <div class="jsxc_muteNotification jsxc_actionButton" data-i18n="Mute"></div>\n' +
+'    Choisissez un nom pour votre pad, et partagez le !<br/>\n' +
 '\n' +
-'    <div class="jsxc_showNotificationRequestDialog jsxc_actionButton">Activer les notifications de bureau</div>\n' +
+'    <input id="jsxc_etherpad_name" type="text" placeholder="Nom du pad"/>\n' +
 '\n' +
-'    <div class="jsxc_actionButton notImplementedYet">Interdire les appels vidéos</div>\n' +
+'    <input type="text" class="jsxc_etherpad_sharetextfield" readonly/>\n' +
+'    <a href="#" class="jsxc_etherpad_sharelink" target="_blank">&gt;&gt;</a>\n' +
 '\n' +
-'    <div class="jsxc_actionButton jsxc_hideOffline" data-i18n="Hide_offline"></div>\n' +
+'  </p>\n' +
 '\n' +
-'    <div class="jsxc_actionButton jsxc_dialog_settings">Boite de dialogue de réglages</div>\n' +
+'  <div class="jsxc_actionButton jsxc_openpad">Ouvrir un pad</div>\n' +
+'  <div class="jsxc_actionButton notImplementedYet">Liste des pads</div>\n' +
 '\n' +
-'    <div class="jsxc_actionButton notImplementedYet">Rétablir les réglages par défaut</div>\n' +
 '\n' +
-'    <div class="jsxc_actionButton notImplementedYet">Console XMPP</div>\n' +
-'\n' +
-'    <div class="jsxc_actionButton notImplementedYet">Console d\'événements Jquery</div>\n' +
-'\n' +
-'    <div class="jsxc_actionButton jsxc_about">A propos</div>\n' +
+'  <div class="jsxc_sideMenuBottom"></div>\n' +
 '\n' +
 '</div>\n' +
 '';
 
-jsxc.gui.template['menuTools'] = '<div id="jsxc_menuTools">\n' +
+jsxc.gui.template['menuSettings'] = '<div id="jsxc_menuSettings">\n' +
 '\n' +
-'  <div>\n' +
+'  <div class="jsxc_muteNotification jsxc_actionButton" data-i18n="Mute"></div>\n' +
 '\n' +
-'    <h2>Vidéoconférence</h2>\n' +
-'\n' +
-'    <div id="jsxc_videoConferenceCallUsers"></div>\n' +
-'\n' +
-'    <div class="jsxc_actionButton jsxc_refreshBuddyList">Rafraichir la liste</div>\n' +
-'    <div class="jsxc_actionButton jsxc_createConference">Appeler les contacts</div>\n' +
-'\n' +
+'  <div class="jsxc_showNotificationRequestDialog jsxc_actionButton">Activer les notifications de\n' +
+'    bureau\n' +
 '  </div>\n' +
 '\n' +
-'  <div>\n' +
+'  <div class="jsxc_actionButton notImplementedYet">Interdire les appels vidéos</div>\n' +
 '\n' +
-'    <h2>Etherpad</h2>\n' +
+'  <div class="jsxc_actionButton jsxc_hideOffline" data-i18n="Hide_offline"></div>\n' +
 '\n' +
-'    <p>Choisissez un nom pour votre pad, et partagez le !\n' +
-'      <input id="jsxc_etherpad_name" type="text" placeholder="Nom du pad"/>\n' +
-'    </p>\n' +
-'    <p>Lien de partage:\n' +
-'      <input type="text" class="jsxc_etherpad_sharetextfield"/>\n' +
-'      <a href="#" class="jsxc_etherpad_sharelink" target="_blank">>></a></p>\n' +
+'  <div class="jsxc_actionButton jsxc_dialog_settings">Boite de dialogue de réglages</div>\n' +
 '\n' +
-'    <div class="jsxc_actionButton jsxc_openpad">Ouvrir un pad</div>\n' +
+'  <div class="jsxc_actionButton notImplementedYet">Rétablir les réglages par défaut</div>\n' +
 '\n' +
+'  <div class="jsxc_actionButton notImplementedYet">Console XMPP</div>\n' +
 '\n' +
-'    <div class="jsxc_actionButton notImplementedYet">Liste des pads</div>\n' +
+'  <div class="jsxc_actionButton notImplementedYet">Console d\'événements Jquery</div>\n' +
 '\n' +
-'  </div>\n' +
+'  <div class="jsxc_actionButton jsxc_about">A propos</div>\n' +
+'\n' +
+'  <div class="jsxc_sideMenuBottom"></div>\n' +
 '\n' +
 '\n' +
-'</div>';
+'</div>\n' +
+'';
 
 jsxc.gui.template['menuWelcome'] = '<div id="jsxc_menuWelcome">\n' +
 '\n' +
-'    <p>\n' +
-'        Recherchez une fonctionnalité à l\'aide du champs ci-dessus ou explorez le menu :)\n' +
-'    </p>\n' +
+'  <p>\n' +
+'    Recherchez une fonctionnalité à l\'aide du champs ci-dessus ou explorez le menu :)\n' +
+'  </p>\n' +
 '\n' +
-'    <div data-pres="offline" class="jsxc_actionButton jsxc_menu_offline">Se déconnecter</div>\n' +
+'  <div data-pres="offline" class="jsxc_actionButton jsxc_menu_offline">Se déconnecter</div>\n' +
 '\n' +
-'    <!-- Display notifications -->\n' +
+'  <!-- Display notifications -->\n' +
 '\n' +
-'    <div id="jsxc_notice">\n' +
-'        <div>\n' +
-'            Notifications: <span class="jsxc_menu_notif_number"></span>\n' +
-'        </div>\n' +
+'  <p>Notifications: <span class="jsxc_menu_notif_number"></span></p>\n' +
+'  <div id="jsxc_notice">\n' +
 '\n' +
-'        <!-- Notification inserted here -->\n' +
-'        <ul>\n' +
+'    <!-- Notification inserted here -->\n' +
+'    <ul>\n' +
 '\n' +
-'        </ul>\n' +
+'    </ul>\n' +
 '\n' +
-'    </div>\n' +
+'  </div>\n' +
 '\n' +
-'    <p>Statut:</p>\n' +
+'  <!-- Change status -->\n' +
 '\n' +
-'    <div class="jsxc_status_buttons">\n' +
+'  <p>Statut:</p>\n' +
 '\n' +
-'        <div data-pres="online" class="jsxc_actionButton jsxc_online" data-i18n="Online"></div>\n' +
-'        <div data-pres="chat" class="jsxc_actionButton jsxc_chat" data-i18n="Chatty"></div>\n' +
-'        <div data-pres="away" class="jsxc_actionButton jsxc_away" data-i18n="Away"></div>\n' +
-'        <div data-pres="xa" class="jsxc_actionButton jsxc_xa" data-i18n="Extended_away"></div>\n' +
-'        <div data-pres="dnd" class="jsxc_actionButton jsxc_dnd" data-i18n="dnd"></div>\n' +
+'  <div class="jsxc_status_buttons">\n' +
 '\n' +
-'    </div>\n' +
+'    <div data-pres="online" class="jsxc_actionButton jsxc_online" data-i18n="Online"></div>\n' +
+'    <div data-pres="chat" class="jsxc_actionButton jsxc_chat" data-i18n="Chatty"></div>\n' +
+'    <div data-pres="away" class="jsxc_actionButton jsxc_away" data-i18n="Away"></div>\n' +
+'    <div data-pres="xa" class="jsxc_actionButton jsxc_xa" data-i18n="Extended_away"></div>\n' +
+'    <div data-pres="dnd" class="jsxc_actionButton jsxc_dnd" data-i18n="dnd"></div>\n' +
+'\n' +
+'  </div>\n' +
+'\n' +
+'  <!-- invite users -->\n' +
+'\n' +
+'  <p>Inviter des utilisateurs:</p>\n' +
+'\n' +
+'  <div id="jsxc_contactsUserList"></div>\n' +
+'\n' +
+'  <div class="jsxc_menuAdvice">Touche \'Control\' pour sélectionner plusieurs utilisateurs</div>\n' +
+'\n' +
+'  <div class="jsxc_addBuddyFromList jsxc_actionButton">Inviter un/des utilisateur(s)</div>\n' +
+'\n' +
+'  <div class="jsxc_removeBuddyFromList jsxc_actionButton">Supprimer un/des contact(s)</div>\n' +
+'\n' +
+'  <div class="jsxc_refreshBuddyList jsxc_actionButton">Rafraichir la liste</div>\n' +
+'\n' +
+'\n' +
+'  <div class="jsxc_sideMenuBottom"></div>\n' +
+'\n' +
 '\n' +
 '</div>';
 

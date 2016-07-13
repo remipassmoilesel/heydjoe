@@ -1384,7 +1384,7 @@ jsxc.muc = {
     var d = new Date();
 
     // prepare title of room. If no title, using all usernames sorted.
-    if (title.length < 1) {
+    if (!title || title.length < 1) {
 
       // create username array
       var userNodeArray = [jsxc.xmpp.getCurrentNode()];
@@ -1420,7 +1420,7 @@ jsxc.muc = {
     jsxc.gui.window.clear(roomjid);
     jsxc.storage.setUserItem('member', roomjid, {});
 
-    jsxc.muc.join(roomjid, jsxc.xmpp.getCurrentNode(), null, title, subject, true, true,
+    jsxc.muc.join(roomjid, jsxc.xmpp.getCurrentNode(), null, title, subject || '', true, true,
         {"initialParticipants" : initialParticipants});
 
     // open window
