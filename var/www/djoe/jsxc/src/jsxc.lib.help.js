@@ -13,26 +13,58 @@ jsxc.help = {
 
     var self = jsxc.help;
 
-    self.tutorials["demotour"] = {
+    self.tutorials["demotour"] = function() {
+      return [
 
-      /**
-       * Here you can return an object which will be accessible in setup and teardown
-       */
-      options : function() {
-        return {};
-      },
+        {
+          title : "Démonstration",
+          text : "<p>Vous allez découvrir les fonctionnalités offerte par la" +
+          " plateforme en 5 étapes.</p>",
+          attachTo : {element: 'body', on: 'top'},
+          when : {
+            'before-show' : function() {
+              jsxc.gui.roster.toggle("hidden");
+              jsxc.mmstream.gui.toggleVideoPanel(false);
+            }
+          }
+        },
 
-      steps : function() {
-        return [{
-          content : '<p>First look at this thing</p>',
-          highlightTarget : true,
-          nextButton : true,
-          target : $('#predefinedJidList'),
-          my : 'bottom center',
-          at : 'top center'
-        }];
+        {
+          title : "Interface",
+          text : "<p>L'interface principale est disponible à droite. Cliquez sur la barre " +
+          "transparente pour l'afficher.</p>",
+          attachTo : {element: '#jsxc_toggleRoster', on: 'left'},
+          when : {
+            'before-hide' : function() {
+              jsxc.gui.roster.toggle("shown");
+            }
+          }
+        },
 
-      }
+        {
+          title : "Interface",
+          text : "<p>Les appels vidéos sont affichés à gauche.</p>",
+          attachTo : {element: '#jsxc_toggleVideoPanel', on: 'left'},
+          when : {
+            'before-hide' : function() {
+              jsxc.mmstream.gui.toggleVideoPanel(true);
+            }
+          }
+        },
+
+        {
+          title : "Travail en cours",
+          text : "<p>Travail en cours, cet assistant sera bientôt terminé.</p>",
+          attachTo : {element: '#jsxc_toggleRoster', on: 'right'},
+          when : {
+            'before-show' : function() {
+
+            }
+          }
+        }
+
+      ];
+
     };
 
     // $("#jsxc_toggleRoster")[0]
@@ -60,16 +92,46 @@ jsxc.help = {
       throw "Invalid tutorial name: " + name;
     }
 
+    var steps = self.tutorials[name]();
+
+
     var tour = new Shepherd.Tour({
+
       defaults : {
-        classes : 'shepherd-theme-arrows', scrollTo : true
+
+        classes : 'shepherd-theme-arrows jsxc_demotour_item',
+
+        scrollTo : true,
+
+        showCancelLink : true,
+
+        buttons : [
+
+          {
+            text : '<',
+
+            action : function() {
+              Shepherd.activeTour.back();
+            }
+
+          },
+
+          {
+            text : '>',
+
+            action : function() {
+              Shepherd.activeTour.next();
+            }
+
+          },
+
+        ]
+
       }
     });
 
-    tour.addStep('example', {
-      title : 'Work in progress',
-      text : 'Work in progress ...',
-      attachTo : '#jsxc_toggleRoster'
+    $.each(steps, function(index, element) {
+      tour.addStep(element);
     });
 
     tour.start();

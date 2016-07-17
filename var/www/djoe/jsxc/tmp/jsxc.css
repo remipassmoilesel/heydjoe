@@ -3691,6 +3691,9 @@ img.jsxc_vCard {
     .jsxc_more {
       width: 25px; } }
 
+.jsxc_demotour_item {
+  z-index: 9999; }
+
 .jsxc_remotevideo, .jsxc_noRemoteVideo {
   width: 100%;
   height: 100%;
