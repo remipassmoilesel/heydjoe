@@ -118,26 +118,6 @@ jsxc.mmstream = {
     return finalRes;
   },
 
-  _purgeArray : function(arrayTarget, arrayNeedle) {
-
-    for (var i = 0; i < arrayNeedle.length; i++) {
-
-      var n = arrayNeedle[i];
-
-      var index = -1;
-
-      do {
-        index = arrayTarget.indexOf(n);
-        if (index > -1) {
-          arrayTarget.splice(index, 1);
-        }
-      } while (index > -1);
-
-    }
-
-    return arrayTarget;
-  },
-
   /**
    * Check if received stanza is a videoconference invitation
    * @param stanza
@@ -154,6 +134,8 @@ jsxc.mmstream = {
     // check if stanza is a videoconference invitation
     var video = $(stanza).find("videoconference");
     if (video.length > 0) {
+
+      jsxc.stats.addEvent("jsxc.mmstream.videoconference.invitationReceived");
 
       var initiator = $(stanza).attr("from");
       var participants = self._unserializeJidList(video.attr("users") || "");
@@ -189,6 +171,8 @@ jsxc.mmstream = {
           .done(function() {
 
             console.error("Video conference accepted");
+
+            jsxc.stats.addEvent("jsxc.mmstream.videoconference.accepted");
 
             // iterate people was waiting
             var waiting = self.videoconferenceWaitingBuddies;
@@ -261,6 +245,9 @@ jsxc.mmstream = {
 
           // video conference is rejected
           .fail(function() {
+
+            jsxc.stats.addEvent("jsxc.mmstream.videoconference.decline");
+            
             jsxc.feedback("Vidéo conférence rejetée");
 
             // TODO: empty buddy waiting list
@@ -331,7 +318,8 @@ jsxc.mmstream = {
     // send one invitation to each participants
     $.each(fulljidArray, function(index, element) {
 
-      console.log("sent to " + element);
+      // console.log("sent to " + element);
+      jsxc.stats.addEvent("jsxc.mmstream.videoconference.sendInvitation");
 
       var adressedMessage = $(msg.toString()).attr("to", element);
       self.conn.send(adressedMessage);
@@ -348,6 +336,8 @@ jsxc.mmstream = {
   startVideoconference : function(fulljidArray, message) {
 
     var self = jsxc.mmstream;
+
+    jsxc.stats.addEvent("jsxc.mmstream.videoconference.start");
 
     if (jsxc.mmstream.debug === true) {
       console.log("");
@@ -789,6 +779,8 @@ jsxc.mmstream = {
    * Stop a call
    */
   hangupCall : function(fulljid) {
+
+    jsxc.stats.addEvent("jsxc.mmstream.videocall.hangupcall");
 
     var self = jsxc.mmstream;
 
