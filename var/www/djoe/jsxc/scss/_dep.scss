@@ -4,8 +4,8 @@
 @import "../lib/emojione/assets/css/emojione";
 
 /* BEGIN: bootstrap */
-@import "../lib/bootstrap/assets/stylesheets/bootstrap/variables";
-@import "../lib/bootstrap/assets/stylesheets/bootstrap/mixins";
+@import "../lib/bootstrap.dep/assets/stylesheets/bootstrap/variables";
+@import "../lib/bootstrap.dep/assets/stylesheets/bootstrap/mixins";
 
 // Spec and IE10+
 @keyframes progress-bar-stripes {
@@ -19,17 +19,17 @@
 }
 
 #jsxc_dialog {
-    @import "../lib/bootstrap/assets/stylesheets/bootstrap/progress-bars";
+    @import "../lib/bootstrap.dep/assets/stylesheets/bootstrap/progress-bars";
 }
 
 #jsxc_dialog, #jsxc_webrtc {
-    @import "../lib/bootstrap/assets/stylesheets/bootstrap/utilities";
-    @import "../lib/bootstrap/assets/stylesheets/bootstrap/code";
-    @import "../lib/bootstrap/assets/stylesheets/bootstrap/grid";
-    @import "../lib/bootstrap/assets/stylesheets/bootstrap/alerts";
-    @import "../lib/bootstrap/assets/stylesheets/bootstrap/buttons";
-    @import "../lib/bootstrap/assets/stylesheets/bootstrap/button-groups";
-    @import "../lib/bootstrap/assets/stylesheets/bootstrap/forms";
+    @import "../lib/bootstrap.dep/assets/stylesheets/bootstrap/utilities";
+    @import "../lib/bootstrap.dep/assets/stylesheets/bootstrap/code";
+    @import "../lib/bootstrap.dep/assets/stylesheets/bootstrap/grid";
+    @import "../lib/bootstrap.dep/assets/stylesheets/bootstrap/alerts";
+    @import "../lib/bootstrap.dep/assets/stylesheets/bootstrap/buttons";
+    @import "../lib/bootstrap.dep/assets/stylesheets/bootstrap/button-groups";
+    @import "../lib/bootstrap.dep/assets/stylesheets/bootstrap/forms";
 
     .progress {
         margin-bottom: 0px;

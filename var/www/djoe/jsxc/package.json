@@ -1,14 +1,14 @@
 {
-  "name": "jsxc",
-  "version": "3.0.1-nightly.20160504",
-  "description": "Real-time chat app",
+  "name": "djoe",
+  "version": "1.0",
+  "description": "Real-time communication app",
   "homepage": "http://www.jsxc.org/",
   "bugs": "https://github.com/jsxc/jsxc/issues",
-  "license": "MIT",
-  "author": "Klaus Herberth <klaus@jsxc.org>",
+  "license": "GPLv3",
+  "author": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jsxc/jsxc"
+    "url": "https://github.com/remipassmoilesel/djoe"
   },
   "devDependencies": {
     "autoprefixer-core": "^4.0.2",

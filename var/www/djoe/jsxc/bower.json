@@ -1,20 +1,22 @@
 {
-  "name": "jsxc",
-  "version": "3.0.0-beta1",
+  "name": "djoe",
+  "version": "1.0",
   "homepage": "https://www.jsxc.org",
   "authors": [
-    "sualko <klaus@jsxc.org>"
+    ""
   ],
-  "description": "Real-time chat app",
+  "description": "Real-time communication app",
   "keywords": [
     "javascript",
     "xmpp",
     "webrtc",
     "otr",
+    "etherpad",
+    "videoconference",
     "chat",
     "realtime"
   ],
-  "license": "MIT",
+  "license": "GPLv3",
   "ignore": [
     "**/.*",
     "node_modules",
@@ -33,7 +35,6 @@
     "strophe.x": "https://raw.githubusercontent.com/strophe/strophejs-plugins/master/dataforms/src/strophe.x.js",
     "jquery": "^2.1.1",
     "jquery-ui": "^1.11.4",
-    "intro.js": "^2.2.0",
     "tether-shepherd": "^1.8.0"
   }
 }

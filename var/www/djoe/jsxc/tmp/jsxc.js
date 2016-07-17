@@ -7254,64 +7254,31 @@ jsxc.help = {
 
     var self = jsxc.help;
 
-    /*
+    self.tutorials["demotour"] = {
 
+      /**
+       * Here you can return an object which will be accessible in setup and teardown
+       */
+      options : function() {
+        return {};
+      },
 
-     INTRO JS Version
+      steps : function() {
+        return [{
+          content : '<p>First look at this thing</p>',
+          highlightTarget : true,
+          nextButton : true,
+          target : $('#predefinedJidList'),
+          my : 'bottom center',
+          at : 'top center'
+        }];
 
-
-
-     */
-
-    if (typeof introJs === "undefined") {
-      throw "Unable to find intro.js";
-    }
-
-    self.tutorials["demotour"] = function() {
-
-      return [
-
-        {
-          intro : "Vous allez découvrir les fonctionnalités de cette version de JSXC en 5 étapes",
-          position : "center",
-          __beforeChange : function() {
-            jsxc.gui.roster.toggle('hidden');
-            jsxc.mmstream.gui.toggleVideoPanel(false);
-          }
-        },
-
-        {
-          element : $("#jsxc_toggleRoster")[0],
-          intro : "Vous pouvez ouvrir l'interface en cliquant ici",
-          position : 'left',
-
-        },
-
-        {
-          element : $("#jsxc_toggleVideoPanel")[0],
-          intro : "Les appels vidéo seront affiché ici",
-          position : "right",
-          __beforeChange : function() {
-            jsxc.gui.roster.toggle("shown");
-          }
-        },
-
-        {
-          intro : "Avant de pouvoir échanger avec un autre utilisateur vous devez l'inviter",
-          position : 'center',
-          __beforeChange : function() {
-            jsxc.mmstream.gui.toggleVideoPanel(true);
-          }
-        }, {
-          intro : "Cette démonstration n'est pas encore terminée, désolé :)",
-          position : 'center',
-          __beforeChange : function() {
-
-          }
-        }
-
-      ];
+      }
     };
+
+    // $("#jsxc_toggleRoster")[0]
+
+    // jsxc.gui.roster.toggle("shown");
 
   },
 
@@ -7321,16 +7288,11 @@ jsxc.help = {
    */
   launchTutorial : function(name) {
 
-    /*
-
-
-     INTRO JS Version
-
-
-     */
-
     var self = jsxc.help;
 
+    jsxc.stats.addEvent("jsxc.help.tutorial." + name);
+
+    console.log("Launching tutorial");
     console.log(name);
 
     // TODO: Check if a tutorial is already running
@@ -7339,31 +7301,19 @@ jsxc.help = {
       throw "Invalid tutorial name: " + name;
     }
 
-    var steps = self.tutorials[name]();
-
-    console.log(steps);
-
-    var intro = introJs();
-    intro.onbeforechange(function() {
-
-      if (typeof steps[this._currentStep].__beforeChange !== "undefined") {
-        steps[this._currentStep].__beforeChange();
+    var tour = new Shepherd.Tour({
+      defaults : {
+        classes : 'shepherd-theme-arrows', scrollTo : true
       }
-
     });
 
-    intro.setOptions({
-
-      overlayOpacity : 0.6,
-
-      showProgress : true,
-
-      showStepNumbers : false,
-
-      steps : steps
+    tour.addStep('example', {
+      title : 'Work in progress',
+      text : 'Work in progress ...',
+      attachTo : '#jsxc_toggleRoster',
     });
 
-    intro.start();
+    tour.start();
 
   }
 };
@@ -7690,26 +7640,6 @@ jsxc.mmstream = {
     return finalRes;
   },
 
-  _purgeArray : function(arrayTarget, arrayNeedle) {
-
-    for (var i = 0; i < arrayNeedle.length; i++) {
-
-      var n = arrayNeedle[i];
-
-      var index = -1;
-
-      do {
-        index = arrayTarget.indexOf(n);
-        if (index > -1) {
-          arrayTarget.splice(index, 1);
-        }
-      } while (index > -1);
-
-    }
-
-    return arrayTarget;
-  },
-
   /**
    * Check if received stanza is a videoconference invitation
    * @param stanza
@@ -7726,6 +7656,8 @@ jsxc.mmstream = {
     // check if stanza is a videoconference invitation
     var video = $(stanza).find("videoconference");
     if (video.length > 0) {
+
+      jsxc.stats.addEvent("jsxc.mmstream.videoconference.invitationReceived");
 
       var initiator = $(stanza).attr("from");
       var participants = self._unserializeJidList(video.attr("users") || "");
@@ -7761,6 +7693,8 @@ jsxc.mmstream = {
           .done(function() {
 
             console.error("Video conference accepted");
+
+            jsxc.stats.addEvent("jsxc.mmstream.videoconference.accepted");
 
             // iterate people was waiting
             var waiting = self.videoconferenceWaitingBuddies;
@@ -7833,6 +7767,9 @@ jsxc.mmstream = {
 
           // video conference is rejected
           .fail(function() {
+
+            jsxc.stats.addEvent("jsxc.mmstream.videoconference.decline");
+            
             jsxc.feedback("Vidéo conférence rejetée");
 
             // TODO: empty buddy waiting list
@@ -7903,7 +7840,8 @@ jsxc.mmstream = {
     // send one invitation to each participants
     $.each(fulljidArray, function(index, element) {
 
-      console.log("sent to " + element);
+      // console.log("sent to " + element);
+      jsxc.stats.addEvent("jsxc.mmstream.videoconference.sendInvitation");
 
       var adressedMessage = $(msg.toString()).attr("to", element);
       self.conn.send(adressedMessage);
@@ -7920,6 +7858,8 @@ jsxc.mmstream = {
   startVideoconference : function(fulljidArray, message) {
 
     var self = jsxc.mmstream;
+
+    jsxc.stats.addEvent("jsxc.mmstream.videoconference.start");
 
     if (jsxc.mmstream.debug === true) {
       console.log("");
@@ -8361,6 +8301,8 @@ jsxc.mmstream = {
    * Stop a call
    */
   hangupCall : function(fulljid) {
+
+    jsxc.stats.addEvent("jsxc.mmstream.videocall.hangupcall");
 
     var self = jsxc.mmstream;
 

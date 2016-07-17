@@ -138,19 +138,13 @@
     "url": "http://emojione.com"
   },
   {
-    "name": "intro.js",
-    "file": "lib/intro.js/intro.js",
-    "license": "GNU AGPLv3",
-    "url": "https://github.com/usablica/intro.js"
-  },
-  {
-    "name": "",
+    "name": "Tether",
     "file": "lib/tether-shepherd/dist/js/tether.js",
     "license": "",
     "url": ""
   },
   {
-    "name": "",
+    "name": "Shepherd",
     "file": "lib/tether-shepherd/dist/js/shepherd.js",
     "license": "",
     "url": ""
