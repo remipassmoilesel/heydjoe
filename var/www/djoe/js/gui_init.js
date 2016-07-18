@@ -15,17 +15,35 @@ $(function() {
 
   var webAdminUrl = "http://" + pageDomain + ":9090/";
   var consoleAdminUrl = "http://" + pageDomain + ":9091/";
-  var etherpadUrl = "http://" + pageDomain + ":9001/";
+  var etherpadUrl = "https://im.silverpeas.net/etherpad/p/%%name%%?showControls=true&showChat=false&showLineNumbers=true&useMonospaceFont=true";
   var consoleUrl = "https://" + pageDomain + "/xmpp-console/";
   var discoUrl = "https://" + pageDomain + "/xmpp-disco/";
 
   var xmppResource = "heyDjoe";
 
+  /**
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   */
+
   // Initialize consoles
   $("#eventsConsole").eventConsole();
   new StorageConsole("storageConsole");
 
-  $(document).on("attached.jsxc ", function() {
+  $(document).on("attached.jsxc", function() {
     $("#xmppInspector").xmppInspector(jsxc.xmpp.conn);
   });
 
@@ -33,23 +51,36 @@ $(function() {
   $("#tabs").tabs();
 
   // Listen connexion fail
-  $(document).on("authfail.jsxc ", function() {
+  $(document).on("authfail.jsxc", function() {
     jsxc.xmpp.logout(true);
     $("#feedbackArea").html("<b>Echec de la connexion. Rechargez la page puis rééssayez !</b>");
   });
 
   // listen connexion success
-  $(document).on("attached.jsxc ", function() {
+  $(document).on("attached.jsxc", function() {
     $("#feedbackArea").html("<i>Connexion établie</i>");
-
-    $("#startDemoTour").prop("disabled", false);
   });
 
-  $("#startDemoTour").click(function(){
-    jsxc.help.launchTutorial("demotour");
-  });
+  /**
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   */
 
-  // random login
+  // create and show random login
   function showRandomName() {
     $("#randomLogin").val((chance.first() + "_" + chance.last()).toLowerCase());
   }
@@ -128,10 +159,31 @@ $(function() {
     jsxc.xmpp.logout(true);
   });
 
+  /**
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   */
+
   // create pad
   $('#newPadButton').click(function() {
-    window.open(etherpadUrl + "p/" + $("#newPadName").val(), '_blank');
+    window.open(etherpadUrl.replace("%%name%%", $("#newPadName").val()), '_blank');
   });
+
+  /**
+   *
+   *
+   *
+   *
+   *
+   *
+   */
 
   // show availables accounts
   for (var i = 0; i < availablesLogins.length; i++) {
@@ -140,6 +192,65 @@ $(function() {
     // les ajouter à la liste de sélection de pseudo
     $("#predefinedJidList").append("<option value='" + lg + "'>" + lg + "</option>");
   }
+
+  /**
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   */
+
+  // show tutorials
+  $(document).on("attached.jsxc ", function() {
+
+    var list = $("#tutorials");
+    list.empty();
+
+    var tutorials = jsxc.help.getAllTutorials();
+    $.each(tutorials, function(index, element) {
+      var opt = $("<option>").text(element.description).val(index);
+      list.append(opt);
+    });
+
+    list.prop("disabled", false);
+    $("#startDemoTour").prop("disabled", false);
+
+  });
+
+  $("#startDemoTour").click(function() {
+    jsxc.help.launchTutorial($("#tutorials").val());
+  });
+
+  /**
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   */
 
   // utils and informations
   var appendToUtilsInfo = function(name, elmt) {
