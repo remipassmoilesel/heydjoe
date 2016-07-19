@@ -24,38 +24,6 @@ $(function() {
   };
 
   /**
-   * Silverpeas callback set
-   */
-  // $.getJSON("<%=m_context%>/InvitationJSON",
-  //     {
-  //       IEFix: new Date().getTime(),
-  //       Action: "<%=InvitationJSONActions.SendInvitation%>",
-  //       Message: message,
-  //       TargetUserId: invitationTargetUserId
-  //     },
-  //
-  //     $.getJSON("<%=m_context%>/InvitationJSON",
-  //         {
-  //           IEFix: new Date().getTime(),
-  //           Action: "<%=InvitationJSONActions.SendInvitation%>",
-  //           Message: message,
-  //           TargetUserId: invitationTargetUserId
-  //         },
-  //         function(data){
-  //           if (data.success) {
-  //             closeInvitationDialog();
-  //             try {
-  //               $("#user-"+invitationTargetUserId+" .invitation").hide('slow')
-  //             } catch (e) {
-  //               //do nothing
-  //               //As fragment is externalized, class invitation can be missing
-  //             }
-  //           } else {
-  //             alert(data.error);
-  //           }
-  //         });
-  
-  /**
    *   Initialization options for JSXC
    */
 
@@ -141,29 +109,82 @@ $(function() {
    */
   if (window.jsxcConnexionCredentials) {
 
-    // credential must be stored on page
-    var cred = window.jsxcConnexionCredentials;
+    var SilverpeasCallbackSet = {
 
-    var silverpeasConnexion = function() {
+      /**
+       * Reconnect client on demand from user
+       */
+      onReconnectDemand : function() {
 
-      var jid = cred.userLogin.toLowerCase() + "@" + cred.xmppDomain;
+        console.log(this);
+        
+        // credential should be stored on page
+        var cred = window.jsxcConnexionCredentials;
 
-      jsxc.start(jid, cred.userPassword);
-      jsxc.gui.roster.toggle('shown');
+        // get bare jid
+        var jid = cred.userLogin.toLowerCase() + "@" + cred.xmppDomain;
+
+        // launch and show
+        jsxc.start(jid, cred.userPassword);
+        jsxc.gui.roster.toggle('shown');
+
+      },
+
+      /**
+       * Send Silverpeas invitation on XMPP buddy added
+       *
+       * @param buddyBJid
+       */
+      onBuddyAdded : function(buddyBJid) {
+
+        console.log(this);
+        
+        // credential should be stored on page
+        var cred = window.jsxcConnexionCredentials;
+        var context = cred.silverpeasContext;
+
+        var message = $("#invitation-message").val();
+        $.getJSON(context + "/InvitationJSON", {
+          IEFix : new Date().getTime(),
+          Action : 'SendInvitation',
+          Message : message,
+          TargetUserId : invitationTargetUserId
+        }, function(data) {
+          if (data.success) {
+            closeInvitationDialog();
+            try {
+              $("#user-" + invitationTargetUserId + " .invitation").hide('slow')
+            } catch (e) {
+              //do nothing
+              //As fragment is externalized, class invitation can be missing
+            }
+          } else {
+            alert(data.error);
+          }
+        });
+
+      },
+      
+      onBuddyAccepted: function(){
+        console.log(this);
+      }
 
     };
+
+    // credential must be stored on page
+    var cred = window.jsxcConnexionCredentials;
 
     /** Correction JSXC Options */
     options.xmpp.url = cred.httpBindUrl;
     options.xmpp.domain = cred.xmppDomain;
-    options.callbacks = {
-      reconnectCb : silverpeasConnexion
-    };
 
+
+    jsxc.api.registerCallbacks(SilverpeasCallbackSet);
+    
     // initialisation
     jsxc.init(options);
 
-    silverpeasConnexion();
+    SilverpeasCallbackSet.onReconnectDemand();
 
   }
 
