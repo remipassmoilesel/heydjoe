@@ -21,13 +21,13 @@ gulp.task('jsxc-grunt',
     shell.task(['export PATH=$PATH:/opt/nodejs4/bin && cd var/www/djoe/jsxc/ && grunt']));
 
 gulp.task('mirror-local', shell.task(
-    ['rsync -az "var/www/djoe/jsxc/dev/" "/home/remipassmoilesel/projects/javaee/silverpeas/Silverpeas-Core/core-war/src/main/webapp/chatclient/"',
-      'rsync -az "var/www/djoe/jsxc/dev/" "/opt/silverpeas-6.0-SNAPSHOT-wildfly10/bin/build/dist/chatclient/"']));
+    ['rsync -avz "var/www/djoe/jsxc/dev/" "/home/remipassmoilesel/projects/javaee/silverpeas/Silverpeas-Core/core-war/src/main/webapp/chatclient/"',
+      'rsync -avz "var/www/djoe/jsxc/dev/" "/opt/silverpeas-6.0-SNAPSHOT-wildfly10/bin/build/dist/chatclient/"']));
 
 gulp.task('mirror-distant', shell.task(
-    ['rsync -az "var/www/djoe/jsxc/dev/" im.silverpeas.net:"/opt/silverpeas-sources/Silverpeas-Core/core-war/src/main/webapp/chatclient/"',
-      'rsync -az "var/www/djoe/jsxc/dev/" im.silverpeas.net:"/opt/silverpeas-6.0-SNAPSHOT-wildfly10/bin/build/dist/chatclient/"',]));
+    ['rsync -avz "var/www/djoe/jsxc/dev/" im.silverpeas.net:"/opt/silverpeas-sources/Silverpeas-Core/core-war/src/main/webapp/chatclient/"',
+      'rsync -avz "var/www/djoe/jsxc/dev/" im.silverpeas.net:"/opt/silverpeas-6.0-SNAPSHOT-wildfly10/bin/build/dist/chatclient/"',]));
 
 gulp.task('mirror-demo',
-    shell.task(['rsync -az "var/www/djoe/" im.silverpeas.net:"/var/www/djoe/"']));
+    shell.task(['rsync -avz "var/www/djoe/" im.silverpeas.net:"/var/www/djoe/"']));
 
