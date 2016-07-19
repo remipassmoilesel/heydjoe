@@ -1847,7 +1847,7 @@ jsxc.gui.roster = {
    */
   toggle : function(state) {
 
-    jsxc.stats.addEvent('jsxc.toggleroster.' + state || 'toggle');
+    jsxc.stats.addEvent('jsxc.toggleroster.' + state || 'toggle');
 
     var duration;
 
@@ -1893,15 +1893,13 @@ jsxc.gui.roster = {
     $('#jsxc_roster').append($('<p>' + jsxc.t('no_connection') + '</p>').append(
         ' <a>' + jsxc.t('relogin') + '</a>').click(function() {
 
-      var reconnectCallback = jsxc.options.get("callbacks") || {};
-      reconnectCallback = reconnectCallback.reconnectCb || null;
-      if (reconnectCallback) {
-        reconnectCallback.call(window);
-      }
+      // show login box only if there is no reconnection callback
 
-      else {
+      var called = jsxc.api.callback("onReconnectDemand");
+      if (called < 1) {
         jsxc.gui.showLoginBox();
       }
+
     }));
   },
 

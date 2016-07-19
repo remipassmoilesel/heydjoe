@@ -23,7 +23,42 @@ $(function() {
     }
   };
 
-  // Initialize JSXC
+  /**
+   * Silverpeas callback set
+   */
+  // $.getJSON("<%=m_context%>/InvitationJSON",
+  //     {
+  //       IEFix: new Date().getTime(),
+  //       Action: "<%=InvitationJSONActions.SendInvitation%>",
+  //       Message: message,
+  //       TargetUserId: invitationTargetUserId
+  //     },
+  //
+  //     $.getJSON("<%=m_context%>/InvitationJSON",
+  //         {
+  //           IEFix: new Date().getTime(),
+  //           Action: "<%=InvitationJSONActions.SendInvitation%>",
+  //           Message: message,
+  //           TargetUserId: invitationTargetUserId
+  //         },
+  //         function(data){
+  //           if (data.success) {
+  //             closeInvitationDialog();
+  //             try {
+  //               $("#user-"+invitationTargetUserId+" .invitation").hide('slow')
+  //             } catch (e) {
+  //               //do nothing
+  //               //As fragment is externalized, class invitation can be missing
+  //             }
+  //           } else {
+  //             alert(data.error);
+  //           }
+  //         });
+  
+  /**
+   *   Initialization options for JSXC
+   */
+
   var options = {
 
     // REST support

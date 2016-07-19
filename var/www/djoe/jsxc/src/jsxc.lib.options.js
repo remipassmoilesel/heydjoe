@@ -81,10 +81,6 @@ jsxc.options = {
     online : 0, chat : 0, away : 0, xa : 0, dnd : 0
   },
 
-  callbacks : {
-    reconnectCb : null
-  },
-
   /**
    * This function is called if a login form was found, but before any
    * modification is done to it.
