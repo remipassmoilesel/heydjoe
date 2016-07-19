@@ -31,19 +31,22 @@ module.exports = function (grunt) {
             },
 
             copy: {
-                init: {
+
+              /**
+               * Copy initialization file
+               */
+              init: {
                     files: [{
-                        expand: true,
-                        src: [
-                            'jsxc_init.js'
-                        ],
-                        dest: '<%= target %>/'
+                        expand: false,
+                        src: 'src/jsxc_init.js',
+                        dest: '<%= target %>/jsxc_init.js'
                     }]
                 },
+
+              /**
+               * Copy dependencies, images, ... to dev/ or build/
+               */
                 main: {
-                    /**
-                     Copy dependencies, images, ... to dev/ or build/
-                     */
                     files: [{
                         expand: true,
                         src: [
@@ -271,7 +274,7 @@ module.exports = function (grunt) {
                     tasks: ['concat:jsxc']
                 },
                 copy: {
-                    files: ['jsxc_init.js'],
+                    files: ['src/jsxc_init.js'],
                     tasks: ['copy:init']
                 },
                 template: {
