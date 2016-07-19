@@ -66,7 +66,7 @@ $(function() {
       enable : false
     },
 
-    // if 404 errors precise jsxc root
+    // if lot of 404 errors precise jsxc root
     root : 'jsxc/',
 
     // stat module. save and monitor events
@@ -109,15 +109,42 @@ $(function() {
    */
   if (window.jsxcConnexionCredentials) {
 
-    var SilverpeasCallbackSet = {
+    var SilverpeasCustomModule = {
 
       /**
-       * Reconnect client on demand from user
+       * Open a chat window by user id
+       * @param userId
        */
-      onReconnectDemand : function() {
+      openChatWindowById : function(userId) {
 
-        console.log(this);
-        
+        // credential should be stored on page
+        var cred = window.jsxcConnexionCredentials;
+        var context = cred.silverpeasContext;
+
+        $.getJSON(context + "/ChatUserInformations", {
+          IEFix : new Date().getTime(), Action : 'GetUserById', UserId : userId,
+        }, function(data) {
+
+          console.log(data);
+
+          if (data.success) {
+            jsxc.api.openChatWindow(data.login + "@" + cred.xmppDomain);
+          }
+
+          else {
+            console.error("Error while retrieving user login");
+            console.error(data);
+
+            jsxc.api.feedback("Erreur lors de l'ouverture de la fenêtre de discussion");
+          }
+        });
+
+      },
+
+      /**
+       * Connect user to chat client
+       */
+      connect: function(){
         // credential should be stored on page
         var cred = window.jsxcConnexionCredentials;
 
@@ -127,7 +154,47 @@ $(function() {
         // launch and show
         jsxc.start(jid, cred.userPassword);
         jsxc.gui.roster.toggle('shown');
+      },
 
+      /**
+       * Send Silverpeas invitation to user
+       * @param login
+       */
+      inviteUser: function(login){
+
+        // credential should be stored on page
+        var cred = window.jsxcConnexionCredentials;
+        var context = cred.silverpeasContext;
+
+        $.getJSON(context + "/InvitationJSON", {
+          IEFix : new Date().getTime(),
+          Action : 'SendInvitation',
+          Message : "",
+          TargetUserLogin : login,
+          TargetUserDomainId : cred.userDomainId
+        }, function(data) {
+          
+          if (!data.success) {
+            jsxc.api.feedback("Erreur lors de l'invitation de l'utilisateur");
+          }
+
+        });
+
+      }
+
+    };
+
+    jsxc.api.registerCustomModule({
+      name : "Silverpeas", module : SilverpeasCustomModule,
+    });
+
+    var SilverpeasCallbackSet = {
+
+      /**
+       * Reconnect client on demand from user
+       */
+      "onReconnectDemand" : function() {
+        jsxc.api.Silverpeas.connect();
       },
 
       /**
@@ -135,41 +202,19 @@ $(function() {
        *
        * @param buddyBJid
        */
-      onBuddyAdded : function(buddyBJid) {
-
-        console.log(this);
-        
-        // credential should be stored on page
-        var cred = window.jsxcConnexionCredentials;
-        var context = cred.silverpeasContext;
-
-        var message = $("#invitation-message").val();
-        $.getJSON(context + "/InvitationJSON", {
-          IEFix : new Date().getTime(),
-          Action : 'SendInvitation',
-          Message : message,
-          TargetUserId : invitationTargetUserId
-        }, function(data) {
-          if (data.success) {
-            closeInvitationDialog();
-            try {
-              $("#user-" + invitationTargetUserId + " .invitation").hide('slow')
-            } catch (e) {
-              //do nothing
-              //As fragment is externalized, class invitation can be missing
-            }
-          } else {
-            alert(data.error);
-          }
-        });
-
+      "onBuddyAdded" : function(buddyBJid) {
+        var login = Strophe.getNodeFromJid(buddyBJid);
+        jsxc.api.Silverpeas.inviteUser(login);
       },
-      
-      onBuddyAccepted: function(){
-        console.log(this);
+
+      "onBuddyAccepted" : function(buddyBJid) {
+        console.log("onBuddyAccepted");
+        console.log(buddyBJid);
       }
 
     };
+
+    jsxc.api.registerCallbacks(SilverpeasCallbackSet);
 
     // credential must be stored on page
     var cred = window.jsxcConnexionCredentials;
@@ -177,15 +222,12 @@ $(function() {
     /** Correction JSXC Options */
     options.xmpp.url = cred.httpBindUrl;
     options.xmpp.domain = cred.xmppDomain;
+    options.root = cred.silverpeasContext + "/chatclient";
 
-
-    jsxc.api.registerCallbacks(SilverpeasCallbackSet);
-    
     // initialisation
     jsxc.init(options);
 
-    SilverpeasCallbackSet.onReconnectDemand();
-
+    jsxc.api.Silverpeas.connect();
   }
 
   else {
