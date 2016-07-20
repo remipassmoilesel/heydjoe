@@ -166,7 +166,7 @@ jsxc.gui.menu = {
      */
 
     conversationPanel : {
-      label : "Conversations", template : "menuConversations", init : function() {
+      label : "Conversations et multimédia", template : "menuConversations", init : function() {
 
         // buddy list for room creation
         var buddyList = jsxc.gui.createBuddyList("#jsxc_conversationUserList");
@@ -251,7 +251,7 @@ jsxc.gui.menu = {
          * @returns {Array}
          * @private
          */
-        var _getSelectedContactsForVideo = function() {
+        var _getSelectedContactsForMultimedia = function() {
 
           var selItems = $("#jsxc_conversationUserList .ui-selected");
 
@@ -308,7 +308,7 @@ jsxc.gui.menu = {
 
         $("#jsxc_menuConversation .jsxc_createConference").click(function() {
 
-          var toCall = _getSelectedContactsForVideo();
+          var toCall = _getSelectedContactsForMultimedia();
 
           jsxc.mmstream.startVideoconference(toCall);
 
@@ -318,15 +318,29 @@ jsxc.gui.menu = {
 
         $("#jsxc_menuConversation .jsxc_callContacts").click(function() {
 
-          var toCall = _getSelectedContactsForVideo();
+          var toCall = _getSelectedContactsForMultimedia();
 
           // call each participant
           $.each(toCall, function(index, element) {
-            jsxc.mmstream.startCall(element);
+            jsxc.mmstream.startVideoCall(element);
           });
 
         });
 
+        /**
+         * 
+         * Screen sharing
+         * 
+         */
+
+        $("#jsxc_menuConversation .jsxc_screenSharing").click(function(){
+
+          var toCall = _getSelectedContactsForMultimedia();
+
+          jsxc.mmstream.startScreenSharingMultiPart(toCall);
+          
+        });
+        
         /**
          * Etherpad
          *

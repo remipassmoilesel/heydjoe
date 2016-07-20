@@ -961,7 +961,7 @@ jsxc.muc = {
 
               jsxc.warn("Error while loading room configuration", response);
 
-              jsxc.feedback("Erreur lors de la configuration de la discussion");
+              jsxc.gui.feedback("Erreur lors de la configuration de la discussion");
 
             });
 
