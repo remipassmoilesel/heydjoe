@@ -1,7 +1,7 @@
 /* global module:false */
 module.exports = function (grunt) {
 
-    // full without jquery and jquery ui 
+    // full without jquery and jquery ui
     var dep = grunt.file.readJSON('jsdep-full.json');
 
     var depcss = grunt.file.readJSON('cssdep.json');
@@ -174,7 +174,15 @@ module.exports = function (grunt) {
                     options: {
                         banner: '/*! This file is concatenated for the browser. */\n\n'
                     },
-                    src: ['src/jsxc.intro.js', 'src/jsxc.lib.js', 'src/jsxc.lib.xmpp.js', 'src/jsxc.lib.*.js', 'tmp/template.js', 'src/jsxc.outro.js'],
+                    src: ['src/jsxc.intro.js',
+                      'src/jsxc.lib.js',
+                      'src/jsxc.lib.xmpp.js',
+                      'src/jsxc.lib.mmstream.js',
+                      'src/jsxc.lib.mmstream.gui.js',
+                      'src/jsxc.lib.*.js',
+                      'tmp/template.js',
+                      'src/jsxc.outro.js'],
+
                     dest: 'tmp/jsxc.js'
                 }
             },
@@ -310,7 +318,7 @@ module.exports = function (grunt) {
 
             concat_css: {
                 options: {
-                    // Task-specific options go here. 
+                    // Task-specific options go here.
                 },
                 all: {
                     src: depcss,

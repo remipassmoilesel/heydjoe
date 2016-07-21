@@ -28,6 +28,10 @@ $(function() {
    */
 
   var options = {
+    
+    // in french
+    defaultLang : 'fr',
+    autoLang : false,
 
     // REST support
     rest : {
