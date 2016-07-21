@@ -16,6 +16,8 @@ jsxc.gui.menu = {
    */
   timeoutBeforeClose : 5000,
 
+  ready: false,
+
   /**
    * Menu elements. Each menu element has a label, a template name and an optional init function.
    */
@@ -453,6 +455,8 @@ jsxc.gui.menu = {
    */
   init : function() {
 
+    var self = jsxc.gui.menu;
+
     // disable text selection
     $("#jsxc_side_menu").disableSelection();
 
@@ -487,6 +491,9 @@ jsxc.gui.menu = {
 
     // open at launch
     $("#jsxc_side_menu_content > h1.ui-accordion-header").eq(0).trigger("click");
+
+    self.ready = true;
+    $(document).trigger("menu.ready.jsxc");
 
   },
 
