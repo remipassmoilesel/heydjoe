@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<silverpeas-settings product="Silverpeas">
+
+    <fileset root="${SILVERPEAS_HOME}/properties/org/silverpeas/">
+        <configfile name="general.properties">
+            <parameter key="web.resource.js.get.minified.enabled">false</parameter>
+            <parameter key="web.resource.css.get.minified.enabled">false</parameter>
+        </configfile>
+    </fileset>
+
+</silverpeas-settings>
+
