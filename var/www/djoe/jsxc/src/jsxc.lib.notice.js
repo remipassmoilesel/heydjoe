@@ -73,8 +73,6 @@ jsxc.notice = {
                 fnParams: fnParams
             };
 
-            console.log(saved);
-
             jsxc.storage.setUserItem('notices', saved);
 
             jsxc.notification.notify(msg, description || '', null, true, jsxc.CONST.SOUNDS.NOTICE);

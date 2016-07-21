@@ -1179,6 +1179,8 @@ jsxc.mmstream = {
      */
     $(document).off('disconnected.jsxc', self._onDisconnected);
     $(document).off('caps.strophe', self._onCaps);
+    $(document).off('init.window.jsxc', self.gui._initChatWindow);
+    $(document).off('presence.jsxc', self.gui._updateAllVideoLinks);
 
     self.conn.deleteHandler(self.messageHandler);
 
@@ -1203,5 +1205,8 @@ $(document).ready(function() {
     $(document).on('disconnected.jsxc', self._onDisconnected);
     $(document).on('init.window.jsxc', self.gui._initChatWindow);
 
+
+    // TODO: to improve
+    $(document).on('presence.jsxc', self.gui._updateAllVideoLinks);
   }
 });

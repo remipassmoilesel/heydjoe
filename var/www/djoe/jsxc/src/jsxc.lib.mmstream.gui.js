@@ -110,6 +110,18 @@ jsxc.mmstream.gui = {
       throw "JID must be full jid";
     }
 
+    // add only if not already present
+    var alreadyHere = false;
+    self.videoPanel.find(".jsxc_videoPanelContent").each(function(index, element){
+      if($(element).data("fromjid") === fulljid){
+        alreadyHere = true;
+        return false;
+      }
+    });
+    if(alreadyHere === true){
+      return;
+    }
+
     var defaultOptions = {
 
       /**
@@ -126,6 +138,11 @@ jsxc.mmstream.gui = {
        * If false, no hang up button will be displayed
        */
       hangupButton : true,
+
+      /**
+       *
+       */
+      fullscreenButton : true,
 
       /**
        * Supplementary classes to add to video container
@@ -151,18 +168,21 @@ jsxc.mmstream.gui = {
 
     // controls
     if (options.hangupButton === true) {
-      var hangup = $("<div>").addClass('jsxc_hangUp jsxc_videoControl').click(function() {
+      var hangup = $("<div>").addClass('jsxc_hangUpControl jsxc_videoControl').click(function() {
         jsxc.mmstream.hangupCall(fulljid);
       });
 
       hangup.appendTo(videoCtr);
     }
 
-    var fullscreen = $("<div>").addClass('jsxc_fullscreen jsxc_videoControl').click(function() {
-      jsxc.mmstream.gui._showVideoFullscreen(fulljid);
-    });
+    if (options.fullscreenButton === true) {
 
-    fullscreen.appendTo(videoCtr);
+      var fullscreen = $("<div>").addClass('jsxc_fullscreenControl jsxc_videoControl').click(function() {
+        jsxc.mmstream.gui._showVideoFullscreen(fulljid);
+      });
+
+      fullscreen.appendTo(videoCtr);
+    }
 
     // append video on first position if needed
     if (options.prepend === true) {
@@ -232,6 +252,7 @@ jsxc.mmstream.gui = {
             title : "Local video stream",
             prepend : true,
             hangupButton : false,
+            fullscreenButton : false,
             supClasses : "jsxc_local_video_container"
           });
         })
@@ -319,10 +340,13 @@ jsxc.mmstream.gui = {
     // no ressource available
     if (fulljid !== "") {
 
-      videoLink.css("text-decoration", "none");
+      videoLink.css("text-decoration", "underlined");
 
       // simple video call
       videoLink.click(function() {
+
+        jsxc.gui.feedback("L'appel va bientôt commencer");
+
         jsxc.mmstream.startVideoCall(fulljid);
         return false;
       });
@@ -593,10 +617,10 @@ jsxc.mmstream.gui = {
 
     // attach video stream
     var video = $("#jsxc_dialog video");
-    var stream = jsxc.mmstream.getCurrentVideoSessions()[fulljid].stream;
+    var session = jsxc.mmstream.getCurrentVideoSessions()[fulljid];
 
-    if (stream) {
-      jsxc.attachMediaStream(video.get(0), stream);
+    if (session && session.stream) {
+      jsxc.attachMediaStream(video.get(0), session.stream);
       video.get(0).play();
     }
 

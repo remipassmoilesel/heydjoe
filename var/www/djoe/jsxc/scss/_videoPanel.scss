@@ -101,15 +101,15 @@ $roster_width: 300px;
       }
     }
 
-    .jsxc_hangUp {
+    .jsxc_hangUpControl {
       background-image: image-url("hang_up_red.svg");
       height: 20px;
       width: 40px;
       cursor: pointer;
     }
 
-    .jsxc_fullscreen{
-      background-image: image-url("full-screen.png");
+    .jsxc_fullscreenControl{
+      background-image: image-url("fullscreen_black.svg");
       height: 20px;
       width: 40px;
       cursor: pointer;
@@ -127,4 +127,10 @@ $roster_width: 300px;
     font-size: 13px;
   }
 
+}
+
+.jsxc_fullscreenVideo{
+  width: 100%;
+  margin: 10px;
+  border: solid 1px gray;
 }
