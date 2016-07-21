@@ -1,13 +1,23 @@
 <div id="jsxc_menuConversation">
 
-  <p>Liste de contacts:</p>
+  <!-- User selection -->
 
-  <!-- Select users for start a conversation -->
+  <p class="jsxc_menu_subtitle">Liste de contacts</p>
+
   <div id="jsxc_conversationUserList"></div>
 
   <div class="jsxc_menuAdvice">Touche 'Control' pour sélectionner plusieurs utilisateurs</div>
 
   <div class="jsxc_actionButton jsxc_refreshBuddyList">Rafraichir la liste</div>
+
+
+  <!--
+
+  Chat conversation
+
+  -->
+
+
 
   <div class="jsxc_actionButton jsxc_createConversation">Nouvelle conversation</div>
 
@@ -17,30 +27,48 @@
 
   <!--&lt;!&ndash; Conversation form &ndash;&gt;-->
   <!--<div class="jsxc_sideMenuCreateRoomForm">-->
-
   <!--<input type="text" class="jsxc_inputRoomTitle" placeholder="Titre de la conversation"/>-->
-
   <!--<input type="text" class="jsxc_inputRoomSubject" placeholder="Sujet"/>-->
-
   <!--</div>-->
-
-
 
   <!--<div class="jsxc_roomDialog jsxc_actionButton" >Boite de dialogue "salons"</div>-->
 
 
-  <p>Appels vidéo:</p>
+  <!--
 
-  <div id="jsxc_videoConferenceCallUsers"></div>
+  Video calls
+
+
+  -->
+
+
+  <p class="jsxc_menu_subtitle">Appels vidéo</p>
+
 
   <div class="jsxc_actionButton jsxc_callContacts">Appeler les contacts</div>
   <div class="jsxc_actionButton jsxc_createConference">Créer une conférence</div>
 
 
-  <p>Etherpad: </p>
+  <!--
 
-  <p>
+  Screen sharing
 
+  -->
+
+  <p class="jsxc_menu_subtitle">Partage d'écran:</p>
+
+  <div class="jsxc_actionButton jsxc_screenSharing">Partager mon écran</div>
+
+
+  <!--
+
+  Etherpad
+
+  -->
+
+  <p class="jsxc_menu_subtitle">Etherpad</p>
+
+  <div style="margin: 7px">
     Choisissez un nom pour votre pad, et partagez le !<br/>
 
     <input id="jsxc_etherpad_name" type="text" placeholder="Nom du pad"/>
@@ -48,7 +76,7 @@
     <input type="text" class="jsxc_etherpad_sharetextfield" readonly/>
     <a href="#" class="jsxc_etherpad_sharelink" target="_blank">&gt;&gt;</a>
 
-  </p>
+  </div>
 
   <div class="jsxc_actionButton jsxc_openpad">Ouvrir un pad</div>
   <div class="jsxc_actionButton notImplementedYet">Liste des pads</div>

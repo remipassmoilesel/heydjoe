@@ -14,12 +14,38 @@ jsxc.mmstream = {
 
   auto_accept : false,
 
+  /**
+   * Waiting time before call after sending invitations. If we call before invitation arrive,
+   * videoconference will fail.
+   *
+   * Receiver need to get all jids participant before first calls
+   *
+   */
+  //WAIT_BEFORE_CALL : 1000,
+  WAIT_BEFORE_CALL : 300,
+
   /** required disco features for video call */
   reqVideoFeatures : ['urn:xmpp:jingle:apps:rtp:video', 'urn:xmpp:jingle:apps:rtp:audio',
     'urn:xmpp:jingle:transports:ice-udp:1', 'urn:xmpp:jingle:apps:dtls:0'],
 
   /** required disco features for file transfer */
   reqFileFeatures : ['urn:xmpp:jingle:1', 'urn:xmpp:jingle:apps:file-transfer:3'],
+
+  /**
+   * True if navigator can share is screen
+   */
+  screenSharingCapable : false,
+
+  /**
+   * Messages for Chrome communicate with Chrome extension
+   */
+
+  chromeExtensionMessages : {
+    isAvailable : "djoe.screencapture-extension." + "is-available",
+    available : "djoe.screencapture-extension." + "available",
+    getScreenSourceId : "djoe.screencapture-extension." + "get-screen-source-id",
+    getAPTSourceId : "djoe.screencapture-extension." + "get-audio-plus-tab-source-id"
+  },
 
   /**
    * Where local stream is stored, to avoid too many stream creation
@@ -84,6 +110,11 @@ jsxc.mmstream = {
     if (!self.conn.jingle) {
       jsxc.error('No jingle plugin found!');
       return;
+    }
+
+    // check screen sharing capabilities
+    if (self._isNavigatorChrome() === true) {
+      self._isChromeExtensionInstalled();
     }
 
     self.gui._initGui();
@@ -223,32 +254,38 @@ jsxc.mmstream = {
               console.log(waiting);
             }
 
-            // call every participant after our jid to the initator
-            var toCall = participants.concat([initiator]);
-            toCall.sort();
-            toCall = toCall.concat(toCall);
+            // TODO: to improve
+            setTimeout(function() {
 
-            var ownIndex = toCall.indexOf(self.conn.jid);
+              // call every participant after our jid to the initator
+              var toCall = participants.concat([initiator]);
+              toCall.sort();
+              toCall = toCall.concat(toCall);
 
-            for (var i = ownIndex + 1; i < toCall.length; i++) {
+              var ownIndex = toCall.indexOf(self.conn.jid);
 
-              // stop if we reach initiator
-              if (toCall[i] === initiator) {
-                break;
+              for (var i = ownIndex + 1; i < toCall.length; i++) {
+
+                // stop if we reach initiator
+                if (toCall[i] === initiator) {
+                  break;
+                }
+
+                // call
+                self.startVideoCall(toCall[i]);
+
               }
 
-              // call
-              self.startCall(toCall[i]);
+            }, self.WAIT_BEFORE_CALL);
 
-            }
           })
 
           // video conference is rejected
           .fail(function() {
 
             jsxc.stats.addEvent("jsxc.mmstream.videoconference.decline");
-            
-            jsxc.feedback("Vidéo conférence rejetée");
+
+            jsxc.gui.feedback("Vidéo conférence rejetée");
 
             // TODO: empty buddy waiting list
             // TODO: empty session waiting list
@@ -356,15 +393,15 @@ jsxc.mmstream = {
 
       jsxc.gui.feedback("La vidéoconférence va bientôt commencer ...");
 
-      // TODO: improve
+      // TODO: to improve, we have to wait a little to let invitations go
       setTimeout(function() {
 
         // call each participant
         $.each(fulljidArray, function(index, element) {
-          self.startCall(element);
+          self.startVideoCall(element);
         });
 
-      }, 1500);
+      }, self.WAIT_BEFORE_CALL);
 
     } catch (error) {
 
@@ -373,6 +410,216 @@ jsxc.mmstream = {
       jsxc.gui.feedback(
           "Erreur lors de l'envoi des invitations. Veuillez rafraichir la page et réessayer.");
     }
+
+  },
+
+  _sendScreensharingInvitation : function(fulljidArray, message) {
+    console.log("_sendScreensharingInvitation");
+    console.log(fulljidArray);
+    console.log(message);
+  },
+
+  /**
+   * Cast screen to one or multiple users
+   *
+   * First invitations are sent, after screen is casting
+   *
+   */
+  startScreenSharingMultiPart : function(fulljidArray, message) {
+
+    var self = jsxc.mmstream;
+
+    jsxc.stats.addEvent("jsxc.mmstream.screensharing.multipart.start");
+
+    if (jsxc.mmstream.debug === true) {
+      console.log("");
+      console.log("startScreenSharingMultiPart");
+      console.log(fulljidArray, message);
+    }
+
+    // TODO verify jid list to get full jid
+
+    // send an invitation to each participant
+    try {
+      self._sendScreensharingInvitation(fulljidArray, message);
+
+      jsxc.gui.feedback("Le partage d'écran va bientôt commencer ...");
+
+      // TODO: to improve, we have to wait a little to let invitations go
+      setTimeout(function() {
+
+        // call each participant
+        $.each(fulljidArray, function(index, element) {
+          self.shareScreen(element);
+        });
+
+      }, self.WAIT_BEFORE_CALL);
+
+    } catch (error) {
+
+      console.log(error);
+
+      jsxc.gui.feedback(
+          "Erreur lors de l'envoi des invitations. Veuillez rafraichir la page et réessayer.");
+    }
+  },
+
+  _isNavigatorFirefox : function() {
+    return typeof InstallTrigger !== 'undefined';
+  },
+
+  _isNavigatorChrome : function() {
+    return !!window.chrome && !!window.chrome.webstore;
+  },
+
+  /**
+   * Return a promise indicating if sceen capture is available
+   *
+   * /!\ Promise will never fail for now, it can just be done.
+   *
+   *
+   * @returns {*}
+   * @private
+   */
+  _isChromeExtensionInstalled : function() {
+
+    var self = jsxc.mmstream;
+    var messages = self.chromeExtensionMessages;
+
+    var defer = $.Deferred();
+
+    self.screenSharingCapable = false;
+
+    /**
+     * Before begin capturing, we have to ask for source id and wait for response
+     */
+    window.addEventListener("message", function(event) {
+
+      if (event && event.data && event.data === messages.available) {
+        self.screenSharingCapable = true;
+        defer.resolve();
+      }
+    });
+
+    window.postMessage(messages.isAvailable, '*');
+
+    return defer.promise();
+
+  },
+
+  /**
+   * Return a promise with the user screen stream, or fail
+   * @private
+   */
+  _getUserScreenStream : function() {
+
+    var self = jsxc.mmstream;
+
+    var defer = $.Deferred();
+    var messages = self.chromeExtensionMessages;
+
+    window.addEventListener("message", function(event) {
+
+      // filter invalid messages
+      if (!event || !event.data) {
+        jsxc.debug("Invalid event: ");
+        jsxc.debug(event);
+        return;
+      }
+
+      var data = event.data;
+
+      // extension send video sourceid
+      if (data.sourceId) {
+
+        // getUserMedia
+        var constraints = {
+
+          audio : false,
+
+          video : {
+            mandatory : {
+              chromeMediaSource : "desktop",
+              maxWidth : screen.width > 1920 ? screen.width : 1920,
+              maxHeight : screen.height > 1080 ? screen.height : 1080,
+              chromeMediaSourceId : data.sourceId
+            }
+          }
+
+        };
+
+        navigator.webkitGetUserMedia(constraints,
+
+            function(stream) {
+              defer.resolve(stream);
+              window.removeEventListener("message", this);
+            },
+
+            // error
+            function(error) {
+              defer.fail(error);
+              window.removeEventListener("message", this);
+            });
+
+      }
+    });
+
+    // ask for source id
+    window.postMessage(messages.getScreenSourceId, '*');
+
+    return defer.promise();
+
+  },
+
+  /**
+   * Share screen with one user
+   *
+   *
+   * /!\ Here we don't check if navigator can share screen
+   * /!\ Here we don't check if navigator can share screen
+   * /!\ Here we don't check if navigator can share screen
+   *
+   * @param fullJid
+   */
+  shareScreen : function(fulljid) {
+
+    if (jsxc.mmstream.debug === true) {
+      console.error("shareScreen: " + fulljid);
+    }
+
+    var self = jsxc.mmstream;
+
+    if (Strophe.getResourceFromJid(fulljid) === null) {
+      throw "JID must be full jid";
+    }
+
+    // ice configuration
+    self.conn.jingle.setICEServers(self.iceServers);
+
+    // requesting user media
+    // TODO test chrome 'desktop' constraint ?
+    // TODO test firefox 'window' constraint ?
+
+    self._getUserScreenStream()
+
+        .then(function(stream) {
+
+          // openning jingle session
+          var session = self.conn.jingle.initiate(fulljid, stream);
+
+          session.on('change:connectionState', self._onSessionStateChanged);
+
+        })
+
+        .fail(function(error) {
+
+          jsxc.error('Failed to get access to local media.');
+          jsxc.error(error);
+
+          jsxc.gui.feedback(
+              "Impossible d'accéder à votre écran, veuillez autoriser l'accès, installer l'extension si nécéssaire et réessayer.");
+
+        });
 
   },
 
@@ -406,7 +653,7 @@ jsxc.mmstream = {
    */
   _onIncomingFileTransfer : function() {
 
-    jsxc.feedback("Transfert de fichier à l'arrivée");
+    jsxc.gui.feedback("Transfert de fichier à l'arrivée");
 
     throw "Not implemented yet";
 
@@ -705,13 +952,13 @@ jsxc.mmstream = {
   },
 
   /**
-   * Create a new video call
+   * Call another user with video and audio media
    * @param fullJid
    */
-  startCall : function(fulljid) {
+  startVideoCall : function(fulljid) {
 
     if (jsxc.mmstream.debug === true) {
-      console.error("startCall " + fulljid);
+      console.error("startVideoCall " + fulljid);
     }
 
     var self = jsxc.mmstream;
@@ -748,11 +995,11 @@ jsxc.mmstream = {
 
         },
 
-        function(error) {
+        function() {
 
-          console.error('Failed to get access to local media. Error ', error);
+          console.error('Failed to get access to local media. Error ', arguments);
 
-          jsxc.feedback(
+          jsxc.gui.feedback(
               "Impossible d'accéder à votre webcam, veuillez autoriser l'accès et réessayer.");
 
         });
@@ -761,6 +1008,8 @@ jsxc.mmstream = {
 
   /**
    * Called on session changes
+   *
+   * Used only for logging and feedback
    * @param session
    * @param state
    * @private
@@ -771,7 +1020,7 @@ jsxc.mmstream = {
     console.log(session, state);
 
     if (state === "interrupted") {
-      jsxc.feedback("Problème de connexion avec " + Strophe.getNodeFromJid(session.peerID));
+      jsxc.gui.feedback("Problème de connexion avec " + Strophe.getNodeFromJid(session.peerID));
     }
   },
 
@@ -1194,7 +1443,7 @@ jsxc.mmstream.gui = {
 
     if (capableRes.indexOf(targetRes) > -1) {
       el.click(function() {
-        self.startCall(jid);
+        self.startVideoCall(jid);
       });
 
       el.removeClass('jsxc_disabled');

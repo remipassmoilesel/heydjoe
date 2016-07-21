@@ -310,7 +310,9 @@ jsxc.gui.menu = {
 
           var toCall = _getSelectedContactsForMultimedia();
 
-          jsxc.mmstream.startVideoconference(toCall);
+          if (toCall.length > 0) {
+            jsxc.mmstream.startVideoconference(toCall);
+          }
 
         });
 
@@ -328,19 +330,30 @@ jsxc.gui.menu = {
         });
 
         /**
-         * 
+         *
          * Screen sharing
-         * 
+         *
          */
 
-        $("#jsxc_menuConversation .jsxc_screenSharing").click(function(){
+        $("#jsxc_menuConversation .jsxc_screenSharing").click(function() {
 
-          var toCall = _getSelectedContactsForMultimedia();
+          if (jsxc.mmstream.screenSharingCapable === true) {
+            var toCall = _getSelectedContactsForMultimedia();
 
-          jsxc.mmstream.startScreenSharingMultiPart(toCall);
-          
+            if (toCall.length > 0) {
+              jsxc.mmstream.startScreenSharingMultiPart(toCall);
+            }
+          }
+
+          else {
+            jsxc.gui.feedback(
+                "Pour partager votre écran vous devez utiliser le navigateur Chrome et " +
+                "installer l'extension de capture d'écran.");
+
+          }
+
         });
-        
+
         /**
          * Etherpad
          *
