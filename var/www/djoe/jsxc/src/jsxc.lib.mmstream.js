@@ -490,18 +490,27 @@ jsxc.mmstream = {
 
     self.screenSharingCapable = false;
 
-    /**
-     * Before begin capturing, we have to ask for source id and wait for response
-     */
-    window.addEventListener("message", function(event) {
+    if (self._isNavigatorChrome() === true) {
 
-      if (event && event.data && event.data === messages.available) {
-        self.screenSharingCapable = true;
-        defer.resolve();
-      }
-    });
+      /**
+       * Before begin capturing, we have to ask for source id and wait for response
+       */
+      window.addEventListener("message", function(event) {
 
-    window.postMessage(messages.isAvailable, '*');
+        if (event && event.data && event.data === messages.available) {
+          self.screenSharingCapable = true;
+          defer.resolve();
+        }
+
+      });
+
+      window.postMessage(messages.isAvailable, '*');
+
+    }
+
+    else {
+      defer.reject("InvalidNavigator");
+    }
 
     return defer.promise();
 
@@ -1214,6 +1223,52 @@ jsxc.mmstream.gui = {
     self.videoPanel.find(".jsxc_videoPanelContent").perfectScrollbar();
 
     $('body').append(self.videoPanel);
+
+    // init Chrome extension installation button
+    if (jsxc.gui.menu.ready === true) {
+      self._initChromeExtensionDialog();
+    } else {
+      $(document).one("menu.ready.jsxc", self._initChromeExtensionDialog);
+    }
+
+  },
+
+  /**
+   * Init dialog and button for installing screen capture Chrome extension
+   * @private
+   */
+  _initChromeExtensionDialog : function() {
+
+    // show gui for install Chrome extension
+    var installChromeExt = $("#jsxc_menuConversation .jsxc_screenInstallChromeExtension");
+
+    if (jsxc.mmstream._isNavigatorChrome() !== true) {
+      installChromeExt.css({"display" : "none"});
+    }
+
+    else {
+      installChromeExt.click(function() {
+
+        jsxc.gui.dialog.open(jsxc.gui.template.get('installChromeExtension'), {
+          'noClose' : true
+        });
+
+        $("#jsxc_dialog .jsxc_closeInstallChromeExtension").click(function() {
+          jsxc.gui.dialog.close();
+        });
+
+        $("#jsxc_dialog .jsxc_reloadInstallChromeExtension").click(function() {
+          location.reload();
+        });
+
+      });
+
+      jsxc.mmstream._isChromeExtensionInstalled()
+          .then(function() {
+            installChromeExt.css({"display" : "none"});
+          });
+
+    }
 
   },
 
