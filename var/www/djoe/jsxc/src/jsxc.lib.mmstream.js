@@ -551,14 +551,24 @@ jsxc.mmstream = {
         navigator.webkitGetUserMedia(constraints,
 
             function(stream) {
-              defer.resolve(stream);
+
+              jsxc.stats.addEvent("jsxc.mmstream.screensharing.streamAcquired");
+
               window.removeEventListener("message", this);
+
+              defer.resolve(stream);
+
             },
 
             // error
             function(error) {
-              defer.fail(error);
+
+              jsxc.stats.addEvent("jsxc.mmstream.screensharing.streamRefused");
+
               window.removeEventListener("message", this);
+
+              defer.fail(error);
+
             });
 
       }
