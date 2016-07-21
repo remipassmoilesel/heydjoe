@@ -120,6 +120,7 @@ $(function() {
         // credential should be stored on page
         var cred = window.jsxcConnexionCredentials;
         var context = cred.silverpeasContext;
+        
 
         $.getJSON(context + "/ChatUserInformations", {
           IEFix : new Date().getTime(), Action : 'GetUserById', UserId : userId,
