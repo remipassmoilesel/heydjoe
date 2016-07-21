@@ -21,5 +21,6 @@ opt/openfire/resources/security/
 opt/silverpeas-6.0-SNAPSHOT-wildfly10/export-vars.sh
 opt/silverpeas-6.0-SNAPSHOT-wildfly10/bin/settings.gradle
 opt/silverpeas-6.0-SNAPSHOT-wildfly10/configuration/config.properties
+opt/silverpeas-6.0-SNAPSHOT-wildfly10/configuration/silverpeas/CustomerSettings.xml
 
 opt/etherpad-lite/settings.json
