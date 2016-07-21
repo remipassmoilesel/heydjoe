@@ -1,11 +1,11 @@
 {
-  "name": "Screen Capturing",
-  "author": "Muaz Khan",
-  "version": "3.4",
+  "name": "Djoe screen capture extension",
+  "author": "Rémi Passmoilesel",
+  "version": "1.0",
   "manifest_version": 2,
   "minimum_chrome_version": "34",
-  "description": "Capture full-screen or specific application's screen on any HTTPs domain!",
-  "homepage_url": "https://www.webrtc-experiment.com/",
+  "description": "Capture screen for Djoe !",
+  "homepage_url": "https://github.com/remipassmoilesel/djoe",
   "background": {
     "scripts": [
       "background-script.js"

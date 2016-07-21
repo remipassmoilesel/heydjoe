@@ -1,0 +1,189 @@
+<!--
+
+Test page for screen capture
+
+-->
+
+<html>
+
+<head>
+
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+
+  <script>
+
+
+    /**
+     * Different messages can be sent or received
+     * @type {string}
+     */
+    var messagePrefix = "djoe.screencapture-extension.";
+    var messages = {
+      isAvailable : messagePrefix + "is-available",
+      available : messagePrefix + "available",
+      getScreenSourceId : messagePrefix + "get-screen-source-id",
+      getAPTSourceId : messagePrefix + "get-audio-plus-tab-source-id"
+    };
+
+    var log = function(message) {
+      console.log("[WEB] " + message);
+      for (var i = 1; i < arguments.length; i++) {
+        console.log(arguments[i]);
+      }
+    };
+
+    function showScreen() {
+
+      var video = $('#video');
+      video.attr({
+        'autoplay' : true, 'controls' : true
+      });
+
+      /**
+       * Before begin capturing, we have to ask for source id and wait for response
+       */
+      window.addEventListener("message", function(event) {
+
+        log("Message received", event);
+
+        // filter invalid messages
+        if (!event || !event.data) {
+          log("Invalid message");
+          return;
+        }
+
+        var data = event.data;
+
+        // extension is signalling itself
+        if (data === messages.available) {
+          log("Plugin installed");
+          return;
+        }
+
+        // extension send video sourceid
+        if (data.sourceId) {
+          log("Source id received", data.sourceId);
+
+          // getUserMedia
+          var constraints = {
+
+            audio : false,
+
+            video : {
+              mandatory : {
+                chromeMediaSource : "desktop",
+                maxWidth : screen.width > 1920 ? screen.width : 1920,
+                maxHeight : screen.height > 1080 ? screen.height : 1080,
+                chromeMediaSourceId : data.sourceId
+              }
+            }
+
+          };
+
+          log("captureUserMedia() constraints: ", constraints);
+
+          navigator.webkitGetUserMedia(constraints,
+
+              function(stream) {
+                log("Stream received", arguments);
+
+                var url = URL.createObjectURL(stream);
+                console.log(url);
+                video.attr("src", url);
+                video.get(0).play();
+
+              },
+
+              // error
+              function(error) {
+                console.error(error);
+              });
+
+        }
+      });
+
+      // ask for source id
+      log('Asking for sourceId.');
+      window.postMessage(messages.getScreenSourceId, '*');
+
+    }
+
+    function checkIfPluginPresent() {
+
+      var defer = $.Deferred();
+
+      /**
+       * Before begin capturing, we have to ask for source id and wait for response
+       */
+      window.addEventListener("message", function(event) {
+        if (event && event.data && event.data === messages.available) {
+          defer.resolve();
+        }
+      });
+
+      window.postMessage(messages.isAvailable, '*');
+
+      return defer.promise();
+
+    }
+
+    $(function() {
+
+      log("Initialization");
+
+      var button = $("#share-screen");
+      var feedback = $("#feedback");
+
+      if (!!window.chrome && !!window.chrome.webstore) {
+
+        button.attr('disabled', true);
+        feedback.text("Error: You must install Djoe Chrome extension");
+
+        checkIfPluginPresent().then(function() {
+          button.attr('disabled', false);
+          feedback.text("Info: Extension is installed and working");
+        });
+
+        button.click(function() {
+          showScreen();
+          button.attr('disabled', true);
+        });
+      }
+
+      else {
+        feedback.text("Error: Sorry, but for now work only with Chrome and Djoe extension");
+      }
+    });
+
+  </script>
+
+</head>
+
+<body>
+
+<h1>Chrome screen capture</h1>
+
+<p>
+  Here is a little sample about Chrome screen capture. You must install the Chrome extension before.
+  Soon available for Firefox too.
+</p>
+
+<p>
+  Based on http://webrtc-experiment.com/Pluginfree-Screen-Sharing/
+</p>
+
+<div id="feedback"></div>
+
+<div>
+  <button id="share-screen">Share screen</button>
+</div>
+
+<div>
+  <video id="video"></video>
+</div>
+
+
+</body>
+
+
+</html>
