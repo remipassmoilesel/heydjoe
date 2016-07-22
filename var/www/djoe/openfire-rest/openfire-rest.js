@@ -26,10 +26,10 @@ $(document).ready(function() {
   // ]);
 
   // delete all chatrooms
-  orest.deleteAllChatrooms();
+  // orest.deleteAllChatrooms();
 
   // delete all users
-  orest.deleteAllUsers();
+  // orest.deleteAllUsers();
 
   // Delete dummy users
   //orest.deleteDummies("dummy", 20);
