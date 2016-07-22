@@ -16,7 +16,7 @@ jsxc.gui.menu = {
    */
   timeoutBeforeClose : 5000,
 
-  ready: false,
+  ready : false,
 
   /**
    * Menu elements. Each menu element has a label, a template name and an optional init function.
@@ -720,8 +720,6 @@ jsxc.gui.menu = {
    */
   openSideMenu : function() {
 
-    jsxc.stats.addEvent('jsxc.menu.open');
-
     var self = $("#jsxc_side_menu");
 
     // state is saved inside the jquery element
@@ -733,8 +731,10 @@ jsxc.gui.menu = {
     self.animate({right : "0px"});
 
     // focus on search text field, but not on small devices
-    if ($(window).height() > 700) {
-      $("#jsxc_menu_search_text_field").focus();
+    var txtField = $("#jsxc_menu_search_text_field");
+    if ($(window).height() > 600) {
+      txtField.get(0).focus();
+      txtField.get(0).select();
     }
 
   },
@@ -743,8 +743,6 @@ jsxc.gui.menu = {
    * Close the side menu
    */
   closeSideMenu : function() {
-
-    jsxc.stats.addEvent('jsxc.menu.close');
 
     var self = $("#jsxc_side_menu");
 
@@ -816,6 +814,14 @@ jsxc.gui.menu = {
 
       return false;
 
+    });
+
+    // click on text field, show cursor
+    // workaround for firefox
+    var txtField = $("#jsxc_menu_search_text_field");
+    txtField.click(function() {
+      txtField.get(0).focus();
+      txtField.get(0).select();
     });
 
   },
