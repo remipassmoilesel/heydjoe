@@ -22,7 +22,7 @@
       "matches": [
         "https://127.0.0.1/*",
         "https://localhost/*",
-        "https://im.silverpeas.org/*"
+        "https://im.silverpeas.net/*"
       ]
     }
   ],

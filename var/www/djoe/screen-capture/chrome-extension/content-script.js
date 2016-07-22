@@ -10,7 +10,7 @@
  */
 
 var config = {
-  debug : true, messagePrefix : "djoe.screencapture-extension."
+  debug : false, messagePrefix : "djoe.screencapture-extension."
 }
 
 /**
