@@ -296,7 +296,7 @@ jsxc.mmstream.gui = {
     var self = jsxc.mmstream.gui;
 
     $.each(jsxc.storage.getUserItem('buddylist') || [], function(index, item) {
-      self._updateVideoLinks(item);
+      self._updateVideoLink(item);
     });
   },
 
@@ -310,7 +310,7 @@ jsxc.mmstream.gui = {
    * @param bid
    * @private
    */
-  _updateVideoLinks : function(bid) {
+  _updateVideoLink : function(bid) {
 
     var self = jsxc.mmstream;
 

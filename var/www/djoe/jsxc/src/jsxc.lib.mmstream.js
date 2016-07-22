@@ -1113,7 +1113,7 @@ jsxc.mmstream = {
   },
 
   /**
-   * Update "video" button if we receive cap information.
+   * Update video button and links if we receive cap information.
    *
    * @private
    * @memberOf jsxc.mmstream
@@ -1126,11 +1126,11 @@ jsxc.mmstream = {
 
     // update video windows and video links
     if (jsxc.gui.roster.loaded) {
-      self.gui._updateVideoLinks(jsxc.jidToBid(jid));
+      self.gui._updateVideoLink(jsxc.jidToBid(jid));
       self.gui._updateIcon(jsxc.jidToBid(jid));
     } else {
       $(document).on('cloaded.roster.jsxc', function() {
-        self.gui._updateVideoLinks(jsxc.jidToBid(jid));
+        self.gui._updateVideoLink(jsxc.jidToBid(jid));
         self.gui._updateIcon(jsxc.jidToBid(jid));
       });
     }
