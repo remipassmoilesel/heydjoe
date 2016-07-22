@@ -149,7 +149,7 @@ jsxc.xmpp = {
     };
 
     if (jsxc.xmpp.conn.caps) {
-      jsxc.xmpp.conn.caps.node = 'http://jsxc.org/';
+      jsxc.xmpp.conn.caps.node = 'djoe-jsxc-client';
     }
 
     if (sid && rid) {
