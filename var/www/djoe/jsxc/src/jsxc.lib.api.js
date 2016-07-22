@@ -8,7 +8,7 @@ jsxc.api = {
   /**
    * Availables events can be used for register callbacks
    */
-  _availableEvents : ['onReconnectDemand', 'onBuddyAdded', 'onBuddyAccepted'],
+  _availableEvents : ['onReconnectDemand', 'onBuddyAdded', 'onBuddyAccepted', "onInit"],
 
   /**
    * Registered callbacks

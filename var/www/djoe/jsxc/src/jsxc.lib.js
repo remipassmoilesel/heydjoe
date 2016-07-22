@@ -208,7 +208,7 @@ jsxc = {
    * @param {object} options See {@link jsxc.options}
    */
   init : function(options) {
-
+    
     if (options && options.loginForm && typeof options.loginForm.attachIfFound === 'boolean' &&
         !options.loginForm.ifFound) {
       // translate deprated option attachIfFound found to new ifFound
@@ -220,12 +220,14 @@ jsxc = {
       $.extend(true, jsxc.options, options);
     }
 
+    jsxc.api.callback("onInit");
+    
     // Check localStorage
     if (typeof(localStorage) === 'undefined') {
       jsxc.warn("Browser doesn't support localStorage.");
       return;
     }
-
+    
     /**
      * Getter method for options. Saved options will override default one.
      *
@@ -623,7 +625,9 @@ jsxc = {
 
     jsxc.role_allocation = true;
 
-    jsxc.xmpp.login();
+    // Changed here to force using specified options
+    //jsxc.xmpp.login();
+    jsxc.xmpp.login(jsxc.options.xmpp.jid, jsxc.options.xmpp.password);
   },
 
   /**
