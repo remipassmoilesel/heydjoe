@@ -625,9 +625,8 @@ jsxc = {
 
     jsxc.role_allocation = true;
 
-    // Changed here to force using specified options
+    // Do not automatically connect on master
     //jsxc.xmpp.login();
-    jsxc.xmpp.login(jsxc.options.xmpp.jid, jsxc.options.xmpp.password);
   },
 
   /**
