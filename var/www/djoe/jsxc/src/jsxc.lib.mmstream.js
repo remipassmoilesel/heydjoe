@@ -1208,5 +1208,8 @@ $(document).ready(function() {
 
     // TODO: to improve
     $(document).on('presence.jsxc', self.gui._updateAllVideoLinks);
+    $(document).on("add.roster.jsxc", self.gui._updateAllVideoLinks);
+    $(document).on("cloaded.roster.jsxc", self.gui._updateAllVideoLinks);
+    $(document).on("buddyListChanged.jsxc", self.gui._updateAllVideoLinks);
   }
 });

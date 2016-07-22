@@ -38,9 +38,6 @@ jsxc.mmstream.gui = {
       $(document).one("menu.ready.jsxc", self._initChromeExtensionDialog);
     }
 
-    // init roster links
-    $(document).one("cloaded.roster.jsxc", self._updateAllVideoLinks);
-
   },
 
   /**
@@ -321,6 +318,8 @@ jsxc.mmstream.gui = {
       return;
     }
 
+    jsxc.debug('Update link', bid);
+
     // search available ressource
     var data = jsxc.storage.getUserItem('buddy', bid);
     var fulljid = "";
@@ -338,9 +337,9 @@ jsxc.mmstream.gui = {
     var videoLink = bud.find('.jsxc_videocall');
 
     // no ressource available
-    if (fulljid !== "") {
+    if (fulljid.length > 1) {
 
-      videoLink.css("text-decoration", "underlined");
+      videoLink.css("text-decoration", "underline");
 
       // simple video call
       videoLink.click(function() {
