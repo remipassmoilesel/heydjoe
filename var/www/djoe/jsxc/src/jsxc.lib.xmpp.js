@@ -469,6 +469,9 @@ jsxc.xmpp = {
     jsxc.role_allocation = false;
     jsxc.master = false;
     jsxc.storage.removeItem('alive');
+
+    console.error("Disconnected from JSXC");
+
   },
 
   /**

@@ -272,33 +272,25 @@ jsxc.gui.menu = {
 
             // get informations about buddy
             var bid = $(this).data("userjid");
-            var data = jsxc.storage.getUserItem('buddy', bid);
 
-            // search available ressource
-            var resAvailable = false;
-            if (data && data.res && data.res.length > 0) {
-              $.each(data.res, function(index, element) {
-                if (element !== null && element !== "null") {
-                  toCall.push(bid + "/" + element);
-                  resAvailable = true;
-                  // stop loop
-                  return false;
-                }
-              });
-            }
+            var fulljid = jsxc.getFirstFullJidFor(bid);
 
             // no ressource available
-            if (resAvailable !== true) {
+            if (fulljid === null) {
 
               var node = Strophe.getNodeFromJid(bid);
 
-              jsxc.error("Invalid buddy for video call", {bid : bid, localStorageDatas : data});
+              jsxc.error("Invalid buddy for video call", bid);
 
               jsxc.gui.feedback("Impossible de contacter " + node +
                   ". Vérifiez votre contact est bien connecté et rafraichissez la page.");
 
               // stop loop
               return false;
+            }
+
+            else {
+              toCall.push(fulljid);
             }
 
           });

@@ -22,7 +22,12 @@ jsxc.mmstream = {
    *
    */
   //WAIT_BEFORE_CALL : 1000,
-  WAIT_BEFORE_CALL : 300,
+  WAIT_BEFORE_CALL : 1000,
+
+  /**
+   * Hangup call if no response
+   */
+  HANGUP_IF_NO_RESPONSE : 5000,
 
   /** required disco features for video call */
   reqVideoFeatures : ['urn:xmpp:jingle:apps:rtp:video', 'urn:xmpp:jingle:apps:rtp:audio',
@@ -976,11 +981,11 @@ jsxc.mmstream = {
    */
   startVideoCall : function(fulljid) {
 
+    var self = jsxc.mmstream;
+
     if (jsxc.mmstream.debug === true) {
       console.error("startVideoCall " + fulljid);
     }
-
-    var self = jsxc.mmstream;
 
     if (Strophe.getResourceFromJid(fulljid) === null) {
       throw "JID must be full jid";
@@ -1012,6 +1017,9 @@ jsxc.mmstream = {
 
           session.on('change:connectionState', self._onSessionStateChanged);
 
+          // set timer to hangup if no response
+          self._addAutoHangup(session.sid, fulljid);
+
         },
 
         function() {
@@ -1026,20 +1034,80 @@ jsxc.mmstream = {
   },
 
   /**
+   * Array of jid which be called and have to be close
+   * if no response after determined time
+   */
+  autoHangupCalls : {},
+
+  /**
+   * Remove an auto hangup timer
+   * @param fulljid
+   * @private
+   */
+  _removeAutoHangup: function(sessionid){
+
+    var self = jsxc.mmstream;
+
+    clearTimeout(self.autoHangupCalls[sessionid]);
+
+    // unregister timer
+    delete self.autoHangupCalls[sessionid];
+  },
+
+  /**
+   * Register an auto hangup timer
+   * @param fulljid
+   * @private
+   */
+  _addAutoHangup: function(sessionid, fulljid){
+
+    var self = jsxc.mmstream;
+
+    // check if not already present
+    if(Object.keys(self.autoHangupCalls).indexOf(sessionid) > -1){
+      jsxc.error("Call already exist: " + sessionid);
+      return;
+    }
+
+    // create a timer to hangup
+    var timeout = setTimeout(function(){
+
+      // hangup and feedback
+      self.hangupCall(fulljid);
+
+      jsxc.gui.feedback("Pas de réponse de " + Strophe.getNodeFromJid(fulljid));
+
+    }, self.HANGUP_IF_NO_RESPONSE);
+
+    // register timer
+    self.autoHangupCalls[sessionid] = timeout;
+
+  },
+
+
+
+  /**
    * Called on session changes
    *
-   * Used only for logging and feedback
    * @param session
    * @param state
    * @private
    */
   _onSessionStateChanged : function(session, state) {
 
-    console.log("[JINGLE] _onSessionStateChanged change:connectionState");
-    console.log(session, state);
+    var self = jsxc.mmstream;
 
+    console.log("[JINGLE] _onSessionStateChanged: " + state);
+    console.log(session);
+
+    // inform user of problem
     if (state === "interrupted") {
       jsxc.gui.feedback("Problème de connexion avec " + Strophe.getNodeFromJid(session.peerID));
+    }
+
+    // remove auto hangup timer
+    else if(state === "connected"){
+      self._removeAutoHangup(session.sid);
     }
   },
 
@@ -1168,6 +1236,26 @@ jsxc.mmstream = {
   },
 
   /**
+   * Update icon on presence.
+   *
+   * @memberOf jsxc.webrtc
+   * @param ev
+   * @param status
+   * @private
+   */
+  _onPresence : function(ev, jid, status, presence) {
+    
+    var self = jsxc.mmstream;
+
+    if ($(presence).find('c[xmlns="' + Strophe.NS.CAPS + '"]').length === 0) {
+      jsxc.debug('webrtc.onpresence', jid);
+
+      self.gui._updateIcon(jsxc.jidToBid(jid));
+      self.gui._updateVideoLink(jsxc.jidToBid(jid));
+    }
+  },
+
+  /**
    * Called when
    */
   _onDisconnected : function() {
@@ -1180,7 +1268,7 @@ jsxc.mmstream = {
     $(document).off('disconnected.jsxc', self._onDisconnected);
     $(document).off('caps.strophe', self._onCaps);
     $(document).off('init.window.jsxc', self.gui._initChatWindow);
-    $(document).off('presence.jsxc', self.gui._updateAllVideoLinks);
+    $(document).off('presence.jsxc', self._onPresence);
 
     self.conn.deleteHandler(self.messageHandler);
 
@@ -1207,7 +1295,7 @@ $(document).ready(function() {
 
 
     // TODO: to improve
-    $(document).on('presence.jsxc', self.gui._updateAllVideoLinks);
+    $(document).on('presence.jsxc', self._onPresence);
     $(document).on("add.roster.jsxc", self.gui._updateAllVideoLinks);
     $(document).on("cloaded.roster.jsxc", self.gui._updateAllVideoLinks);
     $(document).on("buddyListChanged.jsxc", self.gui._updateAllVideoLinks);

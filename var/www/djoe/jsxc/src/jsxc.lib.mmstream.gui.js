@@ -109,13 +109,13 @@ jsxc.mmstream.gui = {
 
     // add only if not already present
     var alreadyHere = false;
-    self.videoPanel.find(".jsxc_videoPanelContent").each(function(index, element){
-      if($(element).data("fromjid") === fulljid){
+    self.videoPanel.find(".jsxc_videoPanelContent").each(function(index, element) {
+      if ($(element).data("fromjid") === fulljid) {
         alreadyHere = true;
         return false;
       }
     });
-    if(alreadyHere === true){
+    if (alreadyHere === true) {
       return;
     }
 
@@ -174,9 +174,10 @@ jsxc.mmstream.gui = {
 
     if (options.fullscreenButton === true) {
 
-      var fullscreen = $("<div>").addClass('jsxc_fullscreenControl jsxc_videoControl').click(function() {
-        jsxc.mmstream.gui._showVideoFullscreen(fulljid);
-      });
+      var fullscreen = $("<div>").addClass('jsxc_fullscreenControl jsxc_videoControl').click(
+          function() {
+            jsxc.mmstream.gui._showVideoFullscreen(fulljid);
+          });
 
       fullscreen.appendTo(videoCtr);
     }
@@ -291,6 +292,10 @@ jsxc.mmstream.gui = {
     self.gui._updateIcon(win.data('bid'));
   },
 
+  /**
+   * Update all the video links
+   * @private
+   */
   _updateAllVideoLinks : function() {
 
     var self = jsxc.mmstream.gui;
@@ -312,32 +317,22 @@ jsxc.mmstream.gui = {
    */
   _updateVideoLink : function(bid) {
 
-    var self = jsxc.mmstream;
+    var mmstream = jsxc.mmstream;
 
-    if (bid === jsxc.jidToBid(self.conn.jid)) {
+    if (bid === jsxc.jidToBid(mmstream.conn.jid)) {
       return;
     }
 
     jsxc.debug('Update link', bid);
 
     // search available ressource
-    var data = jsxc.storage.getUserItem('buddy', bid);
-    var fulljid = "";
-    if (data && data.res && data.res.length > 0) {
-      $.each(data.res, function(index, element) {
-        if (element !== null && element !== "null") {
-          fulljid = bid + "/" + element;
-          // stop loop
-          return false;
-        }
-      });
-    }
+    var fulljid = jsxc.getFirstFullJidFor(bid);
 
     var bud = jsxc.gui.roster.getItem(bid);
     var videoLink = bud.find('.jsxc_videocall');
 
     // no ressource available
-    if (fulljid.length > 1) {
+    if (fulljid !== null) {
 
       videoLink.css("text-decoration", "underline");
 
@@ -367,68 +362,40 @@ jsxc.mmstream.gui = {
 
     jsxc.debug('Update icon', bid);
 
-    var self = jsxc.mmstream;
+    var mmstream = jsxc.mmstream;
 
-    if (bid === jsxc.jidToBid(self.conn.jid)) {
+    if (bid === jsxc.jidToBid(mmstream.conn.jid)) {
       return;
     }
 
     var win = jsxc.gui.window.get(bid);
-    var jid = win.data('jid');
-    var ls = jsxc.storage.getUserItem('buddy', bid);
 
-    if (typeof jid !== 'string') {
-      if (ls && typeof ls.jid === 'string') {
-        jid = ls.jid;
-      } else {
-        jsxc.debug('[mmstream] Could not update icon, because could not find jid for ' + bid);
-        return;
-      }
-    }
+    var fulljid = jsxc.getFirstFullJidFor(bid);
 
-    var res = Strophe.getResourceFromJid(jid);
-
+    // get the video icon
     var el = win.find('.jsxc_video');
-
-    var capableRes = self.getCapableRes(jid, self.reqVideoFeatures);
-    var targetRes = res;
-
-    if (targetRes === null) {
-      $.each(jsxc.storage.getUserItem('buddy', bid).res || [], function(index, val) {
-        if (capableRes.indexOf(val) > -1) {
-          targetRes = val;
-          return false;
-        }
-      });
-
-      jid = jid + '/' + targetRes;
-    }
-
     el.off('click');
 
-    if (capableRes.indexOf(targetRes) > -1) {
+    if (fulljid !== null) {
+
       el.click(function() {
-        self.startVideoCall(jid);
+        mmstream.startVideoCall(fulljid);
       });
 
       el.removeClass('jsxc_disabled');
-
       el.attr('title', jsxc.t('Start_video_call'));
-    } else {
+
+      win.find('.jsxc_sendFile').removeClass('jsxc_disabled');
+    }
+
+    else {
       el.addClass('jsxc_disabled');
 
       el.attr('title', jsxc.t('Video_call_not_possible'));
-    }
 
-    var fileCapableRes = self.getCapableRes(jid, self.reqFileFeatures);
-    var resources = Object.keys(jsxc.storage.getUserItem('res', bid) || {}) || [];
-
-    if (fileCapableRes.indexOf(res) > -1 ||
-        (res === null && fileCapableRes.length === 1 && resources.length === 1)) {
-      win.find('.jsxc_sendFile').removeClass('jsxc_disabled');
-    } else {
       win.find('.jsxc_sendFile').addClass('jsxc_disabled');
     }
+
   },
 
   /**

@@ -8,7 +8,7 @@ jsxc = {
   /**
    * Video and file transfer system
    */
-  multimediaStreamSystem: "multistream", // "original" || "multistream"
+  multimediaStreamSystem : "multistream", // "original" || "multistream"
 
   /** Version of jsxc */
   version : '< $ app.version $ >',
@@ -118,6 +118,33 @@ jsxc = {
   },
 
   /**
+   * Return a full jid available or null
+   *
+   * Full jid should be the first with connected status.
+   *
+   */
+  getFirstFullJidFor : function(bid) {
+
+    var fulljid = null;
+
+    // recover all ressources availables
+    var res = jsxc.storage.getUserItem('res', bid);
+    $.each(res, function(ressource, value) {
+
+      // check if ressourceis online
+      if (value === jsxc.CONST.STATUS.indexOf('online')) {
+        fulljid = bid + "/" + ressource;
+
+        // stop loop
+        return false;
+      }
+    });
+
+    return fulljid;
+
+  },
+
+  /**
    * Write debug message to console and to log.
    *
    * @memberOf jsxc
@@ -192,6 +219,21 @@ jsxc = {
   log : '',
 
   /**
+   * Register a listener for disconnecting chat client if user
+   * refresh or leave the webpage
+   * @private
+   */
+  _registerBeforeUnloadListener : function() {
+
+    window.addEventListener("beforeunload", function(e) {
+      jsxc.xmpp.logout(false);
+      jsxc.xmpp.disconnected();
+
+    }, false);
+    
+  },
+
+  /**
    * This function initializes important core functions and event handlers.
    * Afterwards it performs the following actions in the given order:
    *
@@ -208,7 +250,9 @@ jsxc = {
    * @param {object} options See {@link jsxc.options}
    */
   init : function(options) {
-    
+
+    jsxc._registerBeforeUnloadListener();
+
     if (options && options.loginForm && typeof options.loginForm.attachIfFound === 'boolean' &&
         !options.loginForm.ifFound) {
       // translate deprated option attachIfFound found to new ifFound
@@ -221,13 +265,13 @@ jsxc = {
     }
 
     jsxc.api.callback("onInit");
-    
+
     // Check localStorage
     if (typeof(localStorage) === 'undefined') {
       jsxc.warn("Browser doesn't support localStorage.");
       return;
     }
-    
+
     /**
      * Getter method for options. Saved options will override default one.
      *
@@ -979,7 +1023,7 @@ jsxc = {
    * @param stream
    * @param element
    */
-  attachMediaStream: function(element, stream){
+  attachMediaStream : function(element, stream) {
     jsxc.xmpp.conn.jingle.RTC.attachMediaStream(element, stream);
   }
 
