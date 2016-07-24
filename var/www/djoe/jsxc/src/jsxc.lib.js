@@ -226,8 +226,13 @@ jsxc = {
   _registerBeforeUnloadListener : function() {
 
     window.addEventListener("beforeunload", function(e) {
+
       jsxc.xmpp.logout(false);
+
+      // here we call directly this method to be sure it have time to execute
       jsxc.xmpp.disconnected();
+
+      console.error("Disconnected before leaving page");
 
     }, false);
     
