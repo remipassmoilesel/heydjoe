@@ -192,6 +192,15 @@ jsxc.xmpp = {
    */
   logout : function(complete) {
 
+    var self = jsxc.xmpp;
+
+    // send the last presence to inform of disconnection
+    if (self.conn) {
+      self.conn.send($pres({
+        type : "unavailable"
+      }));
+    }
+
     // instruct all tabs
     jsxc.storage.removeItem('sid');
 
@@ -710,9 +719,12 @@ jsxc.xmpp = {
       }
     }
 
+    // delete ressource if disconnected
     if (status === 0) {
       delete res[r];
-    } else {
+    }
+    // or modify ressource status
+    else {
       res[r] = status;
     }
 
