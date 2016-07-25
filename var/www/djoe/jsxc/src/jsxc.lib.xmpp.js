@@ -212,6 +212,9 @@ jsxc.xmpp = {
     if (!jsxc.master) {
       $('#jsxc_roster').remove();
       $('#jsxc_windowlist').remove();
+
+      $(document).trigger("removed.gui.jsxc");
+
       return true;
     }
 
@@ -235,7 +238,9 @@ jsxc.xmpp = {
         jsxc.xmpp.conn.flush();
 
         setTimeout(function() {
-          jsxc.xmpp.conn.disconnect();
+          if (jsxc.xmpp.conn) {
+            jsxc.xmpp.conn.disconnect();
+          }
         }, 600);
       }
     };
@@ -470,6 +475,9 @@ jsxc.xmpp = {
       if (jsxc.triggeredFromLogout) {
         window.location = jsxc.options.logoutElement.attr('href');
       }
+
+      $(document).trigger("removed.gui.jsxc");
+
     } else {
       jsxc.gui.roster.noConnection();
     }

@@ -1288,6 +1288,7 @@ $(document).ready(function() {
 
     $(document).on('attached.jsxc', self.init);
     $(document).on('disconnected.jsxc', self._onDisconnected);
+    $(document).on('removed.gui.jsxc', self.gui.removeGui);
 
   }
 });

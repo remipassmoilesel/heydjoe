@@ -361,6 +361,13 @@ jsxc.mmstream.gui = {
   },
 
   /**
+   * Remove all GUI elements
+   */
+  removeGui: function(){
+    $("#jsxc_videoPanel").remove();
+  },
+
+  /**
    * Enable or disable "video" icon and assign full jid.
    *
    * @memberOf jsxc.mmstream
