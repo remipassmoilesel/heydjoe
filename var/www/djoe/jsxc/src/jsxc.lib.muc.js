@@ -729,6 +729,10 @@ jsxc.muc = {
    * @param {string} presence Presence stanza
    */
   onPresence : function(event, from, status, presence) {
+    
+    if(!from){
+      return true;
+    }
 
     var self = jsxc.muc;
     var room = jsxc.jidToBid(from);
@@ -862,6 +866,11 @@ jsxc.muc = {
    * @returns {Boolean} Returns true on success
    */
   onPresenceError : function(event, from, presence) {
+    
+    if(!from){
+      return true;
+    }
+    
     var self = jsxc.muc;
     var xdata = $(presence).find('x[xmlns="' + Strophe.NS.MUC + '"]');
     var room = jsxc.jidToBid(from);

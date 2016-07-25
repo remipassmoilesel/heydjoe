@@ -293,6 +293,14 @@ jsxc.mmstream.gui = {
   },
 
   /**
+   *
+   * @private
+   */
+  _updateAllIcons: function(){
+    // TODO
+  },
+
+  /**
    * Update all the video links
    * @private
    */

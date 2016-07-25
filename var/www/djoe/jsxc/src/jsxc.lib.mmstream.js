@@ -107,9 +107,7 @@ jsxc.mmstream = {
 
     self.messageHandler = self.conn.addHandler(jsxc.mmstream._onReceived, null, 'message');
 
-    if (self.conn.caps) {
-      $(document).on('caps.strophe', self._onCaps);
-    }
+    self._registerListenersOnAttached();
 
     // check if jingle strophe plugin exist
     if (!self.conn.jingle) {
@@ -1044,7 +1042,7 @@ jsxc.mmstream = {
    * @param fulljid
    * @private
    */
-  _removeAutoHangup: function(sessionid){
+  _removeAutoHangup : function(sessionid) {
 
     var self = jsxc.mmstream;
 
@@ -1059,18 +1057,18 @@ jsxc.mmstream = {
    * @param fulljid
    * @private
    */
-  _addAutoHangup: function(sessionid, fulljid){
+  _addAutoHangup : function(sessionid, fulljid) {
 
     var self = jsxc.mmstream;
 
     // check if not already present
-    if(Object.keys(self.autoHangupCalls).indexOf(sessionid) > -1){
+    if (Object.keys(self.autoHangupCalls).indexOf(sessionid) > -1) {
       jsxc.error("Call already exist: " + sessionid);
       return;
     }
 
     // create a timer to hangup
-    var timeout = setTimeout(function(){
+    var timeout = setTimeout(function() {
 
       // hangup and feedback
       self.hangupCall(fulljid);
@@ -1083,8 +1081,6 @@ jsxc.mmstream = {
     self.autoHangupCalls[sessionid] = timeout;
 
   },
-
-
 
   /**
    * Called on session changes
@@ -1106,7 +1102,7 @@ jsxc.mmstream = {
     }
 
     // remove auto hangup timer
-    else if(state === "connected"){
+    else if (state === "connected") {
       self._removeAutoHangup(session.sid);
     }
   },
@@ -1181,31 +1177,6 @@ jsxc.mmstream = {
   },
 
   /**
-   * Update video button and links if we receive cap information.
-   *
-   * @private
-   * @memberOf jsxc.mmstream
-   * @param event
-   * @param jid
-   */
-  _onCaps : function(event, jid) {
-
-    var self = jsxc.mmstream;
-
-    // update video windows and video links
-    if (jsxc.gui.roster.loaded) {
-      self.gui._updateVideoLink(jsxc.jidToBid(jid));
-      self.gui._updateIcon(jsxc.jidToBid(jid));
-    } else {
-      $(document).on('cloaded.roster.jsxc', function() {
-        self.gui._updateVideoLink(jsxc.jidToBid(jid));
-        self.gui._updateIcon(jsxc.jidToBid(jid));
-      });
-    }
-
-  },
-
-  /**
    * Return list of capable resources.
    *
    * @memberOf jsxc.mmstream
@@ -1236,23 +1207,56 @@ jsxc.mmstream = {
   },
 
   /**
-   * Update icon on presence.
+   * Update icon on presence or on caps.
    *
-   * @memberOf jsxc.webrtc
+   * If no jid is given, all roster will be updated
+   *
+   * @memberOf jsxc.mmstream
    * @param ev
    * @param status
    * @private
    */
-  _onPresence : function(ev, jid, status, presence) {
-    
+  _onXmppEvent : function(ev, jid) {
+
     var self = jsxc.mmstream;
 
-    if ($(presence).find('c[xmlns="' + Strophe.NS.CAPS + '"]').length === 0) {
-      jsxc.debug('webrtc.onpresence', jid);
+    console.log("MMStream on XMPP event");
+    console.log(ev, jid);
 
+    if (jid) {
       self.gui._updateIcon(jsxc.jidToBid(jid));
       self.gui._updateVideoLink(jsxc.jidToBid(jid));
     }
+
+    else {
+      self.gui._updateAllIcons();
+      self.gui._updateAllVideoLinks();
+    }
+
+    // preserve handler
+    return true;
+  },
+
+  /**
+   * Attach listeners on connect
+   * @private
+   */
+  _registerListenersOnAttached : function() {
+
+    var self = jsxc.mmstream;
+
+    if (self.conn.caps) {
+      $(document).on('caps.strophe', self._onXmppEvent);
+    }
+
+    $(document).on('init.window.jsxc', self.gui._initChatWindow);
+
+    // TODO: to improve
+    $(document).on('presence.jsxc', self._onXmppEvent);
+    $(document).on("add.roster.jsxc", self.gui._onXmppEvent);
+    $(document).on("cloaded.roster.jsxc", self.gui._onXmppEvent);
+    $(document).on("buddyListChanged.jsxc", self.gui._onXmppEvent);
+
   },
 
   /**
@@ -1262,19 +1266,12 @@ jsxc.mmstream = {
 
     var self = jsxc.mmstream;
 
-    /**
-     * Remove listeners
-     */
-    $(document).off('disconnected.jsxc', self._onDisconnected);
-    $(document).off('caps.strophe', self._onCaps);
-    $(document).off('init.window.jsxc', self.gui._initChatWindow);
-    $(document).off('presence.jsxc', self._onPresence);
+    // remove listeners added when attached
+    $(document).off('caps.strophe', self._onXmppEvent);
 
     self.conn.deleteHandler(self.messageHandler);
 
-    /**
-     * Remove all videos
-     */
+    // remove all videos
     $("#jsxc_videoPanel .jsxc_videoThumbContainer").remove();
 
     // stop local stream
@@ -1291,13 +1288,6 @@ $(document).ready(function() {
 
     $(document).on('attached.jsxc', self.init);
     $(document).on('disconnected.jsxc', self._onDisconnected);
-    $(document).on('init.window.jsxc', self.gui._initChatWindow);
 
-
-    // TODO: to improve
-    $(document).on('presence.jsxc', self._onPresence);
-    $(document).on("add.roster.jsxc", self.gui._updateAllVideoLinks);
-    $(document).on("cloaded.roster.jsxc", self.gui._updateAllVideoLinks);
-    $(document).on("buddyListChanged.jsxc", self.gui._updateAllVideoLinks);
   }
 });

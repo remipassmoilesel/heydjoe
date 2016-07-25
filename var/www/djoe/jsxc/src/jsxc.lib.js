@@ -118,7 +118,10 @@ jsxc = {
   },
 
   /**
-   * Return the last fulljid received or null if no jid is stored
+   * Return the last fulljid received or null if no full jid is stored
+   *
+   *
+   * Can update the jid
    *
    */
   getCurrentActiveJidForBid : function(bid) {
@@ -133,8 +136,16 @@ jsxc = {
       return buddy.jid;
     }
 
+    // jid is not complete so attach resource and store it
+    else if (buddy.res && buddy.res.length > 0) {
+      fulljid = buddy.jid + "/" + buddy.res[0];
+      buddy.jid = fulljid;
+      jsxc.storage.setUserItem('buddy', bid, buddy);
+    }
+
+    // no res available
     else {
-      jsxc.error("Invalid buddy entry: ");
+      jsxc.error("Invalid buddy entry, no resource available: ");
       jsxc.error(JSON.stringify(buddy));
 
       return null;
@@ -236,18 +247,24 @@ jsxc = {
    * refresh or leave the webpage
    * @private
    */
-  _registerBeforeUnloadListener : function() {
+  _disconnectBeforeUnload : function() {
 
-    window.addEventListener("beforeunload", function(e) {
+    if (jsxc.master === true) {
 
-      jsxc.xmpp.logout(false);
+      window.addEventListener("beforeunload", function(e) {
 
-      // here we call directly this method to be sure it have time to execute
-      jsxc.xmpp.disconnected();
+        jsxc.xmpp.logout(false);
 
-      console.error("Disconnected before leaving page");
+        // here we call directly this method to be sure it have time to execute
+        jsxc.xmpp.disconnected();
 
-    }, false);
+        // TODO: try to send "presence=unaivalable" from here ?
+
+        console.error("Disconnected before leaving page");
+
+      }, false);
+
+    }
 
   },
 
@@ -268,8 +285,6 @@ jsxc = {
    * @param {object} options See {@link jsxc.options}
    */
   init : function(options) {
-
-    jsxc._registerBeforeUnloadListener();
 
     if (options && options.loginForm && typeof options.loginForm.attachIfFound === 'boolean' &&
         !options.loginForm.ifFound) {
@@ -529,7 +544,9 @@ jsxc = {
     }
 
     jsxc.checkMaster(function() {
+
       jsxc.xmpp.login.apply(this, args);
+
     });
   },
 
@@ -686,6 +703,9 @@ jsxc = {
     jsxc.startKeepAlive();
 
     jsxc.role_allocation = true;
+
+    // master have to be disconnected from client on unload
+    jsxc._disconnectBeforeUnload();
 
     // Do not automatically connect on master
     //jsxc.xmpp.login();

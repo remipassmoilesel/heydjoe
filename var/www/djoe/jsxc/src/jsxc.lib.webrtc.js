@@ -374,6 +374,10 @@ jsxc.webrtc = {
   onPresence : function(ev, jid, status, presence) {
     var self = jsxc.webrtc;
 
+    if(!jid){
+      return true;
+    }
+
     if ($(presence).find('c[xmlns="' + Strophe.NS.CAPS + '"]').length === 0) {
       jsxc.debug('webrtc.onpresence', jid);
 

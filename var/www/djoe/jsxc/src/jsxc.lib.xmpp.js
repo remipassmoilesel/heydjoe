@@ -663,7 +663,11 @@ jsxc.xmpp = {
 
     var ptype = $(presence).attr('type');
     var from = $(presence).attr('from');
-    var jid = Strophe.getBareJidFromJid(from).toLowerCase();
+
+    // full jid of presence from
+    // /!\ May be not a full jid
+    var jid = from.toLowerCase();
+
     var r = Strophe.getResourceFromJid(from);
     var bid = jsxc.jidToBid(jid);
     var data = jsxc.storage.getUserItem('buddy', bid) || {};
@@ -671,10 +675,12 @@ jsxc.xmpp = {
     var status = null;
     var xVCard = $(presence).find('x[xmlns="vcard-temp:x:update"]');
 
-    if (jid === Strophe.getBareJidFromJid(jsxc.storage.getItem("jid"))) {
+    // ignore own presence
+    if (bid === Strophe.getBareJidFromJid(jsxc.storage.getItem("jid"))) {
       return true;
     }
 
+    // ignore error presences
     if (ptype === 'error') {
       $(document).trigger('error.presence.jsxc', [from, presence]);
 
@@ -708,9 +714,15 @@ jsxc.xmpp = {
           'gui.showApproveDialog', [jid]);
 
       return true;
-    } else if (ptype === 'unavailable' || ptype === 'unsubscribed') {
+    }
+
+    // disconnection presences
+    else if (ptype === 'unavailable' || ptype === 'unsubscribed') {
       status = jsxc.CONST.STATUS.indexOf('offline');
-    } else {
+    }
+
+    // custom presences
+    else {
       var show = $(presence).find('show').text();
       if (show === '') {
         status = jsxc.CONST.STATUS.indexOf('online');
@@ -719,30 +731,63 @@ jsxc.xmpp = {
       }
     }
 
-    // delete ressource if disconnected
+    // delete resource if buddy disconnecting
     if (status === 0) {
       delete res[r];
     }
-    // or modify ressource status
-    else {
+    // or create/modify resource status
+    else if (r !== "" && r !== "null") {
       res[r] = status;
     }
 
-    var maxVal = [];
-    var max = 0, prop = null;
-    for (prop in res) {
-      if (res.hasOwnProperty(prop)) {
-        if (max <= res[prop]) {
-          if (max !== res[prop]) {
-            maxVal = [];
-            max = res[prop];
-          }
-          maxVal.push(prop);
-        }
-      }
-    }
+    // This code seems to order resources by highest status value (from offline 0 to online 5)
+    // But when a buddy is disconnecting, his status do not change every time, sometimes it stay at
+    // 5 so now the last resource stored in "buddy" entry will be at first position
 
-    if (data.status === 0 && max > 0) {
+    // var maxVal = [];
+    // var max = 0, prop = null;
+    // for (prop in res) {
+    //   if (res.hasOwnProperty(prop) && prop != "null") {
+    //     if (max <= res[prop]) {
+    //       if (max !== res[prop]) {
+    //         maxVal = [];
+    //         max = res[prop];
+    //       }
+    //       maxVal.push(prop);
+    //     }
+    //   }
+    // }
+
+    // reorganize resources
+
+    // max status will be stored in buddy entry and will represent buddy status
+    var maxStatus = 0;
+
+    // resource array will be stored in buddy entry, with at first position the most recent resource
+    var resArray = [];
+    $.each(res, function(resource, status) {
+
+      // remove possible "null" resources
+      if (resource === null || resource === "null") {
+        delete res[resource];
+        return true;
+      }
+
+      // get max status
+      if (status > maxStatus) {
+        maxStatus = status;
+      }
+
+      // create an array of resource to store it in buddy entry
+      if (resource !== r) {
+        resArray.push(resource);
+      }
+    });
+
+    // put the last received ressource on first index
+    resArray.unshift(r);
+
+    if (data.status === 0 && maxStatus > 0) {
       // buddy has come online
       jsxc.notification.notify({
         title : data.name, msg : jsxc.t('has_come_online'), source : bid
@@ -752,11 +797,15 @@ jsxc.xmpp = {
     if (data.type === 'groupchat') {
       data.status = status;
     } else {
-      data.status = max;
+      data.status = maxStatus;
     }
 
-    data.res = maxVal;
-    data.jid = jid;
+    data.res = resArray;
+
+    // change jid only if necessary
+    if (r !== "" && r !== null && r !== "null") {
+      data.jid = jid;
+    }
 
     // Looking for avatar
     if (xVCard.length > 0 && data.type !== 'groupchat') {
