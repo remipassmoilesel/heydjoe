@@ -136,7 +136,7 @@ jsxc = {
       return buddy.jid;
     }
 
-    // jid is not complete so attach resource and store it
+    // jid is not complete so attach the last resource received and store it
     else if (buddy.res && buddy.res.length > 0) {
       fulljid = buddy.jid + "/" + buddy.res[0];
       buddy.jid = fulljid;
