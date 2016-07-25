@@ -599,7 +599,7 @@ jsxc.storage = {
             msgstate: 0,
             transferReq: -1,
             trust: false,
-            fingerprint: null,
+            œ: null,
             res: [],
             type: 'chat'
         }, data));

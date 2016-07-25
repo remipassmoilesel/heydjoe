@@ -273,7 +273,7 @@ jsxc.gui.menu = {
             // get informations about buddy
             var bid = $(this).data("userjid");
 
-            var fulljid = jsxc.getFirstFullJidFor(bid);
+            var fulljid = jsxc.getCurrentActiveJidForBid(bid);
 
             // no ressource available
             if (fulljid === null) {

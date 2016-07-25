@@ -326,7 +326,7 @@ jsxc.mmstream.gui = {
     jsxc.debug('Update link', bid);
 
     // search available ressource
-    var fulljid = jsxc.getFirstFullJidFor(bid);
+    var fulljid = jsxc.getCurrentActiveJidForBid(bid);
 
     var bud = jsxc.gui.roster.getItem(bid);
     var videoLink = bud.find('.jsxc_videocall');
@@ -370,7 +370,7 @@ jsxc.mmstream.gui = {
 
     var win = jsxc.gui.window.get(bid);
 
-    var fulljid = jsxc.getFirstFullJidFor(bid);
+    var fulljid = jsxc.getCurrentActiveJidForBid(bid);
 
     // get the video icon
     var el = win.find('.jsxc_video');
