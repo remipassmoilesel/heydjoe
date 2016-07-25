@@ -54,26 +54,44 @@ jsxc.mmstream.gui = {
     }
 
     else {
-      installChromeExt.click(function() {
 
-        jsxc.gui.dialog.open(jsxc.gui.template.get('installChromeExtension'), {
-          'noClose' : true
-        });
+      // check if we connected in HTTPS
+      if (document.location.protocol.indexOf("https") > -1) {
 
-        $("#jsxc_dialog .jsxc_closeInstallChromeExtension").click(function() {
-          jsxc.gui.dialog.close();
-        });
+        installChromeExt.click(function() {
 
-        $("#jsxc_dialog .jsxc_reloadInstallChromeExtension").click(function() {
-          location.reload();
-        });
-
-      });
-
-      jsxc.mmstream._isChromeExtensionInstalled()
-          .then(function() {
-            installChromeExt.css({"display" : "none"});
+          jsxc.gui.dialog.open(jsxc.gui.template.get('installChromeExtension'), {
+            'noClose' : true
           });
+
+          $("#jsxc_dialog .jsxc_closeInstallChromeExtension").click(function() {
+            jsxc.gui.dialog.close();
+          });
+
+          $("#jsxc_dialog .jsxc_reloadInstallChromeExtension").click(function() {
+            location.reload();
+          });
+
+        });
+
+        jsxc.mmstream._isChromeExtensionInstalled()
+            .then(function() {
+              installChromeExt.css({"display" : "none"});
+            });
+
+      }
+
+      // we are not in HTTPS
+      else {
+
+        var message = "Vous devez vous connecter en HTTPS pour la capture fonctionne.";
+
+        installChromeExt.click(function() {
+          jsxc.gui.feedback(message);
+        });
+
+        installChromeExt.after("<div class='jsxc_menuAdvice'>" + message + "</div>");
+      }
 
     }
 
@@ -296,7 +314,7 @@ jsxc.mmstream.gui = {
    *
    * @private
    */
-  _updateAllIcons: function(){
+  _updateAllIcons : function() {
     // TODO
   },
 
@@ -363,7 +381,7 @@ jsxc.mmstream.gui = {
   /**
    * Remove all GUI elements
    */
-  removeGui: function(){
+  removeGui : function() {
     $("#jsxc_videoPanel").remove();
   },
 
