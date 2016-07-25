@@ -304,7 +304,7 @@ jsxc.gui.menu = {
 
           var toCall = _getSelectedContactsForMultimedia();
 
-          if (toCall.length > 0) {
+          if (toCall && toCall.length > 0) {
             jsxc.mmstream.startVideoconference(toCall);
           }
 
@@ -317,9 +317,11 @@ jsxc.gui.menu = {
           var toCall = _getSelectedContactsForMultimedia();
 
           // call each participant
-          $.each(toCall, function(index, element) {
-            jsxc.mmstream.startVideoCall(element);
-          });
+          if (toCall && toCall.length > 0) {
+            $.each(toCall, function(index, element) {
+              jsxc.mmstream.startVideoCall(element);
+            });
+          }
 
         });
 
@@ -334,7 +336,7 @@ jsxc.gui.menu = {
           if (jsxc.mmstream.screenSharingCapable === true) {
             var toCall = _getSelectedContactsForMultimedia();
 
-            if (toCall.length > 0) {
+            if (toCall && toCall.length > 0) {
               jsxc.mmstream.startScreenSharingMultiPart(toCall);
             }
           }
