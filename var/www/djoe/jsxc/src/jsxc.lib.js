@@ -118,27 +118,40 @@ jsxc = {
   },
 
   /**
-   * Return a full jid available or null
-   *
-   * Full jid should be the first with connected status.
+   * Return the last fulljid received or null if no jid is stored
    *
    */
-  getFirstFullJidFor : function(bid) {
+  getCurrentActiveJidForBid : function(bid) {
 
     var fulljid = null;
 
-    // recover all ressources availables
-    var res = jsxc.storage.getUserItem('res', bid);
-    $.each(res, function(ressource, value) {
+    var buddy = jsxc.storage.getUserItem('buddy', bid);
+    console.log(buddy);
 
-      // check if ressourceis online
-      if (value === jsxc.CONST.STATUS.indexOf('online')) {
-        fulljid = bid + "/" + ressource;
+    // jid is present in buddy entrie, return it
+    if (buddy && buddy.jid && Strophe.getResourceFromJid(buddy.jid) !== null) {
+      return buddy.jid;
+    }
 
-        // stop loop
-        return false;
-      }
-    });
+    else {
+      jsxc.error("Invalid buddy entry: ");
+      jsxc.error(JSON.stringify(buddy));
+
+      return null;
+    }
+
+    // // recover all ressources availables
+    // var res = jsxc.storage.getUserItem('res', bid);
+    // $.each(res, function(ressource, value) {
+    //
+    //   // check if ressourceis online
+    //   if (value === jsxc.CONST.STATUS.indexOf('online')) {
+    //     fulljid = bid + "/" + ressource;
+    //
+    //     // stop loop
+    //     return false;
+    //   }
+    // });
 
     return fulljid;
 
@@ -235,7 +248,7 @@ jsxc = {
       console.error("Disconnected before leaving page");
 
     }, false);
-    
+
   },
 
   /**
