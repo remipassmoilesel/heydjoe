@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<silverpeas-settings product="Silverpeas">
+<silverpeas-settings product="Custom">
 
   <fileset root="${SILVERPEAS_HOME}/properties/org/silverpeas/">
+
     <configfile name="general.properties">
       <parameter key="web.resource.js.get.minified.enabled">false</parameter>
       <parameter key="web.resource.css.get.minified.enabled">false</parameter>
     </configfile>
-    <configuration name="org/silverpeas/authentication/settings/authenticationSettings.properties">
+
+    <configfile name="authentication/settings/authenticationSettings.properties">
       <parameter key="newRegistrationEnabled">true</parameter>
-    </configuration>
+    </configfile>
+
   </fileset>
 
 </silverpeas-settings>
