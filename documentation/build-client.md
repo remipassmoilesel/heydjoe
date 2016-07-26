@@ -24,3 +24,6 @@
         $ npm install 
         $ bower install
         
+        
+        After that, submodules may need more operations for devlopment.
+        
