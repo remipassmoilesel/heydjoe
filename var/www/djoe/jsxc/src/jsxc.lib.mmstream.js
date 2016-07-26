@@ -27,7 +27,7 @@ jsxc.mmstream = {
   /**
    * Hangup call if no response
    */
-  HANGUP_IF_NO_RESPONSE : 5000,
+  HANGUP_IF_NO_RESPONSE : 20000,
 
   /** required disco features for video call */
   reqVideoFeatures : ['urn:xmpp:jingle:apps:rtp:video', 'urn:xmpp:jingle:apps:rtp:audio',
@@ -1220,8 +1220,8 @@ jsxc.mmstream = {
 
     var self = jsxc.mmstream;
 
-    console.log("MMStream on XMPP event");
-    console.log(ev, jid);
+    // console.log("MMStream on XMPP event");
+    // console.log(ev, jid);
 
     if (jid) {
       self.gui._updateIcon(jsxc.jidToBid(jid));
