@@ -114,29 +114,124 @@ $(function() {
    */
   if (window.jsxcConnexionCredentials) {
 
+    /**
+     * Custom module of API which will be included in JSXC API
+     *
+     * All promises are Jquery promises, in accordance with all JSXC
+     *
+     */
     var SilverpeasCustomModule = {
 
       /**
-       * Open a chat window by user id
+       * Credential which must be stored in page
+       */
+      credentials : window.jsxcConnexionCredentials,
+
+      /**
+       * Return a node from Silverpeas login and id
+       * @private
+       */
+      _getNodeFormLoginAndId : function(login, id) {
+
+        if (typeof id === "undefined") {
+          throw "id must be defined: " + id;
+        }
+
+        if (typeof login === "undefined") {
+          throw "domain must be defined: " + login;
+        }
+
+        // all jids must absolutely be in lowercase
+        return (login + "_id" + id).toLocaleLowerCase();
+      },
+
+      /**
+       * Return a promise containing a node Jabber id from a Silverpeas id
+       * @param id
+       * @returns {string}
+       */
+      _getNodeFromSilverpeasId : function(silverpeasId) {
+
+        var self = this;
+
+        // check arguments
+        if (typeof silverpeasId === "undefined") {
+          throw "id must be defined: " + id;
+        }
+
+        var defer = $.Deferred();
+
+        // retrieve user by id
+        User.get(silverpeasId)
+
+            .then(function(data) {
+
+              if (self.debug === true) {
+                console.log("_getNodeFromSilverpeasId");
+                console.log(data);
+              }
+
+              defer.resolve(self._getNodeFormLoginAndId(data.login, data.id));
+
+            }, function(error) {
+              console.error("_getNodeFromSilverpeasId");
+              console.error(error);
+
+              defer.reject("Error while retrieving user: " + error);
+            });
+
+        return defer.promise();
+      },
+
+      /**
+       * Return a bare Jabber id from a Silverpeas id
+       * @param silverpeasId
+       * @returns {*}
+       * @private
+       */
+      _getJidFromSilverpeasId : function(silverpeasId) {
+
+        var cred = this.credentials;
+
+        var defer = $.Deferred();
+
+        // retrieve
+        this._getNodeFromSilverpeasId(silverpeasId)
+
+            .then(function(node) {
+              defer.resolve(node + "@" + cred.xmppDomain);
+            })
+
+            .fail(function(error) {
+
+              console.error("Error while retrieving user login");
+              console.error(error);
+
+              defer.reject(error);
+            });
+
+        return defer.promise();
+      },
+
+      /**
+       * Open a chat window by Silverpeas user id
        * @param userId
        */
-      openChatWindowById : function(userId) {
+      openChatWindowById : function(silverpeasId) {
 
-        // credential should be stored on page
-        var cred = window.jsxcConnexionCredentials;
-        var context = cred.silverpeasContext;
+        // get jid from silverpeas id
+        this._getJidFromSilverpeasId(silverpeasId)
 
-        User.get(userId).then(function(data) {
-          jsxc.api.openChatWindow(data.login + "@" + cred.xmppDomain);
-        })
+            .then(function(jid) {
+              jsxc.api.openChatWindow(jid);
+            })
 
             .fail(function(error) {
               console.error("Error while retrieving user login");
-              console.error(data);
+              console.error(error);
 
               jsxc.api.feedback("Erreur lors de l'ouverture de la fenêtre de discussion");
             });
-
       },
 
       /**
@@ -144,7 +239,7 @@ $(function() {
        */
       connect : function() {
         // credential should be stored on page
-        var cred = window.jsxcConnexionCredentials;
+        var cred = this.credentials;
 
         // get bare jid
         var jid = cred.userLogin.toLowerCase() + "@" + cred.xmppDomain;
@@ -161,8 +256,10 @@ $(function() {
       inviteUser : function(login) {
 
         // credential should be stored on page
-        var cred = window.jsxcConnexionCredentials;
+        var cred = this.credentials;
         var context = cred.silverpeasContext;
+
+        var defer = $.Deferred();
 
         $.getJSON(context + "/InvitationJSON", {
           IEFix : new Date().getTime(),
@@ -172,11 +269,18 @@ $(function() {
           TargetUserDomainId : cred.userDomainId
         }, function(data) {
 
+          if (data.success) {
+            defer.resolve(data);
+          }
+
           if (!data.success) {
+            defer.reject(data);
             jsxc.api.feedback("Erreur lors de l'invitation de l'utilisateur");
           }
 
         });
+
+        return defer.promise();
 
       }
 
@@ -209,13 +313,13 @@ $(function() {
         console.log("onBuddyAccepted");
         console.log(buddyBJid);
       },
-      
+
     };
 
     jsxc.api.registerCallbacks(SilverpeasCallbackSet);
 
     // credential must be stored on page
-    var cred = window.jsxcConnexionCredentials;
+    var cred = SilverpeasCustomModule.credentials;
 
     /** Correction JSXC Options */
     options.xmpp.url = cred.httpBindUrl;

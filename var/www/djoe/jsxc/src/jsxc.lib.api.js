@@ -136,28 +136,39 @@ jsxc.api = {
   },
 
   /**
-   * Open chat window bound to the specified login
+   * Open chat window bound to the specified jid
    *
-   * login can be a jid node or a bare jid
+   * Jid can be a full jid or a bare jid
    *
    * @param login
    */
   openChatWindow : function(jid) {
 
     var self = jsxc.api;
+    var bid = Strophe.getBareJidFromJid(jid);
 
     self.checkConnectedOrThrow();
 
-    jid = Strophe.getBareJidFromJid(jid);
+    // if user isn't in buddylist, create a buddy list entry
+    // with no suscription
+    if (self.getBuddyList().indexOf(jid) < 0) {
 
-    // check if jid is a buddy
-    if (self.getBuddyList().indexOf(jid) > -1) {
-      jsxc.gui.window.open(jid);
+      jsxc.storage.setUserItem('buddy', bid, {
+        jid: jid,
+        name: '',
+        status: 0,
+        sub: 'none',
+        msgstate: 0,
+        transferReq: -1,
+        trust: false,
+        œ: null,
+        res: [],
+        type: 'chat'
+      });
     }
 
-    else {
-      self.feedback(Strophe.getNodeFromJid(jid) + " n'est pas dans vos contacts");
-    }
+    // open chat window
+    jsxc.gui.window.open(bid);
 
   },
 
