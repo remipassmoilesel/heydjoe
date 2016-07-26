@@ -22,5 +22,6 @@ opt/silverpeas-6.0-SNAPSHOT-wildfly10/export-vars.sh
 opt/silverpeas-6.0-SNAPSHOT-wildfly10/bin/settings.gradle
 opt/silverpeas-6.0-SNAPSHOT-wildfly10/configuration/config.properties
 opt/silverpeas-6.0-SNAPSHOT-wildfly10/configuration/silverpeas/CustomerSettings.xml
+opt/silverpeas-6.0-SNAPSHOT-wildfly10/properties/org/silverpeas/authentication/settings/authenticationSettings.properties
 
 opt/etherpad-lite/settings.json
