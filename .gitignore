@@ -1,14 +1,17 @@
 .idea/
+
 *.pem
-etc/ssl/*
-opt/openfire/resources/security/*
-memos
-var/www/djoe/jsxc/dev/*
-var/www/djoe/jsxc/build/*
 node_modules
 bower_components
+
+etc/ssl/*
+opt/openfire/resources/security/*
+memos/
+
+var/www/djoe/jsxc/dev/
+var/www/djoe/jsxc/build/
 var/www/djoe/playground/
-var/www/djoe/stats-module/*
+var/www/djoe/stats-module/
 var/www/djoe/jsxc/tmp/
 var/www/djoe/jsxc.original/
 
