@@ -1,9 +1,7 @@
 {
   "name": "djoe",
-  "version": "1.0",
+  "version": "1.0.0",
   "description": "Real-time communication app",
-  "homepage": "http://www.jsxc.org/",
-  "bugs": "https://github.com/jsxc/jsxc/issues",
   "license": "GPLv3",
   "author": "",
   "repository": {
