@@ -110,9 +110,18 @@ $(function() {
   };
 
   /**
-   * Silverpeas connexion
+   * Simple initialisation procedure
    */
-  if (window.jsxcConnexionCredentials) {
+  if (!window.jsxcConnexionCredentials) {
+    // initialisation
+    jsxc.init(options);
+  }
+
+
+  /**
+   * Silverpeas initialisation procedure
+   */
+  else {
 
     /**
      * Custom module of API which will be included in JSXC API
@@ -312,7 +321,7 @@ $(function() {
       "onBuddyAccepted" : function(buddyBJid) {
         console.log("onBuddyAccepted");
         console.log(buddyBJid);
-      },
+      }
 
     };
 
@@ -332,10 +341,7 @@ $(function() {
     jsxc.api.Silverpeas.connect();
   }
 
-  else {
-    // initialisation
-    jsxc.init(options);
-  }
+
 
 });
 

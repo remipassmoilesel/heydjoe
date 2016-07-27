@@ -1,7 +1,7 @@
 # Erreurs possibles
 
 * TypeError: elem.getClientRects is not a function
-  Ne pas utiliser une version de Jqueyr supérieure à 2.2. Cette erreur ne provoque 
+  Ne pas utiliser une version de Jquery supérieure à 2.2 sans scripts de transition. Cette erreur ne provoque 
   pas que des problèmes d'affichage, elle gêne le bon fonctionnement de l'application.
 
 * Envoi de message mais pas de réaction du serveur ? Erreurs 503 service unavailable ? Ou erreurs non expliquées juste après connexion:

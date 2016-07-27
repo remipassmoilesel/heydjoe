@@ -9,7 +9,7 @@ var gulp = require('gulp')
 var shell = require('gulp-shell')
 
 gulp.task('get-configuration',
-    shell.task(['rsync -av --files-from=utils/configuration.list im.silverpeas.net:/ .']));
+    shell.task(['rsync -av --files-from=opt/djoe-utils/configuration.list im.silverpeas.net:/ .']));
 
 gulp.task('jsxc-grunt-jsdoc',
     shell.task(['export PATH=$PATH:/opt/nodejs4/bin && cd var/www/djoe/jsxc/ && grunt jsdoc']));

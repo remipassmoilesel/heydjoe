@@ -10,8 +10,11 @@ memos/
 
 var/www/djoe/jsxc/dev/
 var/www/djoe/jsxc/build/
-var/www/djoe/playground/
-var/www/djoe/stats-module/
 var/www/djoe/jsxc/tmp/
 var/www/djoe/jsxc.original/
+
+var/www/djoe/playground/
+var/www/djoe/stats-module/
+var/www/djoe/jquery.eventconsole/
+var/www/djoe/jquery.xmppinspector/
 

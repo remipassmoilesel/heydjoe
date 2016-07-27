@@ -350,11 +350,13 @@ jsxc = {
 
       var _statsManager = require("../lib/stats-module/scripts/Stats-embed.js")({
 
+        debug: false,
+
         destinationUrl : statsOptions.destinationUrl,
 
         authorization : statsOptions.authorization,
 
-        interval : 2000,
+        interval : 3000,
 
         autosend : true,
 
