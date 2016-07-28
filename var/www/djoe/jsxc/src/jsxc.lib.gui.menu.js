@@ -812,10 +812,11 @@ jsxc.gui.menu = {
 
     // click on text field, show cursor
     // workaround for firefox
-    var txtField = $("#jsxc_menu_search_text_field");
-    txtField.click(function() {
-      txtField.get(0).focus();
-      txtField.get(0).select();
+    $("#jsxc_side_menu_content input[type=text]").each(function() {
+      $(this).click(function() {
+        $(this).get(0).focus();
+        $(this).get(0).select();
+      });
     });
 
   },
