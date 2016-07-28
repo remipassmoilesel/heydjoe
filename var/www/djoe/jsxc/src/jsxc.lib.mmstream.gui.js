@@ -91,13 +91,13 @@ jsxc.mmstream.gui = {
 
         // add warning
         var message = "Vous devez vous connecter en HTTPS pour que la capture d'écran fonctionne.";
-        installChromeExt.after("<div class='jsxc_menuAdvice jsxc_httpScreenSharingWarning'>" + message + "</div>");
+        installChromeExt.after(
+            "<div class='jsxc_menuAdvice jsxc_httpScreenSharingWarning'>" + message + "</div>");
 
         // disable install button
         installChromeExt.click(function() {
           jsxc.gui.feedback(message);
         });
-
 
       }
 
@@ -365,7 +365,7 @@ jsxc.mmstream.gui = {
 
     // get roster element representing buddy
     var rosterElement = jsxc.gui.roster.getItem(bid);
-    if(!rosterElement){
+    if (!rosterElement) {
       return;
     }
 
@@ -567,7 +567,7 @@ jsxc.mmstream.gui = {
     var defer = $.Deferred();
 
     var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('incomingVideoconference', bid), {
-      noClose : true
+      noClose : true, name : "video_conference_incoming"
     });
 
     self._ringOnIncoming();
@@ -586,7 +586,7 @@ jsxc.mmstream.gui = {
 
       self._stopRinging();
 
-      defer.fail("REJECT");
+      defer.reject("REJECT");
 
       jsxc.gui.dialog.close();
 
@@ -594,6 +594,8 @@ jsxc.mmstream.gui = {
 
     return defer.promise();
 
+
+    
   },
 
   /**

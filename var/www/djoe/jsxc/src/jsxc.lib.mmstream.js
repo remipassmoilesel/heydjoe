@@ -14,6 +14,12 @@ jsxc.mmstream = {
 
   auto_accept : false,
 
+  XMPP_VIDEOCONFERENCE : {
+    ELEMENT_NAME : "videoconference", STATUS : {
+      INIT : "initiate", ABORT : "abort",
+    }
+  },
+
   /**
    * Waiting time before call after sending invitations. If we call before invitation arrive,
    * videoconference will fail.
@@ -159,146 +165,225 @@ jsxc.mmstream = {
    */
   _onReceived : function(stanza) {
 
-    console.log("");
-    console.log("_onReceived");
-    console.log(stanza);
+    if (jsxc.mmstream.debug) {
+      console.log("");
+      console.log("mmstream _onReceived");
+      console.log($(stanza));
+      console.log("");
+    }
 
     var self = jsxc.mmstream;
 
     // check if stanza is a videoconference invitation
-    var video = $(stanza).find("videoconference");
+    var video = $(stanza).find(self.XMPP_VIDEOCONFERENCE.ELEMENT_NAME);
+
+    var initiator = $(stanza).attr("from");
+
     if (video.length > 0) {
 
-      jsxc.stats.addEvent("jsxc.mmstream.videoconference.invitationReceived");
+      /**
+       * Video conference invitation
+       */
+      if (video.attr("status") === self.XMPP_VIDEOCONFERENCE.STATUS.INIT) {
 
-      var initiator = $(stanza).attr("from");
-      var participants = self._unserializeJidList(video.attr("users") || "");
-      // var message = video.attr("message");
-      // var datetime = video.attr("datetime");
+        jsxc.stats.addEvent("jsxc.mmstream.videoconference.invitationReceived");
 
-      // TODO check if datetime is now - 5 min
+        var participants = self._unserializeJidList(video.attr("users") || "");
+        // var message = video.attr("message");
+        // var datetime = video.attr("datetime");
 
-      // check how many participants
-      if (participants.length < 1) {
-        // stop but keep handler
-        return true;
-      }
+        // TODO check if datetime is now - 5 min
 
-      // add buddies to waiting list to avoid too many notifications
-      self.videoconferenceWaitingBuddies =
-          self.videoconferenceWaitingBuddies.concat(participants, [initiator]);
+        // check how many participants
+        if (participants.length < 1) {
+          // stop but keep handler
+          return true;
+        }
 
-      if (jsxc.mmstream.debug === true) {
-        console.log("");
-        console.log("self.videoconferenceWaitingBuddies");
-        console.log(self.videoconferenceWaitingBuddies);
-      }
+        // add buddies to waiting list to avoid too many notifications
+        self.videoconferenceWaitingBuddies =
+            self.videoconferenceWaitingBuddies.concat(participants, [initiator]);
 
-      // TODO: remove own JID from list
-      // TODO: add message to dialog
-      // TODO: reject all other video conference invitation while user is deciding
+        if (jsxc.mmstream.debug === true) {
+          console.log("");
+          console.log("self.videoconferenceWaitingBuddies");
+          console.log(self.videoconferenceWaitingBuddies);
+        }
 
-      // show dialog
-      self.gui._showIncomingVideoconferenceDialog(Strophe.getNodeFromJid(initiator))
+        // TODO: remove own JID from list
+        // TODO: add message to dialog
+        // TODO: reject all other video conference invitation while user is deciding
 
-      // video conference is accepted
-          .done(function() {
+        // show dialog
+        self.gui._showIncomingVideoconferenceDialog(Strophe.getNodeFromJid(initiator))
 
-            console.error("Video conference accepted");
+        // video conference is accepted
+            .done(function() {
 
-            jsxc.stats.addEvent("jsxc.mmstream.videoconference.accepted");
+              console.error("Video conference accepted");
 
-            // iterate people was waiting
-            var waiting = self.videoconferenceWaitingBuddies;
-            var copy = JSON.parse(JSON.stringify(waiting));
+              jsxc.stats.addEvent("jsxc.mmstream.videoconference.accepted");
 
-            $.each(copy, function(index, element) {
+              // iterate people was waiting
+              var waiting = self.videoconferenceWaitingBuddies;
+              var copy = JSON.parse(JSON.stringify(waiting));
 
-              // work only with participants of this videoconference
-              if (element === initiator || participants.indexOf(element) > -1) {
+              $.each(copy, function(index, element) {
 
-                // accept each buddy who had already called
-                if (typeof self.videoconferenceWaitingSessions[element] !== "undefined") {
+                // work only with participants of this videoconference
+                if (element === initiator || participants.indexOf(element) > -1) {
 
-                  self.videoconferenceWaitingSessions[element].accept();
+                  // accept each buddy who had already called
+                  if (typeof self.videoconferenceWaitingSessions[element] !== "undefined") {
 
-                  if (jsxc.mmstream.debug === true) {
-                    console.log("");
-                    console.log("Session accepted");
-                    console.log(element);
-                    console.log(self.videoconferenceWaitingSessions[element]);
+                    self.videoconferenceWaitingSessions[element].accept();
+
+                    if (jsxc.mmstream.debug === true) {
+                      console.log("");
+                      console.log("Session accepted");
+                      console.log(element);
+                      console.log(self.videoconferenceWaitingSessions[element]);
+                    }
+
+                    delete self.videoconferenceWaitingSessions[element];
                   }
 
-                  delete self.videoconferenceWaitingSessions[element];
-                }
+                  // or store buddy in auto accept list
+                  else {
 
-                // or store buddy in auto accept list
-                else {
+                    if (jsxc.mmstream.debug === true) {
+                      console.error("");
+                      console.error("Waiting for buddy");
+                      console.error(element);
+                    }
 
-                  if (jsxc.mmstream.debug === true) {
-                    console.error("");
-                    console.error("Waiting for buddy");
-                    console.error(element);
+                    self.videoconferenceAcceptedBuddies.push(element);
                   }
 
-                  self.videoconferenceAcceptedBuddies.push(element);
+                  // and remove it from waiting list
+                  waiting.splice(waiting.indexOf(element), 1);
                 }
 
-                // and remove it from waiting list
-                waiting.splice(waiting.indexOf(element), 1);
+              });
+
+              if (jsxc.mmstream.debug === true) {
+                console.log("");
+                console.log("Before call others");
+                console.log("Waiting list");
+                console.log(waiting);
               }
+
+              // TODO: to improve
+              setTimeout(function() {
+
+                // call every participant after our jid to the initator
+                var toCall = participants.concat([initiator]);
+                toCall.sort();
+                toCall = toCall.concat(toCall);
+
+                var ownIndex = toCall.indexOf(self.conn.jid);
+
+                for (var i = ownIndex + 1; i < toCall.length; i++) {
+
+                  // stop if we reach initiator
+                  if (toCall[i] === initiator) {
+                    break;
+                  }
+
+                  // call
+                  self.startVideoCall(toCall[i]);
+
+                }
+
+              }, self.WAIT_BEFORE_CALL);
+
+            })
+
+            // video conference is rejected
+            .fail(function() {
+
+              jsxc.stats.addEvent("jsxc.mmstream.videoconference.decline");
+
+              var invitationId = $(stanza).attr('id');
+              var fulljidArray = participants.concat([initiator]);
+
+              self._declineVideoConference(invitationId, fulljidArray);
+
+              jsxc.gui.feedback("Vidéo conférence rejetée");
 
             });
+      }
 
-            if (jsxc.mmstream.debug === true) {
-              console.log("");
-              console.log("Before call others");
-              console.log("Waiting list");
-              console.log(waiting);
-            }
+      /**
+       * Video conference declined, close all streams
+       */
 
-            // TODO: to improve
-            setTimeout(function() {
+      else if (video.attr("status") === self.XMPP_VIDEOCONFERENCE.STATUS.ABORT) {
 
-              // call every participant after our jid to the initator
-              var toCall = participants.concat([initiator]);
-              toCall.sort();
-              toCall = toCall.concat(toCall);
 
-              var ownIndex = toCall.indexOf(self.conn.jid);
 
-              for (var i = ownIndex + 1; i < toCall.length; i++) {
+        // stop local streams
+        self.stopLocalStream();
 
-                // stop if we reach initiator
-                if (toCall[i] === initiator) {
-                  break;
-                }
+        // stop all distants streams
+        $.each(self.remoteVideoSessions, function(index, element) {
+          self._stopStream(element.stream);
+        });
 
-                // call
-                self.startVideoCall(toCall[i]);
+        // clear caches
+        self.remoteVideoSessions = {};
+        self.videoconferenceWaitingSessions = {};
+        self.videoconferenceAcceptedBuddies = [];
 
-              }
+        // close dialog if needed
+        jsxc.gui.dialog.close('video_conference_incoming');
 
-            }, self.WAIT_BEFORE_CALL);
+        // show toast
+        jsxc.gui.feedback(
+            "La videoconférence à été annulée par " + Strophe.getNodeFromJid(initiator));
 
-          })
-
-          // video conference is rejected
-          .fail(function() {
-
-            jsxc.stats.addEvent("jsxc.mmstream.videoconference.decline");
-
-            jsxc.gui.feedback("Vidéo conférence rejetée");
-
-            // TODO: empty buddy waiting list
-            // TODO: empty session waiting list
-
-          });
+      }
 
     }
 
     // keep handler
     return true;
+
+  },
+
+  /**
+   * Send at each participant a message that indicate videoconference is aborted.
+   *
+   * @param invitationId
+   * @param fulljidArray
+   * @private
+   */
+  _declineVideoConference : function(invitationId, fulljidArray) {
+
+    var self = jsxc.mmstream;
+
+    var msg = $msg({
+      from : self.conn.jid
+    })
+        .c("videoconference", {
+
+          users : fulljidArray.join(","),
+
+          status : self.XMPP_VIDEOCONFERENCE.STATUS.ABORT,
+
+          id : invitationId,
+
+          message : "Vidéoconférence annulée par " + Strophe.getNodeFromJid(self.conn.jid)
+
+        });
+
+    // send decline to everybody
+    $.each(fulljidArray, function(index, element) {
+
+      var adressedMessage = $(msg.toString()).attr("to", element);
+      self.conn.send(adressedMessage);
+
+    });
 
   },
 
@@ -316,11 +401,11 @@ jsxc.mmstream = {
    * @param message
    * @returns {*}
    */
-  _sendVideoconferenceInvitation : function(fulljidArray, message) {
+  _sendVideoconferenceInvitations : function(fulljidArray, message) {
 
     if (jsxc.mmstream.debug === true) {
       console.log("");
-      console.log("_sendVideoconferenceInvitation");
+      console.log("_sendVideoconferenceInvitations");
       console.log(fulljidArray, message);
     }
 
@@ -348,6 +433,8 @@ jsxc.mmstream = {
         .c("videoconference", {
 
           users : fulljidArray.join(","),
+
+          status : self.XMPP_VIDEOCONFERENCE.STATUS.INIT,
 
           datetime : new Date().toString(),
 
@@ -392,7 +479,7 @@ jsxc.mmstream = {
 
     // send an invitation to each participant
     try {
-      self._sendVideoconferenceInvitation(fulljidArray, message);
+      self._sendVideoconferenceInvitations(fulljidArray, message);
 
       jsxc.gui.feedback("La vidéoconférence va bientôt commencer ...");
 
