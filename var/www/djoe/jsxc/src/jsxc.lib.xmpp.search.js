@@ -148,7 +148,7 @@ jsxc.xmpp.search = {
 
     // request have already done
     if (self._searchDefers[terms]) {
-      jsxc.debug("Search: return cached results");
+      jsxc.debug("Search: return cached request");
       return self._searchDefers[terms].promise();
     }
 
@@ -177,7 +177,7 @@ jsxc.xmpp.search = {
         // successful request
         function(stanza) {
 
-          jsxc.debug("Search: return fresh results");
+          jsxc.debug("Search: return fresh request");
 
           // error while retieving users
           if ($(stanza).find("error").length > 0) {
