@@ -608,10 +608,10 @@ jsxc.storage = {
     },
 
     /**
-     * Return the local list of buddies, in the form of bare JID
-     *
-     * <p> Sometimes buddies are stocked in form of "node", "node@domain", ...
-     *
+     * Return an array of buddies (bare JIDs)
+     * 
+     * <p> /!\ Some JIDs may not be really buddy (no presence suscribing, ...)
+     * 
      */
     getLocaleBuddyListBJID: function () {
 
@@ -622,5 +622,5 @@ jsxc.storage = {
         });
 
         return output;
-    },
+    }
 };
