@@ -353,12 +353,18 @@ jsxc.mmstream.gui = {
 
     // search available ressource
     var fulljid = jsxc.getCurrentActiveJidForBid(bid);
+    var budDatas = jsxc.storage.getUserItem("buddy", bid);
 
-    var bud = jsxc.gui.roster.getItem(bid);
-    var videoLink = bud.find('.jsxc_videocall');
+    // get roster element representing buddy
+    var rosterElement = jsxc.gui.roster.getItem(bid);
+    if(!rosterElement){
+      return;
+    }
 
-    // no ressource available
-    if (fulljid !== null) {
+    var videoLink = rosterElement.find('.jsxc_videocall');
+
+    // check ressource and status
+    if (fulljid !== null && budDatas.status && budDatas.status > 0) {
 
       videoLink.css("text-decoration", "underline");
 
@@ -404,12 +410,13 @@ jsxc.mmstream.gui = {
     var win = jsxc.gui.window.get(bid);
 
     var fulljid = jsxc.getCurrentActiveJidForBid(bid);
+    var budDatas = jsxc.storage.getUserItem("buddy", bid);
 
     // get the video icon
     var el = win.find('.jsxc_video');
     el.off('click');
 
-    if (fulljid !== null) {
+    if (fulljid !== null && budDatas.status && budDatas.status > 0) {
 
       el.click(function() {
         mmstream.startVideoCall(fulljid);

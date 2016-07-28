@@ -267,6 +267,7 @@ jsxc.gui.menu = {
            * Get full jid of people to call
            */
           var toCall = [];
+          var errorHappen = false;
 
           $.each(selItems, function() {
 
@@ -274,28 +275,31 @@ jsxc.gui.menu = {
             var bid = $(this).data("userjid");
 
             var fulljid = jsxc.getCurrentActiveJidForBid(bid);
+            var budDatas = jsxc.storage.getUserItem("buddy", bid);
 
-            // no ressource available
-            if (fulljid === null) {
+            // check resource and connection
+            if (fulljid !== null && budDatas.status && budDatas.status > 0) {
+              toCall.push(fulljid);
+            }
+
+            else {
 
               var node = Strophe.getNodeFromJid(bid);
 
               jsxc.error("Invalid buddy for video call", bid);
-
               jsxc.gui.feedback("Impossible de contacter " + node +
-                  ". Vérifiez votre contact est bien connecté et rafraichissez la page.");
+                  ". Vérifiez que votre contact est bien connecté et rafraichissez la page " +
+                  "si le problème persiste.");
+
+              errorHappen = true;
 
               // stop loop
               return false;
             }
 
-            else {
-              toCall.push(fulljid);
-            }
-
           });
 
-          return toCall;
+          return errorHappen ? null : toCall;
         };
 
         // create video conference
