@@ -669,24 +669,37 @@ jsxc.xmpp = {
      */
     jsxc.debug('onPresence', presence);
 
+    // presence type
     var ptype = $(presence).attr('type');
+
+    // possible fulljid of sender
     var from = $(presence).attr('from');
 
     // full jid of presence from
     // /!\ May be not a full jid
     var jid = from.toLowerCase();
 
+    // ressource of sender
     var r = Strophe.getResourceFromJid(from);
     var bid = jsxc.jidToBid(jid);
+
+    // data on buddy will be stored on browser
     var data = jsxc.storage.getUserItem('buddy', bid) || {};
+
+    // array of ressources that is stored on browser
+    // ressources can be connected or not
     var res = jsxc.storage.getUserItem('res', bid) || {};
     var status = null;
     var xVCard = $(presence).find('x[xmlns="vcard-temp:x:update"]');
 
     // ignore own presence
-    if (bid === Strophe.getBareJidFromJid(jsxc.storage.getItem("jid"))) {
+    if (bid === Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid)) {
       return true;
     }
+
+    /**
+     * Check presence type
+     */
 
     // ignore error presences
     if (ptype === 'error') {
@@ -694,7 +707,6 @@ jsxc.xmpp = {
 
       var error = $(presence).find('error');
 
-      //@TODO display error message
       jsxc.error(
           '[XMPP] ' + error.attr('code') + ' ' + error.find(">:first-child").prop('tagName'));
       return true;
@@ -739,80 +751,73 @@ jsxc.xmpp = {
       }
     }
 
-    // delete resource if buddy disconnecting
-    if (status === 0) {
-      delete res[r];
-    }
-    // or create/modify resource status
-    else if (r !== "" && r !== "null") {
-      res[r] = status;
-    }
+    /**
+     * Reorganize client resources
+     *
+     * Resources represent possible several XMPP clients attached to one account
+     * The most recent connected resource must appear in priority
+     * because even if a client is supposed to signal his disconnection,
+     * it may not happen
+     */
 
-    // This code seems to order resources by highest status value (from offline 0 to online 5)
-    // But when a buddy is disconnecting, his status do not change every time, sometimes it stay at
-    // 5 so now the last resource stored in "buddy" entry will be at first position
-
-    // var maxVal = [];
-    // var max = 0, prop = null;
-    // for (prop in res) {
-    //   if (res.hasOwnProperty(prop) && prop != "null") {
-    //     if (max <= res[prop]) {
-    //       if (max !== res[prop]) {
-    //         maxVal = [];
-    //         max = res[prop];
-    //       }
-    //       maxVal.push(prop);
-    //     }
-    //   }
-    // }
-
-    // reorganize resources
+    // add current resource to resource array
+    res[r] = status;
 
     // max status will be stored in buddy entry and will represent buddy status
     var maxStatus = 0;
 
-    // resource array will be stored in buddy entry, with at first position the most recent resource
-    var resArray = [];
+    // create an resource array sorted by status
+    // will be stored in buddy entry, with at first position the most recent connected resource
+    var sortedRes = [];
     $.each(res, function(resource, status) {
 
-      // remove possible "null" resources
-      if (resource === null || resource === "null") {
+      // remove unneeded resources: "null", null, 'offline', ...
+      if (resource === null || resource === "null" || status === 0) {
         delete res[resource];
         return true;
       }
 
-      // get max status
+      // store max status
       if (status > maxStatus) {
         maxStatus = status;
       }
 
-      // create an array of resource to store it in buddy entry
+      // populate the resource array
       if (resource !== r) {
-        resArray.push(resource);
+        sortedRes.push(resource);
       }
     });
 
-    // put the last received ressource on first index
-    resArray.unshift(r);
+    // last resource on first index, only if status is not offline
+    if(status !== 0){
+      sortedRes.unshift(r);
+    }
 
+    data.res = sortedRes;
+
+    // notify is buddy has come online
     if (data.status === 0 && maxStatus > 0) {
-      // buddy has come online
       jsxc.notification.notify({
         title : data.name, msg : jsxc.t('has_come_online'), source : bid
       });
     }
 
+    // change status of stored data
     if (data.type === 'groupchat') {
       data.status = status;
     } else {
       data.status = maxStatus;
     }
 
-    data.res = resArray;
-
     // change jid only if necessary
-    if (r !== "" && r !== null && r !== "null") {
+    if (r !== null && r !== "null" && r.length > 1 && status !== 0) {
+
       data.jid = jid;
+
+      if (jsxc.gui.window.get(bid).length > 0) {
+        jsxc.gui.window.get(bid).data('jid', jid);
+      }
+
     }
 
     // Looking for avatar
@@ -823,11 +828,6 @@ jsxc.xmpp = {
         jsxc.storage.removeUserItem('avatar', data.avatar);
         data.avatar = photo.text();
       }
-    }
-
-    // Reset jid
-    if (jsxc.gui.window.get(bid).length > 0) {
-      jsxc.gui.window.get(bid).data('jid', jid);
     }
 
     jsxc.storage.setUserItem('buddy', bid, data);
