@@ -9,12 +9,16 @@ Functionnalities:
 * Screen sharing from one to another user, or to multiple users
 
 Working with:
-* JSXC: An XMPP client, improved to correspond to the wole system
-* Openfire: A free XMPP server
-* RFC-5766 TURN Server: A free server to handle media streams
-* Etherpad: A collaborative editing solution
+* [JSXC](https://www.jsxc.org/): An XMPP client, improved to correspond to the wole system
+* [Openfire](https://www.igniterealtime.org/projects/openfire/): A free XMPP server
+* [RFC-5766 TURN Server](https://github.com/coturn/rfc5766-turn-server): A free server to handle media streams
+* [Etherpad](http://etherpad.org/): A collaborative editing solution
 
-To see more check the `documentation/` folder.
+Nothing would have been possible without these incredible projects !
+
+Thanks to [webrtc-experiment.com](https://www.webrtc-experiment.com/) too.
+
+To know more check the `documentation/` folder.
     
 Docker file will be updated ASAP :)
 
