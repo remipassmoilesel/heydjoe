@@ -84,6 +84,8 @@ jsxc.mmstream.gui = {
       // we are not in HTTPS
       else {
 
+        console.log($("#jsxc_menuConversation .jsxc_httpScreenSharingWarning"));
+
         // remove existing warnings
         $("#jsxc_menuConversation .jsxc_httpScreenSharingWarning").remove();
 

@@ -1559,6 +1559,8 @@ jsxc.gui.roster = {
    */
   init : function() {
 
+    jsxc.debug("Roster init");
+
     // adding roster skeleton to body, or other choosen element
     $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('roster')));
 

@@ -453,12 +453,17 @@ jsxc.gui.menu = {
    */
   init : function() {
 
+    jsxc.debug("Menu init");
+
     var self = jsxc.gui.menu;
 
     // disable text selection
     $("#jsxc_side_menu").disableSelection();
 
     var menuRoot = $("#jsxc_side_menu_content");
+
+    // clear menu root
+    menuRoot.empty();
 
     // initializing elements
     for (var prop in this.elements) {
