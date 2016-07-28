@@ -761,7 +761,9 @@ jsxc.xmpp = {
      */
 
     // add current resource to resource array
-    res[r] = status;
+    if (r !== null && r !== "null" && status !== 0) {
+      res[r] = status;
+    }
 
     // max status will be stored in buddy entry and will represent buddy status
     var maxStatus = 0;
@@ -789,7 +791,7 @@ jsxc.xmpp = {
     });
 
     // last resource on first index, only if status is not offline
-    if(status !== 0){
+    if (status !== 0) {
       sortedRes.unshift(r);
     }
 
