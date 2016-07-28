@@ -84,13 +84,19 @@ jsxc.mmstream.gui = {
       // we are not in HTTPS
       else {
 
-        var message = "Vous devez vous connecter en HTTPS pour la capture fonctionne.";
+        // remove existing warnings
+        $("#jsxc_menuConversation .jsxc_httpScreenSharingWarning").remove();
 
+        // add warning
+        var message = "Vous devez vous connecter en HTTPS pour que la capture d'écran fonctionne.";
+        installChromeExt.after("<div class='jsxc_menuAdvice jsxc_httpScreenSharingWarning'>" + message + "</div>");
+
+        // disable install button
         installChromeExt.click(function() {
           jsxc.gui.feedback(message);
         });
 
-        installChromeExt.after("<div class='jsxc_menuAdvice'>" + message + "</div>");
+
       }
 
     }
