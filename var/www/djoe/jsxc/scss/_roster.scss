@@ -359,11 +359,13 @@
 
 #jsxc_notice {
 
-  padding: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
 
   ul {
     padding-left: 0px;
     margin: 10px;
+    list-style: none;
   }
 
   li {
