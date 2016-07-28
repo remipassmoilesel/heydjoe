@@ -129,7 +129,6 @@ jsxc = {
     var fulljid = null;
 
     var buddy = jsxc.storage.getUserItem('buddy', bid);
-    console.log(buddy);
 
     // jid is present in buddy entrie, return it
     if (buddy && buddy.jid && Strophe.getResourceFromJid(buddy.jid) !== null) {
