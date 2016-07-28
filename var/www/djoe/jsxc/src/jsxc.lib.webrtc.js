@@ -1159,7 +1159,7 @@ $.extend(jsxc.CONST, {
   KEYCODE_ENTER : 13, KEYCODE_ESC : 27
 });
 
-$(document).ready(function() {
+$(function() {
   if (jsxc.multimediaStreamSystem && jsxc.multimediaStreamSystem === "original") {
     $(document).on('init.window.jsxc', jsxc.webrtc.initWindow);
     $(document).on('attached.jsxc', jsxc.webrtc.init);

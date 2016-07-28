@@ -1281,7 +1281,7 @@ jsxc.mmstream = {
 
 };
 
-$(document).ready(function() {
+$(function() {
   if (jsxc.multimediaStreamSystem && jsxc.multimediaStreamSystem === "multistream") {
 
     var self = jsxc.mmstream;
