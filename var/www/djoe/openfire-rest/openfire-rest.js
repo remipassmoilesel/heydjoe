@@ -26,10 +26,10 @@ $(document).ready(function() {
   // ]);
 
   // delete all chatrooms
-  // orest.deleteAllChatrooms();
+  orest.deleteAllChatrooms();
 
   // delete all users
-  // orest.deleteAllUsers();
+  orest.deleteAllUsers();
 
   // Delete dummy users
   //orest.deleteDummies("dummy", 20);
@@ -53,10 +53,13 @@ var orest = {
     orest.asyncRequest('GET', "/users", undefined, {"Accept" : "application/json"}, false)
         .done(function(response) {
 
+          console.log("Users will be deleted: ");
+          console.log(response);
+
           // iterate rooms
           $.each(response.user, function(index, item) {
 
-            if(item.username !== "admin"){
+            if(item && item.username && item.username !== "admin"){
               // delete room
               orest.asyncRequest('DELETE', "/users/" + item.username);
             }
