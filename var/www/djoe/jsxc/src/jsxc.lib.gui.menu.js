@@ -443,6 +443,10 @@ jsxc.gui.menu = {
           jsxc.gui.showAboutDialog();
         });
 
+        $('#jsxc_menuSettings .jsxc_spaceInvasion').click(function(){
+          jsxc.help.spaceInvasion();
+        });
+
       },
     },
 

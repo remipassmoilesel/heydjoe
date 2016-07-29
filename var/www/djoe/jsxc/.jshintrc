@@ -36,6 +36,9 @@
     "setupRTC": true,
     "SDPUtil": true,
     "getSelection": true,
+    "sprites": true,
+    "startGame": true,
+    "Game": true,
     "Shepherd": true
   }
 }
