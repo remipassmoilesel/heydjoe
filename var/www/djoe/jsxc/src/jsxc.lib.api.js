@@ -147,7 +147,7 @@ jsxc.api = {
     var self = jsxc.api;
     var bid = Strophe.getBareJidFromJid(jid);
 
-    self.checkConnectedOrThrow();
+    self.checkIfConnectedOrThrow();
 
     // if user isn't in buddylist, create a buddy list entry
     // with no suscription
@@ -186,7 +186,7 @@ jsxc.api = {
   /**
    * Check if we are connected, if not show feedback, open roster and throw exception
    */
-  checkConnectedOrThrow: function(){
+  checkIfConnectedOrThrow: function(){
 
     var self = jsxc.api;
 

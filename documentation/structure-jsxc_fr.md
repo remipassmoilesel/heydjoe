@@ -8,7 +8,7 @@ Structure du dossier: `var/www/djoe/jsxc/src/`:
 
         src
         ├── jsxc_init.js
-        |                   Un exemple de procédure d'initialisation de JSXC.
+        |                    Un exemple de procédure d'initialisation de JSXC.
         |
         ├── jsxc.intro.js
         |                    Déclaration du bloc JSXC. 

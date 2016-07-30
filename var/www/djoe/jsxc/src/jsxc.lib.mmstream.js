@@ -373,6 +373,8 @@ jsxc.mmstream = {
 
           id : invitationId,
 
+          datetime : new Date().toISOString().slice(0, 19).replace('T', ' '),
+
           message : "Vidéoconférence annulée par " + Strophe.getNodeFromJid(self.conn.jid)
 
         });
@@ -436,7 +438,7 @@ jsxc.mmstream = {
 
           status : self.XMPP_VIDEOCONFERENCE.STATUS.INIT,
 
-          datetime : new Date().toString(),
+          datetime : new Date().toISOString().slice(0, 19).replace('T', ' '),
 
           message : message || ''
 

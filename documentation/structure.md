@@ -2,7 +2,7 @@
 
 Djoe is an instant communication system comprising several systems using multiple protocols.
 
-Most interactions are made through the customer JSXC that has been widely modified for this purpose.
+Most interactions are made through the JSXC client that has been widely modified for this purpose.
 
 
 Structure of the project:

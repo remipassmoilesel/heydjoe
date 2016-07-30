@@ -1,13 +1,13 @@
 # A propos de la vidéoconférence
 
-Le fonctionnement de la vidéo conférence peut paraitre trivial mais permet un fonctionnement simple sans infrastructure supplémentaire que celle nécéssaire aux communications multimédia WebRTC en paire à paire. 
+Le fonctionnement de la vidéo conférence peut paraitre trivial mais permet un fonctionnement simple sans infrastructure supplémentaire autre que celle nécéssaire aux communications multimédia WebRTC en paire à paire. 
 
-Le système de vidéoconférence utilise l'extension Jingle pour établir des sessions multimédia mais ne respecte pas de XEP particulière pour ce qui est des invitations.
+Le système de vidéoconférence utilise l'extension Jingle (XEP 0166) pour établir des sessions multimédia mais ne respecte pas de XEP particulière pour ce qui est des invitations.
 
 Le système de vidéconférence décrit ci-dessous utilise exclusivement des identifiants Jabber complets.
 
 ## Principe
-La vidéoconférence s'effectue en paire à paire entre chacun des clients. Chaque client reçoit une invitation de l'initiateur avec la liste de tous les clients, et détermine quels clients il doit contacter pour que tout le monde reçoive un flux entrée et un flux sortie de chaque client. 
+La vidéoconférence s'effectue en paire à paire entre chacun des clients. Chaque client reçoit une invitation de l'initiateur avec la liste de tous les clients participants, et détermine quels clients il doit contacter pour que tout le monde reçoive un flux entrée et un flux sortie de chaque client. 
 
 Un client qui contacte un autre client initie une session Jingle avec lui, dans le but d'accéder à un flux audio et vidéo distant et de transmette un flux audio et vidéo local.
 
@@ -23,7 +23,7 @@ Exemple de l'utilisateur b@domain/res, qui initie une vidéoconférence avec a@d
 Chaque client doit ensuite:
 
 * créer une liste avec l'initiateur et tous les clients,
-* trier la liste,
+* trier la liste par ordre alphabétique,
 * puis la doubler
 
 Ce qui donne dans notre exemple:
@@ -40,22 +40,22 @@ Ce qui donne dans notre exemple:
         ]
          
 
-A partir de cette liste chaque client peut déterminer quels clients il doit contacter. L'initateur contacte tous les clients, et chaque client doit contacter tous les clients situés après la première occurence de son identifiant et avant la prochaine occurence de l'initateur.
+A partir de cette liste chaque client peut déterminer quels clients il doit contacter. L'initiateur contacte tous les clients, et chaque client doit contacter tous les clients de cette liste situés entre la première occurence du client appelant et la prochaine occurence de l'initateur.
  
 Ce qui donne pour notre exemple la séquence suivante:
  
 1. b@domain/res, l'initiateur, devra contacter `c`, `d` et `a`
 1. c@domain/res devra contacter `d` et `a`
 1. d@domain/res devra contacter `a`
-1. d@domain/res ne doit contacter personne
+1. a@domain/res ne devra contacter personne
 
 ## Initier une vidéoconférence
 
 1. L'initiateur de la vidéoconférence sélectionne une liste d'identifiants Jabber complets
 1. L'initiateur envoi à chacun des clients une invitation avec ces caractéristiques:
 
-    * message: La stance étend "message", à la manière des invitations MUC directes (XEP ##) 
-    * message [from='full@jid/resource']: JID complet de l'utilisateur qui initie la conférence
+    * message: La stance étend "message", à la manière des invitations MUC directes (XEP 0249) 
+    * message [from='full@jid/resource']: JID complet du client qui initie la conférence
     * message [status='initiate']: Indique l'action en cours, le démarrage d'une vidéoconférence
     * message videoconference [users='full@jid/resource,full@jid/resource,...]: la liste des identifiants complets des clients, séparés par une virgule
     * message videoconference [datetime='YYYY-MM-DD HH:MM:SS']: la date de la conférence
@@ -79,17 +79,17 @@ _Exemple de message_:
 
 A la réception d'une invitation à une vidéoconférence:
 
-1. Le client doit stocker la liste des participants pour mettre éventuellement en attente les flux d'autres participants. En effet, des participants sont susceptible d'avoir accepté la conférence en amont. 
+1. Le client doit stocker la liste des participants pour mettre éventuellement en attente les flux d'autres participants. En effet, d'autres participants sont susceptibles d'avoir accepté la conférence auparavant. 
 1. Le client doit proposer une confirmation d'acceptation de participation
 
-Si la vidéoconférence est approuvée:
+**Si la vidéoconférence est approuvée**:
 
 1. Le client doit accepter tous les flux en attente
 1. Le client doit stocker les adresses des participants encore non approuvés pour accepter automatiquement les flux
  
-Si la vidéoconférence est refusée:
+**Si la vidéoconférence est refusée**:
 
-1. Le client doit envoyer une notification d'abandon de la vidéoconférence à chacun des autres participants sous avec les même caractéristique que l'invitation à la différence de:
+1. Le client qui refuse doit envoyer une notification d'abandon de la vidéoconférence à chacun des autres participants avec les même caractéristique que l'invitation sauf:
 
     * message [status='abort']: Indique l'action en cours, l'annulation d'une vidéoconférence
     * message [id='.....']: L'identifiant unique de la vidéo conférence
