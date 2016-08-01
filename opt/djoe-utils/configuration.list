@@ -14,6 +14,7 @@ etc/turnserver.conf
 etc/ssl/
 
 etc/monitorix/monitorix.conf
+etc/default/sslh
 
 opt/openfire/conf/openfire.xml
 opt/openfire/resources/security/
