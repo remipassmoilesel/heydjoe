@@ -186,69 +186,6 @@ jsxc.help = {
       };
     };
 
-  },
-
-  /**
-   *
-   * @private
-   */
-  spaceInvasion : function() {
-
-    var self = jsxc.help;
-
-    var root = jsxc.options.root + "lib/AlienInvasion/";
-
-    // initialize gui only if necessary
-    if (!self._alreadyInitalized || self._alreadyInitalized !== true) {
-
-      self._alreadyInitalized = true;
-
-      // $('head').append('<link rel="stylesheet" href="' + root + 'base.css" type="text/css" />');
-
-      var template = $("<div id='alienInvasionContainer'></div>");
-
-      // hide template for now
-      template.css({display : 'none'});
-
-      // append canvas and script tags
-      template.append("<canvas id='alienInvasionCanvas' width='320' height='480'></canvas>");
-      template.append("<div><a href='https://github.com/cykod/AlienInvasion/' target='_blank'>" +
-          "Thanks to https://github.com/cykod/AlienInvasion/</a></div>");
-      template.append("<script src='" + root + "engine.js'></script><script src='" + root +
-          "game.js'></script>");
-
-      // show dialog
-      $("body").append(template);
-
-      // initialize game
-      setTimeout(function() {
-        Game.initialize("alienInvasionCanvas", sprites, startGame, root);
-      }, 1000);
-
-      // listen opening and closing
-      template.on('dialogopen', function() {
-        template.css({display : 'block'});
-      });
-
-      // listen opening and closing
-      template.on('dialogclose', function() {
-        template.css({display : 'none'});
-      });
-
-    }
-
-    // show dialog
-    $("#alienInvasionContainer").dialog({
-
-      title : "Alien invasion !",
-
-      width : 353,
-
-      height : 550,
-
-      resizable : false
-    });
-
   }
 
 };

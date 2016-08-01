@@ -444,7 +444,7 @@ jsxc.gui.menu = {
         });
 
         $('#jsxc_menuSettings .jsxc_spaceInvasion').click(function(){
-          jsxc.help.spaceInvasion();
+          jsxc.api.spaceInvasion();
         });
 
       },
