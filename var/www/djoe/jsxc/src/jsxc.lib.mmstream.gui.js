@@ -657,6 +657,8 @@ jsxc.mmstream.gui = {
 
     $("#jsxc_dialog .jsxc_closeVideoDialog").click(function() {
       jsxc.gui.dialog.close();
+
+      jsxc.mmstream.gui.toggleVideoPanel(true);
     });
 
     // attach video stream
