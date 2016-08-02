@@ -6223,7 +6223,7 @@
 /* 20 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"lastErrorsContainer\">\n\n  <h2>Last logs</h2>\n\n  <div>Filter by session id / level: <input type=\"text\" ng-model=\"$ctrl.textFilterValue\" ng-keyup=\"$ctrl.filter($event)\" /></div>\n\n  <div style=\"overflow: auto; max-height: 300px\">\n\n    <div ng-repeat=\"(i, val) in $ctrl.displayLogs\">\n      <span><b>{{val.id}}. [{{val.level}}] id{{val.request_from}}</b></span>\n      <span>{{val.text}}</span>\n      <div style=\"margin-left: 25px\"><i>{{(val.data).toString().substring(0,50)}}...</i>\n        <a ng-click=\"$ctrl.log(val.data)\"> ->log()</a></div>\n      <div style=\"margin-left: 25px\"><i>{{val.datetime}}</i></div>\n    </div>\n  </div>\n\n</div>";
+	module.exports = "<div class=\"lastErrorsContainer\">\n\n  <h2>Last logs</h2>\n\n  <div>Filter by session id / level: <input type=\"text\" ng-model=\"$ctrl.textFilterValue\" ng-keyup=\"$ctrl.filter($event)\" /></div>\n\n  <div style=\"overflow: auto; max-height: 300px\">\n\n    <div ng-repeat=\"(i, val) in $ctrl.displayLogs\">\n      <span><b>{{val.id}}. [{{val.level}}] id {{val.request_from}}</b></span>\n      <span>{{val.text}}</span>\n      <div style=\"margin-left: 25px\"><i>{{(val.data).toString().substring(0,50)}}...</i>\n        <a ng-click=\"$ctrl.log(val.data)\"> ->log()</a></div>\n      <div style=\"margin-left: 25px\"><i>{{val.datetime}}</i></div>\n    </div>\n  </div>\n\n</div>";
 
 /***/ },
 /* 21 */
