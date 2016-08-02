@@ -1147,8 +1147,9 @@ jsxc.muc = {
       jsxc.stats.addEvent("jsxc.muc.invitation.sent");
 
       self.conn.muc.directInvite(room, jid,
-          "Vous êtes invité aux chateau de Versaaaaaaiiiillles !");
+          "Vous êtes invité à rejoindre une voncersation");
     });
+    
   },
 
   /**
@@ -1375,6 +1376,9 @@ jsxc.muc = {
         bid : room, direction : jsxc.Message.SYS, msg : jsxc.t('message_not_send')
       });
     }
+
+    //20160802131112895_margaret_ellis@conference.im.silverpeas.net/margaret_ellis
+    //20160802131112895_margaret_ellis@conference.im.silverpeas.net/margaret_ellis
 
     jsxc.debug('[muc] error message for ' + room, $(message).find('error')[0]);
 

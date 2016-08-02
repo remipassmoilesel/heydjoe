@@ -180,16 +180,16 @@ jsxc.mmstream = {
 
     var self = jsxc.mmstream;
 
-    if (jsxc.mmstream.debug) {
-      self._log("_onReceived", stanza);
-    }
-
     // check if stanza is a videoconference invitation
     var video = $(stanza).find(self.XMPP_VIDEOCONFERENCE.ELEMENT_NAME);
 
     var initiator = $(stanza).attr("from");
 
     if (video.length > 0) {
+
+      if (jsxc.mmstream.debug) {
+        self._log("_onReceived", stanza);
+      }
 
       /**
        * Video conference invitation

@@ -120,8 +120,7 @@ jsxc = {
   /**
    * Return the last fulljid received or null if no full jid is stored
    *
-   *
-   * Can update the jid
+   * Update eventually the storage with the last full jid
    *
    */
   getCurrentActiveJidForBid : function(bid) {
@@ -129,6 +128,10 @@ jsxc = {
     var fulljid = null;
 
     var buddy = jsxc.storage.getUserItem('buddy', bid);
+
+    if(buddy.type && buddy.type === "groupchat"){
+      throw "Cannot update groupchat resource";
+    }
 
     // jid is present in buddy entrie, return it
     if (buddy && buddy.jid && Strophe.getResourceFromJid(buddy.jid) !== null) {

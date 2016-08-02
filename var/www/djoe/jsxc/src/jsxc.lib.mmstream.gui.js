@@ -293,7 +293,7 @@ jsxc.mmstream.gui = {
    * Add "video" button to a window chat menu when open.
    *
    * @private
-   * @memberOf jsxc.mmstream
+   * @memberOf jsxc.mmstream.gui
    * @param event
    * @param win jQuery window object
    */
@@ -367,8 +367,18 @@ jsxc.mmstream.gui = {
     self._log('Update link', bid);
 
     // search available ressource
-    var fulljid = jsxc.getCurrentActiveJidForBid(bid);
     var budDatas = jsxc.storage.getUserItem("buddy", bid);
+
+    /*
+     /!\ /!\ Do not update group chat
+     If updating group chat here, keep in mind that method
+     jsxc.getCurrentActiveJidForBid(bid); will modify groupchat jid
+     */
+    if(budDatas.type === "groupchat"){
+      return;
+    }
+
+    var fulljid = jsxc.getCurrentActiveJidForBid(bid);
 
     // get roster element representing buddy
     var rosterElement = jsxc.gui.roster.getItem(bid);
@@ -424,6 +434,16 @@ jsxc.mmstream.gui = {
     }
 
     var win = jsxc.gui.window.get(bid);
+
+    
+    /*
+     /!\ /!\ Do not update group chat window
+     If updating chat window here, keep in mind that method
+     jsxc.getCurrentActiveJidForBid(bid); will modify groupchat jid
+     */
+    if (win.hasClass('jsxc_groupchat')) {
+      return;
+    }
 
     var fulljid = jsxc.getCurrentActiveJidForBid(bid);
     var budDatas = jsxc.storage.getUserItem("buddy", bid);
