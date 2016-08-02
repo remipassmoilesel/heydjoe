@@ -941,7 +941,24 @@ jsxc.mmstream = {
     }
 
     var constraints = {
-      audio : true, video : true
+      
+      audio : true,
+
+      "video" : {
+        "mandatory" : {
+
+          "minWidth" : 320,
+          "maxWidth" : 640,
+
+          "minHeight" : 180,
+          "maxHeight" : 480,
+
+          "minFrameRate" : 10,
+          "maxFrameRate" : 20
+
+        }, "optional" : []
+      }
+
     };
 
     // require local stream
