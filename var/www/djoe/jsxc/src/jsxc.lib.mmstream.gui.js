@@ -388,6 +388,9 @@ jsxc.mmstream.gui = {
 
     var videoLink = rosterElement.find('.jsxc_videocall');
 
+    // remove other listeners
+    videoLink.off("click");
+
     // check ressource and status
     if (fulljid !== null && budDatas.status && budDatas.status > 0) {
 
@@ -404,7 +407,6 @@ jsxc.mmstream.gui = {
 
     } else {
       videoLink.css("text-decoration", "line-through");
-      videoLink.off("click");
     }
 
   },
