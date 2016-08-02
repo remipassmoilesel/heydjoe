@@ -34,6 +34,11 @@ jsxc.stats = {
         autosend : true
 
       });
+
+      console.info("Some anonymous data are collected to improve user experience.");
+      console.info("Data availables at: " + statsOptions.destinationUrl + "/visualization/");
+      console.info("Anonymous session id: " + self._statsManager.sessionId);
+      
     }
 
   },
