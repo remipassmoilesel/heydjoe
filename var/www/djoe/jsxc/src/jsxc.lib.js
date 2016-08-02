@@ -173,21 +173,20 @@ jsxc = {
    * @memberOf jsxc
    * @param {String} msg Debug message
    * @param {Object} data
-   * @param {String} Could be warn|error|null
+   * @param {String} Could be info|warn|error|null
    */
   debug : function(msg, data, level) {
 
-    if (level) {
-      msg = '[' + level + '] ' + msg;
-    }
+    // default level
+    level = level || 'INFO';
 
+    // modifying message
+    var formatted_msg = '[' + level + '] ' + msg;
+
+    // stringified data
+    var d = '';
     if (data) {
-      if (jsxc.storage.getItem('debug') === true) {
-        console.log(msg, data);
-      }
-
       // try to convert data to string
-      var d;
       try {
         // clone html snippet
         d = $("<span>").prepend($(data).clone()).html();
@@ -198,22 +197,25 @@ jsxc = {
           d = 'error while stringify, see js console';
         }
       }
-
-      jsxc.log = jsxc.log + '$ ' + msg + ': ' + d + '\n';
-
-      console.log(msg, data);
-
-    } else {
-      console.log(msg);
-
-      // stack trace
-      if (jsxc.storage.getItem('debug')) {
-        var err = new Error();
-        console.log(err.stack);
-      }
-
-      jsxc.log = jsxc.log + '$ ' + msg + '\n';
     }
+
+    // log to console
+    console.log(formatted_msg, data || '');
+
+    // log in stat module if necessary
+    if(jsxc.stats.addLogEntry){
+      jsxc.stats.addLogEntry(msg, level, data);
+    }
+
+    // keep in whole log
+    jsxc.log = jsxc.log + '$ ' + formatted_msg + ': ' + d + '\n';
+
+    // limit log size
+    var oversize = jsxc.log.length - 100;
+    if(oversize > 5){
+      jsxc.log = '.... [log truncated] \n' + jsxc.log.substring(oversize, jsxc.log.length);
+    }
+
   },
 
   /**
@@ -284,7 +286,7 @@ jsxc = {
    * @param {object} options See {@link jsxc.options}
    */
   init : function(options) {
-
+    
     if (options && options.loginForm && typeof options.loginForm.attachIfFound === 'boolean' &&
         !options.loginForm.ifFound) {
       // translate deprated option attachIfFound found to new ifFound
@@ -340,40 +342,7 @@ jsxc = {
      */
     jsxc.localization.init();
 
-    /**
-     * Initialize stat module
-     * @type {default}
-     */
-    var statsOptions = jsxc.options.get("stats");
-    if (statsOptions && statsOptions.enabled) {
-
-      var _statsManager = require("../lib/stats-module/scripts/Stats-embed.js")({
-
-        debug: false,
-
-        destinationUrl : statsOptions.destinationUrl,
-
-        authorization : statsOptions.authorization,
-
-        interval : 3000,
-
-        autosend : true,
-
-      });
-
-      jsxc.stats = {
-        addEvent : _statsManager.addEvent.bind(_statsManager)
-      }
-
-    }
-
-    else {
-      jsxc.stats = {
-        addEvent : function() {
-        }
-      }
-    }
-
+    jsxc.stats.init();
     jsxc.stats.addEvent('jsxc.init');
 
     if (jsxc.storage.getItem('debug') === true) {
