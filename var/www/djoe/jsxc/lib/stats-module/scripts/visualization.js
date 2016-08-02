@@ -52,11 +52,13 @@
 
 	// load components
 	__webpack_require__(1)(visualizationModule);
+
 	__webpack_require__(4)(visualizationModule);
 	__webpack_require__(11)(visualizationModule);
 	__webpack_require__(13)(visualizationModule);
 	__webpack_require__(15)(visualizationModule);
 	__webpack_require__(17)(visualizationModule);
+	__webpack_require__(19)(visualizationModule);
 
 	$(function() {
 
@@ -72,17 +74,18 @@
 	var conf = __webpack_require__(2);
 
 	module.exports = function(angularMod){
-	  
+
 	  var statService = __webpack_require__(3)({
 	    autosend : false,
 	    destinationUrl : conf.DESTINATION_URL,
-	    authorization : conf.AUTHORIZATION
+	    authorization : conf.AUTHORIZATION,
+	    sendSessionOnStart: false
 	  });
 
 	  angularMod.factory('stats', function() {
 	    return statService;
 	  });
-	  
+
 	};
 
 /***/ },
@@ -155,7 +158,7 @@
 	 * @constructor
 	 */
 
-	var Stats = function(options) {
+	var WebStats = function(options) {
 
 	  if (!options || !options.destinationUrl) {
 	    throw "You must specify destination";
@@ -186,28 +189,55 @@
 	     */
 	    authorization : 'secretkey',
 
+	    /**
+	     * Watch uncaught errors
+	     */
+	    watchErrors: false, 
+	    
+	    
+	    sendSessionOnStart: true
+	    
 	  };
 
 	  this.options = $.extend(defaultOptions, options);
 
-	  this.options.persistenceUrl = options.destinationUrl + "/persist";
+	  if (this.options.debug === true) {
+	    console.log("options");
+	    console.log(this.options);
+	    console.log("");
+	  }
+
+	  this.options.persistEventUrl = options.destinationUrl + "/persist/event";
+	  this.options.persistLogUrl = options.destinationUrl + "/persist/log";
+	  this.options.persistSessionUrl = options.destinationUrl + "/persist/session";
+
 	  this.options.readUrl = options.destinationUrl + "/data";
-	  this.options.sessionUrl = options.destinationUrl + "/session";
 
 	  this.sessionId = "";
 
-	  this.buffer = [];
+	  this.eventBuffer = [];
+	  this.logBuffer = [];
+
+	  var self = this;
 
 	  // send buffer automatically
-	  if (options.autosend === true) {
-
-	    var self = this;
+	  if (this.options.autosend === true) {
 
 	    setInterval(function() {
 	      self.sendDataBuffer();
 	    }, this.options.interval);
 
 	  }
+
+	  // watch uncaught errors
+	  if(this.options.watchErrors === true){
+	    self._watchWindowErrors();
+	  }
+
+	  if(this.options.sendSessionOnStart === true){
+	    this.sendSession();  
+	  }
+	  
 
 	};
 
@@ -216,7 +246,7 @@
 	 * @param id
 	 * @param value
 	 */
-	Stats.prototype.addEvent = function(event, data) {
+	WebStats.prototype.addEvent = function(event, data) {
 
 	  if (this.options.debug === true) {
 	    console.log("addEvent");
@@ -224,7 +254,7 @@
 	    console.log("");
 	  }
 
-	  this.buffer.push({event : event, data : data});
+	  this.eventBuffer.push({event : event, data : data});
 	};
 
 	/**
@@ -233,7 +263,7 @@
 	 * @returns {number}
 	 * @private
 	 */
-	Stats.prototype._hashString = function(string) {
+	WebStats.prototype._hashString = function(string) {
 	  var hash = 0, i, chr, len;
 	  if (string.length === 0) {
 	    return hash;
@@ -249,7 +279,7 @@
 	/**
 	 * Create and store a session id
 	 */
-	Stats.prototype._createSessionId = function() {
+	WebStats.prototype._createSessionId = function() {
 
 	  if (this.sessionId !== "") {
 	    throw "Session id already exist";
@@ -262,14 +292,14 @@
 
 	};
 
-	Stats.prototype._resetSession = function() {
+	WebStats.prototype._resetSession = function() {
 	  this.sessionId = "";
 	};
 
 	/**
-	 * Send sessioninformations
+	 * Send session informations
 	 */
-	Stats.prototype.sendSession = function() {
+	WebStats.prototype.sendSession = function() {
 
 	  var self = this;
 
@@ -291,7 +321,34 @@
 	    'user_agent' : navigator.userAgent || "error"
 	  };
 
-	  return self._makeAjax(self.options.sessionUrl, 'POST', datas);
+	  return self._makeAjax(self.options.persistSessionUrl, 'POST', datas);
+
+	};
+
+	/**
+	 * Watch uncaught errors and log them to distant server
+	 * @private
+	 */
+	WebStats.prototype._watchWindowErrors = function(){
+
+	  if (this.options.debug === true) {
+	    console.log("Watching errors");
+	    console.log("");
+	  }
+
+	  var self = this;
+
+	  // Listen uncaught errors
+	  window.onerror = function (errorMsg, url, lineNumber, columnNumber, error) {
+
+	    self.addLogEntry(errorMsg, "ERROR", {
+	      url: url,
+	      lineNumber: lineNumber,
+	      columnNumber: columnNumber,
+	      error: error
+	    });
+
+	  };
 
 	};
 
@@ -299,78 +356,125 @@
 	 * Send stored events
 	 * @returns {*}
 	 */
-	Stats.prototype.sendDataBuffer = function() {
+	WebStats.prototype.sendDataBuffer = function() {
 
 	  var self = this;
 
-	  if (this.options.debug === true) {
+	  if (self.options.debug === true) {
 	    console.log("sendDataBuffer");
 	    console.trace();
 	  }
 
-	  if (Object.keys(self.buffer).length < 1) {
+	  if (self.eventBuffer.length < 1 && self.logBuffer.length < 1) {
 
-	    if (this.options.debug === true) {
+	    if (self.options.debug === true) {
 	      console.log("__ Empty buffer");
 	    }
 
 	    return;
 	  }
 
-	  if (self.sessionId === "") {
+	  /**
+	   * Check if another sending is in progress
+	   */
+	  if (self._sendingInProgress === true) {
 
-	    if (this.options.debug === true) {
-	      console.log("__ Send session");
+	    if (self.options.debug === true) {
+	      console.log("__ already sending, stop");
 	    }
 
-	    // send session
-	    this.sendSession()
-	        .then(function() {
-	          self._sendDataBuffer();
-
-	          if (self.options.debug === true) {
-	            console.log("__ Session sent");
-	            console.log(arguments);
-	          }
-
-	        })
-	        .fail(function() {
-	          console.error("Fail while sending session");
-	          self._resetSession();
-	        });
+	    return;
 	  }
 
-	  else {
-	    this._sendDataBuffer();
+	  self._sendingInProgress = true;
+
+	  // Reset sending flag
+	  var _sendIsDone = function() {
+	    self._sendingInProgress = false;
+	  };
+
+	  // request are resolved by default
+	  var p1 = $.Deferred().resolve();
+	  var p2 = $.Deferred().resolve();
+
+	  try {
+
+	    // send events if necesary
+	    if (self.eventBuffer.length > 0) {
+
+	      var eventDatas = {
+	        'request_from' : self.sessionId,
+
+	        'datas' : self.eventBuffer
+	      };
+
+	      p1 = self._makeAjax(self.options.persistEventUrl, 'POST', eventDatas)
+
+	          .done(function() {
+	            // clear buffer when finished
+	            self.eventBuffer = [];
+	          })
+
+	          .fail(function() {
+	            console.log("Stats: fail sending event buffer");
+	            console.log(arguments);
+	          });
+
+	    }
+
+	    // send logs if necessary
+	    if (self.logBuffer.length > 0) {
+	      var logDatas = {
+	        'request_from' : self.sessionId,
+
+	        'datas' : self.logBuffer
+	      };
+
+	      p2 = self._makeAjax(self.options.persistLogUrl, 'POST', logDatas)
+
+	          .done(function() {
+	            // clear buffer when finished
+	            self.logBuffer = [];
+	          })
+
+	          .fail(function() {
+	            console.log("WebStats: fail sending log buffer");
+	            console.log(arguments);
+	          });
+	    }
+
+	  } catch (e) {
+	    _sendIsDone();
+	    console.error(e);
 	  }
 
 	  if (this.options.debug === true) {
 	    console.log("");
 	  }
 
+	  return $.when(p1, p2).then(_sendIsDone).fail(_sendIsDone);
 	};
 
-	Stats.prototype._sendDataBuffer = function() {
+	/**
+	 * Add a log entry in buffer.
+	 * Log entry must have a text resume and can have several data arguments.
+	 *
+	 * @param text
+	 */
+	WebStats.prototype.addLogEntry = function(text, level, datas) {
 
-	  var self = this;
+	  level = level || 'INFO';
 
-	  var datas = {
-	    'request_from' : self.sessionId,
+	  var dataStr;
+	  try {
+	    dataStr = JSON.stringify(datas);
+	  } catch (e) {
+	    dataStr = "Error while serializing JSON datas";
+	  }
 
-	    'datas' : self.buffer
-	  };
-
-	  return self._makeAjax(self.options.persistenceUrl, 'POST', datas)
-
-	      .done(function() {
-	        // clear buffer when finished
-	        self.buffer = [];
-	      })
-
-	      .fail(function() {
-	        console.log("Stats: fail sending buffer");
-	        console.log(arguments);
-	      });
+	  this.logBuffer.push({
+	    text : text, level: level, datas : dataStr
+	  });
 
 	};
 
@@ -378,11 +482,9 @@
 	 * Return the list of events
 	 * @returns {*}
 	 */
-	Stats.prototype.getEventList = function() {
+	WebStats.prototype.getEventList = function() {
 
-	  var self = this;
-
-	  return self._makeAjax(self.options.readUrl + "/event/list", 'POST');
+	  return this._makeAjax(this.options.readUrl + "/event/list", 'POST');
 
 	};
 
@@ -390,11 +492,9 @@
 	 * Return an events resume
 	 * @returns {*}
 	 */
-	Stats.prototype.getEventResume = function() {
+	WebStats.prototype.getEventResume = function() {
 
-	  var self = this;
-
-	  return self._makeAjax(self.options.readUrl + "/event/resume", 'POST');
+	  return this._makeAjax(this.options.readUrl + "/event/resume", 'POST');
 
 	};
 
@@ -402,11 +502,9 @@
 	 * Return an events resume
 	 * @returns {*}
 	 */
-	Stats.prototype.getEventTimeline = function() {
+	WebStats.prototype.getEventTimeline = function() {
 
-	  var self = this;
-
-	  return self._makeAjax(self.options.readUrl + "/event/timeline/hours", 'POST');
+	  return this._makeAjax(this.options.readUrl + "/event/timeline/hours", 'POST');
 
 	};
 
@@ -414,11 +512,19 @@
 	 * Return an events resume
 	 * @returns {*}
 	 */
-	Stats.prototype.getLastEvents = function() {
+	WebStats.prototype.getLastEvents = function() {
 
-	  var self = this;
+	  return this._makeAjax(this.options.readUrl + "/event/last", 'POST');
 
-	  return self._makeAjax(self.options.readUrl + "/event/last", 'POST');
+	};
+
+	/**
+	 * Return an events resume
+	 * @returns {*}
+	 */
+	WebStats.prototype.getLastLogs = function() {
+
+	  return this._makeAjax(this.options.readUrl + "/log/last", 'POST');
 
 	};
 
@@ -432,7 +538,7 @@
 	 * @returns {*}
 	 * @private
 	 */
-	Stats.prototype._makeAjax = function(url, method, datas, headers) {
+	WebStats.prototype._makeAjax = function(url, method, datas, headers) {
 
 	  var self = this;
 
@@ -449,7 +555,9 @@
 	      "Authorization" : self.options.authorization,
 
 	      "Content-Type" : "application/json"
-	    }
+	    },
+
+	    timeout : 5000
 	  };
 
 	  // ajouter entetes si necessaire
@@ -465,7 +573,7 @@
 	 */
 	if (typeof module !== "undefined" && module.exports) {
 	  module.exports = function(options) {
-	    return new Stats(options);
+	    return new WebStats(options);
 	  };
 	}
 
@@ -483,7 +591,7 @@
 	var Chance = __webpack_require__(6);
 
 	var TimeLineController = function($scope, stats) {
-
+	  
 	  this.id = "timeLine_" + new Date().getTime();
 
 	  this.title = "Timeline";
@@ -492,7 +600,7 @@
 	  stats.getEventTimeline()
 
 	      .then(function(result) {
-
+	        
 	        var labels = [];
 	        var datas = [];
 	        $.each(result, function(index, value) {
@@ -6019,6 +6127,50 @@
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"lastEventsContainer\">\n\n  <h2>Last events</h2>\n\n  <div style=\"overflow: auto; height: 200px\">\n    <div ng-repeat=\"(i, val) in $ctrl.lastEvents\">\n      <div style=\"width: 7%; display: inline-block\">{{val.id}}</div>\n      <div style=\"width: 17%; display: inline-block\">{{val.prettyDate}}</div>\n      <div style=\"width: 40%; display: inline-block\">{{val.event_name}}</div>\n      <div style=\"display: inline-block\">{{val.event_data}}</div>\n    </div>\n  </div>\n\n</div>";
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Show a list of availables keywords
+	 */
+	var template = __webpack_require__(20);
+
+	var LastLogsController = function($http, $scope, stats) {
+
+	  var self = this;
+
+	  stats.getLastLogs().then(function(result) {
+
+	    self.lastLogs = result;
+
+	    $scope.$apply();
+
+	  }).fail(function() {
+	    console.error(arguments);
+	  });
+
+	};
+
+	LastLogsController.$inject = ["$http", "$scope", "stats"];
+
+	module.exports = function(angularMod) {
+
+	  angularMod.component("lastLogs", {
+	    template : template,
+
+	    controller : LastLogsController,
+
+	    bindings : {}
+	  });
+	};
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	module.exports = "<div class=\"lastErrorsContainer\">\n\n  <h2>Last logs</h2>\n\n  <div style=\"overflow: auto; max-height: 300px\">\n\n    <div ng-repeat=\"(i, val) in $ctrl.lastLogs\">\n      <span><b>{{i + 1}}. [{{val.level}}] id{{val.request_from}}</b></span>\n      <span> id{{val.text}}</span>\n      <div style=\"margin-left: 25px\"><i>{{val.data}}</i></div>\n      <div style=\"margin-left: 25px\"><i>{{val.datetime}}</i></div>\n    </div>\n  </div>\n\n</div>";
 
 /***/ }
 /******/ ]);
