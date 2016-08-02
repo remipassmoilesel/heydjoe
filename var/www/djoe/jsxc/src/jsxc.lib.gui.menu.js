@@ -110,7 +110,7 @@ jsxc.gui.menu = {
           // retrieve first element selected
           var selItems = $("#jsxc_menuWelcome .ui-selected");
 
-          //console.log(selItems);
+          //jsxc.debug(selItems);
 
           if (selItems.length < 1) {
             jsxc.gui.feedback("Vous devez sélectionner un utilisateur", "warn");
@@ -568,7 +568,7 @@ jsxc.gui.menu = {
     // terms to search
     var rawTerms = $(this).val().trim();
 
-    //console.log(rawTerms);
+    //jsxc.debug(rawTerms);
 
     var self = jsxc.gui.menu;
 

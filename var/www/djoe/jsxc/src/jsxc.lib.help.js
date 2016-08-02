@@ -35,8 +35,7 @@ jsxc.help = {
 
     jsxc.stats.addEvent("jsxc.help.tutorial." + name);
 
-    console.log("Launching tutorial");
-    console.log(name);
+    jsxc.debug("Launching tutorial", name);
 
     // TODO: Check if a tutorial is already running
 

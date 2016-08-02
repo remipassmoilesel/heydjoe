@@ -2159,8 +2159,6 @@ jsxc.gui.window = {
 
       padId = padId.toLocaleLowerCase();
 
-      console.log(padId);
-
       jsxc.etherpad.openpad(padId);
     });
 

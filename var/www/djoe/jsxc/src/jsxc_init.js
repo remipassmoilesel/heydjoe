@@ -2,7 +2,7 @@ $(function() {
 
   "use strict";
 
-  console.log("Initializing instant messaging");
+  jsxc.debug("Initializing instant messaging");
 
   // etherpad resource
   var etherpadRes = "https://im.silverpeas.net/etherpad/";
@@ -16,10 +16,12 @@ $(function() {
   // afficher les erreurs de Strophe, indispensable
   var stLogLevel = Strophe.LogLevel.WARN;
 
+  // thow in a new thread
   Strophe.log = function(level, msg) {
     if (level >= stLogLevel) {
-      console.error("Strophe [" + level + "] " + msg);
-      console.error((new Error()).stack);
+      setTimeout(function(){
+        throw "Strophe [" + level + "] " + msg;
+      }, 0);
     }
   };
 
@@ -176,15 +178,13 @@ $(function() {
             .then(function(data) {
 
               if (self.debug === true) {
-                console.log("_getNodeFromSilverpeasId");
-                console.log(data);
+                jsxc.debug("_getNodeFromSilverpeasId", data);
               }
 
               defer.resolve(self._getNodeFormLoginAndId(data.login, data.id));
 
             }, function(error) {
-              console.error("_getNodeFromSilverpeasId");
-              console.error(error);
+              jsxc.error("_getNodeFromSilverpeasId", error, 'ERROR');
 
               defer.reject("Error while retrieving user: " + error);
             });
@@ -213,8 +213,7 @@ $(function() {
 
             .fail(function(error) {
 
-              console.error("Error while retrieving user login");
-              console.error(error);
+              jsxc.error("Error while retrieving user login", error);
 
               defer.reject(error);
             });
@@ -236,8 +235,7 @@ $(function() {
             })
 
             .fail(function(error) {
-              console.error("Error while retrieving user login");
-              console.error(error);
+              jsxc.error("Error while retrieving user login", error);
 
               jsxc.api.feedback("Erreur lors de l'ouverture de la fenêtre de discussion");
             });
@@ -319,8 +317,7 @@ $(function() {
       },
 
       "onBuddyAccepted" : function(buddyBJid) {
-        console.log("onBuddyAccepted");
-        console.log(buddyBJid);
+        jsxc.debug("onBuddyAccepted", buddyBJid);
       }
 
     };

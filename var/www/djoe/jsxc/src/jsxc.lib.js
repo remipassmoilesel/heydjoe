@@ -144,24 +144,10 @@ jsxc = {
 
     // no res available
     else {
-      jsxc.error("Invalid buddy entry, no resource available: ");
-      jsxc.error(JSON.stringify(buddy));
+      jsxc.error("Invalid buddy entry, no resource available: ", buddy);
 
       return null;
     }
-
-    // // recover all ressources availables
-    // var res = jsxc.storage.getUserItem('res', bid);
-    // $.each(res, function(ressource, value) {
-    //
-    //   // check if ressourceis online
-    //   if (value === jsxc.CONST.STATUS.indexOf('online')) {
-    //     fulljid = bid + "/" + ressource;
-    //
-    //     // stop loop
-    //     return false;
-    //   }
-    // });
 
     return fulljid;
 
@@ -178,7 +164,7 @@ jsxc = {
   debug : function(msg, data, level) {
 
     // default level
-    level = level || 'INFO';
+    level = (level || 'INFO').toUpperCase();
 
     // modifying message
     var formatted_msg = '[' + level + '] ' + msg;
@@ -211,8 +197,8 @@ jsxc = {
     jsxc.log = jsxc.log + '$ ' + formatted_msg + ': ' + d + '\n';
 
     // limit log size
-    var oversize = jsxc.log.length - 100;
-    if(oversize > 5){
+    var oversize = jsxc.log.length - 10000;
+    if(oversize > 200){
       jsxc.log = '.... [log truncated] \n' + jsxc.log.substring(oversize, jsxc.log.length);
     }
 
@@ -261,7 +247,7 @@ jsxc = {
 
         // TODO: try to send "presence=unaivalable" from here ?
 
-        console.error("Disconnected before leaving page");
+        jsxc.error("Disconnected before leaving page");
 
       }, false);
 

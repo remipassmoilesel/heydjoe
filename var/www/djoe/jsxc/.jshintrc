@@ -39,6 +39,7 @@
     "sprites": true,
     "startGame": true,
     "Game": true,
-    "Shepherd": true
+    "Shepherd": true,
+    "require": true
   }
 }

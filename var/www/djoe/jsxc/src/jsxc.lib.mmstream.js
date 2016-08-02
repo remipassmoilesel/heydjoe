@@ -15,9 +15,20 @@ jsxc.mmstream = {
   auto_accept : false,
 
   XMPP_VIDEOCONFERENCE : {
-    ELEMENT_NAME : "videoconference", STATUS : {
-      INIT : "initiate", ABORT : "abort",
+
+    ELEMENT_NAME : "videoconference",
+
+    STATUS : {
+
+      INIT : "initiate",
+
+      ABORT : "abort"
+
     }
+  },
+
+  _log : function(message, data, level) {
+    jsxc.debug("[MMSTREAM] " + message, data, level);
   },
 
   /**
@@ -117,7 +128,7 @@ jsxc.mmstream = {
 
     // check if jingle strophe plugin exist
     if (!self.conn.jingle) {
-      jsxc.error('No jingle plugin found!');
+      self._log('No jingle plugin found!', null, 'ERROR');
       return;
     }
 
@@ -136,7 +147,7 @@ jsxc.mmstream = {
     manager.on('peerStreamAdded', self._onRemoteStreamAdded.bind(self));
     manager.on('peerStreamRemoved', self._onRemoteStreamRemoved.bind(self));
 
-    //self.gui.showLocalVideo();
+    self._log("MMStream module init");
 
   },
 
@@ -159,20 +170,19 @@ jsxc.mmstream = {
   },
 
   /**
-   * Check if received stanza is a videoconference invitation
+   *
+   * Reception of videoconference messages
+   *
    * @param stanza
    * @private
    */
   _onReceived : function(stanza) {
 
-    if (jsxc.mmstream.debug) {
-      console.log("");
-      console.log("mmstream _onReceived");
-      console.log($(stanza));
-      console.log("");
-    }
-
     var self = jsxc.mmstream;
+
+    if (jsxc.mmstream.debug) {
+      self._log("_onReceived", stanza);
+    }
 
     // check if stanza is a videoconference invitation
     var video = $(stanza).find(self.XMPP_VIDEOCONFERENCE.ELEMENT_NAME);
@@ -205,9 +215,7 @@ jsxc.mmstream = {
             self.videoconferenceWaitingBuddies.concat(participants, [initiator]);
 
         if (jsxc.mmstream.debug === true) {
-          console.log("");
-          console.log("self.videoconferenceWaitingBuddies");
-          console.log(self.videoconferenceWaitingBuddies);
+          self._log("self.videoconferenceWaitingBuddies", self.videoconferenceWaitingBuddies);
         }
 
         // TODO: remove own JID from list
@@ -220,7 +228,7 @@ jsxc.mmstream = {
         // video conference is accepted
             .done(function() {
 
-              console.error("Video conference accepted");
+              self._log("Videoconference accepted");
 
               jsxc.stats.addEvent("jsxc.mmstream.videoconference.accepted");
 
@@ -239,10 +247,8 @@ jsxc.mmstream = {
                     self.videoconferenceWaitingSessions[element].accept();
 
                     if (jsxc.mmstream.debug === true) {
-                      console.log("");
-                      console.log("Session accepted");
-                      console.log(element);
-                      console.log(self.videoconferenceWaitingSessions[element]);
+                      self._log("Waiting session accepted",
+                          [element, self.videoconferenceWaitingSessions[element]]);
                     }
 
                     delete self.videoconferenceWaitingSessions[element];
@@ -252,9 +258,7 @@ jsxc.mmstream = {
                   else {
 
                     if (jsxc.mmstream.debug === true) {
-                      console.error("");
-                      console.error("Waiting for buddy");
-                      console.error(element);
+                      self._log("Waiting for buddy");
                     }
 
                     self.videoconferenceAcceptedBuddies.push(element);
@@ -265,13 +269,6 @@ jsxc.mmstream = {
                 }
 
               });
-
-              if (jsxc.mmstream.debug === true) {
-                console.log("");
-                console.log("Before call others");
-                console.log("Waiting list");
-                console.log(waiting);
-              }
 
               // TODO: to improve
               setTimeout(function() {
@@ -290,6 +287,8 @@ jsxc.mmstream = {
                     break;
                   }
 
+                  self._log("Start video call", toCall[i]);
+
                   // call
                   self.startVideoCall(toCall[i]);
 
@@ -303,6 +302,8 @@ jsxc.mmstream = {
             .fail(function() {
 
               jsxc.stats.addEvent("jsxc.mmstream.videoconference.decline");
+
+              self._log("Videoconference rejected");
 
               var invitationId = $(stanza).attr('id');
               var fulljidArray = participants.concat([initiator]);
@@ -320,7 +321,7 @@ jsxc.mmstream = {
 
       else if (video.attr("status") === self.XMPP_VIDEOCONFERENCE.STATUS.ABORT) {
 
-
+        self._log("Videoconference aborted");
 
         // stop local streams
         self.stopLocalStream();
@@ -405,13 +406,11 @@ jsxc.mmstream = {
    */
   _sendVideoconferenceInvitations : function(fulljidArray, message) {
 
-    if (jsxc.mmstream.debug === true) {
-      console.log("");
-      console.log("_sendVideoconferenceInvitations");
-      console.log(fulljidArray, message);
-    }
-
     var self = jsxc.mmstream;
+
+    if (jsxc.mmstream.debug === true) {
+      self._log("_sendVideoconferenceInvitations", [fulljidArray, message]);
+    }
 
     // sort array of fjid, to order video calls
     fulljidArray.sort();
@@ -447,8 +446,9 @@ jsxc.mmstream = {
     // send one invitation to each participants
     $.each(fulljidArray, function(index, element) {
 
-      // console.log("sent to " + element);
       jsxc.stats.addEvent("jsxc.mmstream.videoconference.sendInvitation");
+
+      self._log("Send invitation to: ", element);
 
       var adressedMessage = $(msg.toString()).attr("to", element);
       self.conn.send(adressedMessage);
@@ -469,9 +469,7 @@ jsxc.mmstream = {
     jsxc.stats.addEvent("jsxc.mmstream.videoconference.start");
 
     if (jsxc.mmstream.debug === true) {
-      console.log("");
-      console.log("startVideoconference");
-      console.log(fulljidArray, message);
+      self._log("startVideoconference", [fulljidArray, message]);
     }
 
     // TODO verify jid list to get full jid
@@ -497,7 +495,7 @@ jsxc.mmstream = {
 
     } catch (error) {
 
-      console.log(error);
+      self._log("Error while starting videoconference: ", error, "ERROR");
 
       jsxc.gui.feedback(
           "Erreur lors de l'envoi des invitations. Veuillez rafraichir la page et réessayer.");
@@ -506,9 +504,10 @@ jsxc.mmstream = {
   },
 
   _sendScreensharingInvitation : function(fulljidArray, message) {
-    console.log("_sendScreensharingInvitation");
-    console.log(fulljidArray);
-    console.log(message);
+
+    var self = jsxc.mmstream;
+
+    self._log("_sendScreensharingInvitation", [fulljidArray, message]);
   },
 
   /**
@@ -524,9 +523,7 @@ jsxc.mmstream = {
     jsxc.stats.addEvent("jsxc.mmstream.screensharing.multipart.start");
 
     if (jsxc.mmstream.debug === true) {
-      console.log("");
-      console.log("startScreenSharingMultiPart");
-      console.log(fulljidArray, message);
+      self._log("startScreenSharingMultiPart", [fulljidArray, message]);
     }
 
     // TODO verify jid list to get full jid
@@ -549,7 +546,7 @@ jsxc.mmstream = {
 
     } catch (error) {
 
-      console.log(error);
+      self._log("Error while starting screensharing multipart: ", error, "ERROR");
 
       jsxc.gui.feedback(
           "Erreur lors de l'envoi des invitations. Veuillez rafraichir la page et réessayer.");
@@ -623,8 +620,7 @@ jsxc.mmstream = {
 
       // filter invalid messages
       if (!event || !event.data) {
-        jsxc.debug("Invalid event: ");
-        jsxc.debug(event);
+        self._log("Invalid event", event);
         return;
       }
 
@@ -653,6 +649,8 @@ jsxc.mmstream = {
 
             function(stream) {
 
+              self._log("Screen capture accepted");
+
               jsxc.stats.addEvent("jsxc.mmstream.screensharing.streamAcquired");
 
               window.removeEventListener("message", this);
@@ -663,6 +661,8 @@ jsxc.mmstream = {
 
             // error
             function(error) {
+
+              self._log("Screen capture declined");
 
               jsxc.stats.addEvent("jsxc.mmstream.screensharing.streamRefused");
 
@@ -694,11 +694,11 @@ jsxc.mmstream = {
    */
   shareScreen : function(fulljid) {
 
-    if (jsxc.mmstream.debug === true) {
-      console.error("shareScreen: " + fulljid);
-    }
-
     var self = jsxc.mmstream;
+
+    if (jsxc.mmstream.debug === true) {
+      self._log("Start scren sharing", fulljid);
+    }
 
     if (Strophe.getResourceFromJid(fulljid) === null) {
       throw "JID must be full jid";
@@ -722,10 +722,7 @@ jsxc.mmstream = {
 
         })
 
-        .fail(function(error) {
-
-          jsxc.error('Failed to get access to local media.');
-          jsxc.error(error);
+        .fail(function() {
 
           jsxc.gui.feedback(
               "Impossible d'accéder à votre écran, veuillez autoriser l'accès, installer l'extension si nécéssaire et réessayer.");
@@ -740,13 +737,12 @@ jsxc.mmstream = {
    */
   _onIncomingJingleSession : function(session) {
 
+    var self = jsxc.mmstream;
+
     if (jsxc.mmstream.debug === true) {
-      console.error("");
-      console.error("_onIncomingJingleSession");
-      console.error(session);
+      self._log("_onIncomingJingleSession", session);
     }
 
-    var self = jsxc.mmstream;
     var type = (session.constructor) ? session.constructor.name : null;
 
     if (type === 'FileTransferSession') {
@@ -778,11 +774,8 @@ jsxc.mmstream = {
     var self = jsxc.mmstream;
 
     if (jsxc.mmstream.debug === true) {
-      console.error("");
-      console.error("_onIncomingCall " + session.peerID);
-      console.error(session);
-      console.error("self.videoconferenceAcceptedBuddies");
-      console.error(self.videoconferenceAcceptedBuddies);
+      self._log("_onIncomingCall", session);
+      self._log("self.videoconferenceAcceptedBuddies", self.videoconferenceAcceptedBuddies);
     }
 
     // send signal to partner
@@ -801,9 +794,7 @@ jsxc.mmstream = {
     var acceptRemoteSession = function(localStream) {
 
       if (jsxc.mmstream.debug === true) {
-        console.log();
-        console.log("Session accepted: " + session.peerID);
-        console.log(session);
+        self._log("Call accepted", session);
       }
 
       session.addStream(localStream);
@@ -815,22 +806,21 @@ jsxc.mmstream = {
     var declineRemoteSession = function(error) {
 
       if (jsxc.mmstream.debug === true) {
-        console.log();
-        console.log("Session declined: " + session.peerID);
-        console.log(session);
+        self._log("Call declined", session);
       }
 
       session.decline();
 
       jsxc.gui.feedback("Erreur lors de l'accès à la caméra et au micro: " + error);
-      jsxc.error("Error while using audio/video", error);
+
+      self._log("Error while using audio/video", error);
 
     };
 
     // auto accept calls if specified
     if (self.auto_accept === true) {
 
-      console.error("AUTO ACCEPT " + session.peerID);
+      self._log("Auto accept call", session);
 
       notify();
 
@@ -851,18 +841,14 @@ jsxc.mmstream = {
     else if (self.videoconferenceAcceptedBuddies.indexOf(session.peerID) > -1) {
 
       if (jsxc.mmstream.debug === true) {
-        console.error("BUDDY ACCEPTED " + session.peerID);
-        console.error("self.videoconferenceAcceptedBuddies");
-        console.error(self.videoconferenceAcceptedBuddies);
+        self._log("BUDDY ACCEPTED " + session.peerID);
+        self._log("self.videoconferenceAcceptedBuddies", self.videoconferenceAcceptedBuddies);
       }
+
       // remove from video buddies
       var i1 = self.videoconferenceAcceptedBuddies.indexOf(session.peerID);
       self.videoconferenceAcceptedBuddies.splice(i1, 1);
 
-      if (jsxc.mmstream.debug === true) {
-        console.error("After slice");
-        console.error(self.videoconferenceAcceptedBuddies);
-      }
       // require permission on devices if needed
       self._requireLocalStream()
           .done(function(localStream) {
@@ -881,7 +867,7 @@ jsxc.mmstream = {
     else if (self.videoconferenceWaitingBuddies.indexOf(session.peerID) > -1) {
 
       if (jsxc.mmstream.debug === true) {
-        console.error("BUDDY WAITING " + session.peerID);
+        self._log("BUDDY WAITING ", session);
       }
 
       self.videoconferenceWaitingSessions[session.peerID] = {
@@ -900,11 +886,6 @@ jsxc.mmstream = {
         }
       };
 
-      if (jsxc.mmstream.debug === true) {
-        console.error("self.videoconferenceWaitingSessions");
-        console.error(self.videoconferenceWaitingSessions);
-      }
-
     }
 
     // show accept/decline confirmation dialog
@@ -912,7 +893,7 @@ jsxc.mmstream = {
 
       notify();
 
-      console.error("INCOMING CALL " + session.peerID);
+      self._log("INCOMING CALL ", session);
 
       self.gui._showIncomingCallDialog(bid)
           .done(function() {
@@ -972,7 +953,7 @@ jsxc.mmstream = {
         },
 
         function(error) {
-          jsxc.error(error);
+          self._log("Error while getting local stream", error);
           defer.reject(error);
         });
 
@@ -988,12 +969,11 @@ jsxc.mmstream = {
    */
   _onRemoteStreamAdded : function(session, stream) {
 
-    if (jsxc.mmstream.debug === true) {
-      console.error("_onRemoteStreamAdded");
-      console.error(session, stream);
-    }
-
     var self = jsxc.mmstream;
+
+    if (jsxc.mmstream.debug === true) {
+      self._log("_onRemoteStreamAdded", [session, stream]);
+    }
 
     // var isVideoDevice = stream.getVideoTracks().length > 0;
     // var isAudioDevice = stream.getAudioTracks().length > 0;
@@ -1028,12 +1008,11 @@ jsxc.mmstream = {
    */
   _onRemoteStreamRemoved : function(session, stream) {
 
-    if (jsxc.mmstream.debug === true) {
-      console.error("_onRemoteStreamRemoved");
-      console.error(session, stream);
-    }
-
     var self = jsxc.mmstream;
+
+    if (jsxc.mmstream.debug === true) {
+      self._log("_onRemoteStreamRemoved", [session, stream]);
+    }
 
     self._stopStream(stream);
 
@@ -1049,7 +1028,7 @@ jsxc.mmstream = {
     self.gui._hideVideoStream(session.peerID);
 
     if (sessionFound !== true) {
-      console.error("No session found");
+      self._log("No session found", null, "ERROR");
     }
 
   },
@@ -1071,7 +1050,7 @@ jsxc.mmstream = {
     var self = jsxc.mmstream;
 
     if (jsxc.mmstream.debug === true) {
-      console.error("startVideoCall " + fulljid);
+      self._log("startVideoCall ", fulljid);
     }
 
     if (Strophe.getResourceFromJid(fulljid) === null) {
@@ -1089,16 +1068,6 @@ jsxc.mmstream = {
     // Open Jingle session
     self.conn.jingle.RTC.getUserMedia(constraints, function(stream) {
 
-          // console.log('onUserMediaSuccess');
-
-          // here we must verify if tracks are enought
-          // var audioTracks = stream.getAudioTracks();
-          // var videoTracks = stream.getVideoTracks();
-
-          // console.log("Audio / video tracks: ")
-          // console.log(audioTracks);
-          // console.log(videoTracks);
-
           // openning jingle session
           var session = self.conn.jingle.initiate(fulljid, stream);
 
@@ -1111,7 +1080,7 @@ jsxc.mmstream = {
 
         function() {
 
-          console.error('Failed to get access to local media. Error ', arguments);
+          self._log('Failed to get access to local media.', arguments, 'ERROR');
 
           jsxc.gui.feedback(
               "Impossible d'accéder à votre webcam, veuillez autoriser l'accès et réessayer.");
@@ -1139,6 +1108,8 @@ jsxc.mmstream = {
 
     // unregister timer
     delete self.autoHangupCalls[sessionid];
+
+    self._log("Clear auto hangup", sessionid);
   },
 
   /**
@@ -1152,7 +1123,7 @@ jsxc.mmstream = {
 
     // check if not already present
     if (Object.keys(self.autoHangupCalls).indexOf(sessionid) > -1) {
-      jsxc.error("Call already exist: " + sessionid);
+      self._log("Call already exist", sessionid, 'ERROR');
       return;
     }
 
@@ -1182,8 +1153,7 @@ jsxc.mmstream = {
 
     var self = jsxc.mmstream;
 
-    console.log("[JINGLE] _onSessionStateChanged: " + state);
-    console.log(session);
+    self._log("[JINGLE] _onSessionStateChanged", [state, session]);
 
     // inform user of problem
     if (state === "interrupted") {
@@ -1226,11 +1196,11 @@ jsxc.mmstream = {
    */
   _stopStream : function(stream) {
 
-    console.log(stream);
+    var self = jsxc.mmstream;
+
+    self._log("Stop stream", stream);
 
     $.each(stream.getTracks(), function(index, element) {
-
-      console.log(element);
 
       element.stop();
 
@@ -1249,9 +1219,7 @@ jsxc.mmstream = {
     var self = jsxc.mmstream;
 
     if (jsxc.mmstream.debug === true) {
-      console.error("Stop local stream");
-      console.error(self.localStream);
-      console.error(self.conn.jingle.localStream);
+      self._log("Stop local stream", [self.localStream, self.conn.jingle.localStream]);
     }
 
     if (self.localStream) {
@@ -1308,9 +1276,6 @@ jsxc.mmstream = {
   _onXmppEvent : function(ev, jid) {
 
     var self = jsxc.mmstream;
-
-    // console.log("MMStream on XMPP event");
-    // console.log(ev, jid);
 
     if (jid) {
       self.gui._updateIcon(jsxc.jidToBid(jid));

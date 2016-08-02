@@ -112,10 +112,10 @@ jsxc.xmpp = {
 
     if (jsxc.storage.getItem('debug') === true) {
       jsxc.xmpp.conn.xmlInput = function(data) {
-        console.log('<', data);
+        jsxc.debug('<', data);
       };
       jsxc.xmpp.conn.xmlOutput = function(data) {
-        console.log('>', data);
+        jsxc.debug('>', data);
       };
     }
 
@@ -487,7 +487,7 @@ jsxc.xmpp = {
     jsxc.master = false;
     jsxc.storage.removeItem('alive');
 
-    console.error("Disconnected from JSXC");
+    jsxc.error("Disconnected from JSXC");
 
   },
 
@@ -1261,8 +1261,7 @@ jsxc.xmpp = {
 
     var check = function(knownCapabilities) {
 
-      console.log("knownCapabilities");
-      console.log(knownCapabilities);
+      jsxc.debug("knownCapabilities", knownCapabilities);
 
       if (!knownCapabilities) {
         return null;

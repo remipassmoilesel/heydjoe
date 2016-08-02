@@ -27,8 +27,6 @@ jsxc.xmpp.search = {
    */
   init : function() {
 
-    //console.log("jsxc.lib.xmpp.search.init()");
-
     var self = jsxc.xmpp.search;
 
     // shortcut

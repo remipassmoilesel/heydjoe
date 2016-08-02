@@ -455,7 +455,7 @@ jsxc.otr = {
                var val = e.data.val;
 
                if (type === 'debug') {
-                  jsxc.debug(val);
+                  jsxc.debug("OTR: ", val);
                } else if (type === 'data') {
                   jsxc.otr.DSAready(DSA.parsePrivate(val));
                }

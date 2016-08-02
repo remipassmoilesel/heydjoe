@@ -26,8 +26,6 @@ jsxc.notice = {
     var saved = jsxc.storage.getUserItem('notices') || [];
     var key = null;
 
-    // console.log(jsxc.storage.getUserItem('notices'));
-
     for (key in saved) {
       if (saved.hasOwnProperty(key)) {
         var val = saved[key];

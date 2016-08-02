@@ -9,6 +9,10 @@ jsxc.mmstream.gui = {
    */
   videoPanel : null,
 
+  _log : function(message, data, level) {
+    jsxc.debug("[MMSTREAM GUI] " + message, data, level);
+  },
+
   /**
    * Create gui and add it to the main window
    *
@@ -83,9 +87,7 @@ jsxc.mmstream.gui = {
 
       // we are not in HTTPS
       else {
-
-        console.log($("#jsxc_menuConversation .jsxc_httpScreenSharingWarning"));
-
+        
         // remove existing warnings
         $("#jsxc_menuConversation .jsxc_httpScreenSharingWarning").remove();
 
@@ -297,17 +299,18 @@ jsxc.mmstream.gui = {
    */
   _initChatWindow : function(event, win) {
 
-    var self = jsxc.mmstream;
+    var mmstream = jsxc.mmstream;
+    var self = jsxc.mmstream.gui;
+
+    self._log('_initChatWindow', [event, win]);
 
     if (win.hasClass('jsxc_groupchat')) {
       return;
     }
 
-    jsxc.debug('mmstream._initChatWindow');
-
-    if (!self.conn) {
+    if (!mmstream.conn) {
       $(document).one('attached.jsxc', function() {
-        self.gui._initChatWindow(null, win);
+        self._initChatWindow(null, win);
       });
       return;
     }
@@ -315,7 +318,9 @@ jsxc.mmstream.gui = {
     var div = $('<div>').addClass('jsxc_video');
     win.find('.jsxc_tools .jsxc_settings').after(div);
 
-    self.gui._updateIcon(win.data('bid'));
+    var bid = win.data('bid');
+    self._updateIcon(bid);
+    self._updateVideoLink(bid);
   },
 
   /**
@@ -352,12 +357,14 @@ jsxc.mmstream.gui = {
   _updateVideoLink : function(bid) {
 
     var mmstream = jsxc.mmstream;
+    var self = jsxc.mmstream.gui;
+
 
     if (bid === jsxc.jidToBid(mmstream.conn.jid)) {
       return;
     }
 
-    jsxc.debug('Update link', bid);
+    self._log('Update link', bid);
 
     // search available ressource
     var fulljid = jsxc.getCurrentActiveJidForBid(bid);
@@ -407,9 +414,10 @@ jsxc.mmstream.gui = {
    */
   _updateIcon : function(bid) {
 
-    jsxc.debug('Update icon', bid);
-
     var mmstream = jsxc.mmstream;
+    var self = jsxc.mmstream.gui;
+
+    self._log('Update icon', bid);
 
     if (bid === jsxc.jidToBid(mmstream.conn.jid)) {
       return;

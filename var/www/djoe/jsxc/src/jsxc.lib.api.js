@@ -113,8 +113,7 @@ jsxc.api = {
           called++;
 
         } catch (e) {
-          console.error("Error in jsxc.api.callback");
-          console.error(e);
+          jsxc.error("Error in jsxc.api.callback", e);
         }
 
       }

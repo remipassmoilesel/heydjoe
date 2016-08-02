@@ -34,6 +34,8 @@ jsxc.etherpad = {
       return;
     }
 
+    jsxc.debug("Openning new pad", padId);
+    
     // embedable code of pad
     var embedCode = '<iframe name="embed_readwrite" src="' +
         jsxc.etherpad.getEtherpadLinkFor(padId) + '" style="width: 100%; height: 100%"></iframe>';        // container for pad

@@ -283,10 +283,6 @@ jsxc.gui.createRoomList = function(selector) {
  */
 jsxc.gui.createUserList = function(selector) {
 
-  // var root = $(selector);
-
-  console.log(selector);
-
   var root = jsxc.gui._createFilterableList(selector);
   root.addClass("jsxc_userListContainer");
 
@@ -412,7 +408,7 @@ jsxc.gui.createBuddyList = function(selector) {
 
     $.each(buddylist, function(index, jid) {
 
-      //console.log(jsxc.storage.getUserItem('buddy', Strophe.getBareJidFromJid(jid)));
+      //jsxc.debug(jsxc.storage.getUserItem('buddy', Strophe.getBareJidFromJid(jid)));
 
       var infos = jsxc.storage.getUserItem('buddy', Strophe.getBareJidFromJid(jid));
 
