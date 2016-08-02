@@ -584,7 +584,7 @@ jsxc.gui.menu = {
 
       self.resetHighlights();
 
-      $("#jsxc_side_menu_content > h1.ui-accordion-header").eq(0).trigger("click");
+      //$("#jsxc_side_menu_content > h1.ui-accordion-header").eq(0).trigger("click");
 
       return;
     }
