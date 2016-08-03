@@ -160,7 +160,6 @@ jsxc.api = {
         msgstate: 0,
         transferReq: -1,
         trust: false,
-        œ: null,
         res: [],
         type: 'chat'
       });
