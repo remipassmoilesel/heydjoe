@@ -117,6 +117,30 @@ jsxc = {
     return time;
   },
 
+  throwOnStropheErrors: function(){
+
+    var stLogLevel = Strophe.LogLevel.WARN;
+
+    // override Strophe log function
+    Strophe.log = function(level, msg) {
+
+      if (level >= stLogLevel) {
+
+        var txtLevel = Object.keys(Strophe.LogLevel)[level] || level;
+
+        // save stack trace
+        var error = new Error("Strophe [" + txtLevel + "] " + msg);
+
+        // throw error out of log function
+        setTimeout(function(){
+          throw error;
+        }, 0);
+      }
+
+    };
+
+  },
+
   /**
    * Return the last fulljid received or null if no full jid is stored
    *
@@ -275,7 +299,10 @@ jsxc = {
    * @param {object} options See {@link jsxc.options}
    */
   init : function(options) {
-    
+
+    // Log strophe errors
+    jsxc.throwOnStropheErrors();
+
     if (options && options.loginForm && typeof options.loginForm.attachIfFound === 'boolean' &&
         !options.loginForm.ifFound) {
       // translate deprated option attachIfFound found to new ifFound

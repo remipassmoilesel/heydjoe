@@ -11,19 +11,7 @@ $(function() {
   var xmppResource = "heyDjoe";
 
   // jsxc debug mode
-  jsxc.storage.setItem('debug', false)
-
-  // afficher les erreurs de Strophe, indispensable
-  var stLogLevel = Strophe.LogLevel.WARN;
-
-  // thow in a new thread
-  Strophe.log = function(level, msg) {
-    if (level >= stLogLevel) {
-      setTimeout(function(){
-        throw "Strophe [" + level + "] " + msg;
-      }, 0);
-    }
-  };
+  jsxc.storage.setItem('debug', false);
 
   /**
    *   Initialization options for JSXC
