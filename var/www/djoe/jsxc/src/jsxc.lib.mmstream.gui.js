@@ -309,6 +309,8 @@ jsxc.mmstream.gui = {
       return;
     }
 
+    var bid = win.data('bid');
+
     // don't add icon if already present
     if(win.find(".jsxc_video").length > 0){
       self._updateIcon(bid);
@@ -326,8 +328,7 @@ jsxc.mmstream.gui = {
 
     var div = $('<div>').addClass('jsxc_video');
     win.find('.jsxc_tools .jsxc_settings').after(div);
-
-    var bid = win.data('bid');
+    
     self._updateIcon(bid);
     self._updateVideoLink(bid);
   },

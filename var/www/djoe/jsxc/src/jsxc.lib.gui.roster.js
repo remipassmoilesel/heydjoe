@@ -1,0 +1,390 @@
+/**
+ * Handle functions related to the gui of the roster
+ *
+ * @namespace jsxc.gui.roster
+ */
+jsxc.gui.roster = {
+
+  /** True if roster is initialised */
+  ready : false,
+
+  /** True if all items are loaded */
+  loaded : false,
+
+  /**
+   * Init the roster skeleton
+   *
+   * @memberOf jsxc.gui.roster
+   * @returns {undefined}
+   */
+  init : function() {
+
+    jsxc.debug("Roster init");
+
+    // adding roster skeleton to body, or other choosen element
+    $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('roster')));
+
+    // display or hide offline buddies
+    if (jsxc.options.get('hideOffline')) {
+      $('#jsxc_menu .jsxc_hideOffline').text(jsxc.t('Show_offline'));
+      $('#jsxc_buddylist').addClass('jsxc_hideOffline');
+    }
+
+    // mute sounds
+    if (jsxc.options.get('muteNotification')) {
+      jsxc.notification.muteSound();
+    }
+
+    // hide show roster
+    $('#jsxc_toggleRoster').click(function() {
+      jsxc.gui.roster.toggle();
+    });
+
+    $('#jsxc_buddylist').slimScroll({
+      distance : '3px',
+      height : ($('#jsxc_roster').height() - 31) + 'px',
+      width : $('#jsxc_buddylist').width() + 'px',
+      color : '#fff',
+      opacity : '0.5'
+    });
+
+    // initialize main menu
+    jsxc.gui.menu.init();
+
+    var rosterState = jsxc.storage.getUserItem('roster') ||
+        (jsxc.options.get('loginForm').startMinimized ? 'hidden' : 'shown');
+
+    $('#jsxc_roster').addClass('jsxc_state_' + rosterState);
+    $('#jsxc_windowList').addClass('jsxc_roster_' + rosterState);
+
+    var pres = jsxc.storage.getUserItem('presence') || 'online';
+    $('#jsxc_presence > span').text($('#jsxc_presence .jsxc_' + pres).text());
+    jsxc.gui.updatePresence('own', pres);
+
+    jsxc.gui.tooltip('#jsxc_roster');
+
+    jsxc.notice.load();
+
+    jsxc.gui.roster.ready = true;
+
+    $(document).trigger('ready.roster.jsxc');
+
+  },
+
+  /**
+   * Create roster item and add it to the roster
+   *
+   * @param {String} bid bar jid
+   */
+  add : function(bid) {
+
+    var data = jsxc.storage.getUserItem('buddy', bid);
+    var bud = jsxc.gui.buddyTemplate.clone().attr('data-bid', bid).attr('data-type',
+        data.type || 'chat');
+
+    jsxc.gui.roster.insert(bid, bud);
+
+    bud.click(function() {
+      jsxc.gui.window.open(bid);
+    });
+
+    bud.find('.jsxc_msg').click(function() {
+      jsxc.gui.window.open(bid);
+
+      return false;
+    });
+
+    bud.find('.jsxc_rename').click(function() {
+      jsxc.gui.roster.rename(bid);
+      return false;
+    });
+
+    if (data.type !== 'groupchat') {
+      bud.find('.jsxc_delete').click(function() {
+        jsxc.gui.showRemoveDialog(bid);
+        return false;
+      });
+    }
+
+    var expandClick = function() {
+      bud.trigger('extra.jsxc');
+
+      $('body').click();
+
+      if (!bud.find('.jsxc_menu').hasClass('jsxc_open')) {
+        bud.find('.jsxc_menu').addClass('jsxc_open');
+
+        $('body').one('click', function() {
+          bud.find('.jsxc_menu').removeClass('jsxc_open');
+        });
+      }
+
+      return false;
+    };
+
+    bud.find('.jsxc_more').click(expandClick);
+
+    bud.find('.jsxc_vcard').click(function() {
+      jsxc.gui.showVcard(data.jid);
+
+      return false;
+    });
+
+    jsxc.gui.update(bid);
+
+    // update scrollbar
+    $('#jsxc_buddylist').slimScroll({
+      scrollTo : '0px'
+    });
+
+    var history = jsxc.storage.getUserItem('history', bid) || [];
+    var i = 0;
+    while (history.length > i) {
+      var message = new jsxc.Message(history[i]);
+      if (message.direction !== jsxc.Message.SYS) {
+        $('[data-bid="' + bid + '"]').find('.jsxc_lastmsg .jsxc_text').html(message.msg);
+        break;
+      }
+      i++;
+    }
+
+    $(document).trigger('add.roster.jsxc', [bid, data, bud]);
+  },
+
+  getItem : function(bid) {
+    return $("#jsxc_buddylist > li[data-bid='" + bid + "']");
+  },
+
+  /**
+   * Insert roster item. First order: online > away > offline. Second order:
+   * alphabetical of the name
+   *
+   * @param {type} bid
+   * @param {jquery} li roster item which should be insert
+   * @returns {undefined}
+   */
+  insert : function(bid, li) {
+
+    var data = jsxc.storage.getUserItem('buddy', bid);
+    var listElements = $('#jsxc_buddylist > li');
+    var insert = false;
+
+    // Insert buddy with no mutual friendship to the end
+    var status = (data.sub === 'both') ? data.status : -1;
+
+    listElements.each(function() {
+
+      var thisStatus = ($(this).data('sub') === 'both') ? $(this).data('status') : -1;
+
+      if (($(this).data('name').toLowerCase() > data.name.toLowerCase() && thisStatus === status) ||
+          thisStatus < status) {
+
+        $(this).before(li);
+        insert = true;
+
+        return false;
+      }
+    });
+
+    if (!insert) {
+      li.appendTo('#jsxc_buddylist');
+    }
+  },
+
+  /**
+   * Initiate reorder of roster item
+   *
+   * @param {type} bid
+   * @returns {undefined}
+   */
+  reorder : function(bid) {
+    jsxc.gui.roster.insert(bid, jsxc.gui.roster.remove(bid));
+  },
+
+  /**
+   * Removes buddy from roster
+   *
+   * @param {String} bid bar jid
+   * @return {JQueryObject} Roster list element
+   */
+  remove : function(bid) {
+    return jsxc.gui.roster.getItem(bid).detach();
+  },
+
+  /**
+   * Removes buddy from roster and clean up
+   *
+   * @param {String} bid bar compatible jid
+   */
+  purge : function(bid) {
+    if (jsxc.master) {
+      jsxc.storage.removeUserItem('buddy', bid);
+      jsxc.storage.removeUserItem('otr', bid);
+      jsxc.storage.removeUserItem('otr_version_' + bid);
+      jsxc.storage.removeUserItem('chat', bid);
+      jsxc.storage.removeUserItem('window', bid);
+      jsxc.storage.removeUserElement('buddylist', bid);
+      jsxc.storage.removeUserElement('windowlist', bid);
+    }
+
+    jsxc.gui.window._close(bid);
+    jsxc.gui.roster.remove(bid);
+  },
+
+  /**
+   * Create input element for rename action
+   *
+   * @param {type} bid
+   * @returns {undefined}
+   */
+  rename : function(bid) {
+    var name = jsxc.gui.roster.getItem(bid).find('.jsxc_name');
+    var options = jsxc.gui.roster.getItem(bid).find('.jsxc_lastmsg, .jsxc_more');
+    var input = $('<input type="text" name="name"/>');
+
+    // hide more menu
+    $('body').click();
+
+    options.hide();
+    name = name.replaceWith(input);
+
+    input.val(name.text());
+    input.keypress(function(ev) {
+      if (ev.which !== 13) {
+        return;
+      }
+
+      options.css('display', '');
+      input.replaceWith(name);
+      jsxc.gui.roster._rename(bid, $(this).val());
+
+      $('html').off('click');
+    });
+
+    // Disable html click event, if click on input
+    input.click(function() {
+      return false;
+    });
+
+    $('html').one('click', function() {
+      options.css('display', '');
+      input.replaceWith(name);
+      jsxc.gui.roster._rename(bid, input.val());
+    });
+  },
+
+  /**
+   * Rename buddy
+   *
+   * @param {type} bid
+   * @param {type} newname new name of buddy
+   * @returns {undefined}
+   */
+  _rename : function(bid, newname) {
+    if (jsxc.master) {
+      var d = jsxc.storage.getUserItem('buddy', bid) || {};
+
+      if (d.type === 'chat') {
+        var iq = $iq({
+          type : 'set'
+        }).c('query', {
+          xmlns : 'jabber:iq:roster'
+        }).c('item', {
+          jid : Strophe.getBareJidFromJid(d.jid), name : newname
+        });
+        jsxc.xmpp.conn.sendIQ(iq);
+      } else if (d.type === 'groupchat') {
+        jsxc.xmpp.bookmarks.add(bid, newname, d.nickname, d.autojoin);
+      }
+    }
+
+    jsxc.storage.updateUserItem('buddy', bid, 'name', newname);
+    jsxc.gui.update(bid);
+  },
+
+  /**
+   * Toogle complete roster
+   *
+   * @param {string} state Toggle to state
+   */
+  toggle : function(state) {
+
+    jsxc.stats.addEvent('jsxc.toggleroster.' + state || 'toggle');
+
+    var duration;
+
+    var roster = $('#jsxc_roster');
+    var wl = $('#jsxc_windowList');
+
+    if (!state) {
+      state = (jsxc.storage.getUserItem('roster') === jsxc.CONST.HIDDEN) ? jsxc.CONST.SHOWN :
+          jsxc.CONST.HIDDEN;
+    }
+
+    if (state === 'shown' && jsxc.isExtraSmallDevice()) {
+      jsxc.gui.window.hide();
+    }
+
+    jsxc.storage.setUserItem('roster', state);
+
+    roster.removeClass('jsxc_state_hidden jsxc_state_shown').addClass('jsxc_state_' + state);
+    wl.removeClass('jsxc_roster_hidden jsxc_roster_shown').addClass('jsxc_roster_' + state);
+
+    duration = parseFloat(roster.css('transitionDuration') || 0) * 1000;
+
+    setTimeout(function() {
+      jsxc.gui.updateWindowListSB();
+    }, duration);
+
+    $(document).trigger('toggle.roster.jsxc', [state, duration]);
+
+    return duration;
+  },
+
+  /**
+   * Shows a text with link to a login box that no connection exists.
+   */
+  noConnection : function() {
+
+    $('#jsxc_roster').addClass('jsxc_noConnection');
+
+    $('#jsxc_buddylist').empty();
+
+    $('#jsxc_roster').find(".jsxc_rosterIsEmptyMessage").remove();
+
+    $('#jsxc_roster').append($('<p>' + jsxc.t('no_connection') + '</p>').append(
+        ' <a>' + jsxc.t('relogin') + '</a>').click(function() {
+
+      // show login box only if there is no reconnection callback
+
+      var called = jsxc.api.callback("onReconnectDemand");
+      if (called < 1) {
+        jsxc.gui.showLoginBox();
+      }
+
+    }));
+  },
+
+  /**
+   * Shows a text with link to add a new buddy.
+   *
+   * @memberOf jsxc.gui.roster
+   */
+  empty : function() {
+    var text = $(
+        '<p class="jsxc_rosterIsEmptyMessage">' + jsxc.t('Your_roster_is_empty_add_') + '</p>');
+    var link = text.find('a');
+
+    link.click(function() {
+      //jsxc.gui.showContactDialog();
+      jsxc.gui.menu.openSideMenu();
+    });
+    text.append(link);
+    text.append('.');
+
+    if ($('#jsxc_roster').find(".jsxc_rosterIsEmptyMessage").length < 1) {
+      $('#jsxc_roster').prepend(text);
+    }
+
+  }
+};
