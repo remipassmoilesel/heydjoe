@@ -179,6 +179,7 @@ module.exports = function (grunt) {
                       'src/jsxc.lib.xmpp.js',
                       'src/jsxc.lib.mmstream.js',
                       'src/jsxc.lib.mmstream.gui.js',
+                      'src/jsxc.lib.gui.js',
                       'src/jsxc.lib.*.js',
                       'tmp/template.js',
                       'src/jsxc.outro.js'],
