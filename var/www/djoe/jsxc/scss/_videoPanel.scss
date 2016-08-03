@@ -1,4 +1,5 @@
-$roster_width: 300px;
+
+$videopanel_width: 400px;
 /**
   Sive video panel where shown videos thumbs
 
@@ -10,7 +11,7 @@ $roster_width: 300px;
   top: 0px;
   bottom: 0;
   left: 0;
-  width: $roster_width;
+  width: $videopanel_width;
   overflow: visible;
   border-right: 1px solid #e1e1e1;
   z-index: 80;
@@ -20,7 +21,7 @@ $roster_width: 300px;
 
   &.jsxc_state_hidden {
     display: block;
-    left: -$roster_width;
+    left: -$videopanel_width;
     transition: left 0.5s;
 
     #jsxc_toggleRoster {
