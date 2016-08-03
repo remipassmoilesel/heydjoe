@@ -1,5 +1,7 @@
 # Hey Djoe !
 
+## Best view on Brave ! https://github.com/brave/browser-laptop
+
 Instant communication system using XMPP, WebRTC and WebSockets.
 
 Functionnalities:
