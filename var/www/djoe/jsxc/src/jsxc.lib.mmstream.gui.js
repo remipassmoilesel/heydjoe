@@ -304,7 +304,16 @@ jsxc.mmstream.gui = {
 
     self._log('_initChatWindow', [event, win]);
 
+    // don't update groupchat window
     if (win.hasClass('jsxc_groupchat')) {
+      return;
+    }
+
+    // don't add icon if already present
+    if(win.find(".jsxc_video").length > 0){
+      self._updateIcon(bid);
+      self._updateVideoLink(bid);
+      jsxc.debug("Video icon already exist, skip", event);
       return;
     }
 
