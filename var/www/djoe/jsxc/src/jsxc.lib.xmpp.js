@@ -811,8 +811,8 @@ jsxc.xmpp = {
       data.status = maxStatus;
     }
 
-    // change jid only if necessary
-    if (r !== null && r !== "null" && r.length > 1 && status !== 0) {
+    // change jid only if necessary, if resource is correct and if not groupchat
+    if (r !== null && r !== "null" && r.length > 1 && status !== 0 && data.type !== "groupchat") {
 
       data.jid = jid;
 

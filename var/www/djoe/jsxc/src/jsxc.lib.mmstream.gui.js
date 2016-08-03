@@ -328,7 +328,7 @@ jsxc.mmstream.gui = {
 
     var div = $('<div>').addClass('jsxc_video');
     win.find('.jsxc_tools .jsxc_settings').after(div);
-    
+
     self._updateIcon(bid);
     self._updateVideoLink(bid);
   },
