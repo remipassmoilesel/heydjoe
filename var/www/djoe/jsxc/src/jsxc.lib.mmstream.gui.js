@@ -436,6 +436,8 @@ jsxc.mmstream.gui = {
    */
   _updateIcon : function(bid) {
 
+    bid = Strophe.getBareJidFromJid(bid);
+
     var mmstream = jsxc.mmstream;
     var self = jsxc.mmstream.gui;
 
@@ -447,18 +449,19 @@ jsxc.mmstream.gui = {
 
     var win = jsxc.gui.window.get(bid);
 
-    
     /*
      /!\ /!\ Do not update group chat window
      If updating chat window here, keep in mind that method
      jsxc.getCurrentActiveJidForBid(bid); will modify groupchat jid
      */
-    if (win.hasClass('jsxc_groupchat')) {
+
+    var budDatas = jsxc.storage.getUserItem("buddy", bid);
+    if (budDatas.type === "groupchat") {
       return;
     }
 
+    // get fresh full jid
     var fulljid = jsxc.getCurrentActiveJidForBid(bid);
-    var budDatas = jsxc.storage.getUserItem("buddy", bid);
 
     // get the video icon
     var el = win.find('.jsxc_video');
