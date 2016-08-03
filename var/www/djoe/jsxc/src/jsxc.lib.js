@@ -1012,7 +1012,7 @@ jsxc = {
   hashStr : function(str) {
     var hash = 0, i;
 
-    if (str.length === 0) {
+    if (!str || str.length === 0) {
       return hash;
     }
 
