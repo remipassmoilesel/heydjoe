@@ -133,11 +133,11 @@ $(function() {
       _getNodeFormLoginAndId : function(login, id) {
 
         if (typeof id === "undefined") {
-          throw "id must be defined: " + id;
+          throw new Error("id must be defined: " + id);
         }
 
         if (typeof login === "undefined") {
-          throw "domain must be defined: " + login;
+          throw new Error("domain must be defined: " + login);
         }
 
         // all jids must absolutely be in lowercase
@@ -155,7 +155,7 @@ $(function() {
 
         // check arguments
         if (typeof silverpeasId === "undefined") {
-          throw "id must be defined: " + id;
+          throw new Error("id must be defined: " + id);
         }
 
         var defer = $.Deferred();

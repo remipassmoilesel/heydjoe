@@ -154,7 +154,7 @@ jsxc = {
     var buddy = jsxc.storage.getUserItem('buddy', bid);
 
     if(buddy.type && buddy.type === "groupchat"){
-      throw "Cannot update groupchat resource";
+      throw new Error("Cannot update groupchat resource");
     }
 
     // jid is present in buddy entrie, return it

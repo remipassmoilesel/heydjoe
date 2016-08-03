@@ -132,7 +132,7 @@ jsxc.mmstream.gui = {
     var jid = fulljid;
 
     if (Strophe.getResourceFromJid(fulljid) === null) {
-      throw "JID must be full jid";
+      throw new Error("JID must be full jid");
     }
 
     // add only if not already present
@@ -233,7 +233,7 @@ jsxc.mmstream.gui = {
     var self = jsxc.mmstream.gui;
 
     if (Strophe.getResourceFromJid(fulljid) === null) {
-      throw "JID must be full jid";
+      throw new Error("JID must be full jid");
     }
 
     // search element to remove
@@ -649,7 +649,7 @@ jsxc.mmstream.gui = {
     // var self = jsxc.mmstream.gui;
 
     if (Strophe.getResourceFromJid(fulljid) === null) {
-      throw "JID must be full jid";
+      throw new Error("JID must be full jid");
     }
 
     // hide video panel

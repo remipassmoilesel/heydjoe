@@ -40,7 +40,7 @@ jsxc.help = {
     // TODO: Check if a tutorial is already running
 
     if (typeof self.tutorials[name] === "undefined") {
-      throw "Invalid tutorial name: " + name;
+      throw new Error("Invalid tutorial name: " + name);
     }
 
     var tutorial = self.tutorials[name]();

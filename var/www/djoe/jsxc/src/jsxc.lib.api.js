@@ -41,11 +41,11 @@ jsxc.api = {
     $.each(callbacks, function(event, element) {
 
       if (self._availableEvents.indexOf(event) < 0) {
-        throw "Unknown event: " + event + " / Availables: " + self._availableEvents;
+        throw new Error("Unknown event: " + event + " / Availables: " + self._availableEvents);
       }
 
       if (typeof element !== "function") {
-        throw "Invalid callback, must be a function: " + (typeof element);
+        throw new Error("Invalid callback, must be a function: " + (typeof element));
       }
 
     });
@@ -70,7 +70,7 @@ jsxc.api = {
     var self = jsxc.api;
 
     if (typeof self[module.name] !== "undefined") {
-      throw "Module already exist: " + module.name;
+      throw new Error("Module already exist: " + module.name);
     }
 
     self[module.name] = module.module;
@@ -92,13 +92,13 @@ jsxc.api = {
 
     // check arguments
     if (self._availableEvents.indexOf(targetEvent) < 0) {
-      throw "Unknown event: " + targetEvent + " / Availables: " + self._availableEvents;
+      throw new Error("Unknown event: " + targetEvent + " / Availables: " + self._availableEvents);
     }
 
     targetArguments = targetArguments || [];
 
     if (targetArguments.constructor !== Array) {
-      throw "Invalid arguments specified (must provide an array): " + targetArguments;
+      throw new Error("Invalid arguments specified (must provide an array): " + targetArguments);
     }
 
     // call registered callbacks
@@ -194,7 +194,7 @@ jsxc.api = {
       self.feedback("Vous n'êtes pas connecté au client de messagerie");
       jsxc.gui.roster.toggle("shown");
 
-      throw "Not connected to JSXC client";
+      throw new Error("Not connected to JSXC client");
     }
   },
 

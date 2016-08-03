@@ -478,7 +478,7 @@ jsxc.gui.menu = {
 
       // load and add template
       if (typeof elmt.template === "undefined") {
-        throw "Parameter cannot be undefined: " + elmt.template;
+        throw new Error("Parameter cannot be undefined: " + elmt.template);
       }
       elmt.template = jsxc.gui.template.get(elmt.template);
 

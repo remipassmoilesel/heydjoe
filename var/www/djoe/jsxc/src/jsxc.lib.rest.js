@@ -93,10 +93,10 @@ jsxc.rest = {
             var self = jsxc.rest.openfire;
 
             if (typeof type === "undefined") {
-                throw "Parameter cannot be undefined: " + type;
+                throw new Error("Parameter cannot be undefined: " + type);
             }
             if (typeof url === "undefined") {
-                throw "Parameter cannot be undefined: " + url;
+                throw new Error("Parameter cannot be undefined: " + url);
             }
 
             var restUrl = self.apiBaseUrl + url;

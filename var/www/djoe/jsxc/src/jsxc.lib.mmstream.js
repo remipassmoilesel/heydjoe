@@ -419,7 +419,7 @@ jsxc.mmstream = {
     $.each(fulljidArray, function(index, element) {
       var res = Strophe.getResourceFromJid(element);
       if (res === null || res === "" || res === "null") {
-        throw "Only full jid are permitted: " + element;
+        throw new Error("Only full jid are permitted: " + element);
       }
     });
 
@@ -701,7 +701,7 @@ jsxc.mmstream = {
     }
 
     if (Strophe.getResourceFromJid(fulljid) === null) {
-      throw "JID must be full jid";
+      throw new Error("JID must be full jid");
     }
 
     // ice configuration
@@ -762,7 +762,7 @@ jsxc.mmstream = {
 
     jsxc.gui.feedback("Transfert de fichier à l'arrivée");
 
-    throw "Not implemented yet";
+    throw new Error("Not implemented yet");
 
   },
 
@@ -1071,7 +1071,7 @@ jsxc.mmstream = {
     }
 
     if (Strophe.getResourceFromJid(fulljid) === null) {
-      throw "JID must be full jid";
+      throw new Error("JID must be full jid");
     }
 
     // ice configuration
@@ -1193,7 +1193,7 @@ jsxc.mmstream = {
     var self = jsxc.mmstream;
 
     if (Strophe.getResourceFromJid(fulljid) === null) {
-      throw "JID must be full jid";
+      throw new Error("JID must be full jid");
     }
 
     self.conn.jingle.terminate(fulljid, "gone");
