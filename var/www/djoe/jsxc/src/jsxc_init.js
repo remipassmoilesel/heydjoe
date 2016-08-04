@@ -94,6 +94,13 @@ $(function() {
           credential : "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
           credentialType : "password",
           username : "djoe"
+        },
+
+        {
+          urls : "turn:turn1.silverpeas.net:80",
+          credential : "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
+          credentialType : "password",
+          username : "djoe"
         }]
     },
 
