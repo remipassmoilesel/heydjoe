@@ -95,6 +95,11 @@ jsxc.mmstream.gui = {
             location.reload();
           });
 
+          // add animated gif
+
+          $('#jsxc_installationIllustration').show().attr('src',
+              jsxc.options.root + 'img/install-chrome-extension.gif');
+
         });
 
         jsxc.mmstream._isChromeExtensionInstalled()
