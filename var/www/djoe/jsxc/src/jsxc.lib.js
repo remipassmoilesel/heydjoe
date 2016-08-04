@@ -657,20 +657,38 @@ jsxc = {
 
   /**
    * Called if the script is a slave
+   * 
+   *  /!\ Modified, slave use is deprecated for now
+   * 
+   * 
    */
   onSlave : function() {
+    
     jsxc.debug('I am the slave.');
 
+    // call flag of method
     jsxc.role_allocation = true;
-    jsxc.bid = jsxc.jidToBid(jsxc.storage.getItem('jid'));
 
-    jsxc.gui.init();
+    // disconnect
+    if(jsxc.xmpp.conn){
+      jsxc.xmpp.logout(true);
+    }
 
-    jsxc.restoreRoster();
-    jsxc.restoreWindows();
-    jsxc.restoreCompleted = true;
+    // show warning
+    if($('#jsxc_slaveClientWarning').length < 1){
+      var header = '<div id="jsxc_slaveClientWarning">La messagerie est disponible dans un autre onglet</div>';
+      $("body").prepend(header);
+    }
 
-    $(document).trigger('restoreCompleted.jsxc');
+    // jsxc.bid = jsxc.jidToBid(jsxc.storage.getItem('jid'));
+    //
+    // jsxc.gui.init();
+    //
+    // jsxc.restoreRoster();
+    // jsxc.restoreWindows();
+    // jsxc.restoreCompleted = true;
+    //
+    // $(document).trigger('restoreCompleted.jsxc');
   },
 
   /**

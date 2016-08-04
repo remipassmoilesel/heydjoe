@@ -195,10 +195,13 @@ jsxc.xmpp = {
     var self = jsxc.xmpp;
 
     // send the last presence to inform of disconnection
-    if (self.conn) {
-      self.conn.send($pres({
-        type : "unavailable"
-      }));
+    // have to be sent only by master
+    if (jsxc.master === true) {
+      if (self.conn) {
+        self.conn.send($pres({
+          type : "unavailable"
+        }));
+      }
     }
 
     // instruct all tabs
