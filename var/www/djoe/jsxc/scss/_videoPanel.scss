@@ -1,9 +1,13 @@
 
-$videopanel_width: 350px;
+
 /**
-  Sive video panel where shown videos thumbs
+
+  Side video panel where shown videos thumbs
 
 */
+
+$videopanel_width: 500px;
+
 #jsxc_videoPanel {
 
   font-size: 13px;
@@ -35,6 +39,12 @@ $videopanel_width: 350px;
     display: block;
     left: 0px;
     transition: left 0.5s;
+  }
+
+  .jsxc_videoPanelTitle{
+    margin-top: 8px;
+    margin-left: 20px;
+    margin-right: 20px;
   }
 
   #jsxc_toggleVideoPanel {

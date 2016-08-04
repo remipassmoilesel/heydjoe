@@ -86,11 +86,6 @@ jsxc.mmstream = {
   recipients : [],
 
   /**
-   * Currents video dialogs
-   */
-  videoDialogs : [],
-
-  /**
    * List of full jids which are automatically accepted
    */
   videoconferenceAcceptedBuddies : [],
@@ -1028,7 +1023,8 @@ jsxc.mmstream = {
 
     // show local video if needed
     if (self.gui.isLocalVideoShown() !== true) {
-      self.gui.showLocalVideo();
+      // self.gui.showLocalVideo();
+      self.gui.showVideoRecordingWarning();
     }
 
   },
@@ -1062,6 +1058,11 @@ jsxc.mmstream = {
 
     if (sessionFound !== true) {
       self._log("No session found", null, "ERROR");
+    }
+
+    // stop localstream if no current stream
+    if (Object.keys(self.getCurrentVideoSessions()).length < 1) {
+      self.stopLocalStream();
     }
 
   },

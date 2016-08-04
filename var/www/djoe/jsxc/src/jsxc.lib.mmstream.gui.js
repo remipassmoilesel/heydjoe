@@ -9,6 +9,25 @@ jsxc.mmstream.gui = {
    */
   videoPanel : null,
 
+  /**
+   * Currents video dialogs
+   */
+  videoDialogs : [],
+
+  /**
+   * Delay before attach video, to let navigator create all elements needed.
+   *
+   * Workaround for Firefox
+   */
+  DELAY_BEFORE_ATTACH : 600,
+
+  /**
+   * Special logging with prefix
+   * @param message
+   * @param data
+   * @param level
+   * @private
+   */
   _log : function(message, data, level) {
     jsxc.debug("[MMSTREAM GUI] " + message, data, level);
   },
@@ -190,7 +209,6 @@ jsxc.mmstream.gui = {
 
     // create video element and attach media stream
     var video = $("<video>").addClass("jsxc_videoThumb").appendTo(videoCtr);
-    jsxc.attachMediaStream(video.get(0), stream);
 
     // controls
     if (options.hangupButton === true) {
@@ -222,6 +240,8 @@ jsxc.mmstream.gui = {
 
     self.videoPanel.find(".jsxc_videoPanelContent").perfectScrollbar("update");
 
+    // attach video after append elements
+    jsxc.attachMediaStream(video.get(0), stream);
   },
 
   /**
@@ -260,6 +280,7 @@ jsxc.mmstream.gui = {
     // hide localvideo if necessary
     if (Object.keys(mmstream.getCurrentVideoSessions()).length < 1) {
       $("#jsxc_videoPanel .jsxc_videoThumbContainer").remove();
+      self.hideVideoRecordingWarning();
     }
 
   },
@@ -290,6 +311,19 @@ jsxc.mmstream.gui = {
 
   },
 
+  showVideoRecordingWarning : function() {
+
+    $("#jsxc_videoPanel .jsxcVideoPanelHeader").append(
+        "<h3 class='jsxc_videoPanelTitle jsxc_videoRecordingWarning'>Souriez, vous êtes filmé !</h3>");
+
+  },
+
+  hideVideoRecordingWarning : function() {
+
+    $("#jsxc_videoPanel .jsxc_videoRecordingWarning").remove();
+
+  },
+
   /**
    * Add "video" button to a window chat menu when open.
    *
@@ -316,7 +350,7 @@ jsxc.mmstream.gui = {
     if (win.find(".jsxc_video").length > 0) {
       self._updateIcon(bid);
       self._updateVideoLink(bid);
-      jsxc.debug("Video icon already exist, skip", event);
+      self._log("Video icon already exist, skip", event);
       return;
     }
 
@@ -495,7 +529,7 @@ jsxc.mmstream.gui = {
    */
   _newVideoDialog : function(stream, title) {
 
-    var self = jsxc.mmstream;
+    var self = jsxc.mmstream.gui;
 
     title = title || "";
 
@@ -505,12 +539,14 @@ jsxc.mmstream.gui = {
 
     self.videoDialogs.push(dialog);
 
-    // attach stream
-    jsxc.attachMediaStream(dialog.get(0), stream);
-
     dialog.dialog({
       title : title, height : '400', width : 'auto'
     });
+
+    // attach stream after element creation
+    setTimeout(function() {
+      jsxc.attachMediaStream(dialog.get(0), stream);
+    }, self.DELAY_BEFORE_ATTACH);
 
   },
 
@@ -647,7 +683,7 @@ jsxc.mmstream.gui = {
    */
   _showVideoFullscreen : function(fulljid) {
 
-    // var self = jsxc.mmstream.gui;
+    var self = jsxc.mmstream.gui;
 
     if (Strophe.getResourceFromJid(fulljid) === null) {
       throw new Error("JID must be full jid");
@@ -679,9 +715,10 @@ jsxc.mmstream.gui = {
     var session = jsxc.mmstream.getCurrentVideoSessions()[fulljid];
 
     if (session && session.stream) {
-      jsxc.attachMediaStream(video.get(0), session.stream);
-      //TODO: some browsers (Android Chrome, ...) want a user interaction before trigger play()
-      video.get(0).play();
+      // attach stream after element creation
+      setTimeout(function() {
+        jsxc.attachMediaStream(video.get(0), session.stream);
+      }, self.DELAY_BEFORE_ATTACH);
     }
 
     else {

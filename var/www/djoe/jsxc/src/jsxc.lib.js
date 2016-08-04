@@ -117,7 +117,7 @@ jsxc = {
     return time;
   },
 
-  throwOnStropheErrors: function(){
+  throwOnStropheErrors : function() {
 
     var stLogLevel = Strophe.LogLevel.WARN;
 
@@ -126,13 +126,13 @@ jsxc = {
 
       if (level >= stLogLevel) {
 
-        var txtLevel = Object.keys(Strophe.LogLevel)[level] || level;
+        var txtLevel = Object.keys(Strophe.LogLevel)[level] || level;
 
         // save stack trace
         var error = new Error("Strophe [" + txtLevel + "] " + msg);
 
         // throw error out of log function
-        setTimeout(function(){
+        setTimeout(function() {
           throw error;
         }, 0);
       }
@@ -153,7 +153,7 @@ jsxc = {
 
     var buddy = jsxc.storage.getUserItem('buddy', bid);
 
-    if(buddy.type && buddy.type === "groupchat"){
+    if (buddy.type && buddy.type === "groupchat") {
       throw new Error("Cannot update groupchat resource");
     }
 
@@ -213,10 +213,10 @@ jsxc = {
     }
 
     // log to console
-    console.log(formatted_msg, data || '');
+    console.log(formatted_msg, data || '');
 
     // log in stat module if necessary
-    if(jsxc.stats.addLogEntry){
+    if (jsxc.stats.addLogEntry) {
       jsxc.stats.addLogEntry(msg, level, data);
     }
 
@@ -225,7 +225,7 @@ jsxc = {
 
     // limit log size
     var oversize = jsxc.log.length - 10000;
-    if(oversize > 200){
+    if (oversize > 200) {
       jsxc.log = '.... [log truncated] \n' + jsxc.log.substring(oversize, jsxc.log.length);
     }
 
@@ -1012,7 +1012,7 @@ jsxc = {
   hashStr : function(str) {
     var hash = 0, i;
 
-    if (!str || str.length === 0) {
+    if (!str || str.length === 0) {
       return hash;
     }
 
@@ -1048,7 +1048,18 @@ jsxc = {
    * @param element
    */
   attachMediaStream : function(element, stream) {
-    jsxc.xmpp.conn.jingle.RTC.attachMediaStream(element, stream);
+
+    // jsxc.xmpp.conn.jingle.RTC.attachMediaStream(element, stream);
+
+    var video = $(element);
+    var src = URL.createObjectURL(stream);
+
+    jsxc.debug("Attach media stream to video element", {"element" : element, "stream" : stream});
+
+    video.attr('src', src);
+
+    //TODO: some browsers (Android Chrome, ...) want a user interaction before trigger play()
+    video.get(0).play();
   }
 
 };

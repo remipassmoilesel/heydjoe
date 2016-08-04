@@ -40,6 +40,7 @@
     "startGame": true,
     "Game": true,
     "Shepherd": true,
-    "require": true
+    "require": true,
+    "URL": true
   }
 }
