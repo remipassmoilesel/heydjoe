@@ -216,7 +216,7 @@ jsxc = {
     console.log(formatted_msg, data || '');
 
     // log in stat module if necessary
-    if (jsxc.stats.addLogEntry) {
+    if (jsxc.stats && jsxc.stats.addLogEntry) {
       jsxc.stats.addLogEntry(msg, level, data);
     }
 
@@ -283,6 +283,29 @@ jsxc = {
   },
 
   /**
+   * Return true if local storage is available
+   *
+   */
+  isLocalStorageAvailable : function() {
+
+    // check if storage available
+    try {
+
+      // Check localStorage
+      if (typeof(localStorage) === 'undefined') {
+        jsxc.error("Browser doesn't support localStorage.");
+        return false;
+      }
+
+    } catch (e) {
+      jsxc.error("Browser doesn't support localStorage.", e);
+      return false;
+    }
+
+    return true;
+  },
+
+  /**
    * This function initializes important core functions and event handlers.
    * Afterwards it performs the following actions in the given order:
    *
@@ -303,6 +326,28 @@ jsxc = {
     // Log strophe errors
     jsxc.throwOnStropheErrors();
 
+    if (jsxc.isLocalStorageAvailable() !== true) {
+
+      var showHeader = function() {
+
+        if ($('jsxc_noStorageWarning').length < 1) {
+
+          var header = '<div id="jsxc_noStorageWarning">Le stockage local de votre navigateur est indisponible. Utilisez un navigateur compatible ' +
+              '(Firefox, Brave, Opera, Chrome) et utilisez une connexion sécurisée (https://...).</div>';
+          $("body").prepend(header);
+
+          jsxc.error("No local storage available.");
+
+        }
+
+      };
+
+      setTimeout(showHeader, 500);
+
+      return;
+
+    }
+
     if (options && options.loginForm && typeof options.loginForm.attachIfFound === 'boolean' &&
         !options.loginForm.ifFound) {
       // translate deprated option attachIfFound found to new ifFound
@@ -315,12 +360,6 @@ jsxc = {
     }
 
     jsxc.api.callback("onInit");
-
-    // Check localStorage
-    if (typeof(localStorage) === 'undefined') {
-      jsxc.warn("Browser doesn't support localStorage.");
-      return;
-    }
 
     /**
      * Getter method for options. Saved options will override default one.
@@ -357,6 +396,10 @@ jsxc = {
      * Initialize i18n
      */
     jsxc.localization.init();
+
+    /**
+     * Stat module, after options.get and options.set definitions
+     */
 
     jsxc.stats.init();
     jsxc.stats.addEvent('jsxc.init');
@@ -657,25 +700,25 @@ jsxc = {
 
   /**
    * Called if the script is a slave
-   * 
+   *
    *  /!\ Modified, slave use is deprecated for now
-   * 
-   * 
+   *
+   *
    */
   onSlave : function() {
-    
+
     jsxc.debug('I am the slave.');
 
     // call flag of method
     jsxc.role_allocation = true;
 
     // disconnect
-    if(jsxc.xmpp.conn){
+    if (jsxc.xmpp.conn) {
       jsxc.xmpp.logout(true);
     }
 
     // show warning
-    if($('#jsxc_slaveClientWarning').length < 1){
+    if ($('#jsxc_slaveClientWarning').length < 1) {
       var header = '<div id="jsxc_slaveClientWarning">La messagerie est disponible dans un autre onglet</div>';
       $("body").prepend(header);
     }
