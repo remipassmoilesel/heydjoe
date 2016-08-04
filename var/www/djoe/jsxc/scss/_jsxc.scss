@@ -551,3 +551,22 @@ img.jsxc_vCard {
 
   text-align: center;
 }
+
+#jsxc_noscript_warning{
+
+  display: block;
+  height: 30px;
+
+  padding-top: 15px;
+  padding-right: 10px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+
+  background: darkred;
+  color: white;
+
+  font-size: 14px;
+  font-weight: bolder;
+
+  text-align: center;
+}
