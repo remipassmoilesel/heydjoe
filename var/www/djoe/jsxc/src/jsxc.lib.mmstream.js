@@ -940,26 +940,42 @@ jsxc.mmstream = {
       return defer.promise();
     }
 
-    var constraints = {
-      
-      audio : true,
+    // TODO: reduce resolution with firefox too
+    // For now use of mandatory / optionnal is deprecated
 
-      "video" : {
-        "mandatory" : {
+    var constraints;
+    if (self._isNavigatorFirefox()) {
 
-          "minWidth" : 320,
-          "maxWidth" : 640,
+      constraints = {
 
-          "minHeight" : 180,
-          "maxHeight" : 480,
+        audio : true,
 
-          "minFrameRate" : 10,
-          "maxFrameRate" : 20
+        video : true
 
-        }, "optional" : []
-      }
+      };
+    }
 
-    };
+    // other navigators
+    else {
+
+      constraints = {
+
+        audio : true,
+
+        video : {
+          "mandatory" : {
+
+            "minWidth" : 320, "maxWidth" : 640,
+
+            "minHeight" : 180, "maxHeight" : 480,
+
+            "minFrameRate" : 10, "maxFrameRate" : 20
+
+          }, "optional" : []
+        }
+
+      };
+    }
 
     // require local stream
     self.conn.jingle.RTC.getUserMedia(constraints,

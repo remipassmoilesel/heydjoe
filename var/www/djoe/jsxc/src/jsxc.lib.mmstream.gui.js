@@ -87,7 +87,7 @@ jsxc.mmstream.gui = {
 
       // we are not in HTTPS
       else {
-        
+
         // remove existing warnings
         $("#jsxc_menuConversation .jsxc_httpScreenSharingWarning").remove();
 
@@ -143,6 +143,7 @@ jsxc.mmstream.gui = {
         return false;
       }
     });
+
     if (alreadyHere === true) {
       return;
     }
@@ -312,7 +313,7 @@ jsxc.mmstream.gui = {
     var bid = win.data('bid');
 
     // don't add icon if already present
-    if(win.find(".jsxc_video").length > 0){
+    if (win.find(".jsxc_video").length > 0) {
       self._updateIcon(bid);
       self._updateVideoLink(bid);
       jsxc.debug("Video icon already exist, skip", event);
@@ -369,7 +370,6 @@ jsxc.mmstream.gui = {
     var mmstream = jsxc.mmstream;
     var self = jsxc.mmstream.gui;
 
-
     if (bid === jsxc.jidToBid(mmstream.conn.jid)) {
       return;
     }
@@ -384,7 +384,7 @@ jsxc.mmstream.gui = {
      If updating group chat here, keep in mind that method
      jsxc.getCurrentActiveJidForBid(bid); will modify groupchat jid
      */
-    if(budDatas.type === "groupchat"){
+    if (budDatas.type === "groupchat") {
       return;
     }
 
@@ -637,8 +637,6 @@ jsxc.mmstream.gui = {
 
     return defer.promise();
 
-
-    
   },
 
   /**
@@ -682,6 +680,7 @@ jsxc.mmstream.gui = {
 
     if (session && session.stream) {
       jsxc.attachMediaStream(video.get(0), session.stream);
+      //TODO: some browsers (Android Chrome, ...) want a user interaction before trigger play()
       video.get(0).play();
     }
 
