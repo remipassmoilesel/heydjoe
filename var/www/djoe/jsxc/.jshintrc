@@ -41,6 +41,7 @@
     "Game": true,
     "Shepherd": true,
     "require": true,
+    "QUnit": true,
     "URL": true
   }
 }

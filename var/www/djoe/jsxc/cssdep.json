@@ -3,5 +3,6 @@
   "lib/perfect-scrollbar/css/perfect-scrollbar.css",
   "lib/magnific-popup/dist/magnific-popup.css",
   "lib/tether-shepherd/dist/css/shepherd-theme-default.css",
+  "lib/qunit/qunit/qunit.css",
   "tmp/jsxc.css"
 ]

@@ -148,5 +148,11 @@
     "file": "lib/tether-shepherd/dist/js/shepherd.js",
     "license": "",
     "url": ""
+  } ,
+  {
+    "name": "QUnit",
+    "file": "lib/qunit/qunit/qunit.js",
+    "license": "",
+    "url": ""
   }
 ]
