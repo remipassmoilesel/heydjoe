@@ -7,6 +7,22 @@ jsxc.xmpp = {
 
   conn : null, // connection
 
+  _showPresences : false,
+
+  _sentPresences : 0,
+
+  _receivedPresences : 0,
+
+  /**
+   * Timer for sending presence to server every n ms
+   */
+  PRESENCE_SENDING_INTERVAL : 6000,
+
+  /**
+   * Timer reference for sending presence every n ms
+   */
+  _autoPresenceSend : null,
+
   /**
    * Return the node of the current user. Example: jean@something/client is connected so
    * getCurrentNode() return jean
@@ -43,6 +59,8 @@ jsxc.xmpp = {
    * @private
    */
   login : function() {
+
+    var self = jsxc.xmpp;
 
     // check if not already connected
     if (jsxc.xmpp.conn && jsxc.xmpp.conn.authenticated) {
@@ -132,12 +150,18 @@ jsxc.xmpp = {
         case Strophe.Status.CONNECTED:
           jsxc.bid = jsxc.jidToBid(jsxc.xmpp.conn.jid.toLowerCase());
           $(document).trigger('connected.jsxc');
+
+          self.launchAutoPresenceTimer();
+
           break;
         case Strophe.Status.ATTACHED:
           $(document).trigger('attached.jsxc');
           break;
         case Strophe.Status.DISCONNECTED:
           $(document).trigger('disconnected.jsxc');
+
+          self.stopAutoPresenceTimer();
+
           break;
         case Strophe.Status.CONNFAIL:
           $(document).trigger('connfail.jsxc');
@@ -182,6 +206,28 @@ jsxc.xmpp = {
 
       jsxc.xmpp.conn.connect(jid, password || jsxc.options.xmpp.password, callback);
     }
+  },
+
+  /**
+   * Automati sending of presence to inform all users at n ms interval of our state and
+   * our resource (for multimedia stream per example)
+   */
+  launchAutoPresenceTimer : function() {
+
+    var self = jsxc.xmpp;
+
+    self._autoPresenceSend = setInterval(function() {
+      self.sendPres();
+    }, self.PRESENCE_SENDING_INTERVAL);
+
+  },
+
+  stopAutoPresenceTimer : function() {
+
+    var self = jsxc.xmpp;
+
+    clearInterval(self._autoPresenceSend);
+
   },
 
   /**
@@ -416,6 +462,12 @@ jsxc.xmpp = {
    * Sends presence stanza to server.
    */
   sendPres : function() {
+
+    var self = jsxc.xmpp;
+
+    // count presences sent
+    self._sentPresences += 1;
+
     // disco stuff
     if (jsxc.xmpp.conn.disco) {
       jsxc.xmpp.conn.disco.addIdentity('client', 'web', 'JSXC');
@@ -442,7 +494,10 @@ jsxc.xmpp = {
       pres.c('priority').t(priority[presState]).up();
     }
 
-    jsxc.debug('Send presence', pres.toString());
+    //jsxc.debug('Send presence', pres);
+    if (self._showPresences === true) {
+      jsxc.debug('Send presence', {count: self._sentPresences});
+    }
     jsxc.xmpp.conn.send(pres);
   },
 
@@ -670,7 +725,17 @@ jsxc.xmpp = {
      * xmlns='http://jabber.org/protocol/caps' node='http://psi-im.org/caps'
      * ver='caps-b75d8d2b25' ext='ca cs ep-notify-2 html'/> </presence>
      */
-    jsxc.debug('onPresence', presence);
+
+    var self = jsxc.xmpp;
+
+    if (self._showPresences === true) {
+      jsxc.debug('onPresence', {
+        presence : presence, count : self._receivedPresences
+      });
+    }
+
+    // count presences
+    self._receivedPresences += 1;
 
     // presence type
     var ptype = $(presence).attr('type');
@@ -838,7 +903,9 @@ jsxc.xmpp = {
     jsxc.storage.setUserItem('buddy', bid, data);
     jsxc.storage.setUserItem('res', bid, res);
 
-    jsxc.debug('Presence (' + from + '): ' + status);
+    if (self._showPresences === true) {
+      jsxc.debug('Presence (' + from + '): ' + status);
+    }
 
     jsxc.gui.update(bid);
     jsxc.gui.roster.reorder(bid);
