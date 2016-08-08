@@ -1111,16 +1111,22 @@ jsxc = {
   attachMediaStream : function(element, stream) {
 
     // jsxc.xmpp.conn.jingle.RTC.attachMediaStream(element, stream);
+    
+    setTimeout(function() {
 
-    var video = $(element);
-    var src = URL.createObjectURL(stream);
+      var video = $(element);
+      var src = URL.createObjectURL(stream);
 
-    jsxc.debug("Attach media stream to video element", {"element" : element, "stream" : stream});
+      jsxc.debug("Attach media stream to video element", {"element" : video, "stream" : stream, "src": src});
+      
+      video.attr('src', src);
 
-    video.attr('src', src);
+      //TODO: some browsers (Android Chrome, ...) want a user interaction before trigger play()
+      video.get(0).play();
+      
+    }, jsxc.mmstream.DELAY_BEFORE_ATTACH);
 
-    //TODO: some browsers (Android Chrome, ...) want a user interaction before trigger play()
-    video.get(0).play();
+
   }
 
 };

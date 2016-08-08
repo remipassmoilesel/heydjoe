@@ -15,13 +15,6 @@ jsxc.mmstream.gui = {
   videoDialogs : [],
 
   /**
-   * Delay before attach video, to let navigator create all elements needed.
-   *
-   * Workaround for Firefox
-   */
-  DELAY_BEFORE_ATTACH : 600,
-
-  /**
    * Special logging with prefix
    * @param message
    * @param data
@@ -40,6 +33,10 @@ jsxc.mmstream.gui = {
   _initGui : function() {
 
     var self = jsxc.mmstream.gui;
+
+    // update user status on event
+    $(document).on("status.videoconference-changed.jsxc", self._videoconferenceChanged);
+    $(document).on("type.videoconference-changed.jsxc", self._videoconferenceChanged);
 
     // create GUI
     self.videoPanel = $(jsxc.gui.template.get('videoPanel'));
@@ -60,6 +57,81 @@ jsxc.mmstream.gui = {
     } else {
       $(document).one("menu.ready.jsxc", self._initChromeExtensionDialog);
     }
+
+  },
+
+  /**
+   * Called when videoconference users changes
+   *
+   * Here we can show messages or close dialogs, update indicators, ...
+   *
+   * @private
+   */
+  _videoconferenceChanged : function(event, data) {
+
+    var self = jsxc.mmstream.gui;
+    var mmstream = jsxc.mmstream;
+
+    if (jsxc.mmstream.debug === true) {
+      self._log("On status changed", {
+        event : event, data : data
+      });
+    }
+
+    // update video conference indicator
+    self._updateVideoconferenceIndicator();
+
+    // iterate datas and show feedback if one user is disconnected
+    // only for status changed, to avoid too many notifications
+    if (event.type === "status") {
+
+      $.each(data.users, function(index, element) {
+
+        if (element.status === mmstream.USER_STATUS.DISCONNECTED) {
+
+          // display message
+          var node = Strophe.getNodeFromJid(element.fulljid);
+
+          // hide dialog if necessary
+          jsxc.gui.dialog.close('incoming_call_dialog');
+          jsxc.gui.dialog.close('video_conference_incoming');
+
+          // let dialog get closed
+          setTimeout(function() {
+            jsxc.gui.feedback("Connexion interrompue avec " + node);
+          }, 700);
+
+        }
+
+      });
+    }
+
+  },
+
+  /**
+   * Update videoconference gui to show status of participants
+   * @private
+   */
+  _updateVideoconferenceIndicator : function() {
+
+    // var self = jsxc.mmstream.gui;
+    var mmstream = jsxc.mmstream;
+
+    var list = $("#jsxc_videoPanel .jsxc_videoconferenceUsers");
+
+    // remove all items from list
+    list.find("li").remove();
+
+    // iterate users
+    $.each(mmstream.videoconference.users, function(index, item) {
+
+      var it = $("<li>");
+      it.addClass("jsxcVideoConf_" + item.status);
+      it.text(item.node + ": " + item.status);
+
+      list.append(it);
+
+    });
 
   },
 
@@ -255,7 +327,6 @@ jsxc.mmstream.gui = {
    */
   _hideVideoStream : function(fulljid) {
 
-    var mmstream = jsxc.mmstream;
     var self = jsxc.mmstream.gui;
 
     if (Strophe.getResourceFromJid(fulljid) === null) {
@@ -271,22 +342,10 @@ jsxc.mmstream.gui = {
         // remove element
         $(this).remove();
 
-        // display message
-        var node = Strophe.getNodeFromJid(fulljid);
-        var mess = "Connexion interrompue avec " + node;
-
-        jsxc.gui.feedback(mess);
-
         return false;
       }
 
     });
-
-    // hide localvideo if necessary
-    if (Object.keys(mmstream.getCurrentVideoSessions()).length < 1) {
-      $("#jsxc_videoPanel .jsxc_videoThumbContainer").remove();
-      self.hideVideoRecordingWarning();
-    }
 
   },
 
@@ -297,35 +356,25 @@ jsxc.mmstream.gui = {
   showLocalVideo : function() {
 
     var mmstream = jsxc.mmstream;
-    var self = jsxc.mmstream.gui;
 
     mmstream._requireLocalStream()
         .done(function(localStream) {
-          self._showVideoStream(localStream, jsxc.xmpp.conn.jid, {
-            title : "Local video stream",
-            prepend : true,
-            hangupButton : false,
-            fullscreenButton : false,
-            supClasses : "jsxc_local_video_container"
-          });
+
+          jsxc.attachMediaStream("#jsxc_localVideo", localStream);
+
+          // self._showVideoStream(localStream, jsxc.xmpp.conn.jid, {
+          //   title : "Local video stream",
+          //   prepend : true,
+          //   hangupButton : false,
+          //   fullscreenButton : false,
+          //   supClasses : "jsxc_local_video_container"
+          // });
+
         })
         .fail(function(error) {
           jsxc.gui.feedback("Erreur lors de l'accès à la caméra et au micro: " + error);
           jsxc.error("Error while using audio/video", error);
         });
-
-  },
-
-  showVideoRecordingWarning : function() {
-
-    $("#jsxc_videoPanel .jsxcVideoPanelHeader").append(
-        "<h3 class='jsxc_videoPanelTitle jsxc_videoRecordingWarning'>Souriez, vous êtes filmé !</h3>");
-
-  },
-
-  hideVideoRecordingWarning : function() {
-
-    $("#jsxc_videoPanel .jsxc_videoRecordingWarning").remove();
 
   },
 
@@ -407,13 +456,13 @@ jsxc.mmstream.gui = {
   _updateVideoLink : function(bid) {
 
     var mmstream = jsxc.mmstream;
-    var self = jsxc.mmstream.gui;
+    // var self = jsxc.mmstream.gui;
 
     if (bid === jsxc.jidToBid(mmstream.conn.jid)) {
       return;
     }
 
-    self._log('Update link', bid);
+    //self._log('Update link', bid);
 
     // search available ressource
     var budDatas = jsxc.storage.getUserItem("buddy", bid);
@@ -478,9 +527,9 @@ jsxc.mmstream.gui = {
     bid = Strophe.getBareJidFromJid(bid);
 
     var mmstream = jsxc.mmstream;
-    var self = jsxc.mmstream.gui;
+    // var self = jsxc.mmstream.gui;
 
-    self._log('Update icon', bid);
+    //self._log('Update icon', bid);
 
     if (bid === jsxc.jidToBid(mmstream.conn.jid)) {
       return;
@@ -549,9 +598,7 @@ jsxc.mmstream.gui = {
     });
 
     // attach stream after element creation
-    setTimeout(function() {
-      jsxc.attachMediaStream(dialog.get(0), stream);
-    }, self.DELAY_BEFORE_ATTACH);
+    jsxc.attachMediaStream(dialog.get(0), stream);
 
   },
 
@@ -611,8 +658,10 @@ jsxc.mmstream.gui = {
 
     var defer = $.Deferred();
 
+    bid = Strophe.getBareJidFromJid(bid);
+
     var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('incomingCall', bid), {
-      noClose : true
+      noClose : true, name : 'incoming_call_dialog'
     });
 
     self._ringOnIncoming();
@@ -660,7 +709,7 @@ jsxc.mmstream.gui = {
 
       self._stopRinging();
 
-      defer.resolve("ACCEPT");
+      defer.resolve("User accepted videoconference");
 
       jsxc.gui.dialog.close();
 
@@ -670,7 +719,7 @@ jsxc.mmstream.gui = {
 
       self._stopRinging();
 
-      defer.reject("REJECT");
+      defer.reject("User rejected videoconference");
 
       jsxc.gui.dialog.close();
 
@@ -717,17 +766,19 @@ jsxc.mmstream.gui = {
 
     // attach video stream
     var video = $("#jsxc_dialog video");
-    var session = jsxc.mmstream.getCurrentVideoSessions()[fulljid];
+    var stream = jsxc.mmstream.getActiveStream(fulljid);
 
-    if (session && session.stream) {
-      // attach stream after element creation
-      setTimeout(function() {
-        jsxc.attachMediaStream(video.get(0), session.stream);
-      }, self.DELAY_BEFORE_ATTACH);
+    if (stream) {
+      jsxc.attachMediaStream(video.get(0), stream);
     }
 
     else {
       $("#jsxc_dialog h3").text("Vidéo indisponible");
+
+      self._log("Stream is null", {
+        fulljid : fulljid, stream : stream
+      }, 'ERROR');
+
     }
 
   }
