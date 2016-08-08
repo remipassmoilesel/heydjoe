@@ -122,12 +122,25 @@ jsxc.mmstream.gui = {
     // remove all items from list
     list.find("li").remove();
 
+    if (Object.keys(mmstream.videoconference.users) < 1) {
+
+      var it = $("<li>");
+      it.text("Aucun utilisateur en vidéo conférence");
+      list.append(it);
+
+    }
+
     // iterate users
     $.each(mmstream.videoconference.users, function(index, item) {
 
       var it = $("<li>");
+
       it.addClass("jsxcVideoConf_" + item.status);
-      it.text(item.node + ": " + item.status);
+      it.addClass("jsxcVideoConf_" + item.type);
+
+      it.text(item.node);
+
+      it.attr("title", item.type + ": " + item.status);
 
       list.append(it);
 

@@ -28,15 +28,99 @@ $videopanel_width: 500px;
     overflow: auto;
     display: inline-block;
     margin: 5px;
-    border: solid 1px gray;
+    padding: 5px;
+    border: solid 1px #c3c3c3;
 
-    &.jsxc_localVideoCtr{
+    #jsxc_localVideo {
+      height: 100%;
+      margin: auto;
+    }
+
+    &.jsxc_localVideoCtr {
       overflow: hidden;
     }
   }
 
   .jsxc_videoconferenceUsers {
+
     list-style: none;
+    padding: 5px;
+
+    .jsxcVideoConf_SELF {
+      display: none;
+    }
+
+    .jsxcVideoConf_INITIATOR {
+      &:after {
+        content: " ";
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        background-size: 90%;
+        background-repeat: no-repeat;
+        margin: 0 0 0 3px;
+
+        background-image: image-url("videoconference_initiator.svg");
+      }
+    }
+
+    .jsxcVideoConf_DISCONNECTED {
+      &:before {
+        content: " ";
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        background-size: 90%;
+        background-repeat: no-repeat;
+        margin: 0 3px 0 0;
+
+        background-image: image-url("videoconference_disconnected.svg");
+      }
+    }
+
+    .jsxcVideoConf_NOT_READY, .jsxcVideoConf_READY, .jsxcVideoConf_CONNECTING,
+    .jsxcVideoConf_CONNEXION_DISTURBED {
+      &:before {
+        content: " ";
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        background-size: 90%;
+        background-repeat: no-repeat;
+        margin: 0 3px 0 0;
+
+        background-image: image-url("videoconference_waiting.svg");
+      }
+    }
+
+    .jsxcVideoConf_CONNECTED {
+      &:before {
+        content: " ";
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        background-size: 90%;
+        background-repeat: no-repeat;
+        margin: 0 3px 0 0;
+
+        background-image: image-url("videoconference_connected.svg");
+      }
+    }
+
+    .jsxcVideoConf_HAS_DECLINED_VIDEOCONFERENCE, .jsxcVideoConf_REJECTED {
+      &:before {
+        content: " ";
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        background-size: 90%;
+        background-repeat: no-repeat;
+        margin: 0 3px 0 0;
+
+        background-image: image-url("videoconference_declined.svg");
+      }
+    }
+
   }
 
   &.jsxc_state_hidden {

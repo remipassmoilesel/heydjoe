@@ -51,13 +51,9 @@ jsxc.mmstream.testCases = [
 
       var user = "a@domain.net/heyhey";
 
-      self._setUserStatus(user, self.USER_STATUS.AUTOACCEPT_STREAM);
-      assert.ok(self._isBuddyAutoAccept(user) === true, "AUTOACCEPTED ok");
-      assert.ok(self._isBuddyWaiting(user) !== true, "WAITING ok");
-
-      self._setUserStatus(user, self.USER_STATUS.WAITING);
-      assert.ok(self._isBuddyWaiting(user) === true, "WAITING ok");
-      assert.ok(self._isBuddyAutoAccept(user) !== true, "AUTOACCEPTED ok");
+      self._setUserStatus(user, self.USER_STATUS.READY);
+      assert.ok(self._isBuddyReady(user) === true, "READY ok");
+      assert.ok(self._isBuddyParticipating(user) === true, "Participating ok");
 
       // delte user after, to not alter JSXC service
       delete self.videoconference.users[user];
