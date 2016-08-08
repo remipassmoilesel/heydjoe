@@ -49,6 +49,8 @@ Ce qui donne pour notre exemple la séquence suivante:
 1. d@domain/res devra contacter `a`
 1. a@domain/res ne devra contacter personne
 
+![Principe de vidéo conférence en paire à paire](https://raw.githubusercontent.com/remipassmoilesel/djoe/master/documentation/notes/videoconference.png "Principe de vidéo conférence en paire à paire")
+
 ## Initier une vidéoconférence
 
 1. L'initiateur de la vidéoconférence sélectionne une liste d'identifiants Jabber complets
@@ -107,8 +109,3 @@ _Exemple de message_:
                      message='Vidéoconférence annulée par david'/>
     </message>
 ```    
-
-    
-   
-
-        
