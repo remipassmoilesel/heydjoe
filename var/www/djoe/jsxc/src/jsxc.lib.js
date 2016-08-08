@@ -213,7 +213,12 @@ jsxc = {
     }
 
     // log to console
-    console.log(formatted_msg, data || '');
+    var log = console.log;
+    if(level === "ERROR"){
+      var log = console.error;
+    }
+
+    log(formatted_msg, data || '');
 
     // log in stat module if necessary
     if (jsxc.stats && jsxc.stats.addLogEntry) {
