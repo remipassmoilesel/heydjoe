@@ -886,6 +886,10 @@ jsxc.gui = {
     $('#jsxc_dialog .jsxc_debuglog').click(function() {
       jsxc.gui.showDebugLog();
     });
+
+    $('#jsxc_dialog .jsxc_spaceInvasion').click(function(){
+      jsxc.api.spaceInvasion();
+    });
   },
 
   /**
