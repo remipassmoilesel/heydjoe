@@ -16,7 +16,12 @@ jsxc.xmpp = {
   /**
    * Timer for sending presence to server every n ms
    */
-  PRESENCE_SENDING_INTERVAL : 6000,
+  AUTO_PRESENCE_SENDING_INTERVAL : 5000,
+
+  /**
+   * Maximum sending, -1 to disable
+   */
+  AUTO_PRESENCE_SENDING_MAX : 20,
 
   /**
    * Timer reference for sending presence every n ms
@@ -151,7 +156,9 @@ jsxc.xmpp = {
           jsxc.bid = jsxc.jidToBid(jsxc.xmpp.conn.jid.toLowerCase());
           $(document).trigger('connected.jsxc');
 
-          self.launchAutoPresenceTimer();
+          if (jsxc.master === true) {
+            self.launchAutoPresenceTimer();
+          }
 
           break;
         case Strophe.Status.ATTACHED:
@@ -209,22 +216,46 @@ jsxc.xmpp = {
   },
 
   /**
-   * Automati sending of presence to inform all users at n ms interval of our state and
+   * Automatic sending of presence to inform all users at 'n' ms interval of our state and
    * our resource (for multimedia stream per example)
    */
   launchAutoPresenceTimer : function() {
 
     var self = jsxc.xmpp;
 
+    jsxc.debug("Starting auto presence sending timer", {
+      interval: self.AUTO_PRESENCE_SENDING_INTERVAL,
+      max: self.AUTO_PRESENCE_SENDING_MAX
+    });
+
+    // count only auto presences
+    var i = 0;
+
     self._autoPresenceSend = setInterval(function() {
       self.sendPres();
-    }, self.PRESENCE_SENDING_INTERVAL);
+
+      i = i + 1;
+
+      // stop auto sending if necessary
+      if (self.AUTO_PRESENCE_SENDING_MAX > 0 && i > self.AUTO_PRESENCE_SENDING_MAX){
+        self.stopAutoPresenceTimer();
+      }
+
+    }, self.AUTO_PRESENCE_SENDING_INTERVAL);
 
   },
 
+  /**
+   * Stop automatic sending of presence
+   */
   stopAutoPresenceTimer : function() {
 
     var self = jsxc.xmpp;
+
+    jsxc.debug("Stopping auto presence sending timer", {
+      interval: self.AUTO_PRESENCE_SENDING_INTERVAL,
+      max: self.AUTO_PRESENCE_SENDING_MAX
+    });
 
     clearInterval(self._autoPresenceSend);
 
@@ -496,7 +527,7 @@ jsxc.xmpp = {
 
     //jsxc.debug('Send presence', pres);
     if (self._showPresences === true) {
-      jsxc.debug('Send presence', {count: self._sentPresences});
+      jsxc.debug('Send presence', {count : self._sentPresences});
     }
     jsxc.xmpp.conn.send(pres);
   },
