@@ -191,7 +191,7 @@ jsxc = {
   debug : function(msg, data, level) {
 
     // default level
-    level = (level || 'INFO').toUpperCase();
+    level = (level || 'INFO').trim().toUpperCase();
 
     // modifying message
     var formatted_msg = '[' + level + '] ' + msg;
