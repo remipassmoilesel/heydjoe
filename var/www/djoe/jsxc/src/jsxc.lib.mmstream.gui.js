@@ -35,8 +35,7 @@ jsxc.mmstream.gui = {
     var self = jsxc.mmstream.gui;
 
     // update user status on event
-    $(document).on("status.videoconference-changed.jsxc", self._videoconferenceChanged);
-    $(document).on("type.videoconference-changed.jsxc", self._videoconferenceChanged);
+    $(document).on("videoconference-changed.jsxc", self._videoconferenceChanged);
 
     // create GUI
     self.videoPanel = $(jsxc.gui.template.get('videoPanel'));
@@ -59,7 +58,7 @@ jsxc.mmstream.gui = {
     }
 
   },
-
+  
   /**
    * Called when videoconference users changes
    *
@@ -73,7 +72,7 @@ jsxc.mmstream.gui = {
     var mmstream = jsxc.mmstream;
 
     if (jsxc.mmstream.debug === true) {
-      self._log("On status changed", {
+      self._log("On videoconference changed", {
         event : event, data : data
       });
     }
@@ -83,8 +82,8 @@ jsxc.mmstream.gui = {
 
     // iterate datas and show feedback if one user is disconnected
     // only for status changed, to avoid too many notifications
-    if (event.type === "status") {
 
+    if (data && data.users) {
       $.each(data.users, function(index, element) {
 
         if (element.status === mmstream.USER_STATUS.DISCONNECTED) {
@@ -374,15 +373,7 @@ jsxc.mmstream.gui = {
         .done(function(localStream) {
 
           jsxc.attachMediaStream("#jsxc_localVideo", localStream);
-
-          // self._showVideoStream(localStream, jsxc.xmpp.conn.jid, {
-          //   title : "Local video stream",
-          //   prepend : true,
-          //   hangupButton : false,
-          //   fullscreenButton : false,
-          //   supClasses : "jsxc_local_video_container"
-          // });
-
+          
         })
         .fail(function(error) {
           jsxc.gui.feedback("Erreur lors de l'accès à la caméra et au micro: " + error);
