@@ -21,7 +21,7 @@ jsxc.xmpp = {
   /**
    * Maximum sending, -1 to disable
    */
-  AUTO_PRESENCE_SENDING_MAX : 20,
+  AUTO_PRESENCE_SENDING_MAX : -1,
 
   /**
    * Timer reference for sending presence every n ms
