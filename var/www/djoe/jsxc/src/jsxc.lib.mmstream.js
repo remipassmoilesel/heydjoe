@@ -283,11 +283,11 @@ jsxc.mmstream = {
 
       status : self.USER_STATUS.DISCONNECTED,
 
-      session: null,
+      session : null,
 
-      stream: null,
+      stream : null,
 
-      jingleState: null
+      jingleState : null
 
     };
 
@@ -1078,6 +1078,8 @@ jsxc.mmstream = {
 
     var self = jsxc.mmstream;
 
+    self.checkNavigatorCompatibility("videoconference");
+
     jsxc.stats.addEvent("jsxc.mmstream.videoconference.start");
 
     if (jsxc.mmstream.debug === true) {
@@ -1192,6 +1194,8 @@ jsxc.mmstream = {
 
     var self = jsxc.mmstream;
 
+    self.checkNavigatorCompatibility("videoconference");
+
     jsxc.stats.addEvent("jsxc.mmstream.screensharing.multipart.start");
 
     if (jsxc.mmstream.debug === true) {
@@ -1206,7 +1210,7 @@ jsxc.mmstream = {
 
       // call each participant
       $.each(fulljidArray, function(index, element) {
-        self.shareScreen(element);
+        self._shareScreen(element);
       });
 
     } catch (error) {
@@ -1224,6 +1228,46 @@ jsxc.mmstream = {
 
   _isNavigatorChrome : function() {
     return !!window.chrome && !!window.chrome.webstore;
+  },
+
+  _isNavigatorInternetExplorer : function() {
+
+    var ua = window.navigator.userAgent;
+
+    return ua.indexOf('MSIE ') > 0 || ua.indexOf('Trident/') > 0 || ua.indexOf('Edge/' > 0);
+
+  },
+
+  /**
+   * Feedback user and throw  an exception if navigator is not compatible with  specified task
+   * @param task
+   */
+  checkNavigatorCompatibility : function(task) {
+
+    var self = jsxc.mmstream;
+
+    var message = "";
+
+    if (task === "videoconference") {
+      if (self._isNavigatorInternetExplorer() === true) {
+        message =
+            "La vidéo conférence n'est pas disponible avec Internet Explorer. Utilisez Firefox, Brave, Opera ou Chrome.";
+      }
+    }
+
+    else if (task === "screensharing") {
+      if (self._isNavigatorChrome() !== true) {
+        message = "Le partage d'écran n'est pas disponible avec votre navigateur. Utilisez Chrome.";
+      }
+    } else {
+      throw new Error("Unknown task: " + task);
+    }
+
+    if (message !== "") {
+      jsxc.gui.feedback(message);
+      throw new Error(message);
+    }
+
   },
 
   /**
@@ -1357,12 +1401,14 @@ jsxc.mmstream = {
    *
    * @param fullJid
    */
-  shareScreen : function(fulljid) {
+  _shareScreen : function(fulljid) {
 
     var self = jsxc.mmstream;
 
+    self.checkNavigatorCompatibility("videoconference");
+
     if (jsxc.mmstream.debug === true) {
-      self._log("Start scren sharing", fulljid);
+      self._log("Start screen sharing", fulljid);
     }
 
     if (Strophe.getResourceFromJid(fulljid) === null) {
@@ -1668,7 +1714,7 @@ jsxc.mmstream = {
     }
 
     // save session and stream
-    if(!self.videoconference.users[fulljid]){
+    if (!self.videoconference.users[fulljid]) {
       self._createUserEntry(fulljid);
     }
     self.videoconference.users[fulljid].session = session;
@@ -1778,6 +1824,8 @@ jsxc.mmstream = {
       throw new Error("JID must be full jid");
     }
 
+    self.checkNavigatorCompatibility("videoconference");
+
     // change user status
     self._setUserStatus(fulljid, self.USER_STATUS.CONNECTING);
 
@@ -1875,7 +1923,7 @@ jsxc.mmstream = {
     var fulljid = session.peerID;
 
     // save jingle state for debug purposes
-    if(!self.videoconference.users[fulljid]){
+    if (!self.videoconference.users[fulljid]) {
       self._createUserEntry(fulljid);
     }
     self.videoconference.users[fulljid].jingleState = state;
