@@ -51,29 +51,49 @@ Ce qui donne pour notre exemple la séquence suivante:
 
 ![Principe de vidéo conférence en paire à paire](https://raw.githubusercontent.com/remipassmoilesel/djoe/master/documentation/notes/videoconference.png "Principe de vidéo conférence en paire à paire")
 
+## Messages
+Les messages utilisés sont dérivés de la stanza XMPP `message` permettant d'envoyer à n'importe quel utilisateur un message texte ou plus de données si nécéssaire.
+
+Les messages utilisés ci-dessous ont toujours ces caractéristiques:
+* Les clients y sont représentés par leurs fulljid (identifiant Jabber complet, avec ressource)
+* Les clients sont de deux types:
+  * un client est initiateur, il prend l'initative de la vidéoconférence
+  * les autres clients sont participants
+* Les listes de participants ne continnent jamais l'initiateur
+* L'identifiant d'une vidéoconférence est unique et transmis dans chaque message
+
+Structure d'un message type:
+* message: La stance étend "message", à la manière des invitations MUC directes (XEP 0249) 
+* message [from='full@jid/resource']
+  * message videoconference [id='uniqueId']
+  * message videoconference [status='initiate|abort|reinvite']
+  * message videoconference [initiator='full@jid/resource']
+  * message videoconference [users='full@jid/resource,full@jid/resource,...]
+  * message videoconference [datetime='YYYY-MM-DD HH:MM:SS']
+  * message videoconference [message='...']
+
 ## Initier une vidéoconférence
 
 1. L'initiateur de la vidéoconférence sélectionne une liste d'identifiants Jabber complets
 1. L'initiateur envoi à chacun des clients une invitation avec ces caractéristiques:
-
-    * message: La stance étend "message", à la manière des invitations MUC directes (XEP 0249) 
-    * message [from='full@jid/resource']: JID complet du client qui initie la conférence
-    * message [status='initiate']: Indique l'action en cours, le démarrage d'une vidéoconférence
-    * message videoconference [users='full@jid/resource,full@jid/resource,...]: la liste des identifiants complets des clients, séparés par une virgule
-    * message videoconference [datetime='YYYY-MM-DD HH:MM:SS']: la date de la conférence
-    * message videoconference [message='...']: Un message optionnel 
+    * message videoconference [status='initiate']
+ 
 
 _Exemple de message_: 
            
 ```
-    <message from='remi@im.silverpeas.net/4kr2qyth2y'
+    <message from='remi@domain.xmpp/res'
              id='579f7d5a-a70d-4ed8-a660-7f2f3d2e2696'
              xmlns='jabber:client'
-             to='david@im.silverpeas.net/511x45a6u2'>
-    <videoconference users='david@im.silverpeas.net/511x45a6u2'
+             to='david@domain.xmpp/511x45a6u2'>
+    <videoconference users='david@domain.xmpp/res, david@domain.xmpp/res'
+                     
                      status='initiate'
+                     
+                     id='579f7d5a-a70d-4ed8-a660-7f2f3d2e2696'
+                     initator='remi@domain.xmpp/res'
                      datetime='2012-06-22 05:40:06'
-                     message=''/>
+                     message='Remi vous invite à une vidéoconférence avec ...'/>
     </message>
 ```
 
@@ -91,21 +111,47 @@ A la réception d'une invitation à une vidéoconférence:
  
 **Si la vidéoconférence est refusée**:
 
-1. Le client qui refuse doit envoyer une notification d'abandon de la vidéoconférence à chacun des autres participants avec les même caractéristique que l'invitation sauf:
+1. Le client qui refuse doit envoyer une notification d'abandon de la vidéoconférence à chacun des autres participants avec les même caractéristiques que l'invitation sauf:
 
     * message [status='abort']: Indique l'action en cours, l'annulation d'une vidéoconférence
-    * message [id='.....']: L'identifiant unique de la vidéo conférence
 
 _Exemple de message_: 
                 
 ```
-    <message xmlns='jabber:client'
-             from='david@im.silverpeas.net/511x45a6u2'
-             to='remi@im.silverpeas.net/4kr2qyth2y'>
-    <videoconference users='david@im.silverpeas.net/511x45a6u2,remi@im.silverpeas.net/4kr2qyth2y'
+    <message from='david@domain.xmpp/res'
+             id='579f7d5a-a70d-4ed8-a660-7f2f3d2e2696'
+             xmlns='jabber:client'
+             to='yohann@domain.xmpp/res'>
+    <videoconference users='david@domain.xmpp/res, david@domain.xmpp/res'
+                     
                      status='abort'
+                     
                      id='579f7d5a-a70d-4ed8-a660-7f2f3d2e2696'
+                     initator='remi@domain.xmpp/res'
                      datetime='2012-06-22 05:40:06'
-                     message='Vidéoconférence annulée par david'/>
+                     message='David refuse la vidéo conférence'/>
     </message>
-```    
+```
+
+## Inviter à nouveau un client déconnecté
+
+Si un client est déconnecté d'une vidéoconférence, il peut être inviter à nouveau par n'importe quel autre participant.
+
+Pour cela un client souhaitant inviter un utilisateur doit envoyer une notification à chacun des participants de la vidéoconférence.
+
+```
+    <message from='remi@domain.xmpp/res'
+             id='579f7d5a-a70d-4ed8-a660-7f2f3d2e2696'
+             xmlns='jabber:client'
+             to='david@domain.xmpp/res'>
+    <videoconference users='david@domain.xmpp/res, david@domain.xmpp/res'
+                     
+                     status='reinvite'
+                     reinvite='yohann@domain.xmpp/res'
+                     
+                     id='579f7d5a-a70d-4ed8-a660-7f2f3d2e2696'
+                     initator='remi@domain.xmpp/res'
+                     datetime='2012-06-22 05:40:06'
+                     message=''/>
+    </message>
+```
