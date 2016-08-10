@@ -58,7 +58,7 @@ jsxc.mmstream.gui = {
     }
 
   },
-  
+
   /**
    * Called when videoconference users changes
    *
@@ -127,25 +127,32 @@ jsxc.mmstream.gui = {
       it.text("Aucun utilisateur en vidéo conférence");
       list.append(it);
 
+      return;
     }
 
     // iterate users
-    $.each(mmstream.videoconference.users, function(index, item) {
+    $.each(mmstream.videoconference.users, function(fulljid, item) {
 
       var it = $("<li>");
 
       it.addClass("jsxcVideoConf_" + item.status);
       it.addClass("jsxcVideoConf_" + item.type);
 
-      it.text(item.node);
+      var link = $("<a href='#'>");
+      link.click(function(){
+        mmstream.reinviteUserInVideoconference(fulljid);
+      });
+      link.text(item.node);
 
       it.attr("title", item.type + ": " + item.status);
 
-      list.append(it);
+      list.append(it.append(link));
 
     });
 
   },
+
+ 
 
   /**
    * Init dialog and button for installing screen capture Chrome extension
@@ -373,7 +380,7 @@ jsxc.mmstream.gui = {
         .done(function(localStream) {
 
           jsxc.attachMediaStream("#jsxc_localVideo", localStream);
-          
+
         })
         .fail(function(error) {
           jsxc.gui.feedback("Erreur lors de l'accès à la caméra et au micro: " + error);
@@ -523,7 +530,7 @@ jsxc.mmstream.gui = {
   /**
    * Enable or disable "video" icon and assign full jid.
    *
-   * @memberOf jsxc.mmstream
+   * @memberOf jsxc.mmstream.gui
    * @param bid CSS conform jid
    */
   _updateIcon : function(bid) {
@@ -693,6 +700,49 @@ jsxc.mmstream.gui = {
     return defer.promise();
 
   },
+
+  /**
+   *
+   * @param bid
+   * @returns {*}
+   * @private
+   */
+  _showReinviteUserConfirmationDialog: function(bid, mode) {
+
+    // var self = jsxc.mmstream.gui;
+
+    var defer = $.Deferred();
+
+    if(mode !== "received" && mode !=="emit"){
+      throw new Error("Unkown mode: " + mode);
+    }
+    
+    bid = Strophe.getBareJidFromJid(bid);
+    
+    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('videoReinviteUser_' + mode, bid), {
+      noClose : true, name : 'video_reinvite_user'
+    });
+
+    dialog.find('.jsxc_accept').click(function() {
+
+      defer.resolve("ACCEPT");
+
+      jsxc.gui.dialog.close();
+
+    });
+
+    dialog.find('.jsxc_reject').click(function() {
+
+      defer.fail("REJECT");
+
+      jsxc.gui.dialog.close();
+
+    });
+
+    return defer.promise();
+
+  },
+
 
   /**
    * Show an "accept / decline" dialog for an incoming videoconference

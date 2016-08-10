@@ -207,6 +207,9 @@ jsxc.api = {
 
     var root = jsxc.options.root + "lib/AlienInvasion/";
 
+    // close all dialogs if necessary
+    jsxc.gui.dialog.close();
+
     // initialize gui only if necessary
     if (!self._alreadyInitalized || self._alreadyInitalized !== true) {
 

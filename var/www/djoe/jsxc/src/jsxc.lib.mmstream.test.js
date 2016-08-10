@@ -16,11 +16,49 @@ jsxc.mmstream.testCases = [
 
       var self = jsxc.mmstream;
 
+      /**
+       * Example test case
+       *
+       */
+
+      var remi = "remi@im.silverpeas.net/eeee";
+      var david = "david@im.silverpeas.net/eeee";
+      var yohann = "yohann@im.silverpeas.net/eeee";
+
+      var participants = [david, yohann];
+
+      var computed1 = {
+
+        remi : jsxc.mmstream._whichUsersMustWeCall(remi, participants, remi),
+
+        david : jsxc.mmstream._whichUsersMustWeCall(remi, participants, david),
+
+        yohann : jsxc.mmstream._whichUsersMustWeCall(remi, participants, yohann)
+      };
+
+      var result1 = {
+        "remi" : ["yohann@im.silverpeas.net/eeee", "david@im.silverpeas.net/eeee"],
+
+        "david" : [],
+
+        "yohann" : ["david@im.silverpeas.net/eeee"]
+      };
+
+      //console.log(expected1);
+
+      assert.ok(JSON.stringify(computed1) === JSON.stringify(result1),
+          "Destinations selection ok (demo)");
+
+      /**
+       * Complete test case
+       *
+       */
+
       var domain = "@domain.net";
 
       var nodes = ['a', 'b', 'c', 'd', 'f', 'g', 'h', 'i'];
 
-      var participants = [];
+      participants = [];
 
       var initiator = "e" + domain;
 
@@ -29,15 +67,30 @@ jsxc.mmstream.testCases = [
         participants.push(node + domain);
       });
 
-      var res = {};
+      var computed2 = {};
 
       $.each(participants.concat([initiator]), function(index, part) {
-        res[part] = self._whichUsersMustWeCall(initiator, participants, part);
+        computed2[part] = self._whichUsersMustWeCall(initiator, participants, part);
       });
 
-      var expected = '{"a@domain.net":["b@domain.net","c@domain.net","d@domain.net"],"b@domain.net":["c@domain.net","d@domain.net"],"c@domain.net":["d@domain.net"],"d@domain.net":[],"f@domain.net":["g@domain.net","h@domain.net","i@domain.net","a@domain.net","b@domain.net","c@domain.net","d@domain.net"],"g@domain.net":["h@domain.net","i@domain.net","a@domain.net","b@domain.net","c@domain.net","d@domain.net"],"h@domain.net":["i@domain.net","a@domain.net","b@domain.net","c@domain.net","d@domain.net"],"i@domain.net":["a@domain.net","b@domain.net","c@domain.net","d@domain.net"],"e@domain.net":["f@domain.net","g@domain.net","h@domain.net","i@domain.net","a@domain.net","b@domain.net","c@domain.net","d@domain.net"]}';
+      var expected2 = {
+        "a@domain.net" : ["b@domain.net", "c@domain.net", "d@domain.net"],
+        "b@domain.net" : ["c@domain.net", "d@domain.net"],
+        "c@domain.net" : ["d@domain.net"],
+        "d@domain.net" : [],
+        "f@domain.net" : ["g@domain.net", "h@domain.net", "i@domain.net", "a@domain.net",
+          "b@domain.net", "c@domain.net", "d@domain.net"],
+        "g@domain.net" : ["h@domain.net", "i@domain.net", "a@domain.net", "b@domain.net",
+          "c@domain.net", "d@domain.net"],
+        "h@domain.net" : ["i@domain.net", "a@domain.net", "b@domain.net", "c@domain.net",
+          "d@domain.net"],
+        "i@domain.net" : ["a@domain.net", "b@domain.net", "c@domain.net", "d@domain.net"],
+        "e@domain.net" : ["f@domain.net", "g@domain.net", "h@domain.net", "i@domain.net",
+          "a@domain.net", "b@domain.net", "c@domain.net", "d@domain.net"]
+      };
 
-      assert.ok(expected === JSON.stringify(res), "Destinations selection ok");
+      assert.ok(JSON.stringify(computed2) === JSON.stringify(expected2),
+          "Destinations selection ok (complete)");
 
     }
   },
@@ -62,3 +115,44 @@ jsxc.mmstream.testCases = [
   }
 
 ];
+
+$(function() {
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
