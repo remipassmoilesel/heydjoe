@@ -5,17 +5,44 @@
  */
 jsxc.options = {
 
-  // REST support
+  /**
+   * REST support
+   */
   rest : {
     apiName : "", apiBaseUrl : "", apiKey : ""
   },
 
-  // Stats support
+  /**
+   * Stats support. Stats is a small module enabling logs and events transmission to a distant server.
+   *
+   * ** All datas are strictly anonymous
+   */
   stats : {
+
+    /**
+     * Enable or disable module
+     */
     enabled : false,
+
+    /**
+     * Destination of datas
+     */
     destinationUrl : "https://domain-without-trailing-slash.net/stats",
+
+    /**
+     * Send automatically every n ms
+     */
     autosend : true,
-    authorization : "key"
+
+    /**
+     * Credential if encessary
+     */
+    authorization : "key",
+
+    /**
+     * Interresting log level, beware of not overload browser
+     */
+    sentLogLevels: ['WARN', 'ERROR']
   },
 
   /** name of container application (e.g. owncloud or SOGo) */

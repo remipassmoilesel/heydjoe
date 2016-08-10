@@ -326,7 +326,7 @@ jsxc.mmstream = {
    * @private
    */
   _setUserStatus : function(fulljid, status, overwrite) {
-
+    
     var self = jsxc.mmstream;
 
     // overwrite value by default

@@ -144,7 +144,7 @@ jsxc.api = {
   openChatWindow : function(jid) {
 
     var self = jsxc.api;
-    var bid = Strophe.getBareJidFromJid(jid);
+    var bid = jsxc.jidToBid(jid);
 
     self.checkIfConnectedOrThrow();
 
