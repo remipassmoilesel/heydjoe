@@ -33,6 +33,8 @@
 
       jsxc.gui.newgui.toggleChatSidebar();
 
+      jsxc.gui.newgui.toggleVideopanel();
+
     });
 
   </script>
@@ -44,6 +46,20 @@
 <!-- Panel where are displayed videos -->
 <div id="jsxc-video-panel">
 
+  <div class="jsxc-left-videopanel">
+    <div>
+      <p>Etat des participants:</p>
+      <ul id="jsxc-videoconference-buddies">
+        <li>Miguel</li>
+        <li>Rémi</li>
+        <li>David</li>
+      </ul>
+    </div>
+    <div>
+      <p>Vidéo locale:</p>
+      <video class="jsxc-localVideo"/>
+    </div>
+  </div>
 
 </div>
 
