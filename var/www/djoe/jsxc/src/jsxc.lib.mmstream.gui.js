@@ -33,6 +33,7 @@ jsxc.mmstream.gui = {
   _initGui : function() {
 
     var self = jsxc.mmstream.gui;
+    var mmstream = jsxc.mmstream;
 
     // update user status on event
     $(document).on("videoconference-changed.jsxc", self._videoconferenceChanged);
@@ -56,6 +57,11 @@ jsxc.mmstream.gui = {
     } else {
       $(document).one("menu.ready.jsxc", self._initChromeExtensionDialog);
     }
+
+    // init terminate all button
+    $('#jsxc_videoPanel .jsxc_mmstreamTerminateAll').click(function(){
+      mmstream._hangUpAll();
+    });
 
   },
 
@@ -137,17 +143,23 @@ jsxc.mmstream.gui = {
 
       it.addClass("jsxcVideoConf_" + item.status);
       it.addClass("jsxcVideoConf_" + item.type);
-
-      var link = $("<a href='#'>");
-      link.click(function(){
-        mmstream.reinviteUserInVideoconference(fulljid);
-      });
-      link.text(item.node);
-
       it.attr("title", item.type + ": " + item.status);
 
-      list.append(it.append(link));
+      if(mmstream._isBuddyParticipatingToVideoconference(fulljid) === true){
+        var link = $("<a href='#'>");
+        link.click(function(){
+          mmstream.reinviteUserInVideoconference(fulljid);
+        });
+        link.text(item.node);
 
+        list.append(it.append(link));
+      }
+
+      else {
+        it.text(item.node);
+        list.append(it);
+      }
+      
     });
 
   },
@@ -508,9 +520,9 @@ jsxc.mmstream.gui = {
       // simple video call
       videoLink.click(function() {
 
-        jsxc.gui.feedback("L'appel va bientôt commencer");
+        jsxc.gui.feedback("L'appel va bientôt commencer ...");
 
-        jsxc.mmstream.startVideoCall(fulljid);
+        jsxc.mmstream.startSimpleVideoCall(fulljid);
         return false;
       });
 
@@ -569,7 +581,7 @@ jsxc.mmstream.gui = {
     if (fulljid !== null && budDatas.status && budDatas.status > 0) {
 
       el.click(function() {
-        mmstream.startVideoCall(fulljid);
+        mmstream.startSimpleVideoCall(fulljid);
       });
 
       el.removeClass('jsxc_disabled');

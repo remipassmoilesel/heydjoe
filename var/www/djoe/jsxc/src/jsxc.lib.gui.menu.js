@@ -323,7 +323,7 @@ jsxc.gui.menu = {
           // call each participant
           if (toCall && toCall.length > 0) {
             $.each(toCall, function(index, element) {
-              jsxc.mmstream.startVideoCall(element);
+              jsxc.mmstream.startSimpleVideoCall(element);
             });
           }
 

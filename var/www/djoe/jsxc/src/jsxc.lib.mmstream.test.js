@@ -106,7 +106,7 @@ jsxc.mmstream.testCases = [
 
       self._setUserStatus(user, self.USER_STATUS.READY);
       assert.ok(self._isBuddyReady(user) === true, "READY ok");
-      assert.ok(self._isBuddyParticipating(user) === true, "Participating ok");
+      assert.ok(self._isBuddyParticipatingToVideoconference(user) === true, "Participating ok");
 
       // delte user after, to not alter JSXC service
       delete self.videoconference.users[user];
