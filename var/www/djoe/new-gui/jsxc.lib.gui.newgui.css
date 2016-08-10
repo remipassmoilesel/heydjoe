@@ -58,6 +58,47 @@ TODO: Set up variable with sidebar width and height
 }
 
 /**
+  In chat sidebar, filter display to show only users
+*/
+.jsxc-new-gui-filter-users {
+
+}
+
+/**
+  In chat sidebar, filter display to show only users
+*/
+#jsxc-new-gui-filter-users {
+  background-color: rgb(245, 245, 245);
+  color: rgb(28, 148, 212);
+  cursor: pointer;
+  display: block;
+  float: right;
+  height: 48px;
+  line-height: 48px;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  width: 50%;
+}
+
+/**
+  In chat sidebar, filter display to show only users
+*/
+#jsxc-new-gui-filter-conversations {
+  background-color: rgb(245, 245, 245);
+  color: rgb(28, 148, 212);
+  cursor: pointer;
+  display: block;
+  float: left;
+  height: 48px;
+  line-height: 48px;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  width: 50%;
+}
+
+/**
   Video icon to toggle chat videopanel
 */
 .jsxc-toggle-video {
@@ -74,12 +115,47 @@ TODO: Set up variable with sidebar width and height
   margin-right: 0.7em;
 }
 
+#jsxc_buddylist{
+  height: 80%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+#jsxc-select-buddies{
+  display: block;
+  clear: both;
+  padding: 6px;
+  text-align: right;
+}
+
+
+.jsxc-checked:after{
+  content: " ";
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background-size: 90%;
+  background-repeat: no-repeat;
+  margin: 0 3px 0 3px;
+
+  background-image: url('icons/check.svg');
+}
+
+
 /**
   Content of the chat sidebar
 */
 #jsxc-chat-sidebar-content {
   background: white;
-  overflow: auto;
+  height: 0px;
+  overflow: hidden;
+}
+
+#jsxc-chat-sidebar-filter-text-field{
+  border: none;
+  height: 1.5em;
+  margin: 10px;
+  width: 200px;
 }
 
 /**

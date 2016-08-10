@@ -15,7 +15,7 @@
       font-family: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
       font-size: 13px;
     }
-    
+
   </style>
 
   <script type="text/javascript">
@@ -25,11 +25,13 @@
       var lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eu odio luctus, elementum leo at, imperdiet nisl. Cras tristique lorem vitae lacus placerat, sed varius neque molestie. Mauris hendrerit cursus nisi. Curabitur quis fermentum justo. Phasellus bibendum enim in ex lobortis commodo. Aliquam tempor ipsum eu hendrerit ultrices. Mauris quis finibus dui. Quisque commodo, justo at convallis scelerisque, nisi risus condimentum mi, a molestie felis ipsum ut nunc. Mauris nunc enim, consectetur eu aliquet et, finibus quis augue. Vivamus convallis ante sit amet malesuada pellentesque. Donec ac suscipit mi, ut blandit lacus. Curabitur malesuada ipsum magna, vel laoreet quam venenatis et. Integer interdum augue quis metus ultricies hendrerit. Sed tellus elit, imperdiet sit amet ultrices efficitur, bibendum a lectus. Maecenas scelerisque libero massa, vel elementum sem vehicula in. Proin id blandit massa, sollicitudin mollis libero.        Cras ut porttitor ligula. Vestibulum ultrices molestie sollicitudin. Integer vulputate sollicitudin sem ac ultricies. Aliquam accumsan pellentesque justo, a mollis sapien dictum vitae. Cras eget enim non sapien malesuada lobortis. Sed mattis imperdiet pulvinar. Nunc facilisis consequat odio.        Vestibulum interdum mauris a dui euismod, ac varius odio efficitur. Curabitur ac luctus quam, at sollicitudin lorem. Maecenas euismod vulputate luctus. Ut luctus elit mi, ut fringilla turpis volutpat a. Sed et tortor pharetra, mattis sapien tristique, elementum neque. In a metus vitae metus consectetur interdum. Vivamus mi sapien, commodo nec ipsum eget, imperdiet gravida dolor. Nulla facilisi. Pellentesque justo ex, ultricies ut justo id, dictum convallis justo.       Donec ornare iaculis sem molestie molestie. Aenean lobortis nulla elit, quis cursus ipsum malesuada at. Ut mollis sollicitudin odio, quis cursus turpis blandit sed. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Morbi euismod dignissim neque in dignissim. Etiam semper ligula mauris. Quisque est massa, consectetur ornare enim porttitor, tincidunt posuere nibh. Nulla dictum posuere sollicitudin.       Proin ut consequat nisi. Integer mattis pretium odio ut volutpat. Fusce dignissim magna vel augue euismod egestas. Vestibulum et massa pulvinar, porta purus sit amet, ornare justo. Donec non sem in justo rutrum tempus quis ut metus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aenean ut aliquam purus. Aenean vulputate risus quis lorem malesuada ornare. Aliquam non lorem vel odio";
 
       for (var i = 0; i < 20; i++) {
-        $("body").append($("<p>").text(lorem).css({'margin': '20px', 'text-align': 'justify'}));
+        $("body").append($("<p>").text(lorem).css({'margin' : '20px', 'text-align' : 'justify'}));
       }
 
       // init chat bar
       jsxc.gui.newgui.init();
+
+      jsxc.gui.newgui.toggleChatSidebar();
 
     });
 
@@ -47,713 +49,641 @@
 
 <div id="jsxc-chat-sidebar">
 
-  <!-- Sidebar header, always visible -->
-  <div id="jsxc-chat-sidebar-header">
+<!-- Sidebar header, always visible -->
+<div id="jsxc-chat-sidebar-header">
 
-    <!-- toggle chat only -->
-    <span class="jsxc-toggle-chat"></span>
+  <!-- toggle chat only -->
+  <span class="jsxc-toggle-chat"></span>
 
-    <!-- toggle video -->
-    <span class="jsxc-toggle-video"></span>
+  <!-- toggle video -->
+  <span class="jsxc-toggle-video"></span>
 
-    <span class="jsxc-last-notifications">En ligne: 5 utilisateurs</span>
-
-  </div>
-
-  <!-- Chat sidebar content -->
-  <div id="jsxc-chat-sidebar-content"></div>
+  <span class="jsxc-last-notifications">En ligne: 5 utilisateurs</span>
 
 </div>
 
-<!--<div id="jsxc-chat-sidebar">-->
-<!--<div id="jsxc-header-chat-sidebar" onclick="javascript:togglechat('jsxc-chat-sidebar')">-->
-  <!--<a title="Deploy" href="#" class="toggle-chat-sidebar toggle">Ouvrir</a>-->
-  <!--<span>Discussion en ligne</span><span id="connected-contact-chat-sidebar">(3)</span><a id="button-setting-chat" href="#">Paramétrage-->
-  <!--de la discussion en ligne</a>-->
-  <!--<ul id="setting-chat">-->
-    <!--<li><a class="toTurnOn notification" href="#">D&eacute;sactiver les notifications</a></li>-->
-    <!--<li><a class="toTurnOff notificationDesk" href="#">Activer les notifications de bureau</a>-->
-    <!--</li>-->
-    <!--<li><a class="toTurnOff unConnectedUser" href="#">Masquer les contacts-->
-      <!--non-connect&eacute;s</a></li>-->
-    <!--<li><a class="toTurnOff discussion" href="#">D&eacute;sactiver la discussion instantanée</a>-->
-    <!--</li>-->
-    <!--<li><a class="toTurnOff call" href="#">D&eacute;sactiver les appels audios / vidéos</a></li>-->
-  <!--</ul>-->
-<!--</div>-->
-<!--<div id="personal-user-chat-infos" class="online">-->
-  <!--&lt;!&ndash; STATUT &ndash;&gt;-->
-  <!--<div class="name-personal-user-chat-infos">Aurore Allibe</div>-->
-  <!--<div class="statut-personal-user-chat-infos">-->
-    <!--<select class="jsxc_status_buttons">-->
-      <!--&lt;!&ndash; QUAND ON SWITCHERA DE STATUT IL FAUDRA EGALEMENT SWITCHER LA CLASSE SUR LA DIV ID : personal-user-chat-infos &ndash;&gt;-->
-      <!--<option class="online" data-pres="online" class="jsxc_actionButton jsxc_online" data-i18n="Online" value="jsxc_online" selected="selected">-->
-        <!--En ligne-->
-      <!--</option>-->
-      <!--<option class="away" data-pres="away" class="jsxc_actionButton jsxc_away" data-i18n="Away" value="jsxc_away">-->
-        <!--Absent-->
-      <!--</option>-->
-      <!--<option class="dnd" data-pres="dnd" class="jsxc_actionButton jsxc_dnd" data-i18n="dnd" value="jsxc_dnd">-->
-        <!--Ne pas d&eacute;ranger-->
-      <!--</option>-->
-    <!--</select>-->
-  <!--</div>-->
-<!--</div>-->
-<!--<div class="jsxc-content">-->
-<!--<a class="button-switch show chat select" href="#" onclick="javascript:togglechatAndUsers('chat')">Utilisateurs</a>-->
-<!--<a class="button-switch show groupchat" href="#" onclick="javascript:togglechatAndUsers('groupchat')">Discussions</a>-->
-<!--<input class="jsxc_filterTextField" placeholder="Rechercher un utilisateur ..." type="text"/>-->
-<!--<ul id="jsxc_buddylist">-->
-<!--<li data-status="online" data-type="chat" data-bid="miguel@im.silverpeas.net" class="jsxc_rosteritem">-->
-  <!--<div style="background-color: rgb(85, 144, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">-->
-    <!--M-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="miguel@im.silverpeas.net-->
-<!--Abonnement: Les deux-->
-<!--Statut: En ligne" class="jsxc_name">Miguel-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread">0</span> <span class="jsxc_text">dernier test</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="offline" data-type="chat" data-bid="remi@im.silverpeas.net" class="jsxc_rosteritem">-->
-  <!--<div style="background-color: rgb(203, 85, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_offline">-->
-    <!--R-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="remi@im.silverpeas.net-->
-<!--Abonnement: Les deux-->
-<!--Statut: Hors ligne" class="jsxc_name">remi-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread"></span> <span class="jsxc_text">Non c'est miguel tout court</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="online" data-type="chat" data-bid="nicolas@im.silverpeas.net" class="jsxc_rosteritem jsxc_oneway">-->
-  <!--<div style="background-color: rgb(85, 99, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">-->
-    <!--N-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="nicolas@im.silverpeas.net-->
-<!--Abonnement: to-->
-<!--Statut: En ligne" class="jsxc_name">nicolas-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread"></span>-->
-      <!--<span class="jsxc_text">oh ....</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="online" data-type="chat" data-bid="miguel@im.silverpeas.net" class="jsxc_rosteritem">-->
-  <!--<div style="background-color: rgb(85, 144, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">-->
-    <!--M-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="miguel@im.silverpeas.net-->
-<!--Abonnement: Les deux-->
-<!--Statut: En ligne" class="jsxc_name">Miguel-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread">0</span> <span class="jsxc_text">dernier test</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="offline" data-type="chat" data-bid="remi@im.silverpeas.net" class="jsxc_rosteritem">-->
-  <!--<div style="background-color: rgb(203, 85, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_offline">-->
-    <!--R-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="remi@im.silverpeas.net-->
-<!--Abonnement: Les deux-->
-<!--Statut: Hors ligne" class="jsxc_name">remi-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread"></span> <span class="jsxc_text">Non c'est miguel tout court</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="online" data-type="chat" data-bid="nicolas@im.silverpeas.net" class="jsxc_rosteritem jsxc_oneway">-->
-  <!--<div style="background-color: rgb(85, 99, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">-->
-    <!--N-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="nicolas@im.silverpeas.net-->
-<!--Abonnement: to-->
-<!--Statut: En ligne" class="jsxc_name">nicolas-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread"></span>-->
-      <!--<span class="jsxc_text">oh ....</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="online" data-type="chat" data-bid="miguel@im.silverpeas.net" class="jsxc_rosteritem">-->
-  <!--<div style="background-color: rgb(85, 144, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">-->
-    <!--M-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="miguel@im.silverpeas.net-->
-<!--Abonnement: Les deux-->
-<!--Statut: En ligne" class="jsxc_name">Miguel-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread">0</span> <span class="jsxc_text">dernier test</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="offline" data-type="chat" data-bid="remi@im.silverpeas.net" class="jsxc_rosteritem">-->
-  <!--<div style="background-color: rgb(203, 85, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_offline">-->
-    <!--R-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="remi@im.silverpeas.net-->
-<!--Abonnement: Les deux-->
-<!--Statut: Hors ligne" class="jsxc_name">remi-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread"></span> <span class="jsxc_text">Non c'est miguel tout court</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="online" data-type="chat" data-bid="nicolas@im.silverpeas.net" class="jsxc_rosteritem jsxc_oneway">-->
-  <!--<div style="background-color: rgb(85, 99, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">-->
-    <!--N-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="nicolas@im.silverpeas.net-->
-<!--Abonnement: to-->
-<!--Statut: En ligne" class="jsxc_name">nicolas-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread"></span>-->
-      <!--<span class="jsxc_text">oh ....</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="online" data-type="chat" data-bid="miguel@im.silverpeas.net" class="jsxc_rosteritem">-->
-  <!--<div style="background-color: rgb(85, 144, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">-->
-    <!--M-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="miguel@im.silverpeas.net-->
-<!--Abonnement: Les deux-->
-<!--Statut: En ligne" class="jsxc_name">Miguel-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread">0</span> <span class="jsxc_text">dernier test</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="offline" data-type="chat" data-bid="remi@im.silverpeas.net" class="jsxc_rosteritem">-->
-  <!--<div style="background-color: rgb(203, 85, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_offline">-->
-    <!--R-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="remi@im.silverpeas.net-->
-<!--Abonnement: Les deux-->
-<!--Statut: Hors ligne" class="jsxc_name">remi-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread"></span> <span class="jsxc_text">Non c'est miguel tout court</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="online" data-type="chat" data-bid="nicolas@im.silverpeas.net" class="jsxc_rosteritem jsxc_oneway">-->
-  <!--<div style="background-color: rgb(85, 99, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">-->
-    <!--N-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="nicolas@im.silverpeas.net-->
-<!--Abonnement: to-->
-<!--Statut: En ligne" class="jsxc_name">nicolas-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread"></span>-->
-      <!--<span class="jsxc_text">oh ....</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="online" data-type="chat" data-bid="miguel@im.silverpeas.net" class="jsxc_rosteritem">-->
-  <!--<div style="background-color: rgb(85, 144, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">-->
-    <!--M-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="miguel@im.silverpeas.net-->
-<!--Abonnement: Les deux-->
-<!--Statut: En ligne" class="jsxc_name">Miguel-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread">0</span> <span class="jsxc_text">dernier test</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="offline" data-type="chat" data-bid="remi@im.silverpeas.net" class="jsxc_rosteritem">-->
-  <!--<div style="background-color: rgb(203, 85, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_offline">-->
-    <!--R-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="remi@im.silverpeas.net-->
-<!--Abonnement: Les deux-->
-<!--Statut: Hors ligne" class="jsxc_name">remi-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread"></span> <span class="jsxc_text">Non c'est miguel tout court</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="online" data-type="chat" data-bid="nicolas@im.silverpeas.net" class="jsxc_rosteritem jsxc_oneway">-->
-  <!--<div style="background-color: rgb(85, 99, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">-->
-    <!--N-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="nicolas@im.silverpeas.net-->
-<!--Abonnement: to-->
-<!--Statut: En ligne" class="jsxc_name">nicolas-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread"></span>-->
-      <!--<span class="jsxc_text">oh ....</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="online" data-type="chat" data-bid="miguel@im.silverpeas.net" class="jsxc_rosteritem">-->
-  <!--<div style="background-color: rgb(85, 144, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">-->
-    <!--M-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="miguel@im.silverpeas.net-->
-<!--Abonnement: Les deux-->
-<!--Statut: En ligne" class="jsxc_name">Miguel-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread">0</span> <span class="jsxc_text">dernier test</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="offline" data-type="chat" data-bid="remi@im.silverpeas.net" class="jsxc_rosteritem">-->
-  <!--<div style="background-color: rgb(203, 85, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_offline">-->
-    <!--R-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="remi@im.silverpeas.net-->
-<!--Abonnement: Les deux-->
-<!--Statut: Hors ligne" class="jsxc_name">remi-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread"></span> <span class="jsxc_text">Non c'est miguel tout court</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="online" data-type="chat" data-bid="nicolas@im.silverpeas.net" class="jsxc_rosteritem jsxc_oneway">-->
-  <!--<div style="background-color: rgb(85, 99, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">-->
-    <!--N-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="nicolas@im.silverpeas.net-->
-<!--Abonnement: to-->
-<!--Statut: En ligne" class="jsxc_name">nicolas-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread"></span>-->
-      <!--<span class="jsxc_text">oh ....</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="online" data-type="" data-bid="20160802124805393_remi@conference.im.silverpeas.net" class="jsxc_rosteritem jsxc_bookmarked">-->
-  <!--<div style="background-color: rgb(85, 235, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">-->
-    <!--2-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="20160802124805393_remi@conference.im.silverpeas.net-->
-<!--Abonnement: Les deux-->
-<!--Statut: En ligne" class="jsxc_name">20160802124805393_remi@conference.im.silverpeas.net-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread"></span>-->
-      <!--<span class="jsxc_text">et là ?</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_bookmarkOptions"><span class="jsxc_icon jsxc_bookmarkicon"></span><span>Marque-page</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="online" data-type="groupchat" data-bid="20160802124852712_remi@conference.im.silverpeas.net" class="jsxc_rosteritem jsxc_bookmarked">-->
-  <!--<div style="background-color: rgb(246, 85, 179); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">-->
-    <!--2-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="20160802124852712_remi@conference.im.silverpeas.net-->
-<!--Abonnement: Les deux-->
-<!--Statut: En ligne" class="jsxc_name">20160802124852712_remi@conference.im.silverpeas.net-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread"></span>-->
-      <!--<span class="jsxc_text">ici ?</span></div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_bookmarkOptions"><span class="jsxc_icon jsxc_bookmarkicon"></span><span>Marque-page</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--<li data-status="online" data-type="groupchat" data-bid="20160802125121494_remi@conference.im.silverpeas.net" class="jsxc_rosteritem jsxc_bookmarked">-->
-  <!--<div style="background-color: rgb(246, 235, 85); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">-->
-    <!--2-->
-  <!--</div>-->
-  <!--<div class="jsxc_more"></div>-->
-  <!--<div class="jsxc_caption">-->
-    <!--<div title="20160802125121494_remi@conference.im.silverpeas.net-->
-<!--Abonnement: Les deux-->
-<!--Statut: En ligne" class="jsxc_name">20160802125121494_remi@conference.im.silverpeas.net-->
-    <!--</div>-->
-    <!--<div class="jsxc_lastmsg"><span class="jsxc_unread"></span> <span class="jsxc_text">Hello hello !</span>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="jsxc_menu">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a class="jsxc_bookmarkOptions"><span class="jsxc_icon jsxc_bookmarkicon"></span><span>Marque-page</span></a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-<!--</li>-->
-<!--</ul>-->
-<!--</div>-->
-<!--</div>-->
+<!-- Chat sidebar content -->
+<div id="jsxc-chat-sidebar-content">
 
+<a href="#" id="jsxc-new-gui-filter-users">Utilisateurs</a>
+<a href="#" id="jsxc-new-gui-filter-conversations">Discussions</a>
 
+<input id="jsxc-chat-sidebar-filter-text-field" placeholder="Rechercher ..." type="text"/>
+<a href="#" id="jsxc-select-buddies" class="jsxc-checked">Sélectionner</a>
+
+<ul id="jsxc_buddylist">
+
+<li data-status="online" data-type="chat" data-bid="miguel@im.silverpeas.net" class="jsxc_rosteritem">
+  <div style="background-color: rgb(85, 144, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">
+    M
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="miguel@im.silverpeas.net
+Abonnement: Les deux
+Statut: En ligne" class="jsxc_name">Miguel
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread">0</span> <span class="jsxc_text">dernier test</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="offline" data-type="chat" data-bid="remi@im.silverpeas.net" class="jsxc_rosteritem">
+  <div style="background-color: rgb(203, 85, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_offline">
+    R
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="remi@im.silverpeas.net
+Abonnement: Les deux
+Statut: Hors ligne" class="jsxc_name">remi
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread"></span> <span class="jsxc_text">Non c'est miguel tout court</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="online" data-type="chat" data-bid="nicolas@im.silverpeas.net" class="jsxc_rosteritem jsxc_oneway">
+  <div style="background-color: rgb(85, 99, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">
+    N
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="nicolas@im.silverpeas.net
+Abonnement: to
+Statut: En ligne" class="jsxc_name">nicolas
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread"></span>
+      <span class="jsxc_text">oh ....</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="online" data-type="chat" data-bid="miguel@im.silverpeas.net" class="jsxc_rosteritem">
+  <div style="background-color: rgb(85, 144, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">
+    M
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="miguel@im.silverpeas.net
+Abonnement: Les deux
+Statut: En ligne" class="jsxc_name">Miguel
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread">0</span> <span class="jsxc_text">dernier test</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="offline" data-type="chat" data-bid="remi@im.silverpeas.net" class="jsxc_rosteritem">
+  <div style="background-color: rgb(203, 85, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_offline">
+    R
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="remi@im.silverpeas.net
+Abonnement: Les deux
+Statut: Hors ligne" class="jsxc_name">remi
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread"></span> <span class="jsxc_text">Non c'est miguel tout court</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="online" data-type="chat" data-bid="nicolas@im.silverpeas.net" class="jsxc_rosteritem jsxc_oneway">
+  <div style="background-color: rgb(85, 99, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">
+    N
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="nicolas@im.silverpeas.net
+Abonnement: to
+Statut: En ligne" class="jsxc_name">nicolas
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread"></span>
+      <span class="jsxc_text">oh ....</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="online" data-type="chat" data-bid="miguel@im.silverpeas.net" class="jsxc_rosteritem">
+  <div style="background-color: rgb(85, 144, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">
+    M
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="miguel@im.silverpeas.net
+Abonnement: Les deux
+Statut: En ligne" class="jsxc_name">Miguel
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread">0</span> <span class="jsxc_text">dernier test</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="offline" data-type="chat" data-bid="remi@im.silverpeas.net" class="jsxc_rosteritem">
+  <div style="background-color: rgb(203, 85, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_offline">
+    R
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="remi@im.silverpeas.net
+Abonnement: Les deux
+Statut: Hors ligne" class="jsxc_name">remi
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread"></span> <span class="jsxc_text">Non c'est miguel tout court</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="online" data-type="chat" data-bid="nicolas@im.silverpeas.net" class="jsxc_rosteritem jsxc_oneway">
+  <div style="background-color: rgb(85, 99, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">
+    N
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="nicolas@im.silverpeas.net
+Abonnement: to
+Statut: En ligne" class="jsxc_name">nicolas
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread"></span>
+      <span class="jsxc_text">oh ....</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="online" data-type="chat" data-bid="miguel@im.silverpeas.net" class="jsxc_rosteritem">
+  <div style="background-color: rgb(85, 144, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">
+    M
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="miguel@im.silverpeas.net
+Abonnement: Les deux
+Statut: En ligne" class="jsxc_name">Miguel
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread">0</span> <span class="jsxc_text">dernier test</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+
+<li data-status="online" data-type="chat" data-bid="miguel@im.silverpeas.net" class="jsxc_rosteritem">
+  <div style="background-color: rgb(85, 144, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">
+    M
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="miguel@im.silverpeas.net
+Abonnement: Les deux
+Statut: En ligne" class="jsxc_name">Miguel
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread">0</span> <span class="jsxc_text">dernier test</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="offline" data-type="chat" data-bid="remi@im.silverpeas.net" class="jsxc_rosteritem">
+  <div style="background-color: rgb(203, 85, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_offline">
+    R
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="remi@im.silverpeas.net
+Abonnement: Les deux
+Statut: Hors ligne" class="jsxc_name">remi
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread"></span> <span class="jsxc_text">Non c'est miguel tout court</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="online" data-type="chat" data-bid="nicolas@im.silverpeas.net" class="jsxc_rosteritem jsxc_oneway">
+  <div style="background-color: rgb(85, 99, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">
+    N
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="nicolas@im.silverpeas.net
+Abonnement: to
+Statut: En ligne" class="jsxc_name">nicolas
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread"></span>
+      <span class="jsxc_text">oh ....</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="online" data-type="chat" data-bid="miguel@im.silverpeas.net" class="jsxc_rosteritem">
+  <div style="background-color: rgb(85, 144, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">
+    M
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="miguel@im.silverpeas.net
+Abonnement: Les deux
+Statut: En ligne" class="jsxc_name">Miguel
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread">0</span> <span class="jsxc_text">dernier test</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="offline" data-type="chat" data-bid="remi@im.silverpeas.net" class="jsxc_rosteritem">
+  <div style="background-color: rgb(203, 85, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_offline">
+    R
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="remi@im.silverpeas.net
+Abonnement: Les deux
+Statut: Hors ligne" class="jsxc_name">remi
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread"></span> <span class="jsxc_text">Non c'est miguel tout court</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="online" data-type="chat" data-bid="nicolas@im.silverpeas.net" class="jsxc_rosteritem jsxc_oneway">
+  <div style="background-color: rgb(85, 99, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">
+    N
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="nicolas@im.silverpeas.net
+Abonnement: to
+Statut: En ligne" class="jsxc_name">nicolas
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread"></span>
+      <span class="jsxc_text">oh ....</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="online" data-type="chat" data-bid="miguel@im.silverpeas.net" class="jsxc_rosteritem">
+  <div style="background-color: rgb(85, 144, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">
+    M
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="miguel@im.silverpeas.net
+Abonnement: Les deux
+Statut: En ligne" class="jsxc_name">Miguel
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread">0</span> <span class="jsxc_text">dernier test</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="offline" data-type="chat" data-bid="remi@im.silverpeas.net" class="jsxc_rosteritem">
+  <div style="background-color: rgb(203, 85, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_offline">
+    R
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="remi@im.silverpeas.net
+Abonnement: Les deux
+Statut: Hors ligne" class="jsxc_name">remi
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread"></span> <span class="jsxc_text">Non c'est miguel tout court</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="online" data-type="chat" data-bid="nicolas@im.silverpeas.net" class="jsxc_rosteritem jsxc_oneway">
+  <div style="background-color: rgb(85, 99, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">
+    N
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="nicolas@im.silverpeas.net
+Abonnement: to
+Statut: En ligne" class="jsxc_name">nicolas
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread"></span>
+      <span class="jsxc_text">oh ....</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+<li data-status="online" data-type="chat" data-bid="miguel@im.silverpeas.net" class="jsxc_rosteritem">
+  <div style="background-color: rgb(85, 144, 246); color: rgb(255, 255, 255); font-weight: bold; text-align: center; line-height: 36px; font-size: 21.6px;" class="jsxc_avatar jsxc_online">
+    M
+  </div>
+  <div class="jsxc_more"></div>
+  <div class="jsxc_caption">
+    <div title="miguel@im.silverpeas.net
+Abonnement: Les deux
+Statut: En ligne" class="jsxc_name">Miguel
+    </div>
+    <div class="jsxc_lastmsg"><span class="jsxc_unread">0</span> <span class="jsxc_text">dernier test</span>
+    </div>
+  </div>
+  <div class="jsxc_menu">
+    <ul>
+      <li>
+        <a class="jsxc_rename" href="#"><span class="jsxc_icon jsxc_editicon"></span><span data-i18n="rename_buddy">Renommer le contact</span></a>
+      </li>
+      <li>
+        <a class="jsxc_vcard" href=""><span class="jsxc_icon jsxc_infoicon"></span><span data-i18n="get_info">Montrer les informations</span></a>
+      </li>
+      <li>
+        <a style="text-decoration: underline;" class="jsxc_videocall" href="#"><span class="jsxc_icon jsxc_videoicon"></span><span>Appel vid�o</span></a>
+      </li>
+      <li>
+        <a class="jsxc_delete" href=""><span class="jsxc_icon jsxc_deleteicon"></span><span data-i18n="delete_buddy">Supprimer le contact</span></a>
+      </li>
+    </ul>
+  </div>
+</li>
+</ul>
+
+</div>
+
+</div>
 </body>
 </html>

@@ -1,3 +1,6 @@
+// TODO: onSlave
+// TODO: ...
+
 var jsxc = {
   gui : {
     newgui : {
@@ -5,15 +8,14 @@ var jsxc = {
       /**
        * Sidebar of deployed chat sidebar
        */
-      SIDEBAR_HEIGHT: '500px',
-      VIDEOPANEL_HEIGHT: '500px',
+      SIDEBAR_HEIGHT : '500px', VIDEOPANEL_HEIGHT : '500px',
 
       /**
        * Animation of toggling chat side bar, in ms
        */
-      SIDEBAR_ANIMATION_DURATION: '1500',
+      SIDEBAR_ANIMATION_DURATION : '1500',
 
-      _log: function(message, data, level){
+      _log : function(message, data, level) {
 
         level = "[" + (level || 'INFO').trim().toUpperCase() + "] ";
 
@@ -36,15 +38,106 @@ var jsxc = {
 
         });
 
+        // open and close chat sidebar
         var togglechat = $("#jsxc-chat-sidebar-header .jsxc-toggle-chat");
-        togglechat.click(function(){
+        togglechat.click(function() {
           self.toggleChatSidebar();
         });
 
+        // open and close video panel
         var togglevideo = $("#jsxc-chat-sidebar-header .jsxc-toggle-video");
-        togglevideo.click(function(){
+        togglevideo.click(function() {
           self.toggleVideopanel();
         });
+
+        // filter users / conversations
+        $("#jsxc-new-gui-filter-users").click(function() {
+          self.toggleBuddyFilter('buddies');
+        });
+
+        $("#jsxc-new-gui-filter-conversations").click(function() {
+          self.toggleBuddyFilter('conversations');
+        });
+
+        // selection mode
+        $("#jsxc-select-buddies").click(function() {
+          self.toggleSelectionMode();
+        });
+
+      },
+
+      toggleBuddyFilter : function(mode) {
+
+        var self = jsxc.gui.newgui;
+
+        self._log("toggleBuddyFilter: " + mode);
+
+        if (mode !== 'buddies' && mode !== 'conversations') {
+          throw new Error("Unknown mode: " + mode);
+        }
+
+        // TODO check how was selected buddies in original JSXC
+        var list = self._getBuddyList();
+
+        // self._log("buddylist", list);
+
+        var displayBuddies = mode === 'buddies' ? 'block' : 'none';
+        var displayConversations = displayBuddies === 'block' ? 'none' : 'block';
+
+        list.each(function() {
+          var element = $(this);
+
+          element.css('display',
+              element.data('type') === 'chat' ? displayBuddies : displayConversations);
+        });
+
+      },
+
+      toggleSelectionMode : function() {
+
+        var self = jsxc.gui.newgui;
+
+        self._selectionMode = true;
+
+        self._log("toggleSelectionMode");
+
+        var list = self._getBuddyList();
+
+        // remove all click handler and replace it by selector
+        list.each(function() {
+
+          var element = $(this);
+          element.off('click');
+
+          element.on('click', function() {
+            var toDecorate = $(this).find('div.jsxc_name');
+            self._toggleBuddySelected(toDecorate);
+          });
+
+        });
+
+      },
+
+      _toggleBuddySelected : function(toDecorate) {
+
+        var className = 'jsxc-checked';
+        if (toDecorate.hasClass(className)) {
+          toDecorate.removeClass(className);
+        } else {
+          toDecorate.addClass(className);
+        }
+        return toDecorate;
+      },
+
+      /**
+       * Return an JQuery instance of the buddy list ( li )
+       * @returns {*|JQuery|jQuery|HTMLElement}
+       * @private
+       */
+      _getBuddyList : function() {
+
+        // TODO check how was selected buddies in original JSXC
+        return $("#jsxc_buddylist li.jsxc_rosteritem");
 
       },
 
@@ -55,7 +148,7 @@ var jsxc = {
        *
        * @param callbackWhenFinished
        */
-      toggleVideopanel: function(callbackWhenFinished){
+      toggleVideopanel : function(callbackWhenFinished) {
 
         var self = jsxc.gui.newgui;
 
@@ -67,13 +160,13 @@ var jsxc = {
           videopanel.css("box-shadow", "3px 3px 3px 3px rgba(0, 0, 0, 0.3)");
 
           videopanel.animate({
-            height: self.VIDEOPANEL_HEIGHT
+            height : self.VIDEOPANEL_HEIGHT
           }, self.SIDEBAR_ANIMATION_DURATION, function() {
 
             // Animation complete.
             videopanel.addClass("jsxc-deploy");
 
-            if(callbackWhenFinished){
+            if (callbackWhenFinished) {
               callbackWhenFinished();
             }
           });
@@ -83,7 +176,7 @@ var jsxc = {
         else {
 
           videopanel.animate({
-            height: '0px'
+            height : '0px'
           }, self.SIDEBAR_ANIMATION_DURATION, function() {
 
             // Animation complete.
@@ -92,7 +185,7 @@ var jsxc = {
             // remove box shadow
             videopanel.css("box-shadow", "none");
 
-            if(callbackWhenFinished){
+            if (callbackWhenFinished) {
               callbackWhenFinished();
             }
           });
@@ -103,7 +196,7 @@ var jsxc = {
       /**
        * Return true if chat sidebar is shown
        */
-      isVideopanelShown: function(){
+      isVideopanelShown : function() {
         return $("#jsxc-video-panel").hasClass("jsxc-deploy");
       },
 
@@ -120,13 +213,13 @@ var jsxc = {
         if (self.isChatSidebarShown() === false) {
 
           content.animate({
-            height: self.SIDEBAR_HEIGHT
+            height : self.SIDEBAR_HEIGHT
           }, self.SIDEBAR_ANIMATION_DURATION, function() {
 
             // Animation complete.
             content.addClass("jsxc-deploy");
 
-            if(callbackWhenFinished){
+            if (callbackWhenFinished) {
               callbackWhenFinished();
             }
           });
@@ -136,13 +229,13 @@ var jsxc = {
         else {
 
           content.animate({
-            height: '0px'
+            height : '0px'
           }, self.SIDEBAR_ANIMATION_DURATION, function() {
 
             // Animation complete.
             content.removeClass("jsxc-deploy");
 
-            if(callbackWhenFinished){
+            if (callbackWhenFinished) {
               callbackWhenFinished();
             }
           });
@@ -154,7 +247,7 @@ var jsxc = {
       /**
        * Return true if chat sidebar is shown
        */
-      isChatSidebarShown: function(){
+      isChatSidebarShown : function() {
         return $("#jsxc-chat-sidebar-content").hasClass("jsxc-deploy");
       }
 
