@@ -1,0 +1,104 @@
+/**
+
+TODO: Set up variable with sidebar width and height
+
+*/
+
+/**
+  The chat bar container
+*/
+#jsxc-chat-sidebar {
+
+  z-index: 80;
+
+  position: fixed;
+  bottom: 0px;
+  right: 20px;
+  overflow: hidden;
+
+  background: #1c94d4;
+  width: 250px;
+
+  box-shadow: 3px -3px 3px 3px rgba(0, 0, 0, 0.3);
+  /*
+  Don't set height here, sidebar must fit content
+  height: 2.5em;
+  */
+
+}
+
+/**
+  Top part of the chat sidebar, width notifications
+*/
+#jsxc-chat-sidebar-header {
+
+  height: 2em;
+
+  color: white;
+  font-weight: bolder;
+  padding: 0.5em;
+
+}
+
+/**
+  Menu icon to toggle chat sidebar
+*/
+.jsxc-toggle-chat {
+  cursor: pointer;
+  background: url('icons/open-sidebar.svg');
+  background-size: 90%;
+  background-repeat: no-repeat;
+  content: ' ';
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+
+  margin-right: 0.7em;
+}
+
+/**
+  Video icon to toggle chat videopanel
+*/
+.jsxc-toggle-video {
+  cursor: pointer;
+  background: url('icons/open-video.svg');
+  background-size: 90%;
+  background-repeat: no-repeat;
+  content: ' ';
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+
+  margin-right: 0.7em;
+}
+
+/**
+  Content of the chat sidebar
+*/
+#jsxc-chat-sidebar-content {
+  background: white;
+  overflow: auto;
+}
+
+/**
+  Panel where are displayed videos
+*/
+#jsxc-video-panel {
+
+  /** Just under chat sidebar */
+  z-index: 79;
+
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  overflow: auto;
+  width: 100%;
+  background: white;
+
+  /*
+  Don't set height here, sidebar must fit content
+  height: 2.5em;
+  */
+}

@@ -1,0 +1,11 @@
+{
+  "name": "new-gui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "jsxc.lib.gui.newgui.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
