@@ -22,6 +22,8 @@ var jsxc = {
         console.log(level + message, data || "");
       },
 
+      _selectionMode: true,
+
       /**
        * Init gui
        */
@@ -62,7 +64,12 @@ var jsxc = {
         // selection mode
         $("#jsxc-select-buddies").click(function() {
           self.toggleSelectionMode();
+          $(this).toggleClass("jsxc-selection-mode-enabled");
         });
+
+      },
+
+      toggleBackground: function(element, color1, color2){
 
       },
 
@@ -97,24 +104,40 @@ var jsxc = {
 
         var self = jsxc.gui.newgui;
 
-        self._selectionMode = true;
-
-        self._log("toggleSelectionMode");
+        self._log("toggleSelectionMode: " + self._selectionMode);
 
         var list = self._getBuddyList();
 
-        // remove all click handler and replace it by selector
-        list.each(function() {
+        self._selectionMode = !self._selectionMode;
 
-          var element = $(this);
-          element.off('click');
+        if (self._selectionMode === false) {
 
-          element.on('click', function() {
-            var toDecorate = $(this).find('div.jsxc_name');
-            self._toggleBuddySelected(toDecorate);
+          // remove all click handler and replace it by selector
+          list.each(function() {
+
+            var element = $(this);
+            element.off('click');
+
+            element.on('click', function() {
+              var toDecorate = $(this).find('div.jsxc_name');
+              self._toggleBuddySelected(toDecorate);
+            });
+
           });
+        }
 
-        });
+        else {
+
+          // remove all click handler and replace it by selector
+          list.each(function() {
+
+            var element = $(this);
+            element.off('click');
+
+            element.find(".jsxc-checked").removeClass("jsxc-checked");
+
+          });
+        }
 
       },
 
