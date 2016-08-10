@@ -4,5 +4,6 @@
   "lib/magnific-popup/dist/magnific-popup.css",
   "lib/tether-shepherd/dist/css/shepherd-theme-default.css",
   "lib/qunit/qunit/qunit.css",
+  "lib/animate.css/animate.min.css",
   "tmp/jsxc.css"
 ]

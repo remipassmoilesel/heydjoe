@@ -35,6 +35,7 @@
     "strophe.x": "https://raw.githubusercontent.com/strophe/strophejs-plugins/master/dataforms/src/strophe.x.js",
     "jquery": "^2.1.1",
     "jquery-ui": "^1.11.4",
-    "tether-shepherd": "^1.8.0"
+    "tether-shepherd": "^1.8.0",
+    "animate.css": "^3.5.2"
   }
 }
