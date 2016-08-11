@@ -52,15 +52,24 @@ var jsxc = {
           self.toggleVideopanel();
         });
 
-        // filter users / conversations
-        $("#jsxc-new-gui-filter-users").click(function() {
-          self.toggleBuddyFilter('buddies');
-        });
+        // filter users and conversations
+        var buddyFilter = $("#jsxc-new-gui-filter-users");
+        var conversationFilter = $("#jsxc-new-gui-filter-conversations");
 
-        $("#jsxc-new-gui-filter-conversations").click(function() {
-          self.toggleBuddyFilter('conversations');
+        buddyFilter.click(function() {
+          self.toggleBuddyFilter('buddies');
+          buddyFilter.toggleClass("jsxc-active-filter");
+          conversationFilter.toggleClass("jsxc-active-filter");
         });
         self.toggleBuddyFilter('buddies');
+        buddyFilter.toggleClass("jsxc-active-filter");
+        
+        conversationFilter.click(function() {
+          self.toggleBuddyFilter('conversations');
+          conversationFilter.toggleClass("jsxc-active-filter");
+          buddyFilter.toggleClass("jsxc-active-filter");
+        });
+        
 
         // selection mode
         $("#jsxc-select-buddies").click(function() {
@@ -230,9 +239,16 @@ var jsxc = {
 
         var sidebar = $("#jsxc-chat-sidebar");
         var content = $("#jsxc-chat-sidebar-content");
+        var settings = $("#jsxc-settings-button");
 
         if (self.isChatSidebarShown() === false) {
 
+          // show settings button
+          settings.animate({
+            opacity: 1
+          });
+
+          // raise sidebar
           content.animate({
             height : self.SIDEBAR_HEIGHT
           }, self.SIDEBAR_ANIMATION_DURATION, function() {
@@ -249,6 +265,12 @@ var jsxc = {
 
         else {
 
+          // hide settings button
+          settings.animate({
+            opacity: 0
+          });
+
+          // drop down sidebar
           content.animate({
             height : '0px'
           }, self.SIDEBAR_ANIMATION_DURATION, function() {

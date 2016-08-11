@@ -100,6 +100,10 @@ TODO: Set up variable with sidebar width and height
   width: 50%;
 }
 
+.jsxc-active-filter{
+  background: rgba(190,230,240, 0.5) !important;
+}
+
 /**
   Video icon to toggle chat videopanel
 */
@@ -288,7 +292,26 @@ TODO: Set up variable with sidebar width and height
 }
 
 
+#jsxc-settings-button{
 
+  cursor: pointer;
+
+  background: url('icons/settings.svg');
+  background-size: 90%;
+  background-repeat: no-repeat;
+  content: ' ';
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+
+  margin-left: 0.7em;
+  margin-right: 0.7em;
+
+  /** not visible first time */
+  opacity: 0;
+
+}
 
 
 
