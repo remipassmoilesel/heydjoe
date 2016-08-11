@@ -46,20 +46,35 @@
 <!-- Panel where are displayed videos -->
 <div id="jsxc-video-panel">
 
-  <div class="jsxc-left-videopanel">
+  <span class="jsxc-left-videopanel">
+
+   <div>
+      <p>Vidéo locale:</p>
+      <video class="jsxc-local-video"/>
+    </div>
+
     <div>
-      <p>Etat des participants:</p>
+      <p>Participants:</p>
       <ul id="jsxc-videoconference-buddies">
         <li>Miguel</li>
         <li>Rémi</li>
         <li>David</li>
       </ul>
     </div>
-    <div>
-      <p>Vidéo locale:</p>
-      <video class="jsxc-localVideo"/>
-    </div>
-  </div>
+
+  </span>
+
+  <span class="jsxc-right-videopanel">
+
+    <div class="jsxc-remote-video"> </div>
+
+    <div class="jsxc-remote-video"> </div>
+
+    <div class="jsxc-remote-video"> </div>
+
+    <div class="jsxc-remote-video"> </div>
+
+  </span>
 
 </div>
 
@@ -81,11 +96,11 @@
 <!-- Chat sidebar content -->
 <div id="jsxc-chat-sidebar-content">
 
-<a href="#" id="jsxc-new-gui-filter-users">Utilisateurs</a>
-<a href="#" id="jsxc-new-gui-filter-conversations">Discussions</a>
+<a id="jsxc-new-gui-filter-users">Utilisateurs</a>
+<a id="jsxc-new-gui-filter-conversations">Discussions</a>
 
 <input id="jsxc-chat-sidebar-filter-text-field" placeholder="Rechercher ..." type="text"/>
-<a href="#" id="jsxc-select-buddies" class="jsxc-checked">Sélectionner</a>
+<a id="jsxc-select-buddies" class="jsxc-checked">Sélectionner plusieurs</a>
 
 <ul id="jsxc_buddylist">
 
@@ -697,6 +712,20 @@ Statut: En ligne" class="jsxc_name">Miguel
   </div>
 </li>
 </ul>
+
+<div id="jsxc-status-bar">
+
+  <span>Jean Claude le Grand</span>
+
+  <select class="jsxc-select-status">
+    <option>En ligne</option>
+    <option>Absent</option>
+    <option>Ne pas déranger</option>
+  </select>
+
+  <span class="jsxc-logout-button"></span>
+
+</div>
 
 </div>
 

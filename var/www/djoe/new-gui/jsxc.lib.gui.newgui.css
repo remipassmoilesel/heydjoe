@@ -37,7 +37,8 @@ TODO: Set up variable with sidebar width and height
 
   color: white;
   font-weight: bolder;
-  padding: 0.5em;
+  padding-top: 0.8em;
+  padding-left: 0.8em;
 
 }
 
@@ -117,9 +118,13 @@ TODO: Set up variable with sidebar width and height
 }
 
 #jsxc_buddylist {
-  height: 80%;
+  height: 69%;
   overflow-x: hidden;
   overflow-y: scroll;
+
+  margin: 3px;
+  border: solid 1px silver;
+
 }
 
 #jsxc-select-buddies {
@@ -127,6 +132,9 @@ TODO: Set up variable with sidebar width and height
   clear: both;
   padding: 6px;
   text-align: right;
+  text-decoration: none;
+
+  cursor: pointer;
 }
 
 .jsxc-selection-mode-enabled {
@@ -181,11 +189,17 @@ TODO: Set up variable with sidebar width and height
 
 }
 
+/**
+  Left video panel with controls and local video
+*/
 .jsxc-left-videopanel {
+  margin: 0px;
   text-align: center;
   float: left;
   height: 100%;
-  width: 25%;
+  width: 20%;
+
+  display: block;
 
   background: rgba(210, 210, 210, 0.9);
 
@@ -197,13 +211,24 @@ TODO: Set up variable with sidebar width and height
   margin: 1em;
 }
 
+/**
+  Right videopanel with remote videos
+*/
 .jsxc-right-videopanel {
+
+  margin: 0px;
+  display: block;
   text-align: center;
   float: right;
+
   height: 100%;
-  width: 75%;
+  width: 79%;
+  white-space: nowrap;
 
   background: inherit;
+
+  overflow-x: scroll;
+  overflow-y: hidden;
 
 }
 
@@ -218,8 +243,70 @@ TODO: Set up variable with sidebar width and height
   padding: 2px;
 }
 
-.jsxc-localVideo {
-  background: black;
+.jsxc-local-video {
+  background: rgba(0, 0, 0, 1);
   width: 80%;
   margin: 5px;
 }
+
+.jsxc-remote-video {
+
+  background: rgba(255, 255, 255, 0.8);
+
+  display: inline-block;
+  height: 80%;
+  width: 500px;
+
+  margin-top: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+  border: solid 1px white;
+}
+
+#jsxc-status-bar{
+  padding: 0.6em;
+}
+
+.jsxc-logout-button{
+  content: ' ';
+  background-image: url('icons/logout.svg');
+  background-repeat: no-repeat;
+  background-size: 100%;
+
+  cursor: pointer;
+
+  height: 15px;
+  width: 15px;
+  display: inline-block;
+
+  margin-left: 0.4em;
+  margin-right: 0.4em;
+}
+
+.jsxc-select-status{
+  margin: 0.7em;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

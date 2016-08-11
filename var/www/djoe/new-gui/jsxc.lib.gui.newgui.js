@@ -8,7 +8,7 @@ var jsxc = {
       /**
        * Sidebar of deployed chat sidebar
        */
-      SIDEBAR_HEIGHT : '500px', VIDEOPANEL_HEIGHT : '500px',
+      SIDEBAR_HEIGHT : '600px', VIDEOPANEL_HEIGHT : '500px',
 
       /**
        * Animation of toggling chat side bar, in ms
@@ -60,16 +60,14 @@ var jsxc = {
         $("#jsxc-new-gui-filter-conversations").click(function() {
           self.toggleBuddyFilter('conversations');
         });
+        self.toggleBuddyFilter('buddies');
 
         // selection mode
         $("#jsxc-select-buddies").click(function() {
           self.toggleSelectionMode();
           $(this).toggleClass("jsxc-selection-mode-enabled");
         });
-
-      },
-
-      toggleBackground: function(element, color1, color2){
+        
 
       },
 
