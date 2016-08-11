@@ -215,7 +215,7 @@ jsxc.xmpp = {
     }
   },
 
-  _debugPresences : false,
+  _debugPresences : false, _lastAutoPresenceSent : -1,
 
   /**
    * Automatic sending of presence to inform all users at 'n' ms interval of our state and
@@ -243,6 +243,22 @@ jsxc.xmpp = {
 
     // send presences in time interval
     var autosend = function() {
+
+      // check last send
+      var now = new Date().getTime();
+
+      // too early, cancel sending
+      if ((now - self._lastAutoPresenceSent) < self.AUTO_PRESENCE_SENDING_INTERVAL) {
+        // console.log("To early, abort !");
+        return;
+      }
+
+      // console.log("On time !");
+
+      // just on time, save lat sent
+      self._lastAutoPresenceSent = now;
+
+      // send presence
       self.sendPres();
 
       i = i + 1;
