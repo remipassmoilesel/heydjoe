@@ -16,7 +16,7 @@ jsxc.xmpp = {
   /**
    * Timer for sending presence to server every n ms
    */
-  AUTO_PRESENCE_SENDING_INTERVAL : 5000,
+  AUTO_PRESENCE_SENDING_INTERVAL : 4000,
 
   /**
    * Maximum sending, -1 to disable
@@ -157,7 +157,7 @@ jsxc.xmpp = {
           $(document).trigger('connected.jsxc');
 
           if (jsxc.master === true) {
-            self.launchAutoPresenceTimer();
+            self.enableOnGuiActivityPresenceSending();
           }
 
           break;
@@ -215,6 +215,8 @@ jsxc.xmpp = {
     }
   },
 
+  _debugPresences : false,
+
   /**
    * Automatic sending of presence to inform all users at 'n' ms interval of our state and
    * our resource (for multimedia stream per example)
@@ -223,25 +225,59 @@ jsxc.xmpp = {
 
     var self = jsxc.xmpp;
 
-    jsxc.debug("Starting auto presence sending timer", {
-      interval: self.AUTO_PRESENCE_SENDING_INTERVAL,
-      max: self.AUTO_PRESENCE_SENDING_MAX
-    });
+    if (self._debugPresences === true) {
+
+      jsxc.debug(self._launched + " ..Starting auto presence sending timer", {
+        interval : self.AUTO_PRESENCE_SENDING_INTERVAL, max : self.AUTO_PRESENCE_SENDING_MAX
+      });
+
+    }
 
     // count only auto presences
     var i = 0;
 
-    self._autoPresenceSend = setInterval(function() {
+    // clear previous sender if necessary
+    if (self._autoPresenceSend) {
+      clearInterval(self._autoPresenceSend);
+    }
+
+    // send presences in time interval
+    var autosend = function() {
       self.sendPres();
 
       i = i + 1;
 
       // stop auto sending if necessary
-      if (self.AUTO_PRESENCE_SENDING_MAX > 0 && i > self.AUTO_PRESENCE_SENDING_MAX){
+      if (self.AUTO_PRESENCE_SENDING_MAX > 0 && i > self.AUTO_PRESENCE_SENDING_MAX) {
         self.stopAutoPresenceTimer();
       }
 
-    }, self.AUTO_PRESENCE_SENDING_INTERVAL);
+    };
+
+    self._autoPresenceSend = setInterval(autosend, self.AUTO_PRESENCE_SENDING_INTERVAL);
+
+    // first call
+    autosend();
+
+  },
+
+  /**
+   * Send automatically presences when user is interacting with gui
+   */
+  enableOnGuiActivityPresenceSending : function() {
+
+    var self = jsxc.xmpp;
+    var gui = $("#jsxc_roster");
+
+    jsxc.debug("Sending presences on gui activity");
+
+    // remove eventually older timers
+    gui.off("mouseover", "*", self.launchAutoPresenceTimer);
+    gui.off("mouseout", "*", self.stopAutoPresenceTimer);
+
+    // add timers
+    gui.mouseover(self.launchAutoPresenceTimer);
+    gui.mouseout(self.stopAutoPresenceTimer);
 
   },
 
@@ -252,10 +288,11 @@ jsxc.xmpp = {
 
     var self = jsxc.xmpp;
 
-    jsxc.debug("Stopping auto presence sending timer", {
-      interval: self.AUTO_PRESENCE_SENDING_INTERVAL,
-      max: self.AUTO_PRESENCE_SENDING_MAX
-    });
+    if (self._debugPresences === true) {
+      jsxc.debug("Stopping auto presence sending timer", {
+        interval : self.AUTO_PRESENCE_SENDING_INTERVAL, max : self.AUTO_PRESENCE_SENDING_MAX
+      });
+    }
 
     clearInterval(self._autoPresenceSend);
 
