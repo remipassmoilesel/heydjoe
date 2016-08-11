@@ -1,8 +1,15 @@
 /**
 
-TODO: Set up variable with sidebar width and height
+TODO: Set up variables:
+- sidebar width and height
+- opacity before, after hover
 
 */
+
+#jsxc{
+  font-family: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
+  font-size: 13px; !important;
+}
 
 /**
   The chat bar container
@@ -55,15 +62,13 @@ TODO: Set up variable with sidebar width and height
   width: 18px;
   height: 18px;
   vertical-align: middle;
-
   margin-right: 0.7em;
+
+  opacity: 0.7;
 }
 
-/**
-  In chat sidebar, filter display to show only users
-*/
-.jsxc-new-gui-filter-users {
-
+.jsxc-toggle-chat:hover{
+  opacity: 1;
 }
 
 /**
@@ -100,12 +105,12 @@ TODO: Set up variable with sidebar width and height
   width: 50%;
 }
 
-.jsxc-active-filter{
-  background: rgba(190,230,240, 0.5) !important;
+.jsxc-active-filter {
+  background: rgba(190, 230, 240, 0.5) !important;
 }
 
 /**
-  Video icon to toggle chat videopanel
+  Video icon to toggle chat mediapanel
 */
 .jsxc-toggle-video {
   cursor: pointer;
@@ -119,10 +124,16 @@ TODO: Set up variable with sidebar width and height
   vertical-align: middle;
 
   margin-right: 0.7em;
+  opacity: 0.7;
 }
 
+.jsxc-toggle-video:hover{
+  opacity: 1;
+}
+
+
 #jsxc_buddylist {
-  height: 69%;
+  height: 65%;
   overflow-x: hidden;
   overflow-y: scroll;
 
@@ -132,14 +143,21 @@ TODO: Set up variable with sidebar width and height
 }
 
 #jsxc-select-buddies {
-  display: block;
+  display: inline-block;
   clear: both;
   padding: 6px;
   text-align: right;
   text-decoration: none;
 
   cursor: pointer;
+  padding-right: 0.7em;
+  opacity: 0.7;
 }
+
+#jsxc-select-buddies:hover{
+  opacity: 1;
+}
+
 
 .jsxc-selection-mode-enabled {
   background: #cccddd;
@@ -167,16 +185,18 @@ TODO: Set up variable with sidebar width and height
 }
 
 #jsxc-chat-sidebar-filter-text-field {
-  border: none;
-  height: 1.5em;
-  margin: 10px;
-  width: 200px;
+  border: solid 1px #DDDDDD;
+  height: 2em;
+  color: #222222;
+  margin: 5px;
+  padding: 5px;
+  width: 96%;
 }
 
 /**
   Panel where are displayed videos
 */
-#jsxc-video-panel {
+#jsxc-mediapanel {
 
   /** Just under chat sidebar */
   z-index: 79;
@@ -196,7 +216,7 @@ TODO: Set up variable with sidebar width and height
 /**
   Left video panel with controls and local video
 */
-.jsxc-left-videopanel {
+#jsxc-mediapanel-left {
   margin: 0px;
   text-align: center;
   float: left;
@@ -205,20 +225,27 @@ TODO: Set up variable with sidebar width and height
 
   display: block;
 
-  background: rgba(210, 210, 210, 0.9);
+  background: rgba(255, 255, 255, 1);
 
   border-right: solid 1px gray;
 }
 
-.jsxc-left-videopanel p {
+#jsxc-mediapanel-left .jsxc-header {
+  font-weight: bolder;
+  background: #1c94d4;
+  color: white;
+  padding: 1em;
+}
+
+#jsxc-mediapanel-left p {
   text-align: left;
   margin: 1em;
 }
 
 /**
-  Right videopanel with remote videos
+  Right mediapanel with remote videos
 */
-.jsxc-right-videopanel {
+#jsxc-mediapanel-right {
 
   margin: 0px;
   display: block;
@@ -228,8 +255,6 @@ TODO: Set up variable with sidebar width and height
   height: 100%;
   width: 79%;
   white-space: nowrap;
-
-  background: inherit;
 
   overflow-x: scroll;
   overflow-y: hidden;
@@ -253,25 +278,11 @@ TODO: Set up variable with sidebar width and height
   margin: 5px;
 }
 
-.jsxc-remote-video {
-
-  background: rgba(255, 255, 255, 0.8);
-
-  display: inline-block;
-  height: 80%;
-  width: 500px;
-
-  margin-top: 20px;
-  margin-left: 20px;
-  margin-right: 20px;
-  border: solid 1px white;
-}
-
-#jsxc-status-bar{
+#jsxc-status-bar {
   padding: 0.6em;
 }
 
-.jsxc-logout-button{
+.jsxc-logout-button {
   content: ' ';
   background-image: url('icons/logout.svg');
   background-repeat: no-repeat;
@@ -287,12 +298,11 @@ TODO: Set up variable with sidebar width and height
   margin-right: 0.4em;
 }
 
-.jsxc-select-status{
+.jsxc-select-status {
   margin: 0.7em;
 }
 
-
-#jsxc-settings-button{
+#jsxc-toggle-settings {
 
   cursor: pointer;
 
@@ -308,24 +318,125 @@ TODO: Set up variable with sidebar width and height
   margin-left: 0.7em;
   margin-right: 0.7em;
 
+  float: right;
+
   /** not visible first time */
   opacity: 0;
 
 }
 
+#jsxc-toggle-settings:hover{
+  opacity: 1;
+}
+
+/**
+
+  Floating menu with various settings access
+
+*/
+#jsxc-settings-menu {
+  display: none;
+  width: 300px;
+  height: 300px;
+  background: white;
+  z-index: 100;
+
+  border: solid 1px silver;
+
+  box-shadow: -3px 3px 3px 3px rgba(0, 0, 0, 0.1);
+
+  overflow: scroll;
+}
+
+#jsxc-settings-menu a {
+  display: block;
+  padding: 0.5em;
+  width: 100%;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/**
+  Floating menu with actions related to buddies and work operations
+*/
+.jsxc-actions-menu{
+  content: ' ';
+  background: url('icons/open-menu.svg');
+  background-size: 90%;
+  background-repeat: no-repeat;
+  content: ' ';
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+
+  float: right;
+
+  margin-top: 0.5em;
+  margin-left: 0.7em;
+  margin-right: 0.7em;
+
+  cursor: pointer;
+
+  opacity: 0.7;
+
+}
+
+.jsxc-actions-menu:hover{
+  opacity: 1;
+}
+
+/**
+  Ressources links and display in media panel
+*/
+.jsxc-media-ressource-link{
+  color: darkblue;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.jsxc-media-ressource-link:hover{
+  text-decoration: underline;
+  opacity: 1;
+}
+
+.jsxc-media-ressource-link:after{
+
+  content: " ";
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin: 0 3px 0 3px;
+
+  background-image: url('icons/ressource.svg');
+
+}
 
 
+.jsxc-media-ressource {
 
+  background: rgba(255, 255, 255, 0.8);
 
+  display: inline-block;
+  height: 80%;
 
+  margin-top: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+  border: solid 1px white;
+}
 
+.jsxc-media-ressource .title{
+  font-weight: bolder;
+  color: white;
 
+}
 
-
-
-
-
-
+.jsxc-last-notifications{
+  cursor: pointer;
+}
 
 
 

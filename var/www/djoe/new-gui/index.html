@@ -3,24 +3,32 @@
 
   <meta charset="UTF-8">
 
-  <script type="text/javascript" src="../bower_components/jquery/dist/jquery.js"></script>
-  <script type="text/javascript" src="jsxc.lib.gui.newgui.js"></script>
-
   <link rel="stylesheet" type="text/css" href="jsxc.css"/>
+  <link rel="stylesheet" type="text/css" href="../bower_components/tether/dist/css/tether-theme-arrows.css"/>
   <link rel="stylesheet" type="text/css" href="jsxc.lib.gui.newgui.css"/>
 
   <style type="text/css">
 
     * {
       font-family: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
-      font-size: 13px;
     }
 
   </style>
 
+
+  <script type="text/javascript" src="../bower_components/jquery/dist/jquery.js"></script>
+  <script type="text/javascript" src="../bower_components/tether/dist/js/tether.js"></script>
+  <script type="text/javascript" src="jsxc.lib.gui.newgui.js"></script>
+
   <script type="text/javascript">
 
     $(function() {
+
+      // filter example
+      $("body").append($("<p id='filter-example'>").html(
+          "Hey hey hey https://www.youtube.com/watch?hl=fr&v=FbuluDBHpfQ&gl=FR he-y hey https://www.youtube.com/watch?hl=fr&v=FbuluDBHpfQ&gl=FR hey hey https://youtu.be/FbuluDBHpfQ?t=49")
+          .css({'margin' : '20px', 'text-align' : 'justify'}));
+
       // generate random paragraphs
       var lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eu odio luctus, elementum leo at, imperdiet nisl. Cras tristique lorem vitae lacus placerat, sed varius neque molestie. Mauris hendrerit cursus nisi. Curabitur quis fermentum justo. Phasellus bibendum enim in ex lobortis commodo. Aliquam tempor ipsum eu hendrerit ultrices. Mauris quis finibus dui. Quisque commodo, justo at convallis scelerisque, nisi risus condimentum mi, a molestie felis ipsum ut nunc. Mauris nunc enim, consectetur eu aliquet et, finibus quis augue. Vivamus convallis ante sit amet malesuada pellentesque. Donec ac suscipit mi, ut blandit lacus. Curabitur malesuada ipsum magna, vel laoreet quam venenatis et. Integer interdum augue quis metus ultricies hendrerit. Sed tellus elit, imperdiet sit amet ultrices efficitur, bibendum a lectus. Maecenas scelerisque libero massa, vel elementum sem vehicula in. Proin id blandit massa, sollicitudin mollis libero.        Cras ut porttitor ligula. Vestibulum ultrices molestie sollicitudin. Integer vulputate sollicitudin sem ac ultricies. Aliquam accumsan pellentesque justo, a mollis sapien dictum vitae. Cras eget enim non sapien malesuada lobortis. Sed mattis imperdiet pulvinar. Nunc facilisis consequat odio.        Vestibulum interdum mauris a dui euismod, ac varius odio efficitur. Curabitur ac luctus quam, at sollicitudin lorem. Maecenas euismod vulputate luctus. Ut luctus elit mi, ut fringilla turpis volutpat a. Sed et tortor pharetra, mattis sapien tristique, elementum neque. In a metus vitae metus consectetur interdum. Vivamus mi sapien, commodo nec ipsum eget, imperdiet gravida dolor. Nulla facilisi. Pellentesque justo ex, ultricies ut justo id, dictum convallis justo.       Donec ornare iaculis sem molestie molestie. Aenean lobortis nulla elit, quis cursus ipsum malesuada at. Ut mollis sollicitudin odio, quis cursus turpis blandit sed. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Morbi euismod dignissim neque in dignissim. Etiam semper ligula mauris. Quisque est massa, consectetur ornare enim porttitor, tincidunt posuere nibh. Nulla dictum posuere sollicitudin.       Proin ut consequat nisi. Integer mattis pretium odio ut volutpat. Fusce dignissim magna vel augue euismod egestas. Vestibulum et massa pulvinar, porta purus sit amet, ornare justo. Donec non sem in justo rutrum tempus quis ut metus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aenean ut aliquam purus. Aenean vulputate risus quis lorem malesuada ornare. Aliquam non lorem vel odio";
 
@@ -29,11 +37,13 @@
       }
 
       // init chat bar
-      jsxc.gui.newgui.init();
+      jsxc.newgui.init();
 
-      jsxc.gui.newgui.toggleChatSidebar();
+//      jsxc.newgui.toggleChatSidebar();
+//
+//      jsxc.newgui.toggleMediapanel();
 
-      jsxc.gui.newgui.toggleVideopanel();
+      $('#filter-example').html(jsxc.newgui.textFilter($("#filter-example").text()));
 
     });
 
@@ -43,10 +53,14 @@
 </head>
 <body>
 
-<!-- Panel where are displayed videos -->
-<div id="jsxc-video-panel">
+<div id="jsxc">
 
-  <span class="jsxc-left-videopanel">
+<!-- Panel where are displayed videos -->
+<div id="jsxc-mediapanel">
+
+  <span id="jsxc-mediapanel-left">
+
+    <div class="jsxc-header">En ligne: 2 participants</div>
 
    <div>
       <p>Vidéo locale:</p>
@@ -64,15 +78,7 @@
 
   </span>
 
-  <span class="jsxc-right-videopanel">
-
-    <div class="jsxc-remote-video"> </div>
-
-    <div class="jsxc-remote-video"> </div>
-
-    <div class="jsxc-remote-video"> </div>
-
-    <div class="jsxc-remote-video"> </div>
+  <span id="jsxc-mediapanel-right">
 
   </span>
 
@@ -91,7 +97,19 @@
 
   <span class="jsxc-last-notifications">En ligne: 5 utilisateurs</span>
 
-  <span id="jsxc-settings-button"></span>
+  <span id="jsxc-toggle-settings"></span>
+
+  <div id="jsxc-settings-menu">
+
+    <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+    <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+    <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+    <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+    <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+    <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+    <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+
+  </div>
 
 </div>
 
@@ -102,7 +120,11 @@
 <a id="jsxc-new-gui-filter-conversations">Discussions</a>
 
 <input id="jsxc-chat-sidebar-filter-text-field" placeholder="Rechercher ..." type="text"/>
-<a id="jsxc-select-buddies" class="jsxc-checked">Sélectionner plusieurs</a>
+
+<div>
+  <a id="jsxc-select-buddies" class="jsxc-checked">Sélectionner plusieurs</a>
+  <span class="jsxc-actions-menu"></span>
+</div>
 
 <ul id="jsxc_buddylist">
 
@@ -732,5 +754,8 @@ Statut: En ligne" class="jsxc_name">Miguel
 </div>
 
 </div>
+
+</div>
+
 </body>
 </html>

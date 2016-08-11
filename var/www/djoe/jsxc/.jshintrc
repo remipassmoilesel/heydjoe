@@ -42,6 +42,7 @@
     "Shepherd": true,
     "require": true,
     "QUnit": true,
+    "Tether": true,
     "URL": true
   }
 }
