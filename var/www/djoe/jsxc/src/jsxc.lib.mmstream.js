@@ -333,7 +333,7 @@ jsxc.mmstream = {
     overwrite = typeof overwrite !== 'undefined' ? overwrite : true;
 
     if (typeof fulljid === "undefined") {
-      throw new Eror("fulljid cannot be undefined: " + fulljid);
+      throw new Error("fulljid cannot be undefined: " + fulljid);
     }
 
     if (Object.keys(self.USER_STATUS).indexOf(status) === -1) {
@@ -369,7 +369,7 @@ jsxc.mmstream = {
     var self = jsxc.mmstream;
 
     if (typeof fulljid === "undefined") {
-      throw new Eror("fulljid cannot be undefined: " + fulljid);
+      throw new Error("fulljid cannot be undefined: " + fulljid);
     }
 
     if (Object.keys(self.USER_TYPE).indexOf(type) === -1) {
