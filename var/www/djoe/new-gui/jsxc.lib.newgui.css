@@ -359,7 +359,7 @@ TODO: Set up variables:
 /**
   Floating menu with actions related to buddies and work operations
 */
-.jsxc-actions-menu{
+#jsxc-toggle-actions{
   content: ' ';
   background: url('icons/open-menu.svg');
   background-size: 90%;
@@ -382,7 +382,7 @@ TODO: Set up variables:
 
 }
 
-.jsxc-actions-menu:hover{
+#jsxc-toggle-actions:hover{
   opacity: 1;
 }
 
@@ -417,18 +417,17 @@ TODO: Set up variables:
 
 .jsxc-media-ressource {
 
-  background: rgba(255, 255, 255, 0.8);
-
   display: inline-block;
   height: 80%;
 
   margin-top: 20px;
   margin-left: 20px;
   margin-right: 20px;
-  border: solid 1px white;
 }
 
-.jsxc-media-ressource .title{
+.jsxc-media-ressource .jsxc-title{
+  font-size: 1.2em;
+  text-align: center;
   font-weight: bolder;
   color: white;
 
@@ -438,9 +437,25 @@ TODO: Set up variables:
   cursor: pointer;
 }
 
+.jsxc-multimedia-error-block{
+  font-weight: bolder;
+  color: white;
+  font-size: 14px;
+}
 
+#jsxc-actions-menu {
+  display: none;
+  width: 300px;
+  height: 300px;
+  background: white;
+  z-index: 100;
 
+  border: solid 1px silver;
 
+  box-shadow: -3px 3px 3px 3px rgba(0, 0, 0, 0.1);
+
+  overflow: scroll;
+}
 
 
 

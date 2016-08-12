@@ -5,7 +5,7 @@
 
   <link rel="stylesheet" type="text/css" href="jsxc.css"/>
   <link rel="stylesheet" type="text/css" href="../bower_components/tether/dist/css/tether-theme-arrows.css"/>
-  <link rel="stylesheet" type="text/css" href="jsxc.lib.gui.newgui.css"/>
+  <link rel="stylesheet" type="text/css" href="jsxc.lib.newgui.css"/>
 
   <style type="text/css">
 
@@ -18,7 +18,7 @@
 
   <script type="text/javascript" src="../bower_components/jquery/dist/jquery.js"></script>
   <script type="text/javascript" src="../bower_components/tether/dist/js/tether.js"></script>
-  <script type="text/javascript" src="jsxc.lib.gui.newgui.js"></script>
+  <script type="text/javascript" src="jsxc.lib.newgui.js"></script>
 
   <script type="text/javascript">
 
@@ -26,7 +26,12 @@
 
       // filter example
       $("body").append($("<p id='filter-example'>").html(
-          "Hey hey hey https://www.youtube.com/watch?hl=fr&v=FbuluDBHpfQ&gl=FR he-y hey https://www.youtube.com/watch?hl=fr&v=FbuluDBHpfQ&gl=FR hey hey https://youtu.be/FbuluDBHpfQ?t=49")
+          "Hey hey hey https://www.youtube.com/watch?hl=fr&v=FbuluDBHpfQ&gl=FR he-y" +
+          " hey https://www.youtube.com/watch?hl=fr&v=FbuluDBHpfQ&gl=FR hey hey " +
+          "https://youtu.be/FbuluDBHpfQ?t=49" +
+          "<p>ho ho hoh http://www.dailymotion.com/video/x2i3isg_zap-meta-le-zapping-de-meta-tv-2015-s" +
+          "emaine-9_news http://www.dailymotion.com/video/x2i3isg_zap-meta-le-zapping-de-meta-tv" +
+          "-2015-semaine-9_news</p>")
           .css({'margin' : '20px', 'text-align' : 'justify'}));
 
       // generate random paragraphs
@@ -39,8 +44,8 @@
       // init chat bar
       jsxc.newgui.init();
 
-//      jsxc.newgui.toggleChatSidebar();
-//
+      jsxc.newgui.toggleChatSidebar();
+
 //      jsxc.newgui.toggleMediapanel();
 
       $('#filter-example').html(jsxc.newgui.textFilter($("#filter-example").text()));
@@ -58,11 +63,11 @@
 <!-- Panel where are displayed videos -->
 <div id="jsxc-mediapanel">
 
-  <span id="jsxc-mediapanel-left">
+  <div id="jsxc-mediapanel-left">
 
     <div class="jsxc-header">En ligne: 2 participants</div>
 
-   <div>
+    <div>
       <p>Vidéo locale:</p>
       <video class="jsxc-local-video"/>
     </div>
@@ -76,11 +81,11 @@
       </ul>
     </div>
 
-  </span>
+  </div>
 
-  <span id="jsxc-mediapanel-right">
+  <div id="jsxc-mediapanel-right">
 
-  </span>
+  </div>
 
 </div>
 
@@ -123,7 +128,20 @@
 
 <div>
   <a id="jsxc-select-buddies" class="jsxc-checked">Sélectionner plusieurs</a>
-  <span class="jsxc-actions-menu"></span>
+  <span id="jsxc-toggle-actions"></span>
+
+  <div id="jsxc-actions-menu">
+
+    <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+    <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+    <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+    <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+    <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+    <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+    <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+
+  </div>
+
 </div>
 
 <ul id="jsxc_buddylist">

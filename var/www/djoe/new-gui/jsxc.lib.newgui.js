@@ -17,6 +17,8 @@ var jsxc = {
      */
     SIDEBAR_ANIMATION_DURATION : '1500',
 
+    SCROLL_ANIMATION_DURATION: '500',
+
     MENU_APPEAR_ANIMATION_DURATION : '800',
 
     _log : function(message, data, level) {
@@ -80,13 +82,104 @@ var jsxc = {
         $(this).toggleClass("jsxc-selection-mode-enabled");
       });
 
-      $(".jsxc-last-notifications").click(function(){
+      $(".jsxc-last-notifications").click(function() {
         self.toggleChatSidebar();
-        self.toggleMediapanel();
       });
 
       // settings menu
       self._initSettingsMenu();
+
+      // actions
+      self._initActionsMenu();
+
+      // optionnal
+      self.initMediaPanelMouseNavigation();
+
+    },
+
+    /**
+     * Setting menu, where user can mute notifications, see 'About dialog', ...
+     * @private
+     */
+    _initActionsMenu : function() {
+
+      var self = jsxc.newgui;
+
+      // add openning action
+      $("#jsxc-toggle-actions").click(function(){
+        self.toggleActionsMenu();
+      });
+
+    },
+
+    /**
+     * Open or close settings menu
+     */
+    toggleActionsMenu : function() {
+
+      console.trace();
+
+      jsxc.newgui._toggleFloatingMenu('#jsxc-actions-menu', '#jsxc-toggle-actions', 'top right',
+          'middle left');
+    },
+
+    initMediaPanelMouseNavigation: function(){
+
+      var self = jsxc.newgui;
+
+      var mpanel = $("#jsxc-mediapanel-right");
+      var lastMove;
+
+      mpanel.mousemove(function(event) {
+
+        console.log(event.pageX, event.pageY);
+
+        // do not operate if mouse too down
+        if(event.pageY > 150){
+          return true;
+        }
+
+        // first move
+        if(!lastMove){
+          lastMove = event.pageX;
+
+          // keep handler
+          return true;
+        }
+
+        // get dimensions of panel
+        var frameSize = mpanel.width();
+        var viewportSize = 0;
+        mpanel.find("div.jsxc-media-ressource").each(function(){
+          viewportSize += $(this).width();
+        });
+
+        if(viewportSize > frameSize){
+
+          var factor = viewportSize / frameSize;
+
+          // get direction
+          var direction = lastMove - event.pageX;
+
+          mpanel.scrollLeft(mpanel.scrollLeft() - direction * factor);
+
+        }
+
+        lastMove = event.pageX;
+
+      });
+
+      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
+      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
+      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
+      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
+      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
+      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
+      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
+      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
+      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
+
+
 
     },
 
@@ -397,13 +490,15 @@ var jsxc = {
 
     },
 
+    //TODO: Etherpad
+    //TODO: Videoconference
+    //TODO: ...
     MEDIA_RESSOURCES : {
 
       youtube : {
 
         //https://www.youtube.com/watch?v=FbuluDBHpfQ
-        regex : [/https?:\/\/(www\.)?youtube\.[a-z]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/ig,
-          /https?:\/\/(www\.)?youtu\.be\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/ig],
+        regex : [/https?:\/\/(www\.)?youtube\.[a-z]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/ig],
 
         filterFunction : function() {
           var self = jsxc.newgui;
@@ -418,16 +513,51 @@ var jsxc = {
           // https://www.youtube.com/watch?v=FbuluDBHpfQ.match(/v=([^&]+)/i);
           var vid = ressourceOnly.match(/v=([^&]+)/i);
 
-          if(vid === null) {
-            return null;
+          if (vid === null) {
+            return self._getEmbeddedErrorBlock();
           }
 
           return '<iframe src="https://www.youtube.com/embed/' + vid[1] +
-              '" frameborder="0" allowfullscreen></iframe>';
+              '" frameborder="0" width="480" height="270" allowfullscreen></iframe>';
         }
+
+      },
+
+      dailymotion : {
+
+        //https://www.youtube.com/watch?v=FbuluDBHpfQ
+        regex : [/https?:\/\/(www\.)?dailymotion\.[a-z]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/ig],
+
+        filterFunction : function() {
+          var self = jsxc.newgui;
+          var match = arguments[0];
+          return self._getShowRessourceLink(match, "dailymotion");
+        },
+
+        getEmbedded : function(ressourceOnly) {
+          var self = jsxc.newgui;
+
+          // get video id from ressource
+          // http://www.dailymotion.com/video/x2i3isg_zap-meta-le-zapping-de-meta-tv-2015-semaine-9_news
+          var vid = ressourceOnly.match(/video\/([^_]+)/i);
+
+          if (vid === null) {
+            return self._getEmbeddedErrorBlock();
+          }
+
+          return '<iframe frameborder="0" width="480" height="270" ' +
+              'src="//www.dailymotion.com/embed/video/' + vid[1] + '" ' +
+              'allowfullscreen></iframe>';
+
+        },
 
       }
 
+    },
+
+    _getEmbeddedErrorBlock : function(ressource) {
+      return "<div class='jsxc-multimedia-error-block'>Erreur de traitement de la ressource: " +
+          "<br/>" + ressource + "</div>";
     },
 
     /**
@@ -483,17 +613,24 @@ var jsxc = {
 
       var embedded = self.MEDIA_RESSOURCES[prefix].getEmbedded(ressourceOnly);
 
-      self._addMediaRessource(embedded);
+      var title = "Vidéo: " +
+          (ressourceOnly.length > 20 ? ressourceOnly.substring(0, 17) + "..." : ressourceOnly);
+
+      self._addMediaRessource(embedded, title, ressource);
 
     },
 
-    _addMediaRessource : function(htmlContent) {
+    _addMediaRessource : function(htmlContent, title, ressource) {
 
       var self = jsxc.newgui;
 
-      var container = $('<div class="jsxc-remote-video"></div>').append(htmlContent);
+      var container = $('<div class="jsxc-media-ressource"></div>').append(htmlContent);
 
-      self._log("_addMediaRessource", {container : container});
+      if (title && ressource) {
+        container.prepend($("<h1 class='jsxc-title'>" + title + "</h1>").attr('title', ressource));
+      }
+
+      self._log("_addMediaRessource", {title : title, container : container});
 
       $("#jsxc-mediapanel-right").append(container);
     },
