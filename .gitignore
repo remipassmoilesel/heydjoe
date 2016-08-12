@@ -1,12 +1,14 @@
 .idea/
 
-*.pem
 node_modules
 bower_components
+memos
 
 etc/ssl/*
 opt/openfire/resources/security/*
-memos
+*.pem
+
+opt/djoe-docker-image/dependencies/*.tar.gz
 
 var/www/djoe/jsxc/dev/
 var/www/djoe/jsxc/build/
