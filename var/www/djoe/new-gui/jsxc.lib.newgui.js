@@ -1,8 +1,15 @@
 // TODO: onSlave
 // TODO: ...
 
+/**
+ *
+ *
+ */
 var jsxc = {
 
+  /**
+   * @memberOf jsxc
+   */
   newgui : {
 
     /**
@@ -17,7 +24,7 @@ var jsxc = {
      */
     SIDEBAR_ANIMATION_DURATION : '1500',
 
-    SCROLL_ANIMATION_DURATION: '500',
+    SCROLL_ANIMATION_DURATION : '500',
 
     MENU_APPEAR_ANIMATION_DURATION : '800',
 
@@ -93,7 +100,7 @@ var jsxc = {
       self._initActionsMenu();
 
       // optionnal
-      self.initMediaPanelMouseNavigation();
+      // self.initMediaPanelMouseNavigation();
 
     },
 
@@ -106,7 +113,7 @@ var jsxc = {
       var self = jsxc.newgui;
 
       // add openning action
-      $("#jsxc-toggle-actions").click(function(){
+      $("#jsxc-toggle-actions").click(function() {
         self.toggleActionsMenu();
       });
 
@@ -116,14 +123,10 @@ var jsxc = {
      * Open or close settings menu
      */
     toggleActionsMenu : function() {
-
-      console.trace();
-
-      jsxc.newgui._toggleFloatingMenu('#jsxc-actions-menu', '#jsxc-toggle-actions', 'top right',
-          'middle left');
+      jsxc.newgui.chatSidebarContent.toggleContent('jsxc-actions-menu');
     },
 
-    initMediaPanelMouseNavigation: function(){
+    initMediaPanelMouseNavigation : function() {
 
       var self = jsxc.newgui;
 
@@ -135,12 +138,12 @@ var jsxc = {
         console.log(event.pageX, event.pageY);
 
         // do not operate if mouse too down
-        if(event.pageY > 150){
+        if (event.pageY > 150) {
           return true;
         }
 
         // first move
-        if(!lastMove){
+        if (!lastMove) {
           lastMove = event.pageX;
 
           // keep handler
@@ -150,11 +153,11 @@ var jsxc = {
         // get dimensions of panel
         var frameSize = mpanel.width();
         var viewportSize = 0;
-        mpanel.find("div.jsxc-media-ressource").each(function(){
+        mpanel.find("div.jsxc-media-ressource").each(function() {
           viewportSize += $(this).width();
         });
 
-        if(viewportSize > frameSize){
+        if (viewportSize > frameSize) {
 
           var factor = viewportSize / frameSize;
 
@@ -169,17 +172,33 @@ var jsxc = {
 
       });
 
-      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
-      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
-      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
-      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
-      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
-      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
-      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
-      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
-      self._addMediaRessource("<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title', 'Ressource');
-
-
+      self._addMediaRessource(
+          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
+          'Ressource');
+      self._addMediaRessource(
+          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
+          'Ressource');
+      self._addMediaRessource(
+          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
+          'Ressource');
+      self._addMediaRessource(
+          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
+          'Ressource');
+      self._addMediaRessource(
+          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
+          'Ressource');
+      self._addMediaRessource(
+          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
+          'Ressource');
+      self._addMediaRessource(
+          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
+          'Ressource');
+      self._addMediaRessource(
+          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
+          'Ressource');
+      self._addMediaRessource(
+          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
+          'Ressource');
 
     },
 
@@ -424,8 +443,7 @@ var jsxc = {
      * Open or close settings menu
      */
     toggleSettingsMenu : function() {
-      jsxc.newgui._toggleFloatingMenu('#jsxc-settings-menu', '#jsxc-toggle-settings', 'top right',
-          'middle left');
+      jsxc.newgui.chatSidebarContent.toggleContent('jsxc-settings-menu');
     },
 
     /**
@@ -663,6 +681,80 @@ var jsxc = {
       self._log("Output: ", text);
 
       return text;
+    },
+
+    /**
+     * @memberOf jsxc.newgui
+     */
+    chatSidebarContent : {
+
+      /**
+       * Return a find search resuts with all possible displayable viewports
+       * @returns {*|jQuery}
+       */
+      getAllContents : function() {
+        return $('#jsxc-sidebar-content-viewport').find(".jsxc-viewport-content");
+      },
+
+      showMainContent : function() {
+        var self = jsxc.newgui.chatSidebarContent;
+        self._setContentVisible("jsxc-buddy-list-container");
+      },
+      
+      toggleContent: function(contentId){
+
+        var self = jsxc.newgui.chatSidebarContent;
+
+        // check if content shown
+        var visible = $("#" + contentId).css("display") === "block";
+
+        if(visible){
+          self.showMainContent();
+        }
+
+        else {
+          self._setContentVisible(contentId);
+        }
+        
+      },
+      
+      _setContentVisible: function(contentId){
+        
+        var self = jsxc.newgui.chatSidebarContent;
+
+        // get all panels availables
+        var contents = self.getAllContents();
+
+        var found = false;
+
+        self.getAllContents().each(function(){
+          var element = $(this);
+          $(this).css('display', 'none');
+        });
+
+        // the corresponding panel we have to show after hiding the visible
+        var toDisplay = $('#jsxc-sidebar-content-viewport #' + contentId);
+
+        if(toDisplay.length < 1){
+          throw new Error("Unable to find ID: " + contentId);
+        }
+        else {
+          
+          // display element transparent
+          toDisplay.css({
+            opacity: 0,
+            display: 'block'
+          });
+          
+          // animate opacity
+          toDisplay.animate({
+            opacity: 1
+          }, self.MENU_APPEAR_ANIMATION_DURATION);
+          
+        }
+        
+      }
+
     }
 
   }

@@ -131,16 +131,21 @@ TODO: Set up variables:
   opacity: 1;
 }
 
-
-#jsxc_buddylist {
+/**
+  Center of sidebar, where content can shift between multiple panels
+*/
+#jsxc-sidebar-content-viewport{
   height: 65%;
   overflow-x: hidden;
   overflow-y: scroll;
-
   margin: 3px;
   border: solid 1px silver;
+}
+
+.jsxc-viewport-content{
 
 }
+
 
 #jsxc-select-buddies {
   display: inline-block;
@@ -336,16 +341,7 @@ TODO: Set up variables:
 */
 #jsxc-settings-menu {
   display: none;
-  width: 300px;
-  height: 300px;
   background: white;
-  z-index: 100;
-
-  border: solid 1px silver;
-
-  box-shadow: -3px 3px 3px 3px rgba(0, 0, 0, 0.1);
-
-  overflow: scroll;
 }
 
 #jsxc-settings-menu a {
@@ -445,17 +441,10 @@ TODO: Set up variables:
 
 #jsxc-actions-menu {
   display: none;
-  width: 300px;
-  height: 300px;
   background: white;
-  z-index: 100;
 
-  border: solid 1px silver;
-
-  box-shadow: -3px 3px 3px 3px rgba(0, 0, 0, 0.1);
-
-  overflow: scroll;
 }
+
 
 
 
