@@ -33,7 +33,7 @@ TODO: Set up variables:
 */
   #jsxc-chat-sidebar-header {
 
-    height: 2em;
+    height: 35px;
 
     color: white;
     font-weight: bolder;
@@ -42,7 +42,7 @@ TODO: Set up variables:
 
   }
 
-  .jsxc-close-chatsidebar{
+  .jsxc-close-chatsidebar {
 
     display: inline-block;
     opacity: 0;
@@ -61,7 +61,6 @@ TODO: Set up variables:
 
     cursor: pointer;
   }
-
 
   /**
     Menu icon to toggle chat sidebar
@@ -182,13 +181,9 @@ TODO: Set up variables:
     overflow: hidden;
   }
 
-  #jsxc-chat-sidebar-search {
-    border: solid 1px #DDDDDD;
-    height: 2em;
-    color: #222222;
-    margin: 5px;
-    padding: 5px;
-    width: 96%;
+  .jsxc-user-name {
+    display: block;
+    width: 100%
   }
 
   /**
@@ -498,34 +493,75 @@ TODO: Set up variables:
     cursor: not-allowed !important;
   }
 
+  /**
+    Possible content of chat sidebar
+  */
   #jsxc-search-users {
+
     display: none;
-  }
 
-  #jsxc-search-users .jsxc-search-users-results {
-    margin: 5px;
-  }
+    #jsxc-chat-sidebar-search {
+      position: absolute;
+      border: solid 1px #DDDDDD;
+      height: 2em;
+      color: #222222;
+      margin: 5px;
+      padding: 5px;
+      width: 68%;
+    }
 
-  #jsxc-search-users .jsxc-search-users-results a {
-    display: block;
-    width: 100%;
+    #jsxc-chat-sidebar-search-invite{
+      position: absolute;
+      left: 69%;
+      width: 20%;
+      margin: 0.4em;
+      line-height: 0.7em;
+    }
+
+    .jsxc-search-user-entry {
+      cursor: pointer;
+      border: solid 1px #cccccc;
+      padding: 0.4em;
+      margin-top: 0.2em;
+    }
+
+    .jsxc-search-users-results {
+      margin: 5px;
+      padding-top: 3em;
+    }
+
+    .jsxc-search-users-results a {
+      display: block;
+      width: 100%;
+    }
+
+
+    .jsxc-search-user-entry {
+      padding: 15px;
+    }
+
+
+
+
   }
 
   .jsxc-viewport-content {
+
     display: none;
     width: 100%;
     background: white;
-  }
 
-  .jsxc-viewport-content a {
-    display: block;
-    padding: 0.5em;
-    text-decoration: none;
-    cursor: pointer;
-  }
+    a {
+      display: block;
+      padding: 0.5em;
+      text-decoration: none;
+      cursor: pointer;
+    }
 
-  .jsxc-viewport-content a:hover {
-    text-decoration: underline;
+    a:hover {
+      text-decoration: underline;
+    }
+
   }
 
 }

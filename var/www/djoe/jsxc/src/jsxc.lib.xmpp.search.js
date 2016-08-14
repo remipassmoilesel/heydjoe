@@ -1,7 +1,7 @@
 /**
  * Implements user search (XEP 0055)
  *
- *
+ * @memberOf jsxc.xmpp
  */
 jsxc.xmpp.search = {
 

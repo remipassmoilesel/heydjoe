@@ -105,16 +105,27 @@ jsxc.newgui = {
     // actions
     self._initActionsMenu();
 
-    self._initSearchBar();
+    self._initSearchPanel();
 
     // optionnal
     // self.initMediaPanelMouseNavigation();
 
     self.toggleBuddyFilter("buddies");
 
+    // display name in status bar
+    if (jsxc.xmpp.conn.jid) {
+      $("#jsxc-status-bar .jsxc-user-name").text(Strophe.getNodeFromJid(jsxc.xmpp.conn.jid));
+    }
+
+    $(document).on('attached.jsxc', function() {
+      $("#jsxc-status-bar .jsxc-user-name").text(Strophe.getNodeFromJid(jsxc.xmpp.conn.jid));
+    });
+
   },
 
-  _initSearchBar : function() {
+  _searchTimer : 0,
+
+  _initSearchPanel : function() {
 
     var self = jsxc.newgui;
 
@@ -122,15 +133,86 @@ jsxc.newgui = {
       self.chatSidebarContent.showContent('jsxc-search-users');
     });
 
-    var searchBar = $('jsxc-chat-sidebar-search');
+    $("#jsxc-chat-sidebar-search-invite").click(function() {
+
+      //$("#jsxc-chat-sidebar .jsxc-search-users-results");
+
+      // TODO:
+      // find those checked
+      // invite them
+    });
+
+    var searchBar = $('#jsxc-chat-sidebar-search');
 
     searchBar.keyup(function() {
 
-      var val = searchBar.val();
+      var terms = searchBar.val();
 
-      self.filterBuddies(val);
+      clearTimeout(self._searchTimer);
+      self._searchTimer = setTimeout(function() {
+
+        console.info("Search: " + terms);
+
+        jsxc.xmpp.search.searchUsers(terms).then(function(results) {
+          self._displayUserSearchResults(results);
+        }).fail(function(error) {
+          self._displayUserSearchError(error);
+        });
+
+      }, 700);
 
     });
+
+  },
+
+  _displayUserSearchResults : function(results) {
+
+    var list = $("#jsxc-chat-sidebar .jsxc-search-users-results");
+
+    list.empty();
+
+    var displayed = 0;
+
+    var ownJid = Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid);
+    $.each(results, function(index, element) {
+
+      if (element.jid === ownJid) {
+        // do not display but continue
+        return true;
+      }
+
+      var res = $("<div class='jsxc-search-user-entry'></div>").text(element.username);
+      res.css({
+        display : 'block', opacity : 0
+      });
+
+      res.click(function() {
+        res.toggleClass("jsxc-checked");
+      });
+
+      list.append(res);
+
+      res.animate({
+        'opacity' : 1
+      });
+
+      displayed++;
+    });
+
+    if (displayed < 1) {
+      list.append("<div class='jsxc-search-user-entry'>Aucun résultat</div>");
+      return;
+    }
+
+  },
+
+  _displayUserSearchError : function(error) {
+
+    var list = $("#jsxc-chat-sidebar-search .jsxc-search-users-results");
+
+    list.empty();
+
+    list.append("<div>Erreur lors de la recherche: " + error + "</div>");
 
   },
 
