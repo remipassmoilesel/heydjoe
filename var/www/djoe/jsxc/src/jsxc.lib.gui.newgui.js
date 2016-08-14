@@ -177,6 +177,8 @@ jsxc.newgui = {
       res.css({
         display : 'block', opacity : 0
       });
+      
+      res.data('jid', element.jid);
 
       if(element._is_buddy === true){
         res.addClass("jsxc-search-result-buddie");

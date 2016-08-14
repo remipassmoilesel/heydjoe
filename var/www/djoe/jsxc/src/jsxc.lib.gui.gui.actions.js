@@ -1,12 +1,14 @@
-jsxc.newgui.actions = {
+jsxc.gui.actions = {
 
   init : function() {
 
-    var self = jsxc.newgui.actions;
+    var self = jsxc.gui.actions;
 
     self._initSettingsPanel();
 
     self._initActionPanel();
+
+    self._initSearchPanel();
 
     // TODO delete MUC or user
     //
@@ -39,7 +41,7 @@ jsxc.newgui.actions = {
 
   _initActionPanel : function() {
 
-    var self = jsxc.newgui.actions;
+    var self = jsxc.gui.actions;
 
     // Start a new MUC conversation
     $('#jsxc-chat-sidebar .jsxc-action_new-conversation').click(function() {
@@ -60,7 +62,7 @@ jsxc.newgui.actions = {
    */
   _initSettingsPanel : function() {
 
-    // var self = jsxc.newgui.actions;
+    // var self = jsxc.gui.actions;
     var newgui = jsxc.newgui;
 
     // add openning action
@@ -83,24 +85,47 @@ jsxc.newgui.actions = {
   },
 
   _getCheckedSearchUsers : function() {
-    return $("#jsxc-search-users-results .jsxc-search-user-entry");
+    return $(".jsxc-search-users-results .jsxc-checked");
   },
 
   _initSearchPanel : function() {
 
-    var self = jsxc.newgui.actions;
+    var self = jsxc.gui.actions;
     // var newgui = jsxc.newgui;
 
     $("#jsxc-chat-sidebar-search-invite").click(function() {
 
-      $.each(self._getCheckedSearchUsers(), function() {
+      var checkedElements = self._getCheckedSearchUsers();
+
+      if (checkedElements.length < 1) {
+        jsxc.gui.feedback("Vous devez choisir au moins un contact");
+        return false;
+      }
+
+      var invited = [];
+      $.each(checkedElements, function(index, element) {
+
+        var jqi = $(element);
+        var i = jqi.data('jid');
+
+        jsxc.xmpp.addBuddy(i);
+        invited.push(Strophe.getNodeFromJid(i));
+
+        jqi.removeClass('jsxc-checked');
 
       });
-      //$("#jsxc-chat-sidebar .jsxc-search-users-results");
 
-      // TODO:
-      // find those checked
-      // invite them
+      jsxc.gui.feedback("Ces utilisateurs ont été invité: " + invited.join(", "));
+
+      var entries = $(".jsxc-search-users-results .jsxc-search-user-entry");
+
+      // clean search space
+      entries.animate({
+        'opacity' : "0"
+      }, 700, function() {
+        entries.remove();
+      })
+
     });
 
   }
