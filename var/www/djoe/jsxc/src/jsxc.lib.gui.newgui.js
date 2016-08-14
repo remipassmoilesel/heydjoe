@@ -311,6 +311,10 @@ jsxc.newgui = {
 
         element.find(".jsxc-checked").removeClass("jsxc-checked");
 
+        element.click(function() {
+          jsxc.gui.window.open(element.data("bid"));
+        });
+
       });
     }
 
