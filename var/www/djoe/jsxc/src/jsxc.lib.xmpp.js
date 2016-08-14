@@ -244,6 +244,12 @@ jsxc.xmpp = {
     // send presences in time interval
     var autosend = function() {
 
+      if(!jsxc.xmpp.conn){
+        clearInterval(self._autoPresenceSend);
+        //jsxc.debug("Not connected, stop auto-sending presences");
+        return;
+      }
+
       // check last send
       var now = new Date().getTime();
 
