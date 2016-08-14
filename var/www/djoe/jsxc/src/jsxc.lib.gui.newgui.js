@@ -99,11 +99,10 @@ jsxc.newgui = {
       self.toggleChatSidebar();
     });
 
-    // settings menu
-    self._initSettingsMenu();
-
-    // actions
-    self._initActionsMenu();
+    // add openning action
+    $("#jsxc-toggle-actions").click(function() {
+      self.toggleActionsMenu();
+    });
 
     self._initSearchPanel();
 
@@ -216,20 +215,6 @@ jsxc.newgui = {
 
   },
 
-  /**
-   * Setting menu, where user can mute notifications, see 'About dialog', ...
-   * @private
-   */
-  _initActionsMenu : function() {
-
-    var self = jsxc.newgui;
-
-    // add openning action
-    $("#jsxc-toggle-actions").click(function() {
-      self.toggleActionsMenu();
-    });
-
-  },
 
   /**
    * Open or close settings menu
@@ -578,20 +563,7 @@ jsxc.newgui = {
     return $("#jsxc-chat-sidebar-content").hasClass("jsxc-deploy");
   },
 
-  /**
-   * Setting menu, where user can mute notifications, see 'About dialog', ...
-   * @private
-   */
-  _initSettingsMenu : function() {
-
-    var self = jsxc.newgui;
-
-    // add openning action
-    $('#jsxc-chat-sidebar .jsxc-toggle-settings').click(function() {
-      self.toggleSettingsMenu();
-    });
-
-  },
+  
 
   /**
    * Open or close settings menu

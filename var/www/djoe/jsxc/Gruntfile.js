@@ -180,6 +180,7 @@ module.exports = function (grunt) {
                       'src/jsxc.lib.mmstream.js',
                       'src/jsxc.lib.mmstream.gui.js',
                       'src/jsxc.lib.gui.js',
+                      'src/jsxc.lib.newgui.js',
                       'src/jsxc.lib.*.js',
                       'tmp/template.js',
                       'src/jsxc.outro.js'],
