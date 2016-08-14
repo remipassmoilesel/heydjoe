@@ -65,7 +65,8 @@
 
   <div id="jsxc-mediapanel-left">
 
-    <div class="jsxc-header">En ligne: 2 participants</div>
+    <div class="jsxc-header">2 participants
+      <a class="jsxc-close-mediapanel"></a></div>
 
     <div>
       <p>Vidéo locale:</p>
@@ -95,12 +96,12 @@
 <div id="jsxc-chat-sidebar-header">
 
   <!-- toggle chat only -->
-  <span class="jsxc-toggle-chat"></span>
+  <span class="jsxc-toggle-sidebar"></span>
 
   <!-- toggle video -->
-  <span class="jsxc-toggle-video"></span>
+  <span class="jsxc-toggle-mediapanel"></span>
 
-  <span class="jsxc-last-notifications">En ligne: 5 utilisateurs</span>
+  <span class="jsxc-last-notifications">5 utilisateurs</span>
 
   <span id="jsxc-toggle-settings"></span>
 
@@ -115,13 +116,9 @@
   <a id="jsxc-new-gui-filter-users">Utilisateurs</a>
   <a id="jsxc-new-gui-filter-conversations">Discussions</a>
 
-
-  <input id="jsxc-chat-sidebar-filter-text-field" placeholder="Rechercher ..." type="text"/>
-
   <a id="jsxc-select-buddies" class="jsxc-checked">Sélectionner plusieurs</a>
 
   <span id="jsxc-toggle-actions"></span>
-
 
 </div>
 
@@ -129,28 +126,63 @@
 
 <div id="jsxc-settings-menu" class="jsxc-viewport-content">
 
-  <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
-  <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
-  <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
-  <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
-  <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
-  <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
-  <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+  <a class="jsxc-action_notImplementedYet">Mode muet: on | off</a>
+  <a class="jsxc-action_notImplementedYet">Notifications de bureau: on | off</a>
+
+  <div class="jsxc-content-separator"></div>
+
+  <a class="jsxc-action_notImplementedYet">Effacer l'historique local des conversations</a>
+  <a class="jsxc-action_notImplementedYet">Extension de capture d'écran</a>
+
+  <div class="jsxc-content-separator"></div>
+
+  <a class="jsxc-action_notImplementedYet">A propos</a>
 
 </div>
 
 <div id="jsxc-actions-menu" class="jsxc-viewport-content">
 
-  <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
-  <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
-  <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
-  <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
-  <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
-  <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
-  <a>Lorem ipsum dolor sit amet, consectetur adipiscing</a>
+  <div>&nbsp;</div>
+
+  <a class="jsxc-action_search-user">Rechercher un contact</a>
+
+  <div class="jsxc-content-separator"></div>
+
+  <a class="jsxc-action_new-conversation">Nouvelle conversation</a>
+  <a class="jsxc-action_invite-in-conversation">Inviter dans une conversation</a>
+
+  <a class="jsxc-action_new-etherpad-document">Nouveau document Etherpad</a>
+
+  <div class="jsxc-content-separator"></div>
+
+  <a class="jsxc-action_video-call">Appel vidéo</a>
+  <a class="jsxc-action_videoconference">Vidéo conférence</a>
+  <a class="jsxc-action_screensharing">Partager mon écran</a>
+
+  <div class="jsxc-content-separator"></div>
+
+  <a class="jsxc-action_delete-buddies">Supprimer les contacts</a>
+  <a class="jsxc-action_logout">Se déconnecter</a>
+
+
 
 </div>
 
+<!-- XEP 0055 user search-->
+<div id="jsxc-search-users" class="jsxc-viewport-content">
+
+  <input id="jsxc-chat-sidebar-search" placeholder="Rechercher ..." type="text"/>
+
+  <div class="jsxc-search-users-results">
+    <a>Paul</a>
+    <a>Claude</a>
+    <a>Jules</a>
+    <a>....</a>
+  </div>
+
+</div>
+
+<!-- buddy list, where stored contacts AND buddies -->
 <div id="jsxc-buddy-list-container" class="jsxc-viewport-content">
 
 <div>&nbsp;</div>
@@ -765,7 +797,6 @@
   </div>
 </li>
 </ul>
-
 
 </div>
 

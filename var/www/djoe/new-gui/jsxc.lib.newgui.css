@@ -6,9 +6,10 @@ TODO: Set up variables:
 
 */
 
-#jsxc{
+#jsxc {
   font-family: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
-  font-size: 13px; !important;
+  font-size: 13px;
+!important;
 }
 
 /**
@@ -52,9 +53,9 @@ TODO: Set up variables:
 /**
   Menu icon to toggle chat sidebar
 */
-.jsxc-toggle-chat {
+.jsxc-toggle-sidebar {
   cursor: pointer;
-  background: url('icons/open-sidebar.svg');
+  background: url('icons/toggle-sidebar-menu.svg');
   background-size: 90%;
   background-repeat: no-repeat;
   content: ' ';
@@ -67,7 +68,7 @@ TODO: Set up variables:
   opacity: 0.7;
 }
 
-.jsxc-toggle-chat:hover{
+.jsxc-toggle-sidebar:hover {
   opacity: 1;
 }
 
@@ -112,9 +113,9 @@ TODO: Set up variables:
 /**
   Video icon to toggle chat mediapanel
 */
-.jsxc-toggle-video {
+.jsxc-toggle-mediapanel {
   cursor: pointer;
-  background: url('icons/open-video.svg');
+  background: url('icons/toggle-mediapanel.svg');
   background-size: 90%;
   background-repeat: no-repeat;
   content: ' ';
@@ -127,25 +128,24 @@ TODO: Set up variables:
   opacity: 0.7;
 }
 
-.jsxc-toggle-video:hover{
+.jsxc-toggle-mediapanel:hover {
   opacity: 1;
 }
 
 /**
   Center of sidebar, where content can shift between multiple panels
 */
-#jsxc-sidebar-content-viewport{
-  height: 65%;
+#jsxc-sidebar-content-viewport {
+  height: 72%;
   overflow-x: hidden;
   overflow-y: scroll;
   margin: 3px;
   border: solid 1px silver;
 }
 
-.jsxc-viewport-content{
+.jsxc-viewport-content {
 
 }
-
 
 #jsxc-select-buddies {
   display: inline-block;
@@ -157,12 +157,14 @@ TODO: Set up variables:
   cursor: pointer;
   padding-right: 0.7em;
   opacity: 0.7;
+
+  margin-top: 0.5em;
+
 }
 
-#jsxc-select-buddies:hover{
+#jsxc-select-buddies:hover {
   opacity: 1;
 }
-
 
 .jsxc-selection-mode-enabled {
   background: #cccddd;
@@ -189,7 +191,7 @@ TODO: Set up variables:
   overflow: hidden;
 }
 
-#jsxc-chat-sidebar-filter-text-field {
+#jsxc-chat-sidebar-search {
   border: solid 1px #DDDDDD;
   height: 2em;
   color: #222222;
@@ -289,7 +291,7 @@ TODO: Set up variables:
 
 .jsxc-logout-button {
   content: ' ';
-  background-image: url('icons/logout.svg');
+  background-image: url('icons/action-logout.svg');
   background-repeat: no-repeat;
   background-size: 100%;
 
@@ -311,7 +313,7 @@ TODO: Set up variables:
 
   cursor: pointer;
 
-  background: url('icons/settings.svg');
+  background: url('icons/toggle-settings-menu.svg');
   background-size: 90%;
   background-repeat: no-repeat;
   content: ' ';
@@ -330,34 +332,16 @@ TODO: Set up variables:
 
 }
 
-#jsxc-toggle-settings:hover{
+#jsxc-toggle-settings:hover {
   opacity: 1;
-}
-
-/**
-
-  Floating menu with various settings access
-
-*/
-#jsxc-settings-menu {
-  display: none;
-  background: white;
-}
-
-#jsxc-settings-menu a {
-  display: block;
-  padding: 0.5em;
-  width: 100%;
-  text-decoration: underline;
-  cursor: pointer;
 }
 
 /**
   Floating menu with actions related to buddies and work operations
 */
-#jsxc-toggle-actions{
+#jsxc-toggle-actions {
   content: ' ';
-  background: url('icons/open-menu.svg');
+  background: url('icons/toggle-actions-menu.svg');
   background-size: 90%;
   background-repeat: no-repeat;
   content: ' ';
@@ -368,7 +352,7 @@ TODO: Set up variables:
 
   float: right;
 
-  margin-top: 0.5em;
+  margin-top: 0.9em;
   margin-left: 0.7em;
   margin-right: 0.7em;
 
@@ -378,25 +362,25 @@ TODO: Set up variables:
 
 }
 
-#jsxc-toggle-actions:hover{
+#jsxc-toggle-actions:hover {
   opacity: 1;
 }
 
 /**
   Ressources links and display in media panel
 */
-.jsxc-media-ressource-link{
+.jsxc-media-ressource-link {
   color: darkblue;
   cursor: pointer;
   opacity: 0.8;
 }
 
-.jsxc-media-ressource-link:hover{
+.jsxc-media-ressource-link:hover {
   text-decoration: underline;
   opacity: 1;
 }
 
-.jsxc-media-ressource-link:after{
+.jsxc-media-ressource-link:after {
 
   content: " ";
   width: 1em;
@@ -406,10 +390,9 @@ TODO: Set up variables:
   background-repeat: no-repeat;
   margin: 0 3px 0 3px;
 
-  background-image: url('icons/ressource.svg');
+  background-image: url('icons/ressource-link.svg');
 
 }
-
 
 .jsxc-media-ressource {
 
@@ -421,7 +404,7 @@ TODO: Set up variables:
   margin-right: 20px;
 }
 
-.jsxc-media-ressource .jsxc-title{
+.jsxc-media-ressource .jsxc-title {
   font-size: 1.2em;
   text-align: center;
   font-weight: bolder;
@@ -429,22 +412,201 @@ TODO: Set up variables:
 
 }
 
-.jsxc-last-notifications{
+.jsxc-last-notifications {
   cursor: pointer;
 }
 
-.jsxc-multimedia-error-block{
+.jsxc-multimedia-error-block {
   font-weight: bolder;
   color: white;
   font-size: 14px;
 }
 
-#jsxc-actions-menu {
-  display: none;
-  background: white;
+/**
+  Separator used in menu
+
+*/
+.jsxc-content-separator{
+  content: ' ';
+  height: 1.1em;
+  width: 70%;
+
+  border-bottom: solid 1px silver;
+  margin-bottom: 10px;
+  margin-left: 5px;
+}
+
+.jsxc-action_video-call:before {
+
+  content: " ";
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin: 0 6px 0 6px;
+
+  background-image: url('icons/action-video-call.svg');
+
+}
+
+.jsxc-action_videoconference:before {
+
+  content: " ";
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin: 0 6px 0 6px;
+
+  background-image: url('icons/action-videoconference.svg');
+
+}
+
+.jsxc-action_screensharing:before {
+
+  content: " ";
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin: 0 6px 0 6px;
+
+  background-image: url('icons/action-screensharing.svg');
+
+}
+
+.jsxc-action_search-user:before {
+
+  content: " ";
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin: 0 6px 0 6px;
+
+  background-image: url('icons/action-search-users.svg');
+
+}
+
+.jsxc-action_new-conversation:before {
+
+  content: " ";
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin: 0 6px 0 6px;
+
+  background-image: url('icons/action-new-conversation.svg');
+
+}
+
+.jsxc-action_invite-in-conversation:before {
+
+  content: " ";
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin: 0 6px 0 6px;
+
+  background-image: url('icons/action-invite-in-conversation.svg');
+
+}
+
+.jsxc-action_new-etherpad-document:before {
+
+  content: " ";
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin: 0 6px 0 6px;
+
+  background-image: url('icons/action-new-etherpad-document.svg');
 
 }
 
 
+.jsxc-action_delete-buddies:before {
+
+  content: " ";
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin: 0 6px 0 6px;
+
+  background-image: url('icons/action-delete-buddies.svg');
+
+}
+
+.jsxc-action_logout:before {
+  content: " ";
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin: 0 6px 0 6px;
+
+  background-image: url('icons/action-logout.svg');
+
+}
+
+.jsxc-action_notImplementedYet {
+  cursor: not-allowed !important;
+}
+
+#jsxc-search-users{
+  display: none;
+}
+
+#jsxc-search-users .jsxc-search-users-results{
+  margin: 5px;
+}
+
+#jsxc-search-users .jsxc-search-users-results a{
+  display: block;
+  width: 100%;
+}
 
 
+.jsxc-viewport-content{
+  display: none;
+  width: 100%;
+  background: white;
+}
+
+.jsxc-viewport-content a{
+  display: block;
+  padding: 0.5em;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.jsxc-viewport-content a:hover{
+  text-decoration: underline;
+}
+
+.jsxc-close-mediapanel{
+  content: ' ';
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin: 0 6px 0 6px;
+
+  background-image: url('icons/close.svg');
+
+  cursor: pointer;
+}
