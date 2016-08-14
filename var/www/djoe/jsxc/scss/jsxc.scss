@@ -19,24 +19,17 @@ $font_serif: serif;
 @import "menu";
 @import "widgets";
 
-@import "videoPanel";
+@import "sidebar";
+@import "mediapanel";
+
 
 /**
-
-Only for demonstration purpose
-
+  Workaround to avoid strange properties from other style sources
 */
 
-#jsxc_videoPanel {
-
-  .ui-accordion-content {
-    background: white;
-  }
-
-  .ps-container > .ps-scrollbar-y-rail {
-    opacity: 0.6;
-  }
-
+#jsxc {
+  font-family: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
+  font-size: 13px !important;
 }
 
 #jsxc_roster {

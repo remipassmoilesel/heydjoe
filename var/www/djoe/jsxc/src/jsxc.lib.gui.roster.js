@@ -22,11 +22,20 @@ jsxc.gui.roster = {
     jsxc.debug("Roster init");
 
     // adding roster skeleton to body, or other choosen element
-    $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('roster')));
+    // $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('roster')));
+
+    /**
+     * Chatsidebar and mediapanel are grouped in '#jsxc_roster', for historical reasons
+     * @type {*|JQuery|jQuery|HTMLElement}
+     */
+    var skeleton = $("<div id='#jsxc_roster'></div>");
+    skeleton.append($(jsxc.gui.template.get('newgui_chatsidebar')));
+    skeleton.append($(jsxc.gui.template.get('newgui_mediapanel')));
+
+    $(jsxc.options.rosterAppend + ':first').append(skeleton);
 
     // display or hide offline buddies
     if (jsxc.options.get('hideOffline')) {
-      $('#jsxc_menu .jsxc_hideOffline').text(jsxc.t('Show_offline'));
       $('#jsxc_buddylist').addClass('jsxc_hideOffline');
     }
 
@@ -35,21 +44,8 @@ jsxc.gui.roster = {
       jsxc.notification.muteSound();
     }
 
-    // hide show roster
-    $('#jsxc_toggleRoster').click(function() {
-      jsxc.gui.roster.toggle();
-    });
-
-    $('#jsxc_buddylist').slimScroll({
-      distance : '3px',
-      height : ($('#jsxc_roster').height() - 31) + 'px',
-      width : $('#jsxc_buddylist').width() + 'px',
-      color : '#fff',
-      opacity : '0.5'
-    });
-
     // initialize main menu
-    jsxc.gui.menu.init();
+    // jsxc.gui.menu.init();
 
     var rosterState = jsxc.storage.getUserItem('roster') ||
         (jsxc.options.get('loginForm').startMinimized ? 'hidden' : 'shown');
@@ -64,6 +60,9 @@ jsxc.gui.roster = {
     jsxc.gui.tooltip('#jsxc_roster');
 
     jsxc.notice.load();
+
+    // new gui init
+    jsxc.newgui.init();
 
     jsxc.gui.roster.ready = true;
 
@@ -132,10 +131,10 @@ jsxc.gui.roster = {
 
     jsxc.gui.update(bid);
 
-    // update scrollbar
-    $('#jsxc_buddylist').slimScroll({
-      scrollTo : '0px'
-    });
+    // // update scrollbar
+    // $('#jsxc_buddylist').slimScroll({
+    //   scrollTo : '0px'
+    // });
 
     var history = jsxc.storage.getUserItem('history', bid) || [];
     var i = 0;

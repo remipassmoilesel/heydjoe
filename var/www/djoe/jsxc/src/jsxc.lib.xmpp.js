@@ -283,7 +283,7 @@ jsxc.xmpp = {
   enableOnGuiActivityPresenceSending : function() {
 
     var self = jsxc.xmpp;
-    var gui = $("#jsxc_roster");
+    var gui = $("#jsxc-chat-sidebar");
 
     jsxc.debug("Sending presences on gui activity");
 

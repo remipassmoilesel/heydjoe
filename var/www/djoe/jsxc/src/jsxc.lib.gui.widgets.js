@@ -385,11 +385,11 @@ jsxc.gui.createBuddyList = function(selector) {
 
   var root = $(selector);
 
-  root.addClass("jsxc_buddyListContainer");
+  root.addClass("jsxc_widget-buddylistContainer");
 
-  root.append("<ol class='jsxc_buddyList'></ol>");
+  root.append("<ol class='jsxc_widget-buddylist'></ol>");
 
-  var list = $(selector + " .jsxc_buddyList");
+  var list = $(selector + " .jsxc_widget-buddylist");
 
   // make selectable list
   list.selectable();

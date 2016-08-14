@@ -8,7 +8,7 @@ var jsxc = {
    * @memberOf jsxc
    */
   newgui : {
-    
+
     // TODO: onSlave
     // TODO: onHTTP/HTTPS
     // TODO: onLocalStorageUnavailable...
@@ -197,33 +197,12 @@ var jsxc = {
 
       });
 
-      self._addMediaRessource(
-          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
-          'Ressource');
-      self._addMediaRessource(
-          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
-          'Ressource');
-      self._addMediaRessource(
-          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
-          'Ressource');
-      self._addMediaRessource(
-          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
-          'Ressource');
-      self._addMediaRessource(
-          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
-          'Ressource');
-      self._addMediaRessource(
-          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
-          'Ressource');
-      self._addMediaRessource(
-          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
-          'Ressource');
-      self._addMediaRessource(
-          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
-          'Ressource');
-      self._addMediaRessource(
-          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
-          'Ressource');
+      // Optionnal: create fake ressources
+      for (var i = 0; i < 10; i++) {
+        self._addMediaRessource(
+            "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>",
+            'Title', 'Ressource');
+      }
 
     },
 

@@ -730,6 +730,13 @@ jsxc = {
       $("body").prepend(header);
     }
 
+    /**
+     *
+     * SLAVE UTILISATION DISABLED
+     *
+     * Instead of gui a warning message is displayed
+     *
+     */
     // jsxc.bid = jsxc.jidToBid(jsxc.storage.getItem('jid'));
     //
     // jsxc.gui.init();

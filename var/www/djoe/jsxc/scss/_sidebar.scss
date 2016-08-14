@@ -6,12 +6,6 @@ TODO: Set up variables:
 
 */
 
-#jsxc {
-  font-family: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
-  font-size: 13px;
-!important;
-}
-
 /**
   The chat bar container
 */
@@ -34,579 +28,504 @@ TODO: Set up variables:
   height: 2.5em;
   */
 
-}
-
-/**
+  /**
   Top part of the chat sidebar, width notifications
 */
-#jsxc-chat-sidebar-header {
+  #jsxc-chat-sidebar-header {
 
-  height: 2em;
+    height: 2em;
 
-  color: white;
-  font-weight: bolder;
-  padding-top: 0.8em;
-  padding-left: 0.8em;
+    color: white;
+    font-weight: bolder;
+    padding-top: 0.8em;
+    padding-left: 0.8em;
 
-}
+  }
 
-/**
-  Menu icon to toggle chat sidebar
-*/
-.jsxc-toggle-sidebar {
-  cursor: pointer;
-  background: url('icons/toggle-sidebar-menu.svg');
-  background-size: 90%;
-  background-repeat: no-repeat;
-  content: ' ';
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  vertical-align: middle;
-  margin-right: 0.7em;
+  .jsxc-close-chatsidebar{
 
-  opacity: 0.7;
-}
+    display: inline-block;
+    opacity: 0;
 
-.jsxc-toggle-sidebar:hover {
-  opacity: 1;
-}
+    content: ' ';
+    width: 1em;
+    height: 1em;
 
-/**
-  In chat sidebar, filter display to show only users
-*/
-#jsxc-new-gui-filter-users {
-  background-color: rgb(245, 245, 245);
-  color: rgb(28, 148, 212);
-  cursor: pointer;
-  display: block;
-  float: right;
-  height: 48px;
-  line-height: 48px;
-  text-align: center;
-  text-decoration: none;
-  text-transform: uppercase;
-  width: 50%;
-}
+    float: right;
 
-/**
-  In chat sidebar, filter display to show only users
-*/
-#jsxc-new-gui-filter-conversations {
-  background-color: rgb(245, 245, 245);
-  color: rgb(28, 148, 212);
-  cursor: pointer;
-  display: block;
-  float: left;
-  height: 48px;
-  line-height: 48px;
-  text-align: center;
-  text-decoration: none;
-  text-transform: uppercase;
-  width: 50%;
-}
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
 
-.jsxc-active-filter {
-  background: rgba(190, 230, 240, 0.5) !important;
-}
+    background-image: image-url('newgui/close.svg');
 
-/**
+    cursor: pointer;
+  }
+
+
+  /**
+    Menu icon to toggle chat sidebar
+  */
+  .jsxc-toggle-sidebar {
+    cursor: pointer;
+    background: image-url('newgui/toggle-sidebar-menu.svg');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    content: ' ';
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    margin-right: 0.7em;
+
+    opacity: 0.7;
+  }
+
+  .jsxc-toggle-sidebar:hover {
+    opacity: 1;
+  }
+
+  /**
+    In chat sidebar, filter display to show only users
+  */
+  #jsxc-new-gui-filter-users {
+    background-color: rgb(245, 245, 245);
+    color: rgb(28, 148, 212);
+    cursor: pointer;
+    display: block;
+    float: right;
+    height: 48px;
+    line-height: 48px;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    width: 50%;
+  }
+
+  /**
+    In chat sidebar, filter display to show only users
+  */
+  #jsxc-new-gui-filter-conversations {
+    background-color: rgb(245, 245, 245);
+    color: rgb(28, 148, 212);
+    cursor: pointer;
+    display: block;
+    float: left;
+    height: 48px;
+    line-height: 48px;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    width: 50%;
+  }
+
+  .jsxc-active-filter {
+    background: rgba(190, 230, 240, 0.5) !important;
+  }
+
+  /**
+    Center of sidebar, where content can shift between multiple panels
+  */
+  #jsxc-sidebar-content-viewport {
+    height: 72%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    margin: 3px;
+    border: solid 1px silver;
+  }
+
+  .jsxc-viewport-content {
+
+  }
+
+  #jsxc-select-buddies {
+    display: inline-block;
+    clear: both;
+    padding: 6px;
+    text-align: right;
+    text-decoration: none;
+
+    cursor: pointer;
+    padding-right: 0.7em;
+    opacity: 0.7;
+
+    margin-top: 0.5em;
+
+  }
+
+  #jsxc-select-buddies:hover {
+    opacity: 1;
+  }
+
+  .jsxc-selection-mode-enabled {
+    background: #cccddd;
+  }
+
+  .jsxc-checked:after {
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 90%;
+    background-repeat: no-repeat;
+    margin: 0 3px 0 3px;
+
+    background-image: image-url('newgui/check.svg');
+  }
+
+  /**
+    Content of the chat sidebar
+  */
+  #jsxc-chat-sidebar-content {
+    background: white;
+    height: 0px;
+    overflow: hidden;
+  }
+
+  #jsxc-chat-sidebar-search {
+    border: solid 1px #DDDDDD;
+    height: 2em;
+    color: #222222;
+    margin: 5px;
+    padding: 5px;
+    width: 96%;
+  }
+
+  /**
+    Status bar with select button to change status and disconnect user
+  */
+  #jsxc-status-bar {
+    padding: 0.6em;
+
+    .jsxc-select-status {
+      margin: 0.7em;
+    }
+
+  }
+
+  .jsxc-logout-button {
+    content: ' ';
+    background-image: image-url('newgui/action-logout.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+
+    cursor: pointer;
+
+    height: 15px;
+    width: 15px;
+    display: inline-block;
+
+    margin-left: 0.4em;
+    margin-right: 0.4em;
+  }
+
+  .jsxc-toggle-settings {
+
+    cursor: pointer;
+
+    background: image-url('newgui/toggle-settings-menu.svg');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    content: ' ';
+
+    display: inline-block;
+
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+
+    margin-left: 0.7em;
+
+    float: right;
+
+    /** not visible first time */
+    opacity: 0;
+
+  }
+
+  #jsxc-toggle-settings:hover {
+    opacity: 1;
+  }
+
+  /**
   Video icon to toggle chat mediapanel
 */
-.jsxc-toggle-mediapanel {
-  cursor: pointer;
-  background: url('icons/toggle-mediapanel.svg');
-  background-size: 90%;
-  background-repeat: no-repeat;
-  content: ' ';
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  vertical-align: middle;
-
-  margin-right: 0.7em;
-  opacity: 0.7;
-}
-
-.jsxc-toggle-mediapanel:hover {
-  opacity: 1;
-}
-
-/**
-  Center of sidebar, where content can shift between multiple panels
-*/
-#jsxc-sidebar-content-viewport {
-  height: 72%;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  margin: 3px;
-  border: solid 1px silver;
-}
-
-.jsxc-viewport-content {
-
-}
-
-#jsxc-select-buddies {
-  display: inline-block;
-  clear: both;
-  padding: 6px;
-  text-align: right;
-  text-decoration: none;
-
-  cursor: pointer;
-  padding-right: 0.7em;
-  opacity: 0.7;
-
-  margin-top: 0.5em;
-
-}
-
-#jsxc-select-buddies:hover {
-  opacity: 1;
-}
-
-.jsxc-selection-mode-enabled {
-  background: #cccddd;
-}
-
-.jsxc-checked:after {
-  content: " ";
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  background-size: 90%;
-  background-repeat: no-repeat;
-  margin: 0 3px 0 3px;
-
-  background-image: url('icons/check.svg');
-}
-
-/**
-  Content of the chat sidebar
-*/
-#jsxc-chat-sidebar-content {
-  background: white;
-  height: 0px;
-  overflow: hidden;
-}
-
-#jsxc-chat-sidebar-search {
-  border: solid 1px #DDDDDD;
-  height: 2em;
-  color: #222222;
-  margin: 5px;
-  padding: 5px;
-  width: 96%;
-}
-
-/**
-  Panel where are displayed videos
-*/
-#jsxc-mediapanel {
-
-  /** Just under chat sidebar */
-  z-index: 79;
-
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  overflow: auto;
-  width: 100%;
-
-  background: rgba(0, 0, 0, 0.8);
+  .jsxc-toggle-mediapanel {
+    cursor: pointer;
+    background: image-url('newgui/toggle-mediapanel.svg');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    content: ' ';
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+
+    margin-right: 0.7em;
+    opacity: 0.7;
+  }
+
+  .jsxc-toggle-mediapanel:hover {
+    opacity: 1;
+  }
+
+  /**
+    Floating menu with actions related to buddies and work operations
+  */
+  #jsxc-toggle-actions {
+    content: ' ';
+    background: image-url('newgui/toggle-actions-menu.svg');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    content: ' ';
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+
+    float: right;
+
+    margin-top: 0.9em;
+    margin-left: 0.7em;
+    margin-right: 0.7em;
+
+    cursor: pointer;
+
+    opacity: 0.7;
+
+  }
+
+  #jsxc-toggle-actions:hover {
+    opacity: 1;
+  }
+
+  /**
+    Ressources links and display in media panel
+  */
+  .jsxc-media-ressource-link {
+    color: darkblue;
+    cursor: pointer;
+    opacity: 0.8;
+  }
+
+  .jsxc-media-ressource-link:hover {
+    text-decoration: underline;
+    opacity: 1;
+  }
+
+  .jsxc-media-ressource-link:after {
+
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 3px 0 3px;
+
+    background-image: image-url('newgui/ressource-link.svg');
+
+  }
+
+  .jsxc-media-ressource {
+
+    display: inline-block;
+    height: 80%;
+
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .jsxc-media-ressource .jsxc-title {
+    font-size: 1.2em;
+    text-align: center;
+    font-weight: bolder;
+    color: white;
+
+  }
+
+  .jsxc-last-notifications {
+    cursor: pointer;
+  }
+
+  .jsxc-multimedia-error-block {
+    font-weight: bolder;
+    color: white;
+    font-size: 14px;
+  }
 
-  height: 0px;
+  /**
+    Separator used in menu
 
-}
-
-/**
-  Left video panel with controls and local video
-*/
-#jsxc-mediapanel-left {
-  margin: 0px;
-  text-align: center;
-  float: left;
-  height: 100%;
-  width: 20%;
+  */
+  .jsxc-content-separator {
+    content: ' ';
+    height: 1.1em;
+    width: 70%;
 
-  display: block;
+    border-bottom: solid 1px silver;
+    margin-bottom: 10px;
+    margin-left: 5px;
+  }
 
-  background: rgba(255, 255, 255, 1);
+  .jsxc-action_video-call:before {
 
-  border-right: solid 1px gray;
-}
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
 
-#jsxc-mediapanel-left .jsxc-header {
-  font-weight: bolder;
-  background: #1c94d4;
-  color: white;
-  padding: 1em;
-}
-
-#jsxc-mediapanel-left p {
-  text-align: left;
-  margin: 1em;
-}
-
-/**
-  Right mediapanel with remote videos
-*/
-#jsxc-mediapanel-right {
-
-  margin: 0px;
-  display: block;
-  text-align: center;
-  float: right;
-
-  height: 100%;
-  width: 79%;
-  white-space: nowrap;
+    background-image: image-url('newgui/action-video-call.svg');
 
-  overflow-x: scroll;
-  overflow-y: hidden;
+  }
 
-}
+  .jsxc-action_videoconference:before {
 
-#jsxc-videoconference-buddies {
-  margin: 5px;
-  list-style: none;
-}
-
-#jsxc-videoconference-buddies li {
-  text-align: left;
-  margin: 5px 5px 5px 15px;
-  padding: 2px;
-}
-
-.jsxc-local-video {
-  background: rgba(0, 0, 0, 1);
-  width: 80%;
-  margin: 5px;
-}
-
-#jsxc-status-bar {
-  padding: 0.6em;
-}
-
-.jsxc-logout-button {
-  content: ' ';
-  background-image: url('icons/action-logout.svg');
-  background-repeat: no-repeat;
-  background-size: 100%;
-
-  cursor: pointer;
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
 
-  height: 15px;
-  width: 15px;
-  display: inline-block;
+    background-image: image-url('newgui/action-videoconference.svg');
 
-  margin-left: 0.4em;
-  margin-right: 0.4em;
-}
+  }
 
-.jsxc-select-status {
-  margin: 0.7em;
-}
-
-#jsxc-toggle-settings {
-
-  cursor: pointer;
+  .jsxc-action_screensharing:before {
 
-  background: url('icons/toggle-settings-menu.svg');
-  background-size: 90%;
-  background-repeat: no-repeat;
-  content: ' ';
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  vertical-align: middle;
-
-  margin-left: 0.7em;
-  margin-right: 0.7em;
-
-  float: right;
-
-  /** not visible first time */
-  opacity: 0;
-
-}
-
-#jsxc-toggle-settings:hover {
-  opacity: 1;
-}
-
-/**
-  Floating menu with actions related to buddies and work operations
-*/
-#jsxc-toggle-actions {
-  content: ' ';
-  background: url('icons/toggle-actions-menu.svg');
-  background-size: 90%;
-  background-repeat: no-repeat;
-  content: ' ';
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  vertical-align: middle;
-
-  float: right;
-
-  margin-top: 0.9em;
-  margin-left: 0.7em;
-  margin-right: 0.7em;
-
-  cursor: pointer;
-
-  opacity: 0.7;
-
-}
-
-#jsxc-toggle-actions:hover {
-  opacity: 1;
-}
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
 
-/**
-  Ressources links and display in media panel
-*/
-.jsxc-media-ressource-link {
-  color: darkblue;
-  cursor: pointer;
-  opacity: 0.8;
-}
-
-.jsxc-media-ressource-link:hover {
-  text-decoration: underline;
-  opacity: 1;
-}
+    background-image: image-url('newgui/action-screensharing.svg');
 
-.jsxc-media-ressource-link:after {
+  }
 
-  content: " ";
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  background-size: 100%;
-  background-repeat: no-repeat;
-  margin: 0 3px 0 3px;
+  .jsxc-action_search-user:before {
 
-  background-image: url('icons/ressource-link.svg');
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
 
-}
+    background-image: image-url('newgui/action-search-users.svg');
 
-.jsxc-media-ressource {
+  }
 
-  display: inline-block;
-  height: 80%;
+  .jsxc-action_new-conversation:before {
 
-  margin-top: 20px;
-  margin-left: 20px;
-  margin-right: 20px;
-}
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
 
-.jsxc-media-ressource .jsxc-title {
-  font-size: 1.2em;
-  text-align: center;
-  font-weight: bolder;
-  color: white;
+    background-image: image-url('newgui/action-new-conversation.svg');
 
-}
+  }
 
-.jsxc-last-notifications {
-  cursor: pointer;
-}
+  .jsxc-action_invite-in-conversation:before {
 
-.jsxc-multimedia-error-block {
-  font-weight: bolder;
-  color: white;
-  font-size: 14px;
-}
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
 
-/**
-  Separator used in menu
+    background-image: image-url('newgui/action-invite-in-conversation.svg');
 
-*/
-.jsxc-content-separator{
-  content: ' ';
-  height: 1.1em;
-  width: 70%;
+  }
 
-  border-bottom: solid 1px silver;
-  margin-bottom: 10px;
-  margin-left: 5px;
-}
+  .jsxc-action_new-etherpad-document:before {
 
-.jsxc-action_video-call:before {
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
 
-  content: " ";
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  background-size: 100%;
-  background-repeat: no-repeat;
-  margin: 0 6px 0 6px;
+    background-image: image-url('newgui/action-new-etherpad-document.svg');
 
-  background-image: url('icons/action-video-call.svg');
+  }
 
-}
+  .jsxc-action_delete-buddies:before {
 
-.jsxc-action_videoconference:before {
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
 
-  content: " ";
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  background-size: 100%;
-  background-repeat: no-repeat;
-  margin: 0 6px 0 6px;
+    background-image: image-url('newgui/action-delete-buddies.svg');
 
-  background-image: url('icons/action-videoconference.svg');
+  }
 
-}
+  .jsxc-action_logout:before {
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
 
-.jsxc-action_screensharing:before {
+    background-image: image-url('newgui/action-logout.svg');
 
-  content: " ";
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  background-size: 100%;
-  background-repeat: no-repeat;
-  margin: 0 6px 0 6px;
+  }
 
-  background-image: url('icons/action-screensharing.svg');
+  .jsxc-action_notImplementedYet {
+    cursor: not-allowed !important;
+  }
 
-}
+  #jsxc-search-users {
+    display: none;
+  }
 
-.jsxc-action_search-user:before {
+  #jsxc-search-users .jsxc-search-users-results {
+    margin: 5px;
+  }
 
-  content: " ";
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  background-size: 100%;
-  background-repeat: no-repeat;
-  margin: 0 6px 0 6px;
+  #jsxc-search-users .jsxc-search-users-results a {
+    display: block;
+    width: 100%;
+  }
 
-  background-image: url('icons/action-search-users.svg');
+  .jsxc-viewport-content {
+    display: none;
+    width: 100%;
+    background: white;
+  }
 
-}
+  .jsxc-viewport-content a {
+    display: block;
+    padding: 0.5em;
+    text-decoration: none;
+    cursor: pointer;
+  }
 
-.jsxc-action_new-conversation:before {
+  .jsxc-viewport-content a:hover {
+    text-decoration: underline;
+  }
 
-  content: " ";
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  background-size: 100%;
-  background-repeat: no-repeat;
-  margin: 0 6px 0 6px;
-
-  background-image: url('icons/action-new-conversation.svg');
-
-}
-
-.jsxc-action_invite-in-conversation:before {
-
-  content: " ";
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  background-size: 100%;
-  background-repeat: no-repeat;
-  margin: 0 6px 0 6px;
-
-  background-image: url('icons/action-invite-in-conversation.svg');
-
-}
-
-.jsxc-action_new-etherpad-document:before {
-
-  content: " ";
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  background-size: 100%;
-  background-repeat: no-repeat;
-  margin: 0 6px 0 6px;
-
-  background-image: url('icons/action-new-etherpad-document.svg');
-
-}
-
-
-.jsxc-action_delete-buddies:before {
-
-  content: " ";
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  background-size: 100%;
-  background-repeat: no-repeat;
-  margin: 0 6px 0 6px;
-
-  background-image: url('icons/action-delete-buddies.svg');
-
-}
-
-.jsxc-action_logout:before {
-  content: " ";
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  background-size: 100%;
-  background-repeat: no-repeat;
-  margin: 0 6px 0 6px;
-
-  background-image: url('icons/action-logout.svg');
-
-}
-
-.jsxc-action_notImplementedYet {
-  cursor: not-allowed !important;
-}
-
-#jsxc-search-users{
-  display: none;
-}
-
-#jsxc-search-users .jsxc-search-users-results{
-  margin: 5px;
-}
-
-#jsxc-search-users .jsxc-search-users-results a{
-  display: block;
-  width: 100%;
-}
-
-
-.jsxc-viewport-content{
-  display: none;
-  width: 100%;
-  background: white;
-}
-
-.jsxc-viewport-content a{
-  display: block;
-  padding: 0.5em;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.jsxc-viewport-content a:hover{
-  text-decoration: underline;
-}
-
-.jsxc-close-mediapanel{
-  content: ' ';
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  background-size: 100%;
-  background-repeat: no-repeat;
-  margin: 0 6px 0 6px;
-
-  background-image: url('icons/close.svg');
-
-  cursor: pointer;
 }
