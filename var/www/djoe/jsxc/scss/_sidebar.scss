@@ -518,6 +518,18 @@ TODO: Set up variables:
       line-height: 0.7em;
     }
 
+    .jsxc-search-result-buddie:after {
+
+      width: 1em;
+      height: 1em;
+      display: inline-block;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      margin: 0 6px 0 6px;
+
+      content: image-url("user_list_buddy.png");
+    }
+
     .jsxc-search-user-entry {
       cursor: pointer;
       border: solid 1px #cccccc;

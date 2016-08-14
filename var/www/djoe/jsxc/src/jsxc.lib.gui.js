@@ -139,8 +139,9 @@ jsxc.gui = {
    */
   tooltip : function(selector) {
     $(selector).tooltip({
+      tooltipClass: "jsxc-custom-tooltip",
       show : {
-        delay : 600
+        delay : 1000
       }, content : function() {
         return $(this).attr('title').replace(/\n/g, '<br />');
       }

@@ -132,14 +132,7 @@ jsxc.newgui = {
       self.chatSidebarContent.showContent('jsxc-search-users');
     });
 
-    $("#jsxc-chat-sidebar-search-invite").click(function() {
-
-      //$("#jsxc-chat-sidebar .jsxc-search-users-results");
-
-      // TODO:
-      // find those checked
-      // invite them
-    });
+    $("#jsxc-chat-sidebar-search-invite").button();
 
     var searchBar = $('#jsxc-chat-sidebar-search');
 
@@ -185,9 +178,15 @@ jsxc.newgui = {
         display : 'block', opacity : 0
       });
 
-      res.click(function() {
-        res.toggleClass("jsxc-checked");
-      });
+      if(element._is_buddy === true){
+        res.addClass("jsxc-search-result-buddie");
+      }
+
+      else {
+        res.click(function() {
+          res.toggleClass("jsxc-checked");
+        });
+      }
 
       list.append(res);
 

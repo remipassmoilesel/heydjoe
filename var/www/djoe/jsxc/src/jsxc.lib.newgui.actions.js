@@ -1,7 +1,3 @@
-
-
-
-
 jsxc.newgui.actions = {
 
   init : function() {
@@ -44,7 +40,7 @@ jsxc.newgui.actions = {
   _initActionPanel : function() {
 
     var self = jsxc.newgui.actions;
-    
+
     // Start a new MUC conversation
     $('#jsxc-chat-sidebar .jsxc-action_new-conversation').click(function() {
 
@@ -72,11 +68,11 @@ jsxc.newgui.actions = {
       newgui.toggleSettingsMenu();
     });
 
-    $('#jsxc-settings-menu .jsxc-action_clearLocalStorage').click(function(){
+    $('#jsxc-settings-menu .jsxc-action_clearLocalStorage').click(function() {
 
       var buddies = jsxc.storage.getUserItem("buddylist") || [];
 
-      $.each(buddies, function(index, jid){
+      $.each(buddies, function(index, jid) {
         jsxc.gui.window.clear(jid);
       });
 
@@ -85,5 +81,28 @@ jsxc.newgui.actions = {
     });
 
   },
+
+  _getCheckedSearchUsers : function() {
+    return $("#jsxc-search-users-results .jsxc-search-user-entry");
+  },
+
+  _initSearchPanel : function() {
+
+    var self = jsxc.newgui.actions;
+    // var newgui = jsxc.newgui;
+
+    $("#jsxc-chat-sidebar-search-invite").click(function() {
+
+      $.each(self._getCheckedSearchUsers(), function() {
+
+      });
+      //$("#jsxc-chat-sidebar .jsxc-search-users-results");
+
+      // TODO:
+      // find those checked
+      // invite them
+    });
+
+  }
 
 };
