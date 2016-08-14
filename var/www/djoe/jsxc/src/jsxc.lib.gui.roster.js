@@ -28,7 +28,7 @@ jsxc.gui.roster = {
      * Chatsidebar and mediapanel are grouped in '#jsxc_roster', for historical reasons
      * @type {*|JQuery|jQuery|HTMLElement}
      */
-    var skeleton = $("<div id='#jsxc_roster'></div>");
+    var skeleton = $("<div id='jsxc_roster'></div>");
     skeleton.append($(jsxc.gui.template.get('newgui_chatsidebar')));
     skeleton.append($(jsxc.gui.template.get('newgui_mediapanel')));
 
