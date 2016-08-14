@@ -106,7 +106,7 @@ var jsxc = {
 
       // optionnal
       // self.initMediaPanelMouseNavigation();
-
+      
     },
 
     _initSearchBar : function() {
@@ -123,7 +123,7 @@ var jsxc = {
 
         var val = searchBar.val();
 
-        self.filterBuddies(val);
+        //self.filterBuddies(val);
 
       });
 
@@ -251,7 +251,7 @@ var jsxc = {
       };
 
       var applyBuddie = mode === 'buddies' ? showElement : hideElement;
-      var applyConversation = mode === 'conversations' ? hideElement : showElement;
+      var applyConversation = mode === 'conversations' ? showElement : hideElement;
 
       list.each(function() {
         var element = $(this);

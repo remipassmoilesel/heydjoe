@@ -1,8 +1,8 @@
 /**
- * 
+ *
  * New GUI added on original JSXC GUI
- * 
- * 
+ *
+ *
  * @memberOf jsxc
  */
 jsxc.newgui = {
@@ -109,6 +109,8 @@ jsxc.newgui = {
 
     // optionnal
     // self.initMediaPanelMouseNavigation();
+
+    self.toggleBuddyFilter("buddies");
 
   },
 
@@ -220,12 +222,12 @@ jsxc.newgui = {
   toggleBuddyFilter : function(mode) {
 
     var self = jsxc.newgui;
+    var roster = jsxc.gui.roster;
 
     self._log("toggleBuddyFilter: " + mode);
 
-    if (mode !== 'buddies' && mode !== 'conversations') {
-      throw new Error("Unknown mode: " + mode);
-    }
+    // set filter for future adding
+    roster.setFilterMode(mode);
 
     // TODO check how was selected buddies in original JSXC
     var list = self._getBuddyList();
@@ -254,7 +256,7 @@ jsxc.newgui = {
     };
 
     var applyBuddie = mode === 'buddies' ? showElement : hideElement;
-    var applyConversation = mode === 'conversations' ? hideElement : showElement;
+    var applyConversation = mode === 'conversations' ? showElement : hideElement;
 
     list.each(function() {
       var element = $(this);
@@ -359,7 +361,7 @@ jsxc.newgui = {
     if (self.isMediapanelShown() === false) {
 
       mediapanel.find(".jsxc-close-mediapanel").css({
-        display: 'block'
+        display : 'block'
       });
 
       // add box shadow
@@ -382,7 +384,7 @@ jsxc.newgui = {
     else {
 
       mediapanel.find(".jsxc-close-mediapanel").css({
-        display: 'none'
+        display : 'none'
       });
 
       mediapanel.animate({

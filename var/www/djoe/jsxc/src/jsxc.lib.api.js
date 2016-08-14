@@ -171,6 +171,38 @@ jsxc.api = {
   },
 
   /**
+   * Start a new conversation with given JIDs
+   *
+   * If an error occur, feedbacks are shown
+   *
+   */
+  createNewConversationWith: function(jidArray){
+    
+    var invite = true;
+
+    if(!jidArray || typeof jidArray.length === "undefined"){
+      throw new Error("Invalid argument: " + jidArray);
+    }
+
+    if(jidArray.length < 1){
+      jsxc.gui.feedback("Vous devez sélectionner au moins un interlocuteur");
+      return;
+    }
+    
+    $.each(jidArray, function(index, element) {
+      if(element.match(/.+@.+\..+/i) === null){
+        jsxc.gui.feedback("Impossible de joindre: " + element);
+        invite = false;
+      }
+    });
+    
+    if(invite === true){
+      jsxc.muc.createNewConversationWith(jidArray);  
+    }
+    
+  },
+
+  /**
    * Return the buddy list
    */
   getBuddyList : function() {

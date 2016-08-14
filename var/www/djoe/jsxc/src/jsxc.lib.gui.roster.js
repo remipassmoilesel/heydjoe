@@ -63,6 +63,7 @@ jsxc.gui.roster = {
 
     // new gui init
     jsxc.newgui.init();
+    jsxc.gui.actions.init();
 
     jsxc.gui.roster.ready = true;
 
@@ -77,9 +78,13 @@ jsxc.gui.roster = {
    */
   add : function(bid) {
 
+    var self = jsxc.gui.roster;
+
     var data = jsxc.storage.getUserItem('buddy', bid);
     var bud = jsxc.gui.buddyTemplate.clone().attr('data-bid', bid).attr('data-type',
         data.type || 'chat');
+
+    self.setVisibilityByFilter(bud);
 
     jsxc.gui.roster.insert(bid, bud);
 
@@ -93,48 +98,7 @@ jsxc.gui.roster = {
       return false;
     });
 
-    bud.find('.jsxc_rename').click(function() {
-      jsxc.gui.roster.rename(bid);
-      return false;
-    });
-
-    if (data.type !== 'groupchat') {
-      bud.find('.jsxc_delete').click(function() {
-        jsxc.gui.showRemoveDialog(bid);
-        return false;
-      });
-    }
-
-    var expandClick = function() {
-      bud.trigger('extra.jsxc');
-
-      $('body').click();
-
-      if (!bud.find('.jsxc_menu').hasClass('jsxc_open')) {
-        bud.find('.jsxc_menu').addClass('jsxc_open');
-
-        $('body').one('click', function() {
-          bud.find('.jsxc_menu').removeClass('jsxc_open');
-        });
-      }
-
-      return false;
-    };
-
-    bud.find('.jsxc_more').click(expandClick);
-
-    bud.find('.jsxc_vcard').click(function() {
-      jsxc.gui.showVcard(data.jid);
-
-      return false;
-    });
-
     jsxc.gui.update(bid);
-
-    // // update scrollbar
-    // $('#jsxc_buddylist').slimScroll({
-    //   scrollTo : '0px'
-    // });
 
     var history = jsxc.storage.getUserItem('history', bid) || [];
     var i = 0;
@@ -148,6 +112,66 @@ jsxc.gui.roster = {
     }
 
     $(document).trigger('add.roster.jsxc', [bid, data, bud]);
+  },
+
+  availablesFilterModes : ['buddies', 'conversations'],
+
+  filterMode : 'buddies', // buddies || conversations
+
+  setFilterMode: function(mode){
+
+    var self = jsxc.gui.roster;
+    
+    if (self.availablesFilterModes.indexOf(mode) === -1) {
+      throw new Error("Unknown mode: " + mode);
+    }
+
+    self.filterMode = mode;
+  },
+  
+  setVisibilityByFilter : function(li) {
+
+    var self = jsxc.gui.roster;
+
+    var hideElement = function(element) {
+      element.css("display", "none");
+    };
+
+    var showElement = function(element) {
+      element.css({
+        display : 'block'
+      });
+    };
+
+    var type = li.data('type');
+    if (type === 'chat') {
+
+      if (self.filterMode === 'buddies') {
+        showElement(li);
+      }
+
+      else {
+        hideElement(li);
+      }
+
+    }
+
+    // groupchat
+    else if (type === "groupchat") {
+
+      if (self.filterMode === 'buddies') {
+        hideElement(li);
+      }
+
+      else {
+        showElement(li);
+      }
+
+    }
+
+    else {
+      throw new Error("Unkown type: " + type);
+    }
   },
 
   getItem : function(bid) {

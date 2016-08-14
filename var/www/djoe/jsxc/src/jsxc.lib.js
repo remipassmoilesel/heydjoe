@@ -171,7 +171,7 @@ jsxc = {
 
     // no res available
     else {
-      jsxc.warn("Invalid buddy entry, no resource available: ", buddy);
+      //jsxc.warn("Invalid buddy entry, no resource available: ", buddy);
 
       return null;
     }
