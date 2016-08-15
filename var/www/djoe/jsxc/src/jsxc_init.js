@@ -1,5 +1,5 @@
 $(function() {
-
+  
   "use strict";
 
   jsxc.debug("Initializing instant messaging");
@@ -300,7 +300,7 @@ $(function() {
       /**
        * Reconnect client on demand from user
        */
-      "onReconnectDemand" : function() {
+      "onReconnectRequest" : function() {
         jsxc.api.Silverpeas.connect();
       },
 

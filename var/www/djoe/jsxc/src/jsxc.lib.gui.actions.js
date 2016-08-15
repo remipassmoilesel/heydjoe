@@ -10,19 +10,15 @@ jsxc.gui.actions = {
 
     self._initSearchPanel();
 
-    // TODO: Separate rooms and chat in selections
-
-    // TODO delete MUC or user
-    //
-    // if (data.type !== 'groupchat') {
-    //   bud.find('.jsxc_delete').click(function() {
-    //     jsxc.gui.showRemoveDialog(bid);
-    //     return false;
-    //   });
-    // }
+    self._initStatusPanel();
 
   },
 
+  /**
+   * Get all checked elements from buddylist, conversations AND buddies
+   * @returns {Array}
+   * @private
+   */
   _getCheckedElements : function() {
 
     var all = $("#jsxc_buddylist li");
@@ -56,6 +52,22 @@ jsxc.gui.actions = {
     });
 
     return rslt;
+
+  },
+
+  _initStatusPanel: function(){
+
+    $('#jsxc-status-bar .jsxc-logout-button').click(function(){
+      jsxc.api.disconnect();
+    });
+    
+    $('#jsxc-status-bar .jsxc-login-button').click(function(){
+      jsxc.api.reconnect();
+    });
+
+    $('#jsxc-status-bar .jsxc-select-status').change(function(){
+      console.error(arguments);
+    });
 
   },
 

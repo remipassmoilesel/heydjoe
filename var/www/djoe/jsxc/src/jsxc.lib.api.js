@@ -8,7 +8,7 @@ jsxc.api = {
   /**
    * Availables events can be used for register callbacks
    */
-  _availableEvents : ['onReconnectDemand', 'onBuddyAdded', 'onBuddyAccepted', "onInit"],
+  _availableEvents : ['onReconnectRequest', 'onBuddyAdded', 'onBuddyAccepted', "onInit"],
 
   /**
    * Registered callbacks
@@ -293,6 +293,19 @@ jsxc.api = {
       resizable : false
     });
 
+  },
+  
+  disconnect: function(){
+    jsxc.gui.feedback("Déconnexion en cours");
+    jsxc.xmpp.logout(false);
+  },
+  
+  reconnect: function(){
+    jsxc.gui.feedback("Déconnexion en cours");
+    var called = jsxc.api.callback("onReconnectRequest");
+    if (called < 1) {
+      jsxc.gui.showLoginBox();
+    }
   }
 
 };

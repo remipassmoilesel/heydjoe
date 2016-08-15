@@ -71,6 +71,8 @@ jsxc.gui.roster = {
 
     var self = jsxc.gui.roster;
 
+    $('#jsxc_roster').find(".jsxc_rosterIsEmptyMessage").remove();
+
     var data = jsxc.storage.getUserItem('buddy', bid);
     var bud = jsxc.gui.buddyTemplate.clone().attr('data-bid', bid).attr('data-type',
         data.type || 'chat');
@@ -323,7 +325,7 @@ jsxc.gui.roster = {
    */
   toggle : function(state) {
 
-    jsxc.stats.addEvent('jsxc.toggleroster.' + state || 'toggle');
+    jsxc.debug("Toggle roster is deprecated", null, "WARN");
 
     var duration;
 
@@ -352,19 +354,19 @@ jsxc.gui.roster = {
 
     $('#jsxc_buddylist').empty();
 
-    $('#jsxc_roster').find(".jsxc_rosterIsEmptyMessage").remove();
+    $('#jsxc_buddylist').find(".jsxc_rosterIsEmptyMessage").remove();
 
-    $('#jsxc_roster').append($('<p>' + jsxc.t('no_connection') + '</p>').append(
-        ' <a>' + jsxc.t('relogin') + '</a>').click(function() {
+    var reconnectMsg = $("<div class='jsxc-reconnect-message'>Vous êtes déconnecté</div>");
+    reconnectMsg.click(function() {
+      jsxc.api.reconnect();
+    });
 
-      // show login box only if there is no reconnection callback
+    $('#jsxc_buddylist').append(reconnectMsg);
 
-      var called = jsxc.api.callback("onReconnectDemand");
-      if (called < 1) {
-        jsxc.gui.showLoginBox();
-      }
+    $(document).one('attached.jsxc', function(){
+      $('#jsxc_buddylist').find(".jsxc-reconnect-message").remove();
+    });
 
-    }));
   },
 
   /**

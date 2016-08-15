@@ -18,6 +18,16 @@
   cursor: pointer;
 }
 
+.jsxc-reconnect-message {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.jsxc-reconnect-message:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .jsxc-warning-offline {
   padding: 0.7em;
   color: black;

@@ -55,7 +55,8 @@ TODO: Set up variables:
 
     background-size: 100%;
     background-repeat: no-repeat;
-    margin: 0 6px 0 6px;
+    margin-right: 0.7em;
+    margin-left: 0.7em;
 
     background-image: image-url('newgui/close.svg');
 
@@ -218,6 +219,22 @@ TODO: Set up variables:
     margin-right: 0.4em;
   }
 
+  .jsxc-login-button {
+    content: ' ';
+    background-image: image-url('newgui/action-login.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+
+    cursor: pointer;
+
+    height: 15px;
+    width: 15px;
+    display: inline-block;
+
+    margin-left: 0.4em;
+    margin-right: 0.4em;
+  }
+
   .jsxc-toggle-settings {
 
     cursor: pointer;
@@ -261,6 +278,7 @@ TODO: Set up variables:
     vertical-align: middle;
 
     margin-right: 0.7em;
+    margin-left: 0.5em;
     opacity: 0.7;
   }
 
