@@ -101,5 +101,22 @@
     cursor: pointer;
   }
 
+  .jsxc-close-ressource{
+
+    display: inline-block;
+
+    content: ' ';
+    width: 0.8em;
+    height: 0.8em;
+
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 0.8em 0 0.8em;
+
+    background-image: image-url('newgui/close.svg');
+
+    cursor: pointer;
+  }
+
 
 }

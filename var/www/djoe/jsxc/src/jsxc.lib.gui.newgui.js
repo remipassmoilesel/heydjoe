@@ -665,6 +665,14 @@ jsxc.newgui = {
 
   },
 
+  /**
+   * Add a ressource in media panel, wrapped in container
+   * 
+   * @param htmlContent
+   * @param title
+   * @param ressource
+   * @private
+   */
   _addMediaRessource : function(htmlContent, title, ressource) {
 
     var self = jsxc.newgui;
@@ -672,7 +680,22 @@ jsxc.newgui = {
     var container = $('<div class="jsxc-media-ressource"></div>').append(htmlContent);
 
     if (title && ressource) {
-      container.prepend($("<h1 class='jsxc-title'>" + title + "</h1>").attr('title', ressource));
+      var ressHeader = $("<h1 class='jsxc-title'>" + title + "</h1>").attr('title', ressource)
+
+      var closeHeader = $("<span class='jsxc-close-ressource'></span>");
+      closeHeader.click(function() {
+
+        container.animate({
+          opacity : "0"
+        }, 500, function() {
+          container.remove();
+        });
+
+      });
+
+      ressHeader.append(closeHeader);
+      container.prepend(ressHeader);
+
     }
 
     self._log("_addMediaRessource", {title : title, container : container});
