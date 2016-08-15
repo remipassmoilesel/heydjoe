@@ -173,7 +173,10 @@ jsxc.gui = {
 
     // limite name length to preserve ticks
     var max = 21;
-    var dspName = data.name.length > max ? data.name.substring(0, max - 3) + "..." : data.name;
+    var dspName = "";
+    if (data.name) {
+      dspName = data.name.length > max ? data.name.substring(0, max - 3) + "..." : data.name;
+    }
 
     // Change name and add title
     ue.find('.jsxc_name:first').add(spot).text(dspName).attr('title', jsxc.t('is_', {
@@ -777,6 +780,48 @@ jsxc.gui = {
 
       jsxc.gui.dialog.close();
     });
+  },
+
+  showRemoveManyDialog : function(bidArray) {
+
+    // show dialog
+    jsxc.gui.dialog.open(jsxc.gui.template.get('removeManyDialog'));
+
+    var templateList = $('#jsxc_dialog .jsxc_elementsToRemove');
+
+    // show what will be deleted
+    $.each(bidArray, function(index, element) {
+      templateList.append($("<li>").text(element));
+    });
+
+    // delete if OK
+    $('#jsxc_dialog .jsxc_remove').click(function(ev) {
+      ev.stopPropagation();
+
+      $.each(bidArray, function(index, element) {
+
+        var data = jsxc.storage.getUserItem('buddy', element);
+        var type = data.type;
+
+        jsxc.xmpp.removeBuddy(element);
+
+        if (type === "groupchat") {
+          jsxc.xmpp.bookmarks.delete(element, false);
+        }
+
+      });
+
+      // close dialog
+      jsxc.gui.dialog.close();
+
+      jsxc.gui.feedback(bidArray.length + " éléments ont été supprimés");
+    });
+
+    $('#jsxc_dialog .jsxc_cancel').click(function() {
+      jsxc.gui.dialog.close();
+      jsxc.gui.feedback("Opération annulée");
+    });
+
   },
 
   /**

@@ -23,7 +23,7 @@ jsxc.gui.actions = {
 
   },
 
-  _getCheckedBuddies : function() {
+  _getCheckedElements : function() {
 
     var all = $("#jsxc_buddylist li");
     var rslt = [];
@@ -31,6 +31,24 @@ jsxc.gui.actions = {
     all.each(function() {
       var element = $(this);
       if (element.find(".jsxc-checked").length > 0) {
+        rslt.push({
+          jid : element.data('jid'), bid : element.data('bid')
+        });
+      }
+    });
+
+    return rslt;
+
+  },
+
+  _getCheckedBuddies : function() {
+
+    var all = $("#jsxc_buddylist li");
+    var rslt = [];
+
+    all.each(function() {
+      var element = $(this);
+      if (element.data('type') === 'chat' && element.find(".jsxc-checked").length > 0) {
         rslt.push({
           jid : element.data('jid'), bid : element.data('bid')
         });
@@ -49,15 +67,33 @@ jsxc.gui.actions = {
     $('#jsxc-chat-sidebar .jsxc-action_new-conversation').click(function() {
 
       var selected = [];
-      $.each(self._getCheckedBuddies(), function(index, element) {
+      $.each(self._getCheckedElements(), function(index, element) {
         selected.push(element.jid);
       });
 
       jsxc.api.createNewConversationWith(selected);
     });
 
-    // TODO: delete buddies and conversation
-    // jsxc-action_delete-buddies
+    $('.jsxc-action_delete-buddies').click(function() {
+
+      var buddies = self._getCheckedElements();
+
+      // check if buddies are checked
+      if (buddies.length < 1) {
+        jsxc.gui.feedback("Vous devez sélectionner un élément au moins");
+        return;
+      }
+
+      // get bid
+      var bidArray = [];
+      $.each(buddies, function(index, element) {
+        bidArray.push(element.bid);
+      });
+
+      // show confirmation dialog
+      jsxc.gui.showRemoveManyDialog(bidArray);
+
+    });
 
   },
 

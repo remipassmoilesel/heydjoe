@@ -2,23 +2,33 @@
   text-align: right;
 }
 
-.jsxc-title{
+.jsxc-title {
   font-weight: bolder;
   font-size: 1.3em;
   color: white;
 }
 
-.jsxc-warning-offline{
+.jsxc_rosterIsEmptyMessage {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.jsxc_rosterIsEmptyMessage:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.jsxc-warning-offline {
   padding: 0.7em;
   color: black;
 }
 
-.jsxc-warning-notbuddy{
+.jsxc-warning-notbuddy {
   padding: 0.7em;
   color: darkBlue;
 }
 
-.jsxc-custom-tooltip{
+.jsxc-custom-tooltip {
   background: black;
   opacity: 1;
   z-index: 800;
@@ -465,7 +475,7 @@ img.jsxc_vCard {
   background-image: image-url("delete_black.svg");
 }
 
-.jsxc_videoicon{
+.jsxc_videoicon {
   background-image: image-url("camera_icon_black.svg");
 }
 
@@ -520,8 +530,7 @@ img.jsxc_vCard {
   }
 }
 
-
-.jsxc_demotour_item{
+.jsxc_demotour_item {
 
   z-index: 9999;
 
@@ -532,12 +541,12 @@ img.jsxc_vCard {
 }
 
 // illustration of Chrome extension installation
-#jsxc_installationIllustration{
+#jsxc_installationIllustration {
   width: 70%;
   margin-left: 10%;
 }
 
-#jsxc_slaveClientWarning{
+#jsxc_slaveClientWarning {
 
   display: block;
   height: 30px;
@@ -556,7 +565,7 @@ img.jsxc_vCard {
   text-align: center;
 }
 
-#jsxc_noStorageWarning{
+#jsxc_noStorageWarning {
 
   display: block;
   height: 30px;
@@ -575,7 +584,7 @@ img.jsxc_vCard {
   text-align: center;
 }
 
-#jsxc_noscript_warning{
+#jsxc_noscript_warning {
 
   display: block;
   height: 30px;

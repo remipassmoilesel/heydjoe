@@ -475,6 +475,19 @@ jsxc.newgui = {
   isMediapanelShown : function() {
     return $("#jsxc-mediapanel").hasClass("jsxc-deploy");
   },
+  
+  toggleSearchPanel: function(){
+    
+    var self = jsxc.newgui;
+    
+    if(self.chatSidebarContent.isContentVisible('jsxc-search-users') !== true){
+      self.chatSidebarContent.showContent('jsxc-search-users');  
+    }
+    else {
+      self.chatSidebarContent.showMainContent();
+    }
+    
+  },
 
   /**
    * Toggle the chat sidebar

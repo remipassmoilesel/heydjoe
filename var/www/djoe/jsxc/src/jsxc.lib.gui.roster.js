@@ -44,15 +44,6 @@ jsxc.gui.roster = {
       jsxc.notification.muteSound();
     }
 
-    // initialize main menu
-    // jsxc.gui.menu.init();
-
-    var rosterState = jsxc.storage.getUserItem('roster') ||
-        (jsxc.options.get('loginForm').startMinimized ? 'hidden' : 'shown');
-
-    $('#jsxc_roster').addClass('jsxc_state_' + rosterState);
-    $('#jsxc_windowList').addClass('jsxc_roster_' + rosterState);
-
     var pres = jsxc.storage.getUserItem('presence') || 'online';
     $('#jsxc_presence > span').text($('#jsxc_presence .jsxc_' + pres).text());
     jsxc.gui.updatePresence('own', pres);
@@ -118,17 +109,17 @@ jsxc.gui.roster = {
 
   filterMode : 'buddies', // buddies || conversations
 
-  setFilterMode: function(mode){
+  setFilterMode : function(mode) {
 
     var self = jsxc.gui.roster;
-    
+
     if (self.availablesFilterModes.indexOf(mode) === -1) {
       throw new Error("Unknown mode: " + mode);
     }
 
     self.filterMode = mode;
   },
-  
+
   setVisibilityByFilter : function(li) {
 
     var self = jsxc.gui.roster;
@@ -339,18 +330,6 @@ jsxc.gui.roster = {
     var roster = $('#jsxc_roster');
     var wl = $('#jsxc_windowList');
 
-    if (!state) {
-      state = (jsxc.storage.getUserItem('roster') === jsxc.CONST.HIDDEN) ? jsxc.CONST.SHOWN :
-          jsxc.CONST.HIDDEN;
-    }
-
-    if (state === 'shown' && jsxc.isExtraSmallDevice()) {
-      jsxc.gui.window.hide();
-    }
-
-    jsxc.storage.setUserItem('roster', state);
-
-    roster.removeClass('jsxc_state_hidden jsxc_state_shown').addClass('jsxc_state_' + state);
     wl.removeClass('jsxc_roster_hidden jsxc_roster_shown').addClass('jsxc_roster_' + state);
 
     duration = parseFloat(roster.css('transitionDuration') || 0) * 1000;
@@ -394,19 +373,18 @@ jsxc.gui.roster = {
    * @memberOf jsxc.gui.roster
    */
   empty : function() {
+
     var text = $(
-        '<p class="jsxc_rosterIsEmptyMessage">' + jsxc.t('Your_roster_is_empty_add_') + '</p>');
-    var link = text.find('a');
+        '<p class="jsxc_rosterIsEmptyMessage">Votre liste est vide, invitez de nouveaux contacts !</p>');
 
-    link.click(function() {
-      //jsxc.gui.showContactDialog();
-      jsxc.gui.menu.openSideMenu();
+    text.click(function() {
+      jsxc.newgui.toggleSearchPanel();
     });
-    text.append(link);
-    text.append('.');
 
-    if ($('#jsxc_roster').find(".jsxc_rosterIsEmptyMessage").length < 1) {
-      $('#jsxc_roster').prepend(text);
+    var buddyList = $('#jsxc_buddylist');
+
+    if (buddyList.find(".jsxc_rosterIsEmptyMessage").length < 1) {
+      buddyList.prepend(text);
     }
 
   }
