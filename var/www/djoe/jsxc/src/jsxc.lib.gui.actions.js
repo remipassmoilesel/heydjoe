@@ -10,6 +10,8 @@ jsxc.gui.actions = {
 
     self._initSearchPanel();
 
+    // TODO: Separate rooms and chat in selections
+
     // TODO delete MUC or user
     //
     // if (data.type !== 'groupchat') {

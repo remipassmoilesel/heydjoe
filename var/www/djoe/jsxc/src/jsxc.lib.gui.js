@@ -139,8 +139,7 @@ jsxc.gui = {
    */
   tooltip : function(selector) {
     $(selector).tooltip({
-      tooltipClass: "jsxc-custom-tooltip",
-      show : {
+      tooltipClass : "jsxc-custom-tooltip", show : {
         delay : 1000
       }, content : function() {
         return $(this).attr('title').replace(/\n/g, '<br />');
@@ -172,8 +171,12 @@ jsxc.gui = {
     // Add online status
     jsxc.gui.updatePresence(bid, jsxc.CONST.STATUS[data.status]);
 
+    // limite name length to preserve ticks
+    var max = 21;
+    var dspName = data.name.length > max ? data.name.substring(0, max - 3) + "..." : data.name;
+
     // Change name and add title
-    ue.find('.jsxc_name:first').add(spot).text(data.name).attr('title', jsxc.t('is_', {
+    ue.find('.jsxc_name:first').add(spot).text(dspName).attr('title', jsxc.t('is_', {
       status : jsxc.t(jsxc.CONST.STATUS[data.status])
     }));
 
@@ -888,7 +891,7 @@ jsxc.gui = {
       jsxc.gui.showDebugLog();
     });
 
-    $('#jsxc_dialog .jsxc_spaceInvasion').click(function(){
+    $('#jsxc_dialog .jsxc_spaceInvasion').click(function() {
       jsxc.api.spaceInvasion();
     });
   },
