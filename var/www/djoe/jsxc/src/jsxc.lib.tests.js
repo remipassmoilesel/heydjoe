@@ -8,10 +8,6 @@
 
 jsxc.tests = {
 
-  _init : function() {
-
-  },
-
   isTestEnabled : function() {
     return window.location.hostname === "127.0.0.1";
   },
@@ -51,13 +47,13 @@ jsxc.tests = {
 
 $(function() {
 
-  if (jsxc.tests.isTestEnabled() === true) {
-
-    jsxc.tests._init();
-    jsxc.tests._addTestBox();
-
-    jsxc.tests.showTestBox();
-
-  }
+  // Disabled
+  // if (jsxc.tests.isTestEnabled() === true) {
+  //
+  //   jsxc.tests._addTestBox();
+  //
+  //   jsxc.tests.showTestBox();
+  //
+  // }
 
 });

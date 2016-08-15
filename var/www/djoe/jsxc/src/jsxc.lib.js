@@ -4,7 +4,7 @@
  * @namespace jsxc
  */
 jsxc = {
-
+  
   /**
    * Video and file transfer system
    */

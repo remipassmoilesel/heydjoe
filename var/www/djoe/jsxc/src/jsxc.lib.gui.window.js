@@ -298,14 +298,25 @@ jsxc.gui.window = {
     if (win.data('status') === 'offline') {
       win.find('.jsxc_textarea').append(
           "<div class='jsxc-warning-offline'><i>" + node + "</i> est à présent déconnecté</div>");
-    }
 
-    console.error(data);
+      win.find(".jsxc_textinput").keyup(function(){
+        if(win.data('status') !== 'offline'){
+          win.find(".jsxc-warning-offline").remove();
+        }
+      });
+    }
 
     if (data.sub !== "both") {
       win.find('.jsxc_textarea').append("<div class='jsxc-warning-notbuddy'><i>" + node +
           "</i> n'est pas dans vos contacts. Votre interlocuteur peut refuser " +
           "de voir vos messages.</div>");
+
+      win.find(".jsxc_textinput").keyup(function(){
+        if(win.data('status') !== 'offline'){
+          // TODO: to improve
+          win.find(".jsxc-warning-notbuddy").remove();
+        }
+      });
     }
 
     $(document).trigger('init.window.jsxc', [win]);

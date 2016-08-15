@@ -51,7 +51,7 @@ jsxc.ressources = {
 
     });
 
-    self._log("Output: ", text);
+    //self._log("Output: ", text);
 
     return text;
   },

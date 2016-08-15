@@ -56,6 +56,9 @@ jsxc.gui.actions = {
       jsxc.api.createNewConversationWith(selected);
     });
 
+    // TODO: delete buddies and conversation
+    // jsxc-action_delete-buddies
+
   },
 
   /**
