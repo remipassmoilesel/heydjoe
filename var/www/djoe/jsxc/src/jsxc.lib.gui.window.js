@@ -293,6 +293,21 @@ jsxc.gui.window = {
       jsxc.otr.enable(bid);
     }
 
+    // display warning if buddy is offline or none suscribed
+    var node = Strophe.getNodeFromJid(win.data('jid'));
+    if (win.data('status') === 'offline') {
+      win.find('.jsxc_textarea').append(
+          "<div class='jsxc-warning-offline'><i>" + node + "</i> est à présent déconnecté</div>");
+    }
+
+    console.error(data);
+
+    if (data.sub !== "both") {
+      win.find('.jsxc_textarea').append("<div class='jsxc-warning-notbuddy'><i>" + node +
+          "</i> n'est pas dans vos contacts. Votre interlocuteur peut refuser " +
+          "de voir vos messages.</div>");
+    }
+
     $(document).trigger('init.window.jsxc', [win]);
 
     return win;
@@ -721,7 +736,7 @@ jsxc.gui.window = {
 
     // search ressources and replace urls
     msg = jsxc.ressources.enlightenRessourcesInText(msg);
-    
+
     // msg = msg.replace(
     //     new RegExp('(xmpp:)?(' + jsxc.CONST.REGEX.JID.source + ')(\\?[^\\s]+\\b)?', 'i'),
     //     function(match, protocol, jid, action) {
