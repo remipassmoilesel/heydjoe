@@ -30,10 +30,7 @@ jsxc.newgui = {
   OPACITY_ANIMATION_DURATION : '500',
 
   _log : function(message, data, level) {
-
-    level = "[" + (level || 'INFO').trim().toUpperCase() + "] ";
-
-    console.log(level + message, data || "");
+    jsxc.debug('[NGUI] ' + message, data, level);
   },
 
   _selectionMode : true,
@@ -177,10 +174,10 @@ jsxc.newgui = {
       res.css({
         display : 'block', opacity : 0
       });
-      
+
       res.data('jid', element.jid);
 
-      if(element._is_buddy === true){
+      if (element._is_buddy === true) {
         res.addClass("jsxc-search-result-buddie");
       }
 
@@ -215,7 +212,6 @@ jsxc.newgui = {
     list.append("<div>Erreur lors de la recherche: " + error + "</div>");
 
   },
-
 
   /**
    * Open or close settings menu
@@ -564,8 +560,6 @@ jsxc.newgui = {
     return $("#jsxc-chat-sidebar-content").hasClass("jsxc-deploy");
   },
 
-  
-
   /**
    * Open or close settings menu
    */
@@ -635,101 +629,6 @@ jsxc.newgui = {
 
   },
 
-  //TODO: Etherpad
-  //TODO: Videoconference
-  //TODO: ...
-  MEDIA_RESSOURCES : {
-
-    youtube : {
-
-      //https://www.youtube.com/watch?v=FbuluDBHpfQ
-      regex : [/https?:\/\/(www\.)?youtube\.[a-z]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/ig],
-
-      filterFunction : function() {
-        var self = jsxc.newgui;
-        var match = arguments[0];
-        return self._getShowRessourceLink(match, "youtube");
-      },
-
-      getEmbedded : function(ressourceOnly) {
-        var self = jsxc.newgui;
-
-        // get video id from ressource
-        // https://www.youtube.com/watch?v=FbuluDBHpfQ.match(/v=([^&]+)/i);
-        var vid = ressourceOnly.match(/v=([^&]+)/i);
-
-        if (vid === null) {
-          return self._getEmbeddedErrorBlock();
-        }
-
-        return '<iframe src="https://www.youtube.com/embed/' + vid[1] +
-            '" frameborder="0" width="480" height="270" allowfullscreen></iframe>';
-      }
-
-    },
-
-    dailymotion : {
-
-      //https://www.youtube.com/watch?v=FbuluDBHpfQ
-      regex : [/https?:\/\/(www\.)?dailymotion\.[a-z]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/ig],
-
-      filterFunction : function() {
-        var self = jsxc.newgui;
-        var match = arguments[0];
-        return self._getShowRessourceLink(match, "dailymotion");
-      },
-
-      getEmbedded : function(ressourceOnly) {
-        var self = jsxc.newgui;
-
-        // get video id from ressource
-        // http://www.dailymotion.com/video/x2i3isg_zap-meta-le-zapping-de-meta-tv-2015-semaine-9_news
-        var vid = ressourceOnly.match(/video\/([^_]+)/i);
-
-        if (vid === null) {
-          return self._getEmbeddedErrorBlock();
-        }
-
-        return '<iframe frameborder="0" width="480" height="270" ' +
-            'src="//www.dailymotion.com/embed/video/' + vid[1] + '" ' + 'allowfullscreen></iframe>';
-
-      },
-
-    }
-
-  },
-
-  _getEmbeddedErrorBlock : function(ressource) {
-    return "<div class='jsxc-multimedia-error-block'>Erreur de traitement de la ressource: " +
-        "<br/>" + ressource + "</div>";
-  },
-
-  /**
-   * Return an HTML link
-   * @param ressource
-   * @returns {string}
-   * @private
-   */
-  _getShowRessourceLink : function(ressource, prefix) {
-
-    if (typeof ressource === 'undefined') {
-      throw new Error('Ressource cannot be undefined');
-    }
-    if (typeof prefix === 'undefined') {
-      throw new Error('Prefix cannot be undefined');
-    }
-
-    // format ressource to show it
-    var ressourceLabel = ressource.length < 20 ? ressource : ressource.substr(0, 17) + "...";
-
-    // add prefix to ressource
-    ressource = prefix ? prefix + ":" + ressource : ressource;
-
-    // return HTML link
-    return '<a class="jsxc-media-ressource-link" onclick="jsxc.newgui.openMediaRessource(\'' +
-        ressource + '\')">' + ressourceLabel + '</a>';
-  },
-
   /**
    * Open a media ressource in the media panel
    * @param ressource
@@ -737,6 +636,7 @@ jsxc.newgui = {
   openMediaRessource : function(ressource) {
 
     var self = jsxc.newgui;
+    var ress = jsxc.ressources;
 
     if (self.isMediapanelShown() === false) {
       self.toggleMediapanel();
@@ -751,16 +651,17 @@ jsxc.newgui = {
       ressource : ressource, prefix : prefix, ressourceOnly : ressourceOnly
     });
 
-    if (!prefix || !self.MEDIA_RESSOURCES[prefix]) {
-      throw new Error("Invalid ressource: " + ressource);
+    var embedded = ress.getEmbeddedFor(prefix, ressourceOnly);
+
+    // add ressource only if needed
+    if (embedded) {
+
+      var title = "Vidéo: " +
+          (ressourceOnly.length > 20 ? ressourceOnly.substring(0, 17) + "..." : ressourceOnly);
+
+      self._addMediaRessource(embedded, title, ressource);
+
     }
-
-    var embedded = self.MEDIA_RESSOURCES[prefix].getEmbedded(ressourceOnly);
-
-    var title = "Vidéo: " +
-        (ressourceOnly.length > 20 ? ressourceOnly.substring(0, 17) + "..." : ressourceOnly);
-
-    self._addMediaRessource(embedded, title, ressource);
 
   },
 
@@ -777,36 +678,6 @@ jsxc.newgui = {
     self._log("_addMediaRessource", {title : title, container : container});
 
     $("#jsxc-mediapanel-right").append(container);
-  },
-
-  /**
-   * Analyse text and return HTML code containing links to display ressources in the ressource
-   * panel
-   */
-  textFilter : function(text) {
-
-    var self = jsxc.newgui;
-
-    self._log("textFilter");
-    self._log(text);
-
-    $.each(self.MEDIA_RESSOURCES, function(filterName, filter) {
-
-      for (var i = 0; i < filter.regex.length; i++) {
-
-        var regex = filter.regex[i];
-
-        if (text.match(regex)) {
-          text = text.replace(regex, filter.filterFunction);
-        }
-
-      }
-
-    });
-
-    self._log("Output: ", text);
-
-    return text;
   },
 
   /**

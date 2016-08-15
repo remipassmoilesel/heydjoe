@@ -124,7 +124,7 @@ jsxc.gui.actions = {
         'opacity' : "0"
       }, 700, function() {
         entries.remove();
-      })
+      });
 
     });
 

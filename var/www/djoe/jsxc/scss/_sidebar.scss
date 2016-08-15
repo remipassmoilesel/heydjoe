@@ -160,6 +160,10 @@ TODO: Set up variables:
     background: #cccddd;
   }
 
+  .jsxc-checked{
+    text-decoration: underline;
+  }
+
   .jsxc-checked:after {
     content: " ";
     width: 1em;

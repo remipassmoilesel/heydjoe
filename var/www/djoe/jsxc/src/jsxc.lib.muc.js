@@ -762,7 +762,7 @@ jsxc.muc = {
 
       jsxc.storage.setUserItem('roomNames', jsxc.xmpp.conn.muc.roomNames);
 
-      if (jsxc.gui.roster.getItem(room).length === 0) {
+      if (jsxc.gui.roster.getItem(room).length < 1) {
         var bl = jsxc.storage.getUserItem('buddylist');
         bl.push(room);
         jsxc.storage.setUserItem('buddylist', bl);

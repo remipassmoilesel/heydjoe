@@ -711,29 +711,32 @@ jsxc.gui.window = {
       jsxc.gui.window.highlight(bid);
     }
 
-    msg = msg.replace(jsxc.CONST.REGEX.URL, function(url) {
+    // msg = msg.replace(jsxc.CONST.REGEX.URL, function(url) {
+    //
+    //   var href = (url.match(/^https?:\/\//i)) ? url : 'http://' + url;
+    //
+    //   // @TODO use jquery element builder
+    //   return '<a href="' + href + '" target="_blank">' + url + '</a>';
+    // });
 
-      var href = (url.match(/^https?:\/\//i)) ? url : 'http://' + url;
-
-      // @TODO use jquery element builder
-      return '<a href="' + href + '" target="_blank">' + url + '</a>';
-    });
-
-    msg = msg.replace(
-        new RegExp('(xmpp:)?(' + jsxc.CONST.REGEX.JID.source + ')(\\?[^\\s]+\\b)?', 'i'),
-        function(match, protocol, jid, action) {
-          if (protocol === 'xmpp:') {
-            if (typeof action === 'string') {
-              jid += action;
-            }
-
-            // @TODO use jquery element builder
-            return '<a href="xmpp:' + jid + '">xmpp:' + jid + '</a>';
-          }
-
-          // @TODO use jquery element builder
-          return '<a href="mailto:' + jid + '" target="_blank">mailto:' + jid + '</a>';
-        });
+    // search ressources and replace urls
+    msg = jsxc.ressources.enlightenRessourcesInText(msg);
+    
+    // msg = msg.replace(
+    //     new RegExp('(xmpp:)?(' + jsxc.CONST.REGEX.JID.source + ')(\\?[^\\s]+\\b)?', 'i'),
+    //     function(match, protocol, jid, action) {
+    //       if (protocol === 'xmpp:') {
+    //         if (typeof action === 'string') {
+    //           jid += action;
+    //         }
+    //
+    //         // @TODO use jquery element builder
+    //         return '<a href="xmpp:' + jid + '">xmpp:' + jid + '</a>';
+    //       }
+    //
+    //       // @TODO use jquery element builder
+    //       return '<a href="mailto:' + jid + '" target="_blank">mailto:' + jid + '</a>';
+    //     });
 
     // replace emoticons from XEP-0038 and pidgin with shortnames
     $.each(jsxc.gui.emotions, function(i, val) {
