@@ -59,7 +59,7 @@ jsxc.mmstream.gui = {
     }
 
     // init terminate all button
-    $('#jsxc_videoPanel .jsxc_mmstreamTerminateAll').click(function(){
+    $('#jsxc_videoPanel .jsxc_mmstreamTerminateAll').click(function() {
       mmstream._hangUpAll();
     });
 
@@ -145,9 +145,9 @@ jsxc.mmstream.gui = {
       it.addClass("jsxcVideoConf_" + item.type);
       it.attr("title", item.type + ": " + item.status);
 
-      if(mmstream._isBuddyParticipatingToVideoconference(fulljid) === true){
+      if (mmstream._isBuddyParticipatingToVideoconference(fulljid) === true) {
         var link = $("<a href='#'>");
-        link.click(function(){
+        link.click(function() {
           mmstream.reinviteUserInVideoconference(fulljid);
         });
         link.text(item.node);
@@ -159,18 +159,42 @@ jsxc.mmstream.gui = {
         it.text(item.node);
         list.append(it);
       }
-      
+
     });
 
   },
 
- 
+  /**
+   * Show a dialog explaining how to install screen sharing extension
+   */
+  showInstallScreenSharingExtensionDialog : function() {
+
+    // show dialog
+    jsxc.gui.dialog.open(jsxc.gui.template.get('installChromeExtension'), {
+      'noClose' : true
+    });
+
+    $("#jsxc_dialog .jsxc_closeInstallChromeExtension").click(function() {
+      jsxc.gui.dialog.close();
+    });
+
+    $("#jsxc_dialog .jsxc_reloadInstallChromeExtension").click(function() {
+      location.reload();
+    });
+
+    // add animated gif
+    $('#jsxc_installationIllustration').show().attr('src',
+        jsxc.options.root + 'img/install-chrome-extension.gif');
+    
+  },
 
   /**
    * Init dialog and button for installing screen capture Chrome extension
    * @private
    */
   _initChromeExtensionDialog : function() {
+    
+    var self = jsxc.mmstream.gui;
 
     // show gui for install Chrome extension
     var installChromeExt = $("#jsxc_menuConversation .jsxc_screenInstallChromeExtension");
@@ -185,24 +209,7 @@ jsxc.mmstream.gui = {
       if (document.location.protocol.indexOf("https") > -1) {
 
         installChromeExt.click(function() {
-
-          jsxc.gui.dialog.open(jsxc.gui.template.get('installChromeExtension'), {
-            'noClose' : true
-          });
-
-          $("#jsxc_dialog .jsxc_closeInstallChromeExtension").click(function() {
-            jsxc.gui.dialog.close();
-          });
-
-          $("#jsxc_dialog .jsxc_reloadInstallChromeExtension").click(function() {
-            location.reload();
-          });
-
-          // add animated gif
-
-          $('#jsxc_installationIllustration').show().attr('src',
-              jsxc.options.root + 'img/install-chrome-extension.gif');
-
+          self.showInstallScreenSharingExtensionDialog();
         });
 
         jsxc.mmstream._isChromeExtensionInstalled()
@@ -719,18 +726,18 @@ jsxc.mmstream.gui = {
    * @returns {*}
    * @private
    */
-  _showReinviteUserConfirmationDialog: function(bid, mode) {
+  _showReinviteUserConfirmationDialog : function(bid, mode) {
 
     // var self = jsxc.mmstream.gui;
 
     var defer = $.Deferred();
 
-    if(mode !== "received" && mode !=="emit"){
+    if (mode !== "received" && mode !== "emit") {
       throw new Error("Unkown mode: " + mode);
     }
-    
+
     bid = Strophe.getBareJidFromJid(bid);
-    
+
     var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('videoReinviteUser_' + mode, bid), {
       noClose : true, name : 'video_reinvite_user'
     });
@@ -754,7 +761,6 @@ jsxc.mmstream.gui = {
     return defer.promise();
 
   },
-
 
   /**
    * Show an "accept / decline" dialog for an incoming videoconference

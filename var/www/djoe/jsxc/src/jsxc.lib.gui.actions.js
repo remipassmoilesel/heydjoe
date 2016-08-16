@@ -238,6 +238,10 @@ jsxc.gui.actions = {
 
     });
 
+    $('#jsxc-settings-menu .jsxc-action_installScreenSharingExtension').click(function() {
+      jsxc.mmstream.gui.showInstallScreenSharingExtensionDialog();
+    });
+
     // about dialog
     $('#jsxc-settings-menu .jsxc-show-about-dialog').click(function() {
       jsxc.gui.showAboutDialog();
