@@ -14,6 +14,28 @@
 
     li {
       cursor: pointer;
+      line-height: 1.6em;
+    }
+
+  }
+}
+
+.jsxc_buddy-list-container {
+
+  overflow: auto;
+  border: solid 1px gray;
+  padding: 0.7em;
+  margin: 0.7em;
+
+  height: 150px;
+
+  .jsxc-buddy-list {
+
+    list-style: none;
+
+    li {
+      cursor: pointer;
+      line-height: 1.6em;
     }
 
   }

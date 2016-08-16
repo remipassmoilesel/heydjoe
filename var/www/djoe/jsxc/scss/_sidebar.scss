@@ -310,59 +310,10 @@ TODO: Set up variables:
   }
 
   /**
-    Ressources links and display in media panel
+    Content of the chat sidebar header
   */
-  .jsxc-media-ressource-link {
-    color: darkblue;
-    cursor: pointer;
-    opacity: 0.8;
-  }
-
-  .jsxc-media-ressource-link:hover {
-    text-decoration: underline;
-    opacity: 1;
-  }
-
-  .jsxc-media-ressource-link:after {
-
-    content: " ";
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    margin: 0 3px 0 3px;
-
-    background-image: image-url('newgui/ressource-link.svg');
-
-  }
-
-  .jsxc-media-ressource {
-
-    display: inline-block;
-    height: 80%;
-
-    margin-top: 20px;
-    margin-left: 20px;
-    margin-right: 20px;
-  }
-
-  .jsxc-media-ressource .jsxc-title {
-    font-size: 1.2em;
-    text-align: center;
-    font-weight: bolder;
-    color: white;
-
-  }
-
   .jsxc-header-content {
     cursor: pointer;
-  }
-
-  .jsxc-multimedia-error-block {
-    font-weight: bolder;
-    color: white;
-    font-size: 14px;
   }
 
   /**
@@ -530,21 +481,26 @@ TODO: Set up variables:
     display: none;
 
     #jsxc-chat-sidebar-search {
-      position: absolute;
+      position: relative;
+
       border: solid 1px #DDDDDD;
       height: 2em;
       color: #222222;
-      margin: 5px;
-      padding: 5px;
-      width: 68%;
+      width: 64%;
+
+      margin: 0.2em;
+      margin-left: 0.6em;
+      padding: 0.2em;
     }
 
     #jsxc-chat-sidebar-search-invite {
-      position: absolute;
-      left: 69%;
-      width: 20%;
-      margin: 0.4em;
+      position: relative;
+
+      width: 24%;
       line-height: 0.7em;
+
+      margin: 0.2em;
+      padding: 0.2em;
     }
 
     .jsxc-search-result-buddie:after {
@@ -568,7 +524,7 @@ TODO: Set up variables:
 
     .jsxc-search-users-results {
       margin: 5px;
-      padding-top: 3em;
+      padding-top: 0.8em;
     }
 
     .jsxc-search-users-results a {

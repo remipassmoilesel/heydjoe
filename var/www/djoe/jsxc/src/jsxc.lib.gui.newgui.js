@@ -178,10 +178,9 @@ jsxc.newgui = {
       headerContent.click(function(event) {
         event.stopPropagation();
 
-        if(self.isChatSidebarShown() === true){
+        if (self.isChatSidebarShown() === true) {
           self.toggleNotificationsMenu();
-        }
-        else {
+        } else {
           self.toggleChatSidebar(function() {
             self.toggleNotificationsMenu();
           });
@@ -387,9 +386,9 @@ jsxc.newgui = {
 
     // Optionnal: create fake ressources
     for (var i = 0; i < 10; i++) {
-      self._addMediaRessource(
-          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>", 'Title',
-          'Ressource');
+      self.addMediaRessource(
+          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>",
+          'Title ' + i);
     }
 
   },
@@ -786,12 +785,7 @@ jsxc.newgui = {
 
     // add ressource only if needed
     if (embedded) {
-
-      var title = "Vidéo: " +
-          (ressourceOnly.length > 20 ? ressourceOnly.substring(0, 17) + "..." : ressourceOnly);
-
-      self._addMediaRessource(embedded, title, ressource);
-
+      self.addMediaRessource(embedded, "Vidéo: " + ressourceOnly);
     }
 
   },
@@ -804,34 +798,39 @@ jsxc.newgui = {
    * @param ressource
    * @private
    */
-  _addMediaRessource : function(htmlContent, title, ressource) {
+  addMediaRessource : function(htmlContent, title) {
 
     var self = jsxc.newgui;
 
+    // container for ressource
     var container = $('<div class="jsxc-media-ressource"></div>').append(htmlContent);
 
-    if (title && ressource) {
-      var ressHeader = $("<h1 class='jsxc-title'>" + title + "</h1>").attr('title', ressource);
+    // displayable title, not too long
+    var dspTitle = title.length > 30 ? title.substring(0, 27) + "..." : title;
 
-      var closeHeader = $("<span class='jsxc-close-ressource'></span>");
-      closeHeader.click(function() {
+    // header with title and close cross
+    var ressHeader = $("<h1 class='jsxc-title'>" + dspTitle + "</h1>").attr('title', title);
 
-        container.animate({
-          opacity : "0"
-        }, 500, function() {
-          container.remove();
-        });
+    // close cross to remove ressource from panel
+    var closeHeader = $("<span class='jsxc-close-ressource'></span>");
+    closeHeader.click(function() {
 
+      container.animate({
+        opacity : "0"
+      }, self.OPACITY_ANIMATION_DURATION, function() {
+        container.remove();
       });
 
-      ressHeader.append(closeHeader);
-      container.prepend(ressHeader);
+    });
 
-    }
+    ressHeader.append(closeHeader);
+    container.prepend(ressHeader);
 
-    self._log("_addMediaRessource", {title : title, container : container});
+    self._log("addMediaRessource", {title : title, container : container});
 
+    // append ressource
     $("#jsxc-mediapanel-right").append(container);
+
   },
 
   /**

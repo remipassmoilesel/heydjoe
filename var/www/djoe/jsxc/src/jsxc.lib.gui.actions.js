@@ -253,6 +253,26 @@ jsxc.gui.actions = {
 
     });
 
+    // create etherpad doc
+    $("#jsxc-actions-menu .jsxc-action_new-etherpad-document").click(function() {
+
+      // show dialog
+      jsxc.gui.showEtherpadCreationDialog()
+
+          .then(function(res) {
+
+            jsxc.gui.feedback("Le document va être ouvert");
+
+            jsxc.etherpad.openpad(res.name);
+            jsxc.etherpad.sendInvitations(res.name, res.buddies);
+          })
+
+          .fail(function() {
+            jsxc.gui.feedback("Opération annulée");
+          });
+
+    });
+
   },
 
   /**

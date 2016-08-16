@@ -517,10 +517,38 @@ img.jsxc_vCard {
   display: none;
 }
 
+.jsxc_noNotice {
+  cursor: default;
+}
 
 
+/**
+   Ressources links and display in media panel
+ */
+.jsxc-media-ressource-link {
+  color: darkblue;
+  cursor: pointer;
+  opacity: 0.8;
+}
 
+.jsxc-media-ressource-link:hover {
+  text-decoration: underline;
+  opacity: 1;
+}
 
+.jsxc-media-ressource-link:after {
+
+  content: " ";
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin: 0 3px 0 3px;
+
+  background-image: image-url('newgui/ressource-link.svg');
+
+}
 
 
 
