@@ -296,7 +296,7 @@ jsxc.gui.window = {
     // display warning if buddy is offline or none suscribed
     var node = Strophe.getNodeFromJid(win.data('jid'));
     if (win.data('status') === 'offline') {
-      win.find('.jsxc_textarea').append(
+      win.find('.jsxc_textarea').prepend(
           "<div class='jsxc-warning-offline'><i>" + node + "</i> est à présent déconnecté</div>");
 
       win.find(".jsxc_textinput").keyup(function(){
@@ -307,7 +307,7 @@ jsxc.gui.window = {
     }
 
     if (data.sub !== "both") {
-      win.find('.jsxc_textarea').append("<div class='jsxc-warning-notbuddy'><i>" + node +
+      win.find('.jsxc_textarea').prepend("<div class='jsxc-warning-notbuddy'><i>" + node +
           "</i> n'est pas dans vos contacts. Votre interlocuteur peut refuser " +
           "de voir vos messages.</div>");
 

@@ -52,11 +52,7 @@ jsxc.mmstream.gui = {
     $('body').append(self.videoPanel);
 
     // init Chrome extension installation button
-    if (jsxc.gui.menu.ready === true) {
       self._initChromeExtensionDialog();
-    } else {
-      $(document).one("menu.ready.jsxc", self._initChromeExtensionDialog);
-    }
 
     // init terminate all button
     $('#jsxc_videoPanel .jsxc_mmstreamTerminateAll').click(function() {

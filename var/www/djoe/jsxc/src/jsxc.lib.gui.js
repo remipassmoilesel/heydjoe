@@ -837,6 +837,45 @@ jsxc.gui = {
   },
 
   /**
+   * Show a feedback message. Type can be 'info' or 'warn'
+   *
+   * @param selector
+   * @returns {JQuery|jQuery|HTMLElement}
+   */
+  feedback : function(message, type, timeout) {
+
+    jsxc.stats.addEvent("jsxc.feedback.toast");
+
+    var defaultType = "info";
+
+    var bgColors = {
+      info : '#1a1a1a', warn : '#520400',
+    };
+    var icons = {
+      info : 'info', warn : 'warning',
+    };
+
+    // show the toast
+    $.toast({
+      text : message, // Text that is to be shown in the toast
+      icon : icons[type || defaultType], // Type of toast icon
+      showHideTransition : 'slide', // fade, slide or plain
+      allowToastClose : true, // Boolean value true or false
+      hideAfter : timeout || 3000, // false to make it sticky or number representing the miliseconds
+                                   // as time after which toast needs to be hidden
+      stack : 3, // false if there should be only one toast at a time or a number representing the
+                 // maximum number of toasts to be shown at a time
+      position : 'top-center', // bottom-left or bottom-right or bottom-center or top-left or
+                               // top-right or top-center or mid-center or an object representing
+                               // the left, right, top, bottom values
+      textAlign : 'left',  // Text alignment i.e. left, right or center
+      loader : false,  // Whether to show loader or not. True by default
+      bgColor : bgColors[type || defaultType], // background color of toast
+    });
+
+  },
+
+  /**
    * Show a dialog to select a conversation
    *
    * @param {type} bid
@@ -848,17 +887,23 @@ jsxc.gui = {
 
     jsxc.gui.dialog.open(jsxc.gui.template.get('conversationSelectionDialog'));
 
-    jsxc.gui.createConversationList("#jsxc_dialogConversationList");
+    jsxc.gui.widgets.createConversationList("#jsxc_dialogConversationList");
 
     $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
       ev.stopPropagation();
 
       // get selected elements
-      var selItems = $("#jsxc_dialogConversationList .ui-selected");
+      var selItems = $("#jsxc_dialogConversationList .jsxc-checked");
+      var res = [];
 
-      defer.resolve(selItems);
+      $.each(selItems, function(index, element) {
+        res.push($(element).data('conversjid'));
+      });
 
       jsxc.gui.dialog.close();
+
+      defer.resolve(res);
+
     });
 
     $('#jsxc_dialog .jsxc_cancel').click(function(ev) {

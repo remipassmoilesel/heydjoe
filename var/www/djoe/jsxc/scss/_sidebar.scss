@@ -168,22 +168,6 @@ TODO: Set up variables:
     text-decoration: underline !important;
   }
 
-  .jsxc-checked {
-    text-decoration: underline;
-  }
-
-  .jsxc-checked:after {
-    content: " ";
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    background-size: 90%;
-    background-repeat: no-repeat;
-    margin: 0 3px 0 3px;
-
-    background-image: image-url('newgui/check.svg');
-  }
-
   /**
     Content of the chat sidebar
   */

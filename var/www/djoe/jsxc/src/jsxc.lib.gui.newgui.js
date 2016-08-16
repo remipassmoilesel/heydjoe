@@ -175,10 +175,18 @@ jsxc.newgui = {
           '<span><span class="jsxc_menu_notif_number"></span> notification(s)</span>');
 
       // open notifications on click
-      headerContent.click(function() {
-        self.toggleChatSidebar(function() {
+      headerContent.click(function(event) {
+        event.stopPropagation();
+
+        if(self.isChatSidebarShown() === true){
           self.toggleNotificationsMenu();
-        });
+        }
+        else {
+          self.toggleChatSidebar(function() {
+            self.toggleNotificationsMenu();
+          });
+        }
+
       });
 
       jsxc.notice.updateNotificationNumbers();

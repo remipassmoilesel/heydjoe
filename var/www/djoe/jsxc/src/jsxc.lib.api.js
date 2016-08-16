@@ -153,15 +153,15 @@ jsxc.api = {
     if (self.getBuddyList().indexOf(jid) < 0) {
 
       jsxc.storage.setUserItem('buddy', bid, {
-        jid: jid,
-        name: '',
-        status: 0,
-        sub: 'none',
-        msgstate: 0,
-        transferReq: -1,
-        trust: false,
-        res: [],
-        type: 'chat'
+        jid : jid,
+        name : '',
+        status : 0,
+        sub : 'none',
+        msgstate : 0,
+        transferReq : -1,
+        trust : false,
+        res : [],
+        type : 'chat'
       });
     }
 
@@ -176,30 +176,36 @@ jsxc.api = {
    * If an error occur, feedbacks are shown
    *
    */
-  createNewConversationWith: function(jidArray){
-    
-    var invite = true;
+  createNewConversationWith : function(jidArray) {
 
-    if(!jidArray || typeof jidArray.length === "undefined"){
+    var createAndInvite = true;
+
+    if (!jidArray || typeof jidArray.length === "undefined") {
       throw new Error("Invalid argument: " + jidArray);
     }
 
-    if(jidArray.length < 1){
+    if (jidArray.length < 1) {
       jsxc.gui.feedback("Vous devez sélectionner au moins un interlocuteur");
       return;
     }
-    
+
     $.each(jidArray, function(index, element) {
-      if(element.match(/.+@.+\..+/i) === null){
+      if (element.match(/.+@.+\..+/i) === null) {
         jsxc.gui.feedback("Impossible de joindre: " + element);
-        invite = false;
+        createAndInvite = false;
       }
     });
-    
-    if(invite === true){
-      jsxc.muc.createNewConversationWith(jidArray);  
+
+    if (createAndInvite === true) {
+
+      // create conversation
+      var rjid = jsxc.muc.createNewConversationWith(jidArray);
+
+      // invite users
+      jsxc.muc.inviteParticipants(rjid, jidArray);
+      
     }
-    
+
   },
 
   /**
@@ -209,19 +215,19 @@ jsxc.api = {
     return jsxc.storage.getUserItem('buddylist') || [];
   },
 
-  isConnected: function(){
+  isConnected : function() {
     return jsxc.xmpp.conn !== null;
   },
 
   /**
    * Check if we are connected, if not show feedback, open roster and throw exception
    */
-  checkIfConnectedOrThrow: function(){
+  checkIfConnectedOrThrow : function() {
 
     var self = jsxc.api;
 
-    if(self.isConnected() !== true){
-      
+    if (self.isConnected() !== true) {
+
       self.feedback("Vous n'êtes pas connecté au client de messagerie");
       jsxc.gui.roster.toggle("shown");
 
@@ -294,13 +300,13 @@ jsxc.api = {
     });
 
   },
-  
-  disconnect: function(){
+
+  disconnect : function() {
     jsxc.gui.feedback("Déconnexion en cours");
     jsxc.xmpp.logout(false);
   },
-  
-  reconnect: function(){
+
+  reconnect : function() {
     jsxc.gui.feedback("Connexion en cours");
     var called = jsxc.api.callback("onReconnectRequest");
     if (called < 1) {

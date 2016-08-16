@@ -10,15 +10,15 @@ jsxc.gui.actions = {
 
     var self = jsxc.gui.actions;
 
-    self._initSettingsPanel();
+    self._initSettingsMenu();
 
-    self._initActionPanel();
+    self._initActionMenu();
 
-    self._initSearchPanel();
+    self._initSearchMenu();
 
-    self._initStatusPanel();
+    self._initStatusMenu();
 
-    self._initNotificationsPanel();
+    self._initNotificationsMenu();
 
   },
 
@@ -93,7 +93,7 @@ jsxc.gui.actions = {
    * Init the status panel, at bottom of the chat sidebar
    * @private
    */
-  _initStatusPanel : function() {
+  _initStatusMenu : function() {
 
     // var self = jsxc.gui.actions;
     var newgui = jsxc.newgui;
@@ -173,7 +173,11 @@ jsxc.gui.actions = {
 
   },
 
-  _initActionPanel : function() {
+  /**
+   * Menu where user can invite other users, create conversations, make call, ...
+   * @private
+   */
+  _initActionMenu : function() {
 
     var self = jsxc.gui.actions;
 
@@ -188,6 +192,7 @@ jsxc.gui.actions = {
       jsxc.api.createNewConversationWith(selected);
     });
 
+    // delete buddies or conversations
     $('.jsxc-action_delete-buddies').click(function() {
 
       var buddies = self._getCheckedElements();
@@ -209,13 +214,52 @@ jsxc.gui.actions = {
 
     });
 
+    // invite in existing conversation
+    $('#jsxc-actions-menu .jsxc-action_invite-in-conversation').click(function() {
+
+      var buddies = self._getCheckedBuddies();
+      if (buddies.length < 1) {
+        jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+        return;
+      }
+
+      var toInvite = [];
+      $.each(buddies, function(index, element) {
+        toInvite.push(element.bid);
+      });
+
+      // show dialog
+      jsxc.gui.showConversationSelectionDialog()
+
+      // user clicks OK
+          .done(function(conversations) {
+
+            if (conversations.length < 1) {
+              jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+              return;
+            }
+
+            $.each(conversations, function(index, cjid) {
+              jsxc.muc.inviteParticipants(cjid, toInvite);
+            });
+
+            jsxc.gui.feedback("Les utilisateurs ont été invités");
+
+          })
+
+          .fail(function() {
+            jsxc.gui.feedback("Opération annulée");
+          });
+
+    });
+
   },
 
   /**
    * Setting menu, where user can mute notifications, see 'About dialog', ...
    * @private
    */
-  _initSettingsPanel : function() {
+  _initSettingsMenu : function() {
 
     // var self = jsxc.gui.actions;
     var newgui = jsxc.newgui;
@@ -253,7 +297,7 @@ jsxc.gui.actions = {
    * Search panel WEP 0055 where users can search other users to invite them
    * @private
    */
-  _initSearchPanel : function() {
+  _initSearchMenu : function() {
 
     var self = jsxc.gui.actions;
     // var newgui = jsxc.newgui;
@@ -295,7 +339,7 @@ jsxc.gui.actions = {
 
   },
 
-  _initNotificationsPanel : function() {
+  _initNotificationsMenu : function() {
 
   }
 

@@ -1,170 +1,20 @@
-.jsxc_filterableList {
 
-  height: 220px;
-  margin: 5px;
-  border: 1px solid #dddddd;
+.jsxc_conversation-list-container {
 
-  ol {
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
-    width: 100%;
-  }
+  overflow: auto;
+  border: solid 1px gray;
+  padding: 0.7em;
+  margin: 0.7em;
 
-  .ui-selected {
-    background: rgb(126, 183, 59);
-    color: white;
-  }
-
-  li {
-    margin: 3px;
-    padding: 4px;
-    cursor: pointer;
-    height: 2em;
-
-    vertical-align: middle;
-    line-height: 1;
-  }
-
-  .jsxc_filterTextField{
-    width: 94% !important;
-  }
-
-  .filterableList-result {
-    background: yellow;
-  }
-
-}
-
-/**
-  User selection list
-*/
-
-.jsxc_userListContainer {
-
-  ol {
-
-    .buddy_item:after {
-      content: image-url("user_list_buddy.png");
-      vertical-align: -30%;
-    }
-
-  }
-
-}
-
-/**
-  Room selection list
-*/
-
-.jsxc_roomListContainer {
-
-  position: relative;
   height: 150px;
-  margin: 5px;
-  border: 1px solid #dddddd;
 
-  .jsxc_roomList {
+  .jsxc-conversation-list {
 
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-
-    .ui-selected {
-      background: rgb(126, 183, 59);
-      color: white;
-    }
+    list-style: none;
 
     li {
-      margin: 3px;
-      padding: 4px;
       cursor: pointer;
-      height: 2em;
-
-      vertical-align: middle;
-      line-height: 1;
-    }
-
-    //.buddy_item:after {
-    //  content: image-url("user_list_buddy.png");
-    //  vertical-align: -30%;
-    //}
-
-  }
-
-}
-
-/**
-  Buddy selection list
-*/
-
-.jsxc_widget-buddylistContainer {
-
-  position: relative;
-  height: 150px;
-  margin: 5px;
-  border: 1px solid #dddddd;
-
-  .jsxc_widget-buddylist {
-
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-
-    .ui-selected {
-      background: rgb(126, 183, 59);
-      color: white;
-    }
-
-    li {
-      margin: 3px;
-      padding: 4px;
-      cursor: pointer;
-      height: 2em;
-
-      vertical-align: middle;
-      line-height: 1;
     }
 
   }
-
-}
-
-/**
-  Conversation selection list
-*/
-
-.jsxc_conversationListContainer {
-
-  position: relative;
-  height: 150px;
-  margin: 5px;
-  border: 1px solid #dddddd;
-
-  .jsxc_conversationList {
-
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-
-    .ui-selected {
-      background: rgb(126, 183, 59);
-      color: white;
-    }
-
-    li {
-      margin: 3px;
-      padding: 4px;
-      cursor: pointer;
-      height: 2em;
-
-      vertical-align: middle;
-      line-height: 1;
-    }
-
-  }
-
 }
