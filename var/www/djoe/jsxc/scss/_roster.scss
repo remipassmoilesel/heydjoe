@@ -360,10 +360,10 @@
   cursor: default !important;
 }
 
-#jsxc_notice {
+#jsxc-notifications {
 
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
 
   ul {
     padding-left: 0px;
@@ -372,6 +372,7 @@
   }
 
   li {
+    padding-bottom: 0.5em;
     cursor: pointer;
   }
 

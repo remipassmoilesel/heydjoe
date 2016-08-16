@@ -9,7 +9,7 @@
     <!-- toggle video -->
     <span class="jsxc-toggle-mediapanel"></span>
 
-    <span class="jsxc-last-notifications">5 utilisateurs</span>
+    <span class="jsxc-header-content"></span>
 
     <!-- close chatsidebar -->
     <span class="jsxc-close-chatsidebar"></span>
@@ -38,6 +38,8 @@
 
       <div id="jsxc-settings-menu" class="jsxc-viewport-content">
 
+        <div class="jsxc-title">Réglages</div>
+
         <a class="jsxc-action_notImplementedYet">Mode muet: on | off</a>
         <a class="jsxc-action_notImplementedYet">Interdire les appels vidéo: on | off</a>
         <a class="jsxc-action_notImplementedYet">Notifications de bureau: on | off</a>
@@ -56,16 +58,20 @@
 
       <div id="jsxc-actions-menu" class="jsxc-viewport-content">
 
-        <div>&nbsp;</div>
+        <div class="jsxc-title">Menu</div>
 
         <a class="jsxc-action_search-user">Rechercher un utilisateur</a>
+        <a class="jsxc-action_manage-notifications">Notifications
+          <span class="jsxc_menu_notif_number"></span></a>
 
         <div class="jsxc-content-separator"></div>
 
         <a class="jsxc-action_new-conversation">Nouvelle conversation</a>
-        <a class="jsxc-action_invite-in-conversation jsxc-action_notImplementedYet">Inviter dans une conversation</a>
+        <a class="jsxc-action_invite-in-conversation jsxc-action_notImplementedYet">Inviter dans une
+          conversation</a>
 
-        <a class="jsxc-action_new-etherpad-document jsxc-action_notImplementedYet">Nouveau document Etherpad</a>
+        <a class="jsxc-action_new-etherpad-document jsxc-action_notImplementedYet">Nouveau document
+          Etherpad</a>
 
         <div class="jsxc-content-separator"></div>
 
@@ -76,18 +82,34 @@
         <div class="jsxc-content-separator"></div>
 
         <a class="jsxc-action_delete-buddies">Supprimer</a>
-        <a class="jsxc-action_logout jsxc-action_notImplementedYet">Se déconnecter</a>
-
 
       </div>
 
       <!-- XEP 0055 user search-->
       <div id="jsxc-search-users" class="jsxc-viewport-content">
 
+        <div class="jsxc-title">Rechercher</div>
+
         <input id="jsxc-chat-sidebar-search" placeholder="Rechercher ..." type="text"/>
         <input id="jsxc-chat-sidebar-search-invite" value="Inviter" type="button"/>
 
         <div class="jsxc-search-users-results">
+
+        </div>
+
+      </div>
+
+      <!-- Notifications-->
+      <div id="jsxc-manage-notifications" class="jsxc-viewport-content">
+
+        <div class="jsxc-title">Notifications <span class="jsxc_menu_notif_number"></span></div>
+
+        <div id="jsxc-notifications">
+
+          <!-- Notification inserted here -->
+          <ul>
+
+          </ul>
 
         </div>
 
@@ -111,11 +133,11 @@
       <span class="jsxc-user-name"></span>
 
       <select class="jsxc-select-status">
-          <option data-pres="online" class="jsxc_online" data-i18n="Online"></option>
-          <option data-pres="chat" class="jsxc_chat" data-i18n="Chatty"></option>
-          <option data-pres="away" class="jsxc_away" data-i18n="Away"></option>
-          <option data-pres="xa" class="jsxc_xa" data-i18n="Extended_away"></option>
-          <option data-pres="dnd" class="jsxc_dnd" data-i18n="dnd"></option>
+        <option data-pres="online" class="jsxc_online" data-i18n="Online"></option>
+        <option data-pres="chat" class="jsxc_chat" data-i18n="Chatty"></option>
+        <option data-pres="away" class="jsxc_away" data-i18n="Away"></option>
+        <option data-pres="xa" class="jsxc_xa" data-i18n="Extended_away"></option>
+        <option data-pres="dnd" class="jsxc_dnd" data-i18n="dnd"></option>
       </select>
 
       <span class="jsxc-login-button" title="Connexion"></span>

@@ -5,6 +5,7 @@
  * @memberOf jsxc
  */
 jsxc.notice = {
+
   /** Number of notices. */
   _num : 0,
 
@@ -18,7 +19,7 @@ jsxc.notice = {
     var self = this;
 
     // reset list
-    $('#jsxc_notice ul li').remove();
+    $('#jsxc-notifications ul li').remove();
 
     $('#jsxc_roster .jsxc_menu_notif_number').text('');
     jsxc.notice._num = 0;
@@ -30,20 +31,24 @@ jsxc.notice = {
       if (saved.hasOwnProperty(key)) {
         var val = saved[key];
 
-        jsxc.notice.add(val.msg, val.description, val.fnName, val.fnParams, key);
+        jsxc.notice.add(val.msg, val.description, val.fnName, val.fnParams, key, false);
       }
     }
 
     self._showNoNoticeContent();
   },
 
+  /**
+   * Display "No notifications" in notifications list if there are no notifications
+   * @private
+   */
   _showNoNoticeContent : function() {
-    if ($('#jsxc_notice ul li').length < 1) {
-      $('#jsxc_notice ul').append("<li class='jsxc_noNotice'>Aucune notification</li>");
+    if ($('#jsxc-notifications ul li').length < 1) {
+      $('#jsxc-notifications ul').append("<li class='jsxc_noNotice'>Aucune notification</li>");
     }
 
     else {
-      $('#jsxc_notice .jsxc_noNotice').remove();
+      $('#jsxc-notifications .jsxc_noNotice').remove();
     }
   },
 
@@ -57,12 +62,15 @@ jsxc.notice = {
    * @param fnParams Array of params for function
    * @param id Notice id
    */
-  add : function(msg, description, fnName, fnParams, id) {
+  add : function(msg, description, fnName, fnParams, id, triggerEvent) {
 
     var self = this;
 
+    // trigger an jquery event by default
+    triggerEvent = typeof triggerEvent === "undefined" ? true : false;
+
     var nid = id || Date.now();
-    var list = $('#jsxc_notice ul');
+    var list = $('#jsxc-notifications ul');
     var notice = $('<li/>');
 
     notice.click(function() {
@@ -92,6 +100,25 @@ jsxc.notice = {
     }
 
     self._showNoNoticeContent();
+    
+    if(triggerEvent){
+      $(document).trigger("notice.jsxc");
+    }
+  },
+
+  /**
+   * Update places where are displayed notification numbers 
+   */
+  updateNotificationNumbers: function(){
+    $('#jsxc_roster .jsxc_menu_notif_number').text(jsxc.notice._num);
+  },
+  
+  /**
+   * Get notification numbers
+   * @returns {number}
+   */
+  getNotificationsNumber : function() {
+    return jsxc.notice._num || 0;
   },
 
   /**
@@ -104,7 +131,7 @@ jsxc.notice = {
 
     var self = this;
 
-    var el = $('#jsxc_notice li[data-nid=' + nid + ']');
+    var el = $('#jsxc-notifications li[data-nid=' + nid + ']');
 
     el.remove();
     $('#jsxc_roster .jsxc_menu_notif_number').text(--jsxc.notice._num || '');

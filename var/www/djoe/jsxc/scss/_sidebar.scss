@@ -119,6 +119,9 @@ TODO: Set up variables:
     width: 50%;
   }
 
+  /**
+    Background of active filter, 'buddies' or 'conversations'
+  */
   .jsxc-active-filter {
     background: rgba(190, 230, 240, 0.5) !important;
   }
@@ -127,15 +130,18 @@ TODO: Set up variables:
     Center of sidebar, where content can shift between multiple panels
   */
   #jsxc-sidebar-content-viewport {
-    height: 72%;
+    height: 66%;
     overflow-x: hidden;
     overflow-y: scroll;
     margin: 3px;
     border: solid 1px silver;
   }
 
-  .jsxc-viewport-content {
-
+  .jsxc-viewport-content .jsxc-title {
+    margin: 0.7em;
+    font-size: 1.1em;
+    font-weight: bolder;
+    color: darkgray;
   }
 
   #jsxc-select-buddies {
@@ -149,7 +155,7 @@ TODO: Set up variables:
     padding-right: 0.7em;
     opacity: 0.7;
 
-    margin-top: 0.5em;
+    margin: 0.5em;
 
   }
 
@@ -364,7 +370,7 @@ TODO: Set up variables:
 
   }
 
-  .jsxc-last-notifications {
+  .jsxc-header-content {
     cursor: pointer;
   }
 
@@ -380,12 +386,26 @@ TODO: Set up variables:
   */
   .jsxc-content-separator {
     content: ' ';
-    height: 1.1em;
+    height: 0.9em;
     width: 70%;
 
     border-bottom: solid 1px silver;
     margin-bottom: 10px;
     margin-left: 5px;
+  }
+
+  .jsxc-action_manage-notifications:before {
+
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
+
+    background-image: image-url('newgui/action-manage-notifications.svg');
+
   }
 
   .jsxc-action_video-call:before {

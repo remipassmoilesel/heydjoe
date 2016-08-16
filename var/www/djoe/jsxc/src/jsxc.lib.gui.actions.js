@@ -18,6 +18,8 @@ jsxc.gui.actions = {
 
     self._initStatusPanel();
 
+    self._initNotificationsPanel();
+
   },
 
   /**
@@ -76,6 +78,15 @@ jsxc.gui.actions = {
 
     return rslt;
 
+  },
+
+  /**
+   * Return checked elements from search user panel
+   * @returns {JQuery|*|jQuery|HTMLElement}
+   * @private
+   */
+  _getCheckedSearchUsers : function() {
+    return $(".jsxc-search-users-results .jsxc-checked");
   },
 
   /**
@@ -210,8 +221,9 @@ jsxc.gui.actions = {
     var newgui = jsxc.newgui;
 
     // add openning action
-    $('#jsxc-chat-sidebar .jsxc-toggle-settings').click(function() {
+    $('#jsxc-chat-sidebar .jsxc-toggle-settings').click(function(event) {
       newgui.toggleSettingsMenu();
+      event.stopPropagation();
     });
 
     $('#jsxc-settings-menu .jsxc-action_clearLocalStorage').click(function() {
@@ -228,10 +240,10 @@ jsxc.gui.actions = {
 
   },
 
-  _getCheckedSearchUsers : function() {
-    return $(".jsxc-search-users-results .jsxc-checked");
-  },
-
+  /**
+   * Search panel WEP 0055 where users can search other users to invite them
+   * @private
+   */
   _initSearchPanel : function() {
 
     var self = jsxc.gui.actions;
@@ -271,6 +283,10 @@ jsxc.gui.actions = {
       });
 
     });
+
+  },
+
+  _initNotificationsPanel : function() {
 
   }
 

@@ -18,7 +18,7 @@ jsxc.newgui = {
   /**
    * Sidebar of deployed chat sidebar
    */
-  SIDEBAR_HEIGHT : '550px',
+  SIDEBAR_CONTENT_HEIGHT : '480px',
 
   MEDIAPANEL_HEIGHT : '500px',
 
@@ -58,8 +58,9 @@ jsxc.newgui = {
 
     // open and close video panel
     var togglevideo = $("#jsxc-chat-sidebar-header .jsxc-toggle-mediapanel");
-    togglevideo.click(function() {
+    togglevideo.click(function(event) {
       self.toggleMediapanel();
+      event.stopPropagation();
     });
 
     // filter users and conversations
@@ -86,7 +87,7 @@ jsxc.newgui = {
       $(this).toggleClass("jsxc-selection-mode-enabled");
     });
 
-    $(".jsxc-last-notifications").click(function() {
+    $("#jsxc-chat-sidebar-header").click(function() {
       self.toggleChatSidebar();
     });
 
@@ -105,7 +106,11 @@ jsxc.newgui = {
       self.toggleActionsMenu();
     });
 
+    // XEP 0055 User search panel
     self._initSearchPanel();
+
+    // where user can manage notifications
+    self._initNotificationsPanel();
 
     // optionnal
     // self.initMediaPanelMouseNavigation();
@@ -121,8 +126,72 @@ jsxc.newgui = {
       $(document).one('attached.jsxc', function() {
         $("#jsxc-status-bar .jsxc-user-name").text(Strophe.getNodeFromJid(jsxc.xmpp.conn.jid));
       });
-
     }
+
+    // update header on presence and on notice received
+    $(document).on('presence.jsxc', function() {
+      self.updateChatSidebarHeader();
+    });
+    $(document).on('notice.jsxc', function() {
+      self.updateChatSidebarHeader();
+    });
+    $(document).on('add.roster.jsxc', function() {
+      self.updateChatSidebarHeader();
+    });
+    self.updateChatSidebarHeader();
+
+  },
+
+  /**
+   * Notifications panel, where are displayed all notifications
+   * @private
+   */
+  _initNotificationsPanel : function() {
+
+    var self = jsxc.newgui;
+
+    // add openning action
+    $("#jsxc-actions-menu .jsxc-action_manage-notifications").click(function() {
+      self.toggleNotificationsMenu();
+    });
+
+  },
+
+  /**
+   * Update the top of the chat sidebar to display notices or others
+   */
+  updateChatSidebarHeader : function() {
+
+    var self = jsxc.newgui;
+
+    var headerContent = $("#jsxc-chat-sidebar-header .jsxc-header-content");
+    headerContent.empty();
+    headerContent.off('click');
+
+    // if notifications, display them
+    if (jsxc.notice.getNotificationsNumber() > 0) {
+
+      headerContent.append(
+          '<span><span class="jsxc_menu_notif_number"></span> notification(s)</span>');
+
+      // open notifications on click
+      headerContent.click(function() {
+        self.toggleChatSidebar(function() {
+          self.toggleNotificationsMenu();
+        });
+      });
+
+      jsxc.notice.updateNotificationNumbers();
+
+      return;
+    }
+
+    // if not, display online buddies
+    else {
+      var online = $('#jsxc_buddylist li[data-status="online"][data-type="chat"]').length;
+      headerContent.append('<span>' + online + ' personne(s) en ligne</span>');
+    }
+
   },
 
   /**
@@ -141,6 +210,10 @@ jsxc.newgui = {
 
   _searchTimer : 0,
 
+  /**
+   * Search user panel (XEP 0055)
+   * @private
+   */
   _initSearchPanel : function() {
 
     var self = jsxc.newgui;
@@ -174,6 +247,11 @@ jsxc.newgui = {
 
   },
 
+  /**
+   * Called when we have to display search user results. Results can be selected to invite buddies.
+   * @param results
+   * @private
+   */
   _displayUserSearchResults : function(results) {
 
     var list = $("#jsxc-chat-sidebar .jsxc-search-users-results");
@@ -223,6 +301,12 @@ jsxc.newgui = {
 
   },
 
+  /**
+   * Called when an error occur while searching in user list
+   *
+   * @param error
+   * @private
+   */
   _displayUserSearchError : function(error) {
 
     var list = $("#jsxc-chat-sidebar-search .jsxc-search-users-results");
@@ -231,6 +315,13 @@ jsxc.newgui = {
 
     list.append("<div>Erreur lors de la recherche: " + error + "</div>");
 
+  },
+
+  /**
+   * Open or close notifications panem
+   */
+  toggleNotificationsMenu : function() {
+    jsxc.newgui.chatSidebarContent.toggleContent('jsxc-manage-notifications');
   },
 
   /**
@@ -539,7 +630,7 @@ jsxc.newgui = {
 
       // raise sidebar
       content.animate({
-        height : self.SIDEBAR_HEIGHT
+        height : self.SIDEBAR_CONTENT_HEIGHT
       }, self.SIDEBAR_ANIMATION_DURATION, function() {
 
         // Animation complete.
