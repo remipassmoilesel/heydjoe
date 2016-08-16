@@ -796,6 +796,30 @@ jsxc.xmpp = {
   },
 
   /**
+   * Change own presence to pres.
+   *
+   * @memberOf jsxc.gui
+   * @param pres {CONST.STATUS} New presence state
+   * @param external {boolean} True if triggered from other tab.
+   */
+  changeOwnPresence : function(pres, external) {
+
+    if (typeof pres === "undefined") {
+      throw new Error("Presence cannot be undefined: " + pres);
+    }
+
+    if (external !== true) {
+      jsxc.storage.setUserItem('presence', pres);
+    }
+
+    if (jsxc.master) {
+      jsxc.xmpp.sendPres();
+    }
+    
+    $(document).trigger('ownpresence.jsxc', pres);
+  },
+
+  /**
    * Triggered on incoming presence stanzas
    *
    * @param {dom} presence
@@ -873,6 +897,11 @@ jsxc.xmpp = {
     // incoming friendship request
     if (ptype === 'subscribe') {
       var bl = jsxc.storage.getUserItem('buddylist');
+
+      // here we can be disconnected
+      if(bl === null){
+        return true;
+      }
 
       if (bl.indexOf(bid) > -1) {
         jsxc.debug('Auto approve contact request, because he is already in our contact list.');

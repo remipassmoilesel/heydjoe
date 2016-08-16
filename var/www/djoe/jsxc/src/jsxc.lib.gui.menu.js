@@ -54,7 +54,7 @@ jsxc.gui.menu = {
           if (pres === 'offline') {
             jsxc.xmpp.logout(false);
           } else {
-            jsxc.gui.changePresence(pres);
+            jsxc.xmpp.changeOwnPresence(pres);
           }
 
         });

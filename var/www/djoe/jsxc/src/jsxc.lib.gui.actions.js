@@ -1,3 +1,9 @@
+/**
+ * Here go all interactions from the new interface
+ *
+ * All init functions are called onlys once, when GUI is preparing, whenever disconnections happend
+ *
+ */
 jsxc.gui.actions = {
 
   init : function() {
@@ -12,6 +18,18 @@ jsxc.gui.actions = {
 
     self._initStatusPanel();
 
+  },
+
+  /**
+   * Add a listener to connexion events and remove it when disconnected
+   * @param callback
+   * @private
+   */
+  _addAttachedListener : function(callback) {
+    $(document).on('attached.jsxc', callback);
+    $(document).on('disconnected.jsxc', function() {
+      $(document).off('attached.jsxc', callback);
+    });
   },
 
   /**
@@ -37,6 +55,11 @@ jsxc.gui.actions = {
 
   },
 
+  /**
+   * Get checked elements from buddylist, and only the buddies
+   * @returns {Array}
+   * @private
+   */
   _getCheckedBuddies : function() {
 
     var all = $("#jsxc_buddylist li");
@@ -55,18 +78,86 @@ jsxc.gui.actions = {
 
   },
 
-  _initStatusPanel: function(){
+  /**
+   * Init the status panel, at bottom of the chat sidebar
+   * @private
+   */
+  _initStatusPanel : function() {
 
-    $('#jsxc-status-bar .jsxc-logout-button').click(function(){
+    // var self = jsxc.gui.actions;
+    var newgui = jsxc.newgui;
+
+    var loginBtn = $('#jsxc-status-bar .jsxc-login-button');
+    var logoutBtn = $('#jsxc-status-bar .jsxc-logout-button');
+
+    // display own presence information
+    $(document).on('ownpresence.jsxc', function() {
+      newgui.updateUserPresenceIndicator();
+    });
+    newgui.updateUserPresenceIndicator();
+
+    /**
+     * Hide one element and show a second one
+     * @param toShow
+     * @param toHide
+     */
+    var hideAndShow = function(toShow, toHide) {
+
+      // hide old element
+      toHide.animate({
+        opacity : 0
+      }, newgui.OPACITY_ANIMATION_DURATION, function() {
+        toHide.css('display', 'none');
+
+        // show new one
+        toShow.css({
+          'display' : 'inline-block', 'opacity' : 0
+        });
+        toShow.animate({
+          'opacity' : '1'
+        }, newgui.OPACITY_ANIMATION_DURATION);
+      });
+
+    };
+
+    // log out button
+    logoutBtn.click(function() {
+
+      // disconnect
       jsxc.api.disconnect();
-    });
-    
-    $('#jsxc-status-bar .jsxc-login-button').click(function(){
-      jsxc.api.reconnect();
+      hideAndShow(loginBtn, logoutBtn);
+
     });
 
-    $('#jsxc-status-bar .jsxc-select-status').change(function(){
-      console.error(arguments);
+    // login button
+    loginBtn.click(function() {
+
+      jsxc.api.reconnect();
+
+      $(document).one('connected.jsxc', function() {
+        hideAndShow(logoutBtn, loginBtn);
+      });
+
+    });
+
+    // show login / logout on connect
+    if (jsxc.xmpp.conn) {
+      hideAndShow(logoutBtn, loginBtn);
+    } else {
+      $(document).one('attached.jsxc', function() {
+        hideAndShow(logoutBtn, loginBtn);
+      });
+    }
+
+    // make status bar selectable
+    $("#jsxc-status-bar .jsxc-select-status").change(function() {
+
+      var pres = $(this).find(":selected").data('pres');
+
+      jsxc.xmpp.changeOwnPresence(pres);
+
+      jsxc.gui.feedback('Statut mis à jour');
+
     });
 
   },

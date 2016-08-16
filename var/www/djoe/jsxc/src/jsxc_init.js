@@ -251,7 +251,6 @@ $(function() {
 
         // launch and show
         jsxc.start(jid, cred.userPassword);
-        jsxc.gui.roster.toggle('shown');
       },
 
       /**

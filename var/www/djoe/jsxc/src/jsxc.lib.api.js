@@ -301,7 +301,7 @@ jsxc.api = {
   },
   
   reconnect: function(){
-    jsxc.gui.feedback("Déconnexion en cours");
+    jsxc.gui.feedback("Connexion en cours");
     var called = jsxc.api.callback("onReconnectRequest");
     if (called < 1) {
       jsxc.gui.showLoginBox();

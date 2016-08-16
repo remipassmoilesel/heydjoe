@@ -349,7 +349,7 @@ jsxc.storage = {
         }
 
         if (key.match(/^presence/)) {
-            jsxc.gui.changePresence(e.newValue, true);
+            jsxc.xmpp.changeOwnPresence(e.newValue, true);
         }
 
         if (key.match(/^options/) && e.newValue) {

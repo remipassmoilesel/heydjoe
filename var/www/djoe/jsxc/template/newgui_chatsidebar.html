@@ -58,7 +58,7 @@
 
         <div>&nbsp;</div>
 
-        <a class="jsxc-action_search-user">Rechercher un contact</a>
+        <a class="jsxc-action_search-user">Rechercher un utilisateur</a>
 
         <div class="jsxc-content-separator"></div>
 
@@ -96,6 +96,7 @@
       <!-- buddy list, where stored contacts AND buddies -->
       <div id="jsxc-buddy-list-container" class="jsxc-viewport-content">
 
+        <!-- We need to have a block before buddy list -->
         <div>&nbsp;</div>
 
         <ul id="jsxc_buddylist"></ul>
@@ -110,9 +111,11 @@
       <span class="jsxc-user-name"></span>
 
       <select class="jsxc-select-status">
-        <option>En ligne</option>
-        <option>Absent</option>
-        <option>Ne pas déranger</option>
+          <option data-pres="online" class="jsxc_online" data-i18n="Online"></option>
+          <option data-pres="chat" class="jsxc_chat" data-i18n="Chatty"></option>
+          <option data-pres="away" class="jsxc_away" data-i18n="Away"></option>
+          <option data-pres="xa" class="jsxc_xa" data-i18n="Extended_away"></option>
+          <option data-pres="dnd" class="jsxc_dnd" data-i18n="dnd"></option>
       </select>
 
       <span class="jsxc-login-button" title="Connexion"></span>

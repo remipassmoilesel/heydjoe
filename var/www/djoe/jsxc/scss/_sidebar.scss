@@ -161,7 +161,7 @@ TODO: Set up variables:
     background: #cccddd;
   }
 
-  .jsxc-checked{
+  .jsxc-checked {
     text-decoration: underline;
   }
 
@@ -186,53 +186,55 @@ TODO: Set up variables:
     overflow: hidden;
   }
 
-  .jsxc-user-name {
-    display: block;
-    width: 100%
-  }
-
   /**
     Status bar with select button to change status and disconnect user
   */
   #jsxc-status-bar {
+
     padding: 0.6em;
+
+    .jsxc-user-name {
+      display: block;
+      font-weight: bolder;
+      margin-left: 0.7em;
+    }
 
     .jsxc-select-status {
       margin: 0.7em;
     }
 
-  }
+    .jsxc-logout-button {
+      content: ' ';
+      background-image: image-url('newgui/action-logout.svg');
+      background-repeat: no-repeat;
+      background-size: 100%;
 
-  .jsxc-logout-button {
-    content: ' ';
-    background-image: image-url('newgui/action-logout.svg');
-    background-repeat: no-repeat;
-    background-size: 100%;
+      cursor: pointer;
 
-    cursor: pointer;
+      height: 15px;
+      width: 15px;
+      display: inline-block;
 
-    height: 15px;
-    width: 15px;
-    display: inline-block;
+      margin-left: 0.4em;
+      margin-right: 0.4em;
+    }
 
-    margin-left: 0.4em;
-    margin-right: 0.4em;
-  }
+    .jsxc-login-button {
+      content: ' ';
+      background-image: image-url('newgui/action-login.svg');
+      background-repeat: no-repeat;
+      background-size: 100%;
 
-  .jsxc-login-button {
-    content: ' ';
-    background-image: image-url('newgui/action-login.svg');
-    background-repeat: no-repeat;
-    background-size: 100%;
+      cursor: pointer;
 
-    cursor: pointer;
+      height: 15px;
+      width: 15px;
+      display: inline-block;
 
-    height: 15px;
-    width: 15px;
-    display: inline-block;
+      margin-left: 0.4em;
+      margin-right: 0.4em;
+    }
 
-    margin-left: 0.4em;
-    margin-right: 0.4em;
   }
 
   .jsxc-toggle-settings {
@@ -532,7 +534,7 @@ TODO: Set up variables:
       width: 68%;
     }
 
-    #jsxc-chat-sidebar-search-invite{
+    #jsxc-chat-sidebar-search-invite {
       position: absolute;
       left: 69%;
       width: 20%;
@@ -569,13 +571,9 @@ TODO: Set up variables:
       width: 100%;
     }
 
-
     .jsxc-search-user-entry {
       padding: 15px;
     }
-
-
-
 
   }
 

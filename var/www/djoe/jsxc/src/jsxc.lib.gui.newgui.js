@@ -2,6 +2,10 @@
  *
  * New GUI added on original JSXC GUI
  *
+ * Gui is divided in two parts: mediapanel on the top of sreen and chat sidebar on right.
+ * Here all stuff to initiate this GUI go here (openning, closing, ...) except "functionnnalities"
+ * that have to be in 'gui.actions'
+ *
  *
  * @memberOf jsxc
  */
@@ -113,9 +117,25 @@ jsxc.newgui = {
       $("#jsxc-status-bar .jsxc-user-name").text(Strophe.getNodeFromJid(jsxc.xmpp.conn.jid));
     }
 
-    $(document).on('attached.jsxc', function() {
-      $("#jsxc-status-bar .jsxc-user-name").text(Strophe.getNodeFromJid(jsxc.xmpp.conn.jid));
-    });
+    else {
+      $(document).one('attached.jsxc', function() {
+        $("#jsxc-status-bar .jsxc-user-name").text(Strophe.getNodeFromJid(jsxc.xmpp.conn.jid));
+      });
+
+    }
+  },
+
+  /**
+   * Update user indicator in the bottom of chat sidebar
+   */
+  updateUserPresenceIndicator : function() {
+
+    var username = $('#jsxc-status-bar .jsxc-user-name');
+    var pres = jsxc.storage.getUserItem('presence') || 'online';
+
+    // change icon of user name
+    username.removeClass('jsxc_online jsxc_chat jsxc_away jsxc_xa jsxc_dnd jsxc_offline');
+    username.addClass('jsxc_' + pres);
 
   },
 
@@ -475,18 +495,17 @@ jsxc.newgui = {
   isMediapanelShown : function() {
     return $("#jsxc-mediapanel").hasClass("jsxc-deploy");
   },
-  
-  toggleSearchPanel: function(){
-    
+
+  toggleSearchPanel : function() {
+
     var self = jsxc.newgui;
-    
-    if(self.chatSidebarContent.isContentVisible('jsxc-search-users') !== true){
-      self.chatSidebarContent.showContent('jsxc-search-users');  
-    }
-    else {
+
+    if (self.chatSidebarContent.isContentVisible('jsxc-search-users') !== true) {
+      self.chatSidebarContent.showContent('jsxc-search-users');
+    } else {
       self.chatSidebarContent.showMainContent();
     }
-    
+
   },
 
   /**

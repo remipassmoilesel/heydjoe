@@ -45,8 +45,7 @@ jsxc.gui.roster = {
     }
 
     var pres = jsxc.storage.getUserItem('presence') || 'online';
-    $('#jsxc_presence > span').text($('#jsxc_presence .jsxc_' + pres).text());
-    jsxc.gui.updatePresence('own', pres);
+    jsxc.xmpp.changeOwnPresence(pres);
 
     jsxc.gui.tooltip('#jsxc_roster');
 
@@ -70,8 +69,6 @@ jsxc.gui.roster = {
   add : function(bid) {
 
     var self = jsxc.gui.roster;
-
-    $('#jsxc_roster').find(".jsxc_rosterIsEmptyMessage").remove();
 
     var data = jsxc.storage.getUserItem('buddy', bid);
     var bud = jsxc.gui.buddyTemplate.clone().attr('data-bid', bid).attr('data-type',
@@ -387,6 +384,10 @@ jsxc.gui.roster = {
 
     if (buddyList.find(".jsxc_rosterIsEmptyMessage").length < 1) {
       buddyList.prepend(text);
+
+      $(document).one('add.roster.jsxc', function(){
+        $('#jsxc_buddylist').find(".jsxc_rosterIsEmptyMessage").remove();
+      });
     }
 
   }

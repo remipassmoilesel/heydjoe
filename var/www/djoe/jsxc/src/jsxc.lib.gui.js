@@ -74,6 +74,8 @@ jsxc.gui = {
   /**
    * Creates application skeleton.
    *
+   * This function is called every time we are attached
+   *
    * @memberOf jsxc.gui
    */
   init : function() {
@@ -129,6 +131,16 @@ jsxc.gui = {
     // We need this often, so we creates some template jquery objects
     jsxc.gui.windowTemplate = $(jsxc.gui.template.get('chatWindow'));
     jsxc.gui.buddyTemplate = $(jsxc.gui.template.get('rosterBuddy'));
+
+    // change own presence informations
+    var updatePresenceInformations = function(event, pres) {
+      jsxc.gui.updatePresence('own', pres);
+    };
+    // add listener for own presences, and remove it on time
+    $(document).on('ownpresence.jsxc', updatePresenceInformations);
+    $(document).on('disconnected.jsxc', function() {
+      $(document).off('ownpresence.jsxc', updatePresenceInformations);
+    });
   },
 
   /**
@@ -1302,28 +1314,6 @@ jsxc.gui = {
     if (opt.primary && opt.option.cb) {
       dialog.find('.btn-primary').click(opt.option.cb);
     }
-  },
-
-  /**
-   * Change own presence to pres.
-   *
-   * @memberOf jsxc.gui
-   * @param pres {CONST.STATUS} New presence state
-   * @param external {boolean} True if triggered from other tab.
-   */
-  changePresence : function(pres, external) {
-
-    if (external !== true) {
-      jsxc.storage.setUserItem('presence', pres);
-    }
-
-    if (jsxc.master) {
-      jsxc.xmpp.sendPres();
-    }
-
-    $('#jsxc_presence > span').text($('#jsxc_presence .jsxc_inner ul .jsxc_' + pres).text());
-
-    jsxc.gui.updatePresence('own', pres);
   },
 
   /**
