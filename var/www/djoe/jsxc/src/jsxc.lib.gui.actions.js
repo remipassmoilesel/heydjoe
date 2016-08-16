@@ -238,6 +238,11 @@ jsxc.gui.actions = {
 
     });
 
+    // about dialog
+    $('#jsxc-settings-menu .jsxc-show-about-dialog').click(function() {
+      jsxc.gui.showAboutDialog();
+    });
+
   },
 
   /**
