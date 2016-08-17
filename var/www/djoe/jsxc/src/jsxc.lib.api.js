@@ -234,10 +234,7 @@ jsxc.api = {
     }
   },
 
-  /**
-   *
-   * @private
-   */
+
   spaceInvasion : function() {
 
     var self = jsxc.help;
@@ -300,11 +297,17 @@ jsxc.api = {
 
   },
 
+  /**
+   * Show a toast and disconnect user
+   */
   disconnect : function() {
     jsxc.gui.feedback("Déconnexion en cours");
     jsxc.xmpp.logout(false);
   },
 
+  /**
+   * Reconnect user
+   */
   reconnect : function() {
     jsxc.gui.feedback("Connexion en cours");
     var called = jsxc.api.callback("onReconnectRequest");

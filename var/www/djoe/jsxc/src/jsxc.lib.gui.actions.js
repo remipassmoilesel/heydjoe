@@ -71,7 +71,7 @@ jsxc.gui.actions = {
       var element = $(this);
       if (element.data('type') === 'chat' && element.find(".jsxc-checked").length > 0) {
         rslt.push({
-          jid : element.data('jid'), bid : element.data('bid')
+          bid : element.data('bid'), status : element.data('status')
         });
       }
     });
@@ -186,18 +186,26 @@ jsxc.gui.actions = {
 
     var self = jsxc.gui.actions;
 
-    // Start a new MUC conversation
+    /**
+     * Start a multi user chat
+     * =======================
+     *
+     */
     $('#jsxc-chat-sidebar .jsxc-action_new-conversation').click(function() {
 
       var selected = [];
       $.each(self._getCheckedElements(), function(index, element) {
-        selected.push(element.jid);
+        selected.push(element.bid);
       });
 
       jsxc.api.createNewConversationWith(selected);
     });
 
-    // delete buddies or conversations
+    /**
+     * Delete buddies or conversations
+     * ===============================
+     */
+
     $('.jsxc-action_delete-buddies').click(function() {
 
       var buddies = self._getCheckedElements();
@@ -219,7 +227,10 @@ jsxc.gui.actions = {
 
     });
 
-    // invite in existing conversation
+    /**
+     * Invite users in conversation
+     * ============================
+     */
     $('#jsxc-actions-menu .jsxc-action_invite-in-conversation').click(function() {
 
       var buddies = self._getCheckedBuddies();
@@ -258,7 +269,10 @@ jsxc.gui.actions = {
 
     });
 
-    // create etherpad doc
+    /**
+     * Etherpad doc creation
+     * =====================
+     */
     $("#jsxc-actions-menu .jsxc-action_new-etherpad-document").click(function() {
 
       // show dialog
@@ -269,12 +283,62 @@ jsxc.gui.actions = {
             jsxc.gui.feedback("Le document va être ouvert");
 
             jsxc.etherpad.openpad(res.name);
-            jsxc.etherpad.sendInvitations(res.name, res.buddies);
+
+            if (res.buddies.length > 0) {
+              jsxc.etherpad.sendInvitations(res.name, res.buddies);
+            }
           })
 
           .fail(function() {
             jsxc.gui.feedback("Opération annulée");
           });
+
+    });
+
+    /**
+     * Video call
+     * ==========
+     *
+     */
+    $("#jsxc-actions-menu .jsxc-action_video-call").click(function() {
+
+      // get selected budies
+      var buddies = self._getCheckedBuddies();
+      if (buddies.length < 1) {
+        jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+        return;
+      }
+
+      // get full jid of buddies
+      var fjidArray = [];
+      var unavailables = [];
+      $.each(buddies, function(index, element) {
+
+        var fjid = jsxc.getCurrentActiveJidForBid(element.bid);
+
+        if (fjid === null || element.status === "offline") {
+          unavailables.push(Strophe.getNodeFromJid(element.bid));
+        } else {
+          fjidArray.push(jsxc.getCurrentActiveJidForBid(element.bid));
+        }
+
+      });
+
+      // check how many participants are unavailable
+      if (unavailables.length === 1) {
+        jsxc.gui.feedback("<b>" + unavailables[0] + "</b> n'est pas disponible");
+        return;
+      }
+
+      else if (unavailables.length > 1) {
+        jsxc.gui.feedback("<b>" + unavailables.join(", ") + "</b> ne sont pas disponibles")
+        return;
+      }
+
+      // call buddies
+      $.each(fjidArray, function(index, fjid) {
+        jsxc.mmstream.startSimpleVideoCall(fjid);
+      });
 
     });
 
@@ -289,13 +353,20 @@ jsxc.gui.actions = {
     // var self = jsxc.gui.actions;
     var newgui = jsxc.newgui;
 
-    // add openning action
+    /**
+     * Open settings menu
+     * ==================
+     */
     $('#jsxc-chat-sidebar .jsxc-toggle-settings').click(function(event) {
       newgui.toggleSettingsMenu();
       event.stopPropagation();
     });
 
-    $('#jsxc-settings-menu .jsxc-action_clearLocalStorage').click(function() {
+    /**
+     * Clear local history of conversations
+     * ====================================
+     */
+    $('#jsxc-settings-menu .jsxc-action_clearLocalHistory').click(function() {
 
       var buddies = jsxc.storage.getUserItem("buddylist") || [];
 
@@ -303,7 +374,7 @@ jsxc.gui.actions = {
         jsxc.gui.window.clear(jid);
       });
 
-      jsxc.gui.feedback("L'historique à été éffacé avec succès");
+      jsxc.gui.feedback("L'historique a été éffacé avec succès");
 
     });
 
@@ -319,7 +390,7 @@ jsxc.gui.actions = {
   },
 
   /**
-   * Search panel WEP 0055 where users can search other users to invite them
+   * Search panel XEP 0055 where users can search other users to invite them
    * @private
    */
   _initSearchMenu : function() {
@@ -327,6 +398,10 @@ jsxc.gui.actions = {
     var self = jsxc.gui.actions;
     // var newgui = jsxc.newgui;
 
+    /**
+     * Invite users
+     * ============
+     */
     $("#jsxc-chat-sidebar-search-invite").click(function() {
 
       var checkedElements = self._getCheckedSearchUsers();
