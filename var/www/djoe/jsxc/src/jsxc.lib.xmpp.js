@@ -244,7 +244,7 @@ jsxc.xmpp = {
     // send presences in time interval
     var autosend = function() {
 
-      if(!jsxc.xmpp.conn){
+      if (!jsxc.xmpp.conn) {
         clearInterval(self._autoPresenceSend);
         //jsxc.debug("Not connected, stop auto-sending presences");
         return;
@@ -815,7 +815,7 @@ jsxc.xmpp = {
     if (jsxc.master) {
       jsxc.xmpp.sendPres();
     }
-    
+
     $(document).trigger('ownpresence.jsxc', pres);
   },
 
@@ -865,6 +865,11 @@ jsxc.xmpp = {
     var r = Strophe.getResourceFromJid(from);
     var bid = jsxc.jidToBid(jid);
 
+    // ignore own presence
+    if (bid === Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid)) {
+      return true;
+    }
+
     // data on buddy will be stored on browser
     var data = jsxc.storage.getUserItem('buddy', bid) || {};
 
@@ -873,11 +878,6 @@ jsxc.xmpp = {
     var res = jsxc.storage.getUserItem('res', bid) || {};
     var status = null;
     var xVCard = $(presence).find('x[xmlns="vcard-temp:x:update"]');
-
-    // ignore own presence
-    if (bid === Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid)) {
-      return true;
-    }
 
     /**
      * Check presence type
@@ -899,7 +899,7 @@ jsxc.xmpp = {
       var bl = jsxc.storage.getUserItem('buddylist');
 
       // here we can be disconnected
-      if(bl === null){
+      if (bl === null) {
         return true;
       }
 
@@ -948,9 +948,7 @@ jsxc.xmpp = {
      */
 
     // add current resource to resource array
-    if (r !== null && r !== "null" && status !== 0) {
-      res[r] = status;
-    }
+    res[r] = status;
 
     // max status will be stored in buddy entry and will represent buddy status
     var maxStatus = 0;
