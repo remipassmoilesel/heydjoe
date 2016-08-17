@@ -118,27 +118,30 @@ jsxc.newgui = {
     self.toggleBuddyFilter("buddies");
 
     // display name in status bar
-    if (jsxc.xmpp.conn.jid) {
+    $(document).on('attached.jsxc', function() {
+      self.updateStatusBarUserName();
+    });
+    self.updateStatusBarUserName();
+
+    // update header on presence and on notice received
+    $(document).on('presence.jsxc', self.updateChatSidebarHeader);
+    $(document).on('notice.jsxc', self.updateChatSidebarHeader);
+    $(document).on('add.roster.jsxc', self.updateChatSidebarHeader);
+    $(document).on('attached.jsxc', self.updateChatSidebarHeader);
+    $(document).on('disconnected.jsxc', self.updateChatSidebarHeader.bind(self, true));
+    self.updateChatSidebarHeader();
+
+  },
+
+  updateStatusBarUserName : function() {
+
+    if (jsxc.xmpp.conn) {
       $("#jsxc-status-bar .jsxc-user-name").text(Strophe.getNodeFromJid(jsxc.xmpp.conn.jid));
     }
 
     else {
-      $(document).one('attached.jsxc', function() {
-        $("#jsxc-status-bar .jsxc-user-name").text(Strophe.getNodeFromJid(jsxc.xmpp.conn.jid));
-      });
+      $("#jsxc-status-bar .jsxc-user-name").text("Déconnecté");
     }
-
-    // update header on presence and on notice received
-    $(document).on('presence.jsxc', function() {
-      self.updateChatSidebarHeader();
-    });
-    $(document).on('notice.jsxc', function() {
-      self.updateChatSidebarHeader();
-    });
-    $(document).on('add.roster.jsxc', function() {
-      self.updateChatSidebarHeader();
-    });
-    self.updateChatSidebarHeader();
 
   },
 
@@ -160,7 +163,7 @@ jsxc.newgui = {
   /**
    * Update the top of the chat sidebar to display notices or others
    */
-  updateChatSidebarHeader : function() {
+  updateChatSidebarHeader : function(disconnected) {
 
     var self = jsxc.newgui;
 
@@ -168,8 +171,13 @@ jsxc.newgui = {
     headerContent.empty();
     headerContent.off('click');
 
+    // we are disconnected
+    if (disconnected === true) {
+      headerContent.append('<span>Déconnecté</span>');
+    }
+
     // if notifications, display them
-    if (jsxc.notice.getNotificationsNumber() > 0) {
+    else if (jsxc.notice.getNotificationsNumber() > 0) {
 
       headerContent.append(
           '<span><span class="jsxc_menu_notif_number"></span> notification(s)</span>');
@@ -190,14 +198,16 @@ jsxc.newgui = {
 
       jsxc.notice.updateNotificationNumbers();
 
-      return;
     }
 
     // if not, display online buddies
     else {
-      var online = $('#jsxc_buddylist li[data-status="online"][data-type="chat"]').length;
+      var online = $('#jsxc_buddylist li[data-status!="offline"][data-type="chat"]').length;
       headerContent.append('<span>' + online + ' personne(s) en ligne</span>');
     }
+
+    // keep handler if used like this
+    return true;
 
   },
 

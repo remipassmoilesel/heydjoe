@@ -60,7 +60,7 @@
     "Continue_without_chat": "Continuer sans tchat",
     "Please_wait": "Merci de patienter",
     "Login_failed": "Authentification échouée",
-    "Sorry_we_cant_authentikate_": "La connexion avec le serveur de tchat a échoué. Vérifiez le mot de passe.",
+    "Sorry_we_cant_authentikate_": "La connexion avec le serveur de chat a échoué. Vérifiez le mot de passe.",
     "Retry": "Retour",
     "clear_history": "Effacer l’historique",
     "New_message_from": "Nouveau message de __name__",
