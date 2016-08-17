@@ -103,9 +103,15 @@ jsxc.gui.actions = {
 
     // display own presence information
     $(document).on('ownpresence.jsxc', function() {
-      newgui.updateUserPresenceIndicator();
+      newgui.updateOwnPresenceIndicator();
     });
-    newgui.updateUserPresenceIndicator();
+    $(document).on('attached.jsxc', function() {
+      newgui.updateOwnPresenceIndicator();
+    });
+    $(document).on('disconnected.jsxc', function() {
+      newgui.updateOwnPresenceIndicator(true);
+    });
+    newgui.updateOwnPresenceIndicator();
 
     /**
      * Hide one element and show a second one
@@ -161,11 +167,10 @@ jsxc.gui.actions = {
     }
 
     // make status bar selectable
-    $("#jsxc-status-bar .jsxc-select-status").change(function() {
+    var statusSelect = $("#jsxc-status-bar .jsxc-select-status");
+    statusSelect.change(function() {
 
-      var pres = $(this).find(":selected").data('pres');
-
-      jsxc.xmpp.changeOwnPresence(pres);
+      jsxc.xmpp.changeOwnPresence(statusSelect.val());
 
       jsxc.gui.feedback('Statut mis à jour');
 

@@ -137,13 +137,6 @@ TODO: Set up variables:
     border: solid 1px silver;
   }
 
-  .jsxc-viewport-content .jsxc-title {
-    margin: 0.7em;
-    font-size: 1.1em;
-    font-weight: bolder;
-    color: darkgray;
-  }
-
   #jsxc-select-buddies {
     display: inline-block;
     clear: both;
@@ -188,6 +181,12 @@ TODO: Set up variables:
       display: block;
       font-weight: bolder;
       margin-left: 0.7em;
+    }
+
+    // special display for offline
+    .jsxc-user-name.jsxc_offline {
+      color: gray;
+      font-style: italic;
     }
 
     .jsxc-select-status {
@@ -538,6 +537,9 @@ TODO: Set up variables:
 
   }
 
+  /**
+    A panel that can be displayed in #...content-viewport
+  */
   .jsxc-viewport-content {
 
     display: none;
@@ -547,12 +549,20 @@ TODO: Set up variables:
     a {
       display: block;
       padding: 0.5em;
+      padding-left: 0.7em;
       text-decoration: none;
       cursor: pointer;
     }
 
     a:hover {
       text-decoration: underline;
+    }
+
+    .jsxc-title {
+      margin: 0.7em;
+      font-size: 1.1em;
+      font-weight: bolder;
+      color: darkgray;
     }
 
   }

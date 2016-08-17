@@ -322,7 +322,7 @@ jsxc.gui.roster = {
    */
   toggle : function(state) {
 
-    jsxc.debug("Toggle roster is deprecated", null, "WARN");
+    jsxc.debug("Toggle roster is deprecated", {trace: new Error()}, "WARN");
 
     var duration;
 
@@ -357,7 +357,7 @@ jsxc.gui.roster = {
     reconnectMsg.click(function() {
       jsxc.api.reconnect();
     });
-
+    
     $('#jsxc_buddylist').append(reconnectMsg);
 
     $(document).one('attached.jsxc', function(){

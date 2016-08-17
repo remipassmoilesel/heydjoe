@@ -204,14 +204,47 @@ jsxc.newgui = {
   /**
    * Update user indicator in the bottom of chat sidebar
    */
-  updateUserPresenceIndicator : function() {
+  updateOwnPresenceIndicator : function(disconnection) {
 
+    var statusSelect = $("#jsxc-status-bar .jsxc-select-status");
     var username = $('#jsxc-status-bar .jsxc-user-name');
     var pres = jsxc.storage.getUserItem('presence') || 'online';
+    var selectedPres = statusSelect ? statusSelect.val() : null;
 
-    // change icon of user name
     username.removeClass('jsxc_online jsxc_chat jsxc_away jsxc_xa jsxc_dnd jsxc_offline');
-    username.addClass('jsxc_' + pres);
+
+    // we are connected
+    if (jsxc.xmpp.conn && disconnection !== true) {
+
+      // change icon of user name
+      username.addClass('jsxc_' + pres);
+
+      if (statusSelect) {
+
+        // check if status was not changed programmatically
+        if (statusSelect.attr("disabled") === "disabled") {
+          statusSelect.attr('disabled', false);
+        }
+
+        if (selectedPres !== pres) {
+          statusSelect.val(pres);
+        }
+
+      }
+
+    }
+
+    // we are disconnected
+    else {
+      username.addClass('jsxc_offline');
+      username.addClass('user');
+
+      if (statusSelect) {
+        statusSelect.val("novalue");
+        statusSelect.attr("disabled", true);
+      }
+
+    }
 
   },
 
