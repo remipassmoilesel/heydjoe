@@ -6,7 +6,21 @@
 jsxc.etherpad = {
 
   XMPP_INVITATIONS : {
-    XMPP_ELEMENT_NAME : "etherpad", PADID_ATTR : "padid", ALL_USERS_ATTR : "allusers"
+
+    XMPP_ELEMENT_NAME : "etherpad",
+
+    PADID_ATTR : "padid",
+
+    ALL_USERS_ATTR : "allusers",
+
+    INVITATIONID_ATTR : "id",
+
+    STATUS_ATTR : "status",
+
+    STATUS_INVITATION : "invitation",
+
+    STATUS_REFUSED : "refused"
+
   },
 
   _init : function() {
@@ -108,6 +122,8 @@ jsxc.etherpad = {
     var invitation = {};
     invitation[self.XMPP_INVITATIONS.PADID_ATTR] = padId;
     invitation[self.XMPP_INVITATIONS.ALL_USERS_ATTR] = jidArray.join(",");
+    invitation[self.XMPP_INVITATIONS.STATUS_ATTR] = self.XMPP_INVITATIONS.STATUS_INVITATION;
+    invitation[self.XMPP_INVITATIONS.INVITATIONID_ATTR] = self.conn.getUniqueId();
 
     // XMPP message stanza
     var msg = $msg({
@@ -127,6 +143,41 @@ jsxc.etherpad = {
       }
 
     });
+
+  },
+
+  /**
+   * Send an XMPP message notifying that document is refused by user.
+   * @private
+   */
+  _sendEtherpadRefusedMessage : function(to, padId, invitationId) {
+
+    jsxc.debug("Sending etherpad refused message", {invitationId : invitationId});
+
+    var self = jsxc.etherpad;
+
+    if (!to) {
+      throw new Error("Invalid argument: " + padId);
+    }
+    if (!padId) {
+      throw new Error("Invalid argument: " + padId);
+    }
+    if (!invitationId) {
+      throw new Error("Invalid argument: " + invitationId);
+    }
+
+    var message = {};
+    message[self.XMPP_INVITATIONS.PADID_ATTR] = padId;
+    message[self.XMPP_INVITATIONS.STATUS_ATTR] = self.XMPP_INVITATIONS.STATUS_REFUSED;
+    message[self.XMPP_INVITATIONS.INVITATIONID_ATTR] = invitationId;
+
+    // XMPP message stanza
+    var msg = $msg({
+      from : self.conn.jid, to : to
+    }).c(self.XMPP_INVITATIONS.XMPP_ELEMENT_NAME, message);
+
+    // send message
+    self.conn.send(msg);
 
   },
 
@@ -154,17 +205,30 @@ jsxc.etherpad = {
       var from = $(stanza).attr("from");
       var node = Strophe.getNodeFromJid(from);
       var padId = etherpad.attr(self.XMPP_INVITATIONS.PADID_ATTR);
+      var invitationId = etherpad.attr(self.XMPP_INVITATIONS.INVITATIONID_ATTR);
 
-      jsxc.gui.showIncomingEtherpadDialog(node)
-          .then(function() {
-            jsxc.gui.feedback("Le document va être ouvert");
-            self.openpad(padId);
-          })
+      var status = (etherpad.attr('status') || '').trim();
 
-          .fail(function() {
-            jsxc.gui.feedback("Document refusé");
-            self._sendEtherpadRefusedMessage();
-          });
+      // we have been just invited
+      if (self.XMPP_INVITATIONS.STATUS_INVITATION === status) {
+
+        jsxc.gui.showIncomingEtherpadDialog(node)
+            .then(function() {
+              jsxc.gui.feedback("Le document va être ouvert");
+              self.openpad(padId);
+            })
+
+            .fail(function() {
+              jsxc.gui.feedback("Document refusé");
+              self._sendEtherpadRefusedMessage(from, padId, invitationId);
+            });
+
+      }
+
+      // someone refused a pas
+      else if (self.XMPP_INVITATIONS.STATUS_REFUSED === status) {
+        jsxc.gui.feedback("<b>" + node + "</b> a refusé le document");
+      }
 
     }
 
@@ -173,18 +237,13 @@ jsxc.etherpad = {
 
   },
 
-  _sendEtherpadRefusedMessage : function() {
-    console.error("Refused");
-    console.error("Refused");
-    console.error("Refused");
-    console.error("Refused");
-    console.error("Refused");
-    console.error("Refused");
-    console.error("Refused");
-    console.error("Refused");
-    console.error("Refused");
-  },
-
+  /**
+   * Called when we are disconnected from XMPP server.
+   *
+   * Allows to remove handlers
+   *
+   * @private
+   */
   _onDisconnected : function() {
 
     var self = jsxc.etherpad;
