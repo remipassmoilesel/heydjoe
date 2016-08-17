@@ -203,7 +203,7 @@ jsxc.api = {
 
       // invite users
       jsxc.muc.inviteParticipants(rjid, jidArray);
-      
+
     }
 
   },
@@ -233,7 +233,6 @@ jsxc.api = {
       throw new Error("Not connected to JSXC client");
     }
   },
-
 
   spaceInvasion : function() {
 
@@ -314,6 +313,33 @@ jsxc.api = {
     if (called < 1) {
       jsxc.gui.showLoginBox();
     }
+  },
+
+  startSimpleVideoCall : function(bid) {
+
+    var node = Strophe.getNodeFromJid(bid);
+    var buddy = jsxc.storage.getUserItem('buddy', bid);
+
+    if (!buddy) {
+      jsxc.gui.feedback("<b>" + node + "</b> n'est pas un utilisateur valide");
+      return;
+    }
+
+    if (buddy.status === jsxc.CONST.STATUS.indexOf("offline")) {
+      jsxc.gui.feedback("<b>" + node + "</b> n'est pas connecté");
+      return;
+    }
+
+    var jid = jsxc.getCurrentActiveJidForBid(bid);
+    if (jid === null) {
+      jsxc.gui.feedback("<b>" + node + "</b> n'est pas disponible");
+      return;
+    }
+
+    jsxc.gui.feedback("Appel vidéo en cours");
+
+    jsxc.mmstream.startSimpleVideoCall(jid);
+
   }
 
 };

@@ -59,18 +59,21 @@
 
   }
 
-  #jsxc-videoconference-buddies {
-    margin: 5px;
+  .jsxc_mediaPanelRemoteVideo{
+    max-height: 470px;
+  }
+
+  .jsxc_videoconferenceUsers {
+    margin: 0.7em;
     list-style: none;
   }
 
-  #jsxc-videoconference-buddies li {
+  .jsxc_videoconferenceUsers li {
     text-align: left;
-    margin: 5px 5px 5px 15px;
     padding: 2px;
   }
 
-  .jsxc-local-video {
+  #jsxc-local-video {
     background: rgba(0, 0, 0, 1);
     width: 80%;
     margin: 5px;
@@ -139,6 +142,128 @@
       color: white;
     }
 
+  }
+
+  .jsxc_videoCallContainer {
+    margin: 1em;
+  }
+
+  .jsxc_videoconferenceUsers {
+
+    list-style: none;
+    padding: 5px;
+
+    .jsxcVideoConf_SELF {
+      display: none;
+    }
+
+    .jsxcVideoConf_INITIATOR {
+      &:after {
+        content: " ";
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        background-size: 90%;
+        background-repeat: no-repeat;
+        margin: 0 0 0 3px;
+
+        background-image: image-url("videoconference_initiator.svg");
+      }
+    }
+
+    .jsxcVideoConf_DISCONNECTED {
+      &:before {
+        content: " ";
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        background-size: 90%;
+        background-repeat: no-repeat;
+        margin: 0 3px 0 0;
+
+        background-image: image-url("videoconference_disconnected.svg");
+      }
+    }
+
+    .jsxcVideoConf_NOT_READY, .jsxcVideoConf_READY, .jsxcVideoConf_CONNECTING,
+    .jsxcVideoConf_CONNEXION_DISTURBED {
+      &:before {
+        content: " ";
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        background-size: 90%;
+        background-repeat: no-repeat;
+        margin: 0 3px 0 0;
+
+        background-image: image-url("videoconference_waiting.svg");
+      }
+    }
+
+    .jsxcVideoConf_CONNECTED {
+      &:before {
+        content: " ";
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        background-size: 90%;
+        background-repeat: no-repeat;
+        margin: 0 3px 0 0;
+
+        background-image: image-url("videoconference_connected.svg");
+      }
+    }
+
+    .jsxcVideoConf_HAS_DECLINED_VIDEOCONFERENCE, .jsxcVideoConf_REJECTED {
+      &:before {
+        content: " ";
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        background-size: 90%;
+        background-repeat: no-repeat;
+        margin: 0 3px 0 0;
+
+        background-image: image-url("videoconference_declined.svg");
+      }
+    }
+
+  }
+
+  .jsxc_videoControl {
+    height: 25px;
+    width: 25px;
+    margin: auto;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 80%;
+    cursor: pointer;
+    display: inline-block;
+    opacity: 0.8;
+
+    &:hover {
+      opacity: 1.0;
+    }
+  }
+
+  .jsxc_hangUpControl {
+    background-image: image-url("hang_up_red.svg");
+    height: 20px;
+    width: 40px;
+    cursor: pointer;
+  }
+
+  .jsxc_fullscreenControl {
+    background-image: image-url("fullscreen_white.svg");
+    height: 20px;
+    width: 40px;
+    cursor: pointer;
+  }
+
+  .jsxc_fullscreenVideo {
+    width: 100%;
+    margin: 10px;
+    border: solid 1px gray;
   }
 
 }

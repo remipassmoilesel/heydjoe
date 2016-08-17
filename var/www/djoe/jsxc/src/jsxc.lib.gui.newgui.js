@@ -20,7 +20,7 @@ jsxc.newgui = {
    */
   SIDEBAR_CONTENT_HEIGHT : '480px',
 
-  MEDIAPANEL_HEIGHT : '500px',
+  MEDIAPANEL_HEIGHT : '550px',
 
   /**
    * Animation of toggling chat side bar, in ms
@@ -131,8 +131,21 @@ jsxc.newgui = {
     $(document).on('disconnected.jsxc', self.updateChatSidebarHeader.bind(self, true));
     self.updateChatSidebarHeader();
 
+    // init multimedia stream gui
+    jsxc.mmstream.gui._initGui();
   },
 
+  /**
+   * Return an JQuery object selecting all media ressources displayed
+   * @returns {*|JQuery|jQuery|HTMLElement}
+   */
+  getAllDisplayedMediaRessource : function() {
+    return $("#jsxc-mediapanel .jsxc-media-ressource");
+  },
+
+  /**
+   * Update the name displayed on bottom of the chat sidebar
+   */
   updateStatusBarUserName : function() {
 
     if (jsxc.xmpp.conn) {
@@ -186,13 +199,10 @@ jsxc.newgui = {
       headerContent.click(function(event) {
         event.stopPropagation();
 
-        if (self.isChatSidebarShown() === true) {
-          self.toggleNotificationsMenu();
-        } else {
-          self.toggleChatSidebar(function() {
-            self.toggleNotificationsMenu();
-          });
+        if (self.isChatSidebarShown() !== true) {
+          self.toggleChatSidebar();
         }
+        self.toggleNotificationsMenu();
 
       });
 
@@ -383,7 +393,7 @@ jsxc.newgui = {
 
   initMediaPanelMouseNavigation : function() {
 
-    var self = jsxc.newgui;
+    // var self = jsxc.newgui;
 
     var mpanel = $("#jsxc-mediapanel-right");
     var lastMove;
@@ -427,12 +437,12 @@ jsxc.newgui = {
 
     });
 
-    // Optionnal: create fake ressources
-    for (var i = 0; i < 10; i++) {
-      self.addMediaRessource(
-          "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>",
-          'Title ' + i);
-    }
+    // // Optionnal: create fake ressources
+    // for (var i = 0; i < 10; i++) {
+    //   self.addMediaRessource(
+    //       "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>",
+    //       'Title ' + i);
+    // }
 
   },
 
@@ -834,6 +844,26 @@ jsxc.newgui = {
   },
 
   /**
+   * Remove a media ressource
+   * @param container
+   */
+  removeMediaRessource : function(container) {
+
+    var self = jsxc.newgui;
+
+    if (!container) {
+      throw new Error("Invalid argument: " + container);
+    }
+
+    container.animate({
+      opacity : "0"
+    }, self.OPACITY_ANIMATION_DURATION, function() {
+      container.remove();
+    });
+
+  },
+
+  /**
    * Add a ressource in media panel, wrapped in container
    *
    * @param htmlContent
@@ -841,9 +871,20 @@ jsxc.newgui = {
    * @param ressource
    * @private
    */
-  addMediaRessource : function(htmlContent, title) {
+  addMediaRessource : function(htmlContent, title, options) {
 
     var self = jsxc.newgui;
+
+    var defaultOptions = {
+      /**
+       * Controls availables next the title
+       *
+       * If null, a close cross will be happend
+       */
+      titleControls : null
+    };
+
+    options = $.extend(defaultOptions, options);
 
     // container for ressource
     var container = $('<div class="jsxc-media-ressource"></div>').append(htmlContent);
@@ -853,21 +894,23 @@ jsxc.newgui = {
 
     // header with title and close cross
     var ressHeader = $("<h1 class='jsxc-title'>" + dspTitle + "</h1>").attr('title', title);
+    container.prepend(ressHeader);
 
-    // close cross to remove ressource from panel
-    var closeHeader = $("<span class='jsxc-close-ressource'></span>");
-    closeHeader.click(function() {
+    // add close control next the title
+    if (!options.titleControls) {
 
-      container.animate({
-        opacity : "0"
-      }, self.OPACITY_ANIMATION_DURATION, function() {
-        container.remove();
+      var closeHeader = $("<span class='jsxc-close-ressource'></span>");
+      closeHeader.click(function() {
+        self.removeMediaRessource(container);
       });
 
-    });
+      ressHeader.append(closeHeader);
+    }
 
-    ressHeader.append(closeHeader);
-    container.prepend(ressHeader);
+    // user provide custom controls, add them
+    else {
+      ressHeader.append(options.titleControls);
+    }
 
     self._log("addMediaRessource", {title : title, container : container});
 

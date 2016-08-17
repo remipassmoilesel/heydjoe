@@ -267,6 +267,45 @@ jsxc.mmstream = {
   conn : null,
 
   /**
+   * Initialize and configure multimedia stream manager
+   */
+  init : function() {
+
+    var self = jsxc.mmstream;
+
+    // create strophe connexion
+    self.conn = jsxc.xmpp.conn;
+
+    // check if jingle strophe plugin exist
+    if (!self.conn.jingle) {
+      self._log('No jingle plugin found!', null, 'ERROR');
+      return;
+    }
+
+    self.messageHandler = self.conn.addHandler(jsxc.mmstream._onMessageReceived, null, 'message');
+
+    self._registerListenersOnAttached();
+
+    // check screen sharing capabilities
+    if (self._isNavigatorChrome() === true) {
+      self._isChromeExtensionInstalled();
+    }
+
+    var manager = self.conn.jingle.manager;
+
+    // listen for incoming jingle calls
+    manager.on('incoming', self._onIncomingJingleSession.bind(self));
+
+    manager.on('peerStreamAdded', self._onRemoteStreamAdded.bind(self));
+    manager.on('peerStreamRemoved', self._onRemoteStreamRemoved.bind(self));
+
+    self._log("MMStream module init");
+
+    // launch unit testing only in debug mode
+    jsxc.tests.runTests(jsxc.mmstream.testCases);
+  },
+
+  /**
    * Special log function here, to prefix logs
    *
    * @param message
@@ -326,7 +365,7 @@ jsxc.mmstream = {
    * @private
    */
   _setUserStatus : function(fulljid, status, overwrite) {
-    
+
     var self = jsxc.mmstream;
 
     // overwrite value by default
@@ -572,47 +611,6 @@ jsxc.mmstream = {
       }
 
     });
-  },
-
-  /**
-   * Initialize and configure multimedia stream manager
-   */
-  init : function() {
-
-    var self = jsxc.mmstream;
-
-    // create strophe connexion
-    self.conn = jsxc.xmpp.conn;
-
-    // check if jingle strophe plugin exist
-    if (!self.conn.jingle) {
-      self._log('No jingle plugin found!', null, 'ERROR');
-      return;
-    }
-
-    self.messageHandler = self.conn.addHandler(jsxc.mmstream._onMessageReceived, null, 'message');
-
-    self._registerListenersOnAttached();
-
-    // check screen sharing capabilities
-    if (self._isNavigatorChrome() === true) {
-      self._isChromeExtensionInstalled();
-    }
-
-    self.gui._initGui();
-
-    var manager = self.conn.jingle.manager;
-
-    // listen for incoming jingle calls
-    manager.on('incoming', self._onIncomingJingleSession.bind(self));
-
-    manager.on('peerStreamAdded', self._onRemoteStreamAdded.bind(self));
-    manager.on('peerStreamRemoved', self._onRemoteStreamRemoved.bind(self));
-
-    self._log("MMStream module init");
-
-    // launch unit testing only in debug mode
-    jsxc.tests.runTests(jsxc.mmstream.testCases);
   },
 
   /**
@@ -1049,20 +1047,6 @@ jsxc.mmstream = {
 
     // change user status
     self._setUserStatus(user, self.USER_STATUS.READY);
-
-    // special case: if initiator is re-invited in videoconference,
-    // we have to change status of all participants to ready to
-    // make him call them all
-    // if(initiator === user){
-    //
-    //   if(jsxc.mmstream.debug === true){
-    //     self._log("I am initiator, and I have to call everybody");
-    //   }
-    //
-    //   $.each(participants, function(index, element){
-    //     self._setUserStatus(element, self.USER_STATUS.READY);
-    //   });
-    // }
 
     // notify changes
     self._notifyVideoconferenceChanged();
@@ -1816,7 +1800,9 @@ jsxc.mmstream = {
 
     /**
      * Buddy participate to videoconference, accept his stream
-     */ else if (self._isBuddyParticipatingToVideoconference(fulljid) === true) {
+     */
+
+    else if (self._isBuddyParticipatingToVideoconference(fulljid) === true) {
 
       self._log("Participant accepted", {
         session : session, videoconference : self.videoconference
@@ -1986,9 +1972,9 @@ jsxc.mmstream = {
     // display video stream
     self.gui._showVideoStream(stream, fulljid);
 
-    // show sidebar if needed
-    if (self.gui.isSidepanelShown() !== true) {
-      self.gui.toggleVideoPanel();
+    // show media panel if needed
+    if (jsxc.newgui.isMediapanelShown() !== true) {
+      jsxc.newgui.toggleMediapanel();
     }
 
     // save session and stream
@@ -2432,34 +2418,6 @@ jsxc.mmstream = {
   },
 
   /**
-   * Update icon on presence or on caps.
-   *
-   * If no jid is given, all roster will be updated
-   *
-   * @memberOf jsxc.mmstream
-   * @param ev
-   * @param status
-   * @private
-   */
-  _onXmppEvent : function(ev, jid) {
-
-    var self = jsxc.mmstream;
-
-    if (jid) {
-      self.gui._updateIcon(jsxc.jidToBid(jid));
-      self.gui._updateVideoLink(jsxc.jidToBid(jid));
-    }
-
-    else {
-      self.gui._updateAllIcons();
-      self.gui._updateAllVideoLinks();
-    }
-
-    // preserve handler
-    return true;
-  },
-
-  /**
    * Attach listeners on connect
    * @private
    */
@@ -2467,17 +2425,11 @@ jsxc.mmstream = {
 
     var self = jsxc.mmstream;
 
-    if (self.conn.caps) {
-      $(document).on('caps.strophe', self._onXmppEvent);
-    }
+    // if (self.conn.caps) {
+    //   $(document).on('caps.strophe', self._onXmppEvent);
+    // }
 
     $(document).on('init.window.jsxc', self.gui._initChatWindow);
-
-    // TODO: to improve
-    $(document).on('presence.jsxc', self._onXmppEvent);
-    $(document).on("add.roster.jsxc", self.gui._onXmppEvent);
-    $(document).on("cloaded.roster.jsxc", self.gui._onXmppEvent);
-    $(document).on("buddyListChanged.jsxc", self.gui._onXmppEvent);
 
   },
 
@@ -2489,12 +2441,9 @@ jsxc.mmstream = {
     var self = jsxc.mmstream;
 
     // remove listeners added when attached
-    $(document).off('caps.strophe', self._onXmppEvent);
+    // $(document).off('caps.strophe', self._onXmppEvent);
 
     self.conn.deleteHandler(self.messageHandler);
-
-    // remove all videos
-    $("#jsxc_videoPanel .jsxc_videoThumbContainer").remove();
 
     // stop local stream
     self.stopLocalStream();

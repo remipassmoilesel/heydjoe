@@ -331,7 +331,7 @@ jsxc.gui.actions = {
       }
 
       else if (unavailables.length > 1) {
-        jsxc.gui.feedback("<b>" + unavailables.join(", ") + "</b> ne sont pas disponibles")
+        jsxc.gui.feedback("<b>" + unavailables.join(", ") + "</b> ne sont pas disponibles");
         return;
       }
 
