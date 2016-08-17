@@ -322,7 +322,7 @@ jsxc.gui.roster = {
    */
   toggle : function(state) {
 
-    jsxc.debug("Toggle roster is deprecated", {trace: new Error()}, "WARN");
+    jsxc.debug("Toggle roster is deprecated",  null, "ERROR");
 
     var duration;
 

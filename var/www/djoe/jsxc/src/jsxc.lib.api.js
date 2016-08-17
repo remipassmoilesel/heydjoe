@@ -229,7 +229,6 @@ jsxc.api = {
     if (self.isConnected() !== true) {
 
       self.feedback("Vous n'êtes pas connecté au client de messagerie");
-      jsxc.gui.roster.toggle("shown");
 
       throw new Error("Not connected to JSXC client");
     }

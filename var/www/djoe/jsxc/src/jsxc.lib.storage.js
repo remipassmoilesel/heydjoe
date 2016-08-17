@@ -546,10 +546,6 @@ jsxc.storage = {
             jsxc.xmpp.addBuddy(n.username, n.alias);
         }
 
-        if (key === 'roster') {
-            jsxc.gui.roster.toggle(e.newValue);
-        }
-
         if (jsxc.master && key.match(new RegExp('^vcard' + jsxc.storage.SEP)) && e.newValue !== null && e.newValue.match(/^request:/)) {
 
             jsxc.xmpp.loadVcard(bid, function (stanza) {

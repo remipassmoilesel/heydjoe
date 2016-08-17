@@ -138,7 +138,7 @@ $(function() {
           if (codes.indexOf(response.status) !== -1) {
             jsxc.start(userJid, defaultPassword);
 
-            jsxc.gui.roster.toggle('shown');
+            
           }
 
           // other fail

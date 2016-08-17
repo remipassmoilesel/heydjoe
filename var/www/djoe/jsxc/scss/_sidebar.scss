@@ -89,13 +89,13 @@ TODO: Set up variables:
     In chat sidebar, filter display to show only users
   */
   #jsxc-new-gui-filter-users {
-    background-color: rgb(245, 245, 245);
-    color: rgb(28, 148, 212);
+    background-color: #EEEEEE;
+    color: silver;
     cursor: pointer;
     display: block;
     float: right;
-    height: 48px;
-    line-height: 48px;
+    height: 40px;
+    line-height: 40px;
     text-align: center;
     text-decoration: none;
     text-transform: uppercase;
@@ -106,13 +106,13 @@ TODO: Set up variables:
     In chat sidebar, filter display to show only users
   */
   #jsxc-new-gui-filter-conversations {
-    background-color: rgb(245, 245, 245);
-    color: rgb(28, 148, 212);
+    background-color: #EEEEEE;
+    color: silver;
     cursor: pointer;
     display: block;
     float: left;
-    height: 48px;
-    line-height: 48px;
+    height: 40px;
+    line-height: 40px;
     text-align: center;
     text-decoration: none;
     text-transform: uppercase;
@@ -123,7 +123,8 @@ TODO: Set up variables:
     Background of active filter, 'buddies' or 'conversations'
   */
   .jsxc-active-filter {
-    background: rgba(190, 230, 240, 0.5) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
+    color: rgb(28, 148, 212) !important;
   }
 
   /**
