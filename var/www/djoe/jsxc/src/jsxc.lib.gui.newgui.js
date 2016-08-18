@@ -618,7 +618,7 @@ jsxc.newgui = {
       });
 
       // add box shadow
-      mediapanel.css("box-shadow", "3px 3px 3px 3px rgba(0, 0, 0, 0.3)");
+      mediapanel.css("box-shadow", "3px 3px 3px 3px rgba(0, 0, 0, 0.1)");
 
       mediapanel.animate({
         height : self.MEDIAPANEL_HEIGHT

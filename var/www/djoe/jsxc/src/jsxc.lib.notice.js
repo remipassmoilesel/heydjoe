@@ -31,11 +31,14 @@ jsxc.notice = {
       if (saved.hasOwnProperty(key)) {
         var val = saved[key];
 
+        // add notice but do not trigger event for each
         jsxc.notice.add(val.msg, val.description, val.fnName, val.fnParams, key, false);
       }
     }
 
     self._showNoNoticeContent();
+
+    $(document).trigger("notice.jsxc");
   },
 
   /**
@@ -53,7 +56,11 @@ jsxc.notice = {
   },
 
   /**
-   * Add a new notice to the stack;
+   * Add a new notice to the stack
+   *
+   * Trigger an event by default
+   *
+   * Id is specified when we are loading old events stored in browser
    *
    * @memberOf jsxc.notice
    * @param msg Header message
@@ -69,10 +76,12 @@ jsxc.notice = {
     // trigger an jquery event by default
     triggerEvent = typeof triggerEvent === "undefined" ? true : false;
 
+    // id of notice, now or previous choosen id
     var nid = id || Date.now();
     var list = $('#jsxc-notifications ul');
-    var notice = $('<li/>');
 
+    // create notice and append it to the notice list
+    var notice = $('<li/>');
     notice.click(function() {
 
       // remove notice
@@ -92,7 +101,9 @@ jsxc.notice = {
     notice.attr('data-nid', nid);
     list.append(notice);
 
-    $('#jsxc_roster .jsxc_menu_notif_number').text(++jsxc.notice._num);
+    // update totla notifications number
+    jsxc.notice._num++;
+    self.updateNotificationNumbers();
 
     if (!id) {
       var saved = jsxc.storage.getUserItem('notices') || {};
@@ -105,6 +116,7 @@ jsxc.notice = {
       jsxc.notification.notify(msg, description || '', null, true, jsxc.CONST.SOUNDS.NOTICE);
     }
 
+    // show no notice content if needed
     self._showNoNoticeContent();
 
     if (triggerEvent) {

@@ -424,7 +424,11 @@ jsxc.gui.actions = {
 
       });
 
-      jsxc.gui.feedback("Ces utilisateurs ont été invité: " + invited.join(", "));
+      if (invited.length < 2) {
+        jsxc.gui.feedback("<b>" + invited[0] + "</b> a été invité");
+      } else {
+        jsxc.gui.feedback("Ces utilisateurs ont été invité: <b>" + invited.join(", ") + "</b>");
+      }
 
       var entries = $(".jsxc-search-users-results .jsxc-search-user-entry");
 

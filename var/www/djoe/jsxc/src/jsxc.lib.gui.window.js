@@ -303,7 +303,7 @@ jsxc.gui.window = {
     // retrieve window
     var win = jsxc.gui.window.get(bid);
     if (win.length < 1) {
-      jsxc.debug("Buddy checks aborted, unable to find window", {bid : bid, win : win});
+      // jsxc.debug("Buddy checks aborted, unable to find window", {bid : bid, win : win});
       return;
     }
 

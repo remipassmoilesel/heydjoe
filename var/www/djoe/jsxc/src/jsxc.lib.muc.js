@@ -448,6 +448,10 @@ jsxc.muc = {
 
     var self = jsxc.muc;
 
+    if (typeof room === "undefined") {
+      throw new Error("Illegal argument for room name: ", {arguments : arguments});
+    }
+
     var datas = {
       jid : room,
       name : roomName || room,
@@ -689,8 +693,7 @@ jsxc.muc = {
     var settingsList = win.find('.jsxc_settings ul');
 
     // add invitation
-    var inviteLink = $(
-        '<a class="jsxc_inviteUsers" href="#"><span>Inviter des utilisateurs</span></a>');
+    var inviteLink = $('<a class="jsxc_inviteUsers"><span>Inviter des utilisateurs</span></a>');
     inviteLink.click(function() {
 
       jsxc.gui.showInviteContactsDialog()
@@ -706,14 +709,19 @@ jsxc.muc = {
             // invite users
             jsxc.muc.inviteParticipants(win.data("bid"), jids);
 
+            var invited = [];
+            $.each(jids, function(index, jid) {
+              invited.push(Strophe.getNodeFromJid(jid));
+            });
+
             // report
-            if (jids.length < 2) {
-              jsxc.gui.feedback("<b>" + jids[0] + "</b> à été invité");
+            if (invited.length < 2) {
+              jsxc.gui.feedback("<b>" + invited[0] + "</b> à été invité");
             }
 
             else {
               jsxc.gui.feedback(
-                  "Les utilisateurs suivant ont été invités: <b>" + jids.join(", ") + "</b>");
+                  "Les utilisateurs suivant ont été invités: <b>" + invited.join(", ") + "</b>");
             }
 
           })
@@ -727,7 +735,7 @@ jsxc.muc = {
     settingsList.prepend($('<li>').append(inviteLink));
 
     // add pad link
-    var padLink = $('<a class="jsxc_openpad" href="#"><span>Ouvrir un pad</span></a>');
+    var padLink = $('<a class="jsxc_openpad"><span>Ouvrir un pad</span></a>');
     padLink.click(function() {
 
       jsxc.gui.feedback("Pad en cours d'ouverture ...");

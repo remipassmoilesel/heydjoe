@@ -143,9 +143,17 @@ jsxc.api = {
    */
   openChatWindow : function(jid) {
 
+    if(!jid){
+      jsxc.gui.feedback("Utilisateur invalide: " + jid);
+    }
+
     var self = jsxc.api;
     var bid = jsxc.jidToBid(jid);
     var node = Strophe.getNodeFromJid(jid);
+
+    if(!node){
+      jsxc.gui.feedback("Utilisateur invalide: " + jid);
+    }
 
     self.checkIfConnectedOrThrow();
 
