@@ -145,16 +145,23 @@ jsxc.api = {
 
     var self = jsxc.api;
     var bid = jsxc.jidToBid(jid);
+    var node = Strophe.getNodeFromJid(jid);
 
     self.checkIfConnectedOrThrow();
 
+    var bl = jsxc.storage.getUserItem('buddylist');
+
     // if user isn't in buddylist, create a buddy list entry
     // with no suscription
-    if (self.getBuddyList().indexOf(jid) < 0) {
+    if (bl.indexOf(jid) < 0) {
+
+      // Do not add contact in buddylist to distinguish him from buddies
+      // bl.push(bid);
+      // jsxc.storage.setUserItem('buddylist', bl);
 
       jsxc.storage.setUserItem('buddy', bid, {
         jid : jid,
-        name : '',
+        name : node,
         status : 0,
         sub : 'none',
         msgstate : 0,
@@ -163,6 +170,8 @@ jsxc.api = {
         res : [],
         type : 'chat'
       });
+
+      jsxc.gui.roster.add(bid);
     }
 
     // open chat window

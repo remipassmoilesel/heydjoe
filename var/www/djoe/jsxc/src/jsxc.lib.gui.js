@@ -619,11 +619,12 @@ jsxc.gui = {
   },
 
   /**
-   * Create and show approve dialog
+   * Create and show approve friendship request dialog
    *
    * @param {type} from valid jid
    */
   showApproveDialog : function(from) {
+
     jsxc.gui.dialog.open(jsxc.gui.template.get('approveDialog'), {
       'noClose' : true
     });
@@ -646,7 +647,7 @@ jsxc.gui = {
       jsxc.xmpp.resFriendReq(from, true);
 
       // If friendship is not mutual show contact dialog
-      if (!data || data.sub === 'from') {
+      if (!data || data.sub !== 'both') {
         jsxc.gui.showContactDialog(from);
       }
     });
@@ -1380,9 +1381,8 @@ jsxc.gui = {
    */
   showUnknownSender : function(bid) {
 
-    var confirmationText = jsxc.t('You_received_a_message_from_an_unknown_sender_', {
-      sender : bid
-    });
+    var confirmationText = "Vous avez reçu un message d'un expéditeur inconnu: <b>" + bid + "</b>" +
+        "<br/> Voulez vous l'afficher ?";
 
     jsxc.gui.showConfirmDialog(confirmationText,
 
@@ -1393,9 +1393,11 @@ jsxc.gui = {
 
           jsxc.gui.dialog.close();
 
+          var node = Strophe.getNodeFromJid(bid);
+
           // save buddy
           jsxc.storage.saveBuddy(bid, {
-            jid : bid, name : bid, status : 0, sub : 'none', res : []
+            jid : bid, name : node, status : 0, sub : 'none', res : []
           });
 
           // init window and post reveived messages

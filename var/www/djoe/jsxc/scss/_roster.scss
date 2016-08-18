@@ -60,6 +60,10 @@
     outline: none;
   }
 
+  input[type=button] {
+    cursor: pointer;
+  }
+
   p {
     color: $roster_color;
     padding: 10px;
@@ -137,7 +141,7 @@
     cursor: pointer;
   }
 
-  .jsxc_videocall{
+  .jsxc_videocall {
     text-decoration: line-through;
   }
 

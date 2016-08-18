@@ -744,26 +744,35 @@ jsxc.xmpp = {
       var sub = $(this).attr('subscription');
       // var ask = $(this).attr('ask');
 
+      // subscription have to be removed
       if (sub === 'remove') {
         jsxc.gui.roster.purge(bid);
-      } else {
+      }
+
+      // subscription have to be added or updated
+      else {
         var bl = jsxc.storage.getUserItem('buddylist');
 
+        // user is not in buddy list, add it
         if (bl.indexOf(bid) < 0) {
-          bl.push(bid); // (INFO) push returns the new length
+          bl.push(bid);
           jsxc.storage.setUserItem('buddylist', bl);
         }
 
-        var temp = jsxc.storage.saveBuddy(bid, {
+        // save buddy informations
+        jsxc.storage.saveBuddy(bid, {
           jid : jid, name : name, sub : sub
         });
 
-        if (temp === 'updated') {
+        // add roster element if not present
+        if (jsxc.gui.roster.getItem(bid).length < 1) {
+          jsxc.gui.roster.add(bid);
+        }
 
+        // else just update it
+        else {
           jsxc.gui.update(bid);
           jsxc.gui.roster.reorder(bid);
-        } else {
-          jsxc.gui.roster.add(bid);
         }
       }
 
@@ -1134,7 +1143,7 @@ jsxc.xmpp = {
       // save history, only 10 last messages
       unknownHistory.push(messageToPost);
       jsxc.storage.setUserItem('unknown-user-chat-history', bid, unknownHistory.slice(-10));
-      
+
       return true;
     }
 
@@ -1254,7 +1263,6 @@ jsxc.xmpp = {
       });
     }
 
-    $(document).trigger("buddyListChanged.jsxc");
   },
 
   /**
@@ -1277,7 +1285,6 @@ jsxc.xmpp = {
 
     jsxc.gui.roster.purge(bid);
 
-    $(document).trigger("buddyListChanged.jsxc");
   },
 
   /**

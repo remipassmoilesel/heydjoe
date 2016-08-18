@@ -126,7 +126,6 @@ jsxc.newgui = {
     // update header on presence and on notice received
     $(document).on('presence.jsxc', self.updateChatSidebarHeader);
     $(document).on('notice.jsxc', self.updateChatSidebarHeader);
-    $(document).on('add.roster.jsxc', self.updateChatSidebarHeader);
     $(document).on('attached.jsxc', self.updateChatSidebarHeader);
     $(document).on('disconnected.jsxc', self.updateChatSidebarHeader.bind(self, true));
     self.updateChatSidebarHeader();

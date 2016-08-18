@@ -71,9 +71,15 @@ jsxc.gui.roster = {
     var self = jsxc.gui.roster;
 
     var data = jsxc.storage.getUserItem('buddy', bid);
+
+    if (!data) {
+      throw new Error("Invalid buddy: " + bid);
+    }
+
     var bud = jsxc.gui.buddyTemplate.clone().attr('data-bid', bid).attr('data-type',
         data.type || 'chat');
 
+    // hide element if filter is enabled
     self.setVisibilityByFilter(bud);
 
     jsxc.gui.roster.insert(bid, bud);
@@ -221,7 +227,10 @@ jsxc.gui.roster = {
    * @return {JQueryObject} Roster list element
    */
   remove : function(bid) {
-    return jsxc.gui.roster.getItem(bid).detach();
+    var res = jsxc.gui.roster.getItem(bid).detach();
+    $(document).trigger('remove.roster.jsxc', [bid]);
+
+    return res;
   },
 
   /**
@@ -322,7 +331,7 @@ jsxc.gui.roster = {
    */
   toggle : function(state) {
 
-    jsxc.debug("Toggle roster is deprecated",  null, "ERROR");
+    jsxc.debug("Toggle roster is deprecated", null, "ERROR");
 
     var duration;
 
@@ -357,10 +366,10 @@ jsxc.gui.roster = {
     reconnectMsg.click(function() {
       jsxc.api.reconnect();
     });
-    
+
     $('#jsxc_buddylist').append(reconnectMsg);
 
-    $(document).one('attached.jsxc', function(){
+    $(document).one('attached.jsxc', function() {
       $('#jsxc_buddylist').find(".jsxc-reconnect-message").remove();
     });
 
@@ -385,7 +394,7 @@ jsxc.gui.roster = {
     if (buddyList.find(".jsxc_rosterIsEmptyMessage").length < 1) {
       buddyList.prepend(text);
 
-      $(document).one('add.roster.jsxc', function(){
+      $(document).one('add.roster.jsxc', function() {
         $('#jsxc_buddylist').find(".jsxc_rosterIsEmptyMessage").remove();
       });
     }

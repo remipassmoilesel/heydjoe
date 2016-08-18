@@ -179,7 +179,7 @@ jsxc.gui.actions = {
   },
 
   /**
-   * Menu where user can invite other users, create conversations, make call, ...
+   * Menu where user can create conversations, make call, ...
    * @private
    */
   _initActionMenu : function() {
