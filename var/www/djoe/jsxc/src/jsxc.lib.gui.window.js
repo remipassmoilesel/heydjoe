@@ -450,22 +450,29 @@ jsxc.gui.window = {
    */
   close : function(bid) {
 
-    if (jsxc.gui.window.get(bid).length === 0) {
+    var win = jsxc.gui.window.get(bid);
+    if (win.length === 0) {
       jsxc.warn('Want to close a window, that is not open.');
       return;
     }
 
-    jsxc.storage.removeUserElement('windowlist', bid);
-    jsxc.storage.removeUserItem('window', bid);
+    // animate closing
+    win.find(".jsxc_window").animate({"height" : "0px"}, 700,
 
-    if (jsxc.storage.getUserItem('buddylist').indexOf(bid) < 0) {
-      // delete data from unknown sender
+        function() {
 
-      jsxc.storage.removeUserItem('buddy', bid);
-      jsxc.storage.removeUserItem('chat', bid);
-    }
+          jsxc.storage.removeUserElement('windowlist', bid);
+          jsxc.storage.removeUserItem('window', bid);
 
-    jsxc.gui.window._close(bid);
+          // delete data from unknown sender
+          if (jsxc.storage.getUserItem('buddylist').indexOf(bid) < 0) {
+            jsxc.storage.removeUserItem('buddy', bid);
+            jsxc.storage.removeUserItem('chat', bid);
+          }
+
+          jsxc.gui.window._close(bid);
+
+        });
   },
 
   /**
