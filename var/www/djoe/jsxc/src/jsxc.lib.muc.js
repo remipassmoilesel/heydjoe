@@ -686,6 +686,21 @@ jsxc.muc = {
       jsxc.muc.scrollMemberListBy(bid, 0);
     });
 
+    // add pad link
+    var padLink = $('<a class="jsxc_openpad" href="#"><span>Ouvrir un pad</span></a>');
+    padLink.click(function() {
+
+      var padId = bid.substr(0, 26).replace(/[^a-z0-9]+/gi, "") + "_" +
+          jsxc.sha1.hash(bid).substr(0, 22);
+
+      padId = padId.toLocaleLowerCase();
+
+      jsxc.etherpad.openpad(padId);
+
+    });
+    win.find('.jsxc_settings ul').append($('<li>').append(padLink));
+
+    // add destroy link
     var destroy = $('<a>');
     destroy.text(jsxc.t('Destroy'));
     destroy.addClass('jsxc_destroy');

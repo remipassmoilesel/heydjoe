@@ -124,17 +124,6 @@ jsxc.gui.window = {
 
     win.find('.jsxc_more').click(expandClick);
 
-    // open a pad
-    win.find(".jsxc_openpad").click(function() {
-
-      var padId = bid.substr(0, 26).replace(/[^a-z0-9]+/gi, "") + "_" +
-          jsxc.sha1.hash(bid).substr(0, 22);
-
-      padId = padId.toLocaleLowerCase();
-
-      jsxc.etherpad.openpad(padId);
-    });
-
     win.find('.jsxc_verification').click(function() {
       jsxc.gui.showVerification(bid);
     });
@@ -457,7 +446,7 @@ jsxc.gui.window = {
     }
 
     // animate closing
-    win.find(".jsxc_window").animate({"height" : "0px"}, 700,
+    win.find(".jsxc_window").animate({"height" : "0px"}, 500,
 
         function() {
 

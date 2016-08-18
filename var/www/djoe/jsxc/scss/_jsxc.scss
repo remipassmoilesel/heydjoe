@@ -343,6 +343,8 @@ img.jsxc_vCard {
     color: #000;
     opacity: 0.5;
     white-space: nowrap;
+    text-decoration: underline;
+    cursor: pointer;
 
     &:hover {
       text-decoration: none;

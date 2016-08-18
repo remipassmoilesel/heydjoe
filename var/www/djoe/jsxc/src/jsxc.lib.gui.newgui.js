@@ -123,6 +123,11 @@ jsxc.newgui = {
     });
     self.updateStatusBarUserName();
 
+    // hide etherpad control if needed
+    if (jsxc.options.etherpad.enabled !== true) {
+      $(".jsxc-action_new-etherpad-document").css({"display" : "none"});
+    }
+
     // update header on presence and on notice received
     $(document).on('presence.jsxc', self.updateChatSidebarHeader);
     $(document).on('notice.jsxc', self.updateChatSidebarHeader);
