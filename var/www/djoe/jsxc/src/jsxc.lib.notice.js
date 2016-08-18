@@ -74,9 +74,15 @@ jsxc.notice = {
     var notice = $('<li/>');
 
     notice.click(function() {
+
+      // remove notice
       jsxc.notice.remove(nid);
 
+      // exec attached function
       jsxc.exec(fnName, fnParams);
+
+      // trigger event, number of notices changed
+      $(document).trigger("notice.jsxc");
 
       return false;
     });
@@ -100,19 +106,19 @@ jsxc.notice = {
     }
 
     self._showNoNoticeContent();
-    
-    if(triggerEvent){
+
+    if (triggerEvent) {
       $(document).trigger("notice.jsxc");
     }
   },
 
   /**
-   * Update places where are displayed notification numbers 
+   * Update places where are displayed notification numbers
    */
-  updateNotificationNumbers: function(){
+  updateNotificationNumbers : function() {
     $('#jsxc_roster .jsxc_menu_notif_number').text(jsxc.notice._num);
   },
-  
+
   /**
    * Get notification numbers
    * @returns {number}
