@@ -1,11 +1,6 @@
 /**
  * New Multimedia Stream Manager
  *
- * Intend to replace jsxc.lib.webrtc.js
- *
- * Modules can be switched by use jsxc.multimediaStreamSystem in
- * jsxc.lib.js
- *
  */
 
 jsxc.mmstream = {
@@ -1759,22 +1754,23 @@ jsxc.mmstream = {
     };
 
     // decline video call
-    var declineRemoteSession = function(error) {
+    var declineRemoteSession = function() {
 
       if (jsxc.mmstream.debug === true) {
         self._log("Call declined", session);
       }
 
-      session.decline();
-
-      jsxc.gui.feedback("Erreur lors de l'accès à la caméra et au micro: " + error);
-
-      self._log("Error while using audio/video", error);
+      session.end("decline", false);
 
       self._setUserStatus(fulljid, self.USER_STATUS.REJECTED);
 
       // notify changes
       self._notifyVideoconferenceChanged();
+    };
+
+    var errorWhileAccessingLocalStream = function(error) {
+      jsxc.gui.feedback("Erreur lors de l'accès à la caméra et au micro: " + error);
+      self._log("Error while using audio/video", error);
     };
 
     /**
@@ -1794,7 +1790,8 @@ jsxc.mmstream = {
             acceptRemoteSession(localStream);
           })
           .fail(function(error) {
-            declineRemoteSession(error);
+            declineRemoteSession();
+            errorWhileAccessingLocalStream(error);
           });
     }
 
@@ -1824,7 +1821,8 @@ jsxc.mmstream = {
             acceptRemoteSession(localStream);
           })
           .fail(function(error) {
-            declineRemoteSession(error);
+            declineRemoteSession();
+            errorWhileAccessingLocalStream(error);
           });
 
     }
@@ -1841,8 +1839,8 @@ jsxc.mmstream = {
 
       // check if another multimedia session is currently running
       if (self.videoconference.occupied === true) {
-        jsxc.gui.feedback(node + " vous a contacté, mais vous êtes occupé");
-        declineRemoteSession("Occupé");
+        jsxc.gui.feedback("<b>" + node + "</b> vous a contacté, mais vous êtes occupé");
+        declineRemoteSession();
         return;
       }
       self.videoconference.occupied = true;
@@ -1859,13 +1857,15 @@ jsxc.mmstream = {
                   acceptRemoteSession(localStream);
                 })
                 .fail(function(error) {
-                  declineRemoteSession(error);
+                  declineRemoteSession();
+                  errorWhileAccessingLocalStream(error);
                 });
 
           })
 
           .fail(function() {
             jsxc.gui.feedback("Appel rejeté");
+            declineRemoteSession();
           });
     }
 
@@ -2197,7 +2197,8 @@ jsxc.mmstream = {
       // hangup and feedback
       self.hangupCall(fulljid);
 
-      jsxc.gui.feedback("Pas de réponse de " + Strophe.getNodeFromJid(fulljid));
+      jsxc.gui.feedback("Pas de réponse de " + Strophe.getNodeFromJid(fulljid) + " au bout de " +
+          (self.HANGUP_IF_NO_RESPONSE / 1000) + " s., l'appel est abandonné.");
 
     }, self.HANGUP_IF_NO_RESPONSE);
 
@@ -2350,15 +2351,18 @@ jsxc.mmstream = {
 
     self._log("Stop stream", stream);
 
-    $.each(stream.getTracks(), function(index, element) {
+    $.each(stream.getTracks(), function(index, track) {
 
-      element.stop();
+      track.stop();
 
-      if (typeof element.enabled !== "undefined") {
-        element.enabled = false;
+      if (typeof track.enabled !== "undefined") {
+        track.enabled = false;
       }
 
+      stream.removeTrack(track);
+
     });
+
   },
 
   /**
@@ -2384,6 +2388,12 @@ jsxc.mmstream = {
     if (self.conn.jingle.localStream) {
       self._stopStream(self.conn.jingle.localStream);
       self.conn.jingle.localStream = null;
+    }
+
+    // stop video element
+    var localVideo = $('#jsxc-media-panel #jsxc-local-video').get(0);
+    if (localVideo) {
+      localVideo.pause();
     }
   },
 
@@ -2456,14 +2466,12 @@ jsxc.mmstream = {
 };
 
 $(function() {
-  if (jsxc.multimediaStreamSystem && jsxc.multimediaStreamSystem === "multistream") {
 
-    var self = jsxc.mmstream;
+  var self = jsxc.mmstream;
 
-    $(document).on('attached.jsxc', self.init);
-    $(document).on('disconnected.jsxc', self._onDisconnected);
-    $(document).on('removed.gui.jsxc', self.gui.removeGui);
+  $(document).on('attached.jsxc', self.init);
+  $(document).on('disconnected.jsxc', self._onDisconnected);
+  $(document).on('removed.gui.jsxc', self.gui.removeGui);
 
-  }
 });
 

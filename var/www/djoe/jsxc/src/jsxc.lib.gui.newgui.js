@@ -69,16 +69,16 @@ jsxc.newgui = {
 
     buddyFilter.click(function() {
       self.toggleBuddyFilter('buddies');
-      buddyFilter.toggleClass("jsxc-active-filter");
-      conversationFilter.toggleClass("jsxc-active-filter");
+      buddyFilter.addClass("jsxc-active-filter");
+      conversationFilter.removeClass("jsxc-active-filter");
     });
     self.toggleBuddyFilter('buddies');
-    buddyFilter.toggleClass("jsxc-active-filter");
+    buddyFilter.addClass("jsxc-active-filter");
 
     conversationFilter.click(function() {
       self.toggleBuddyFilter('conversations');
-      conversationFilter.toggleClass("jsxc-active-filter");
-      buddyFilter.toggleClass("jsxc-active-filter");
+      conversationFilter.addClass("jsxc-active-filter");
+      buddyFilter.removeClass("jsxc-active-filter");
     });
 
     // selection mode

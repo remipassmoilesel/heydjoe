@@ -5,11 +5,6 @@
  */
 jsxc = {
 
-  /**
-   * Video and file transfer system
-   */
-  multimediaStreamSystem : "multistream", // "original" || "multistream"
-
   /** Version of jsxc */
   version : '< $ app.version $ >',
 

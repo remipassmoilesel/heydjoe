@@ -380,7 +380,7 @@ jsxc.mmstream.gui = {
 
       self._stopRinging();
 
-      defer.fail("REJECT");
+      defer.reject("REJECT");
 
       jsxc.gui.dialog.close();
 
