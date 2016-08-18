@@ -77,19 +77,19 @@
 
     position: fixed;
     top: 15px;
-    right: 15px;
+    right: 20px;
 
     display: none;
 
     content: ' ';
-    width: 1em;
-    height: 1em;
+    width: 1.5em;
+    height: 1.5em;
 
     background-size: 100%;
     background-repeat: no-repeat;
     margin: 0 6px 0 6px;
 
-    background-image: image-url('newgui/close.svg');
+    background-image: image-url('newgui/hide-white.svg');
 
     cursor: pointer;
   }
