@@ -887,7 +887,7 @@ jsxc.gui = {
     jsxc.gui.dialog.open(jsxc.gui.template.get('etherpadCreation'));
 
     // create user list to invite
-    jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc_dialog_buddylist");
+    jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc-etherpad-dialog-buddylist");
 
     $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
       ev.stopPropagation();
@@ -897,7 +897,7 @@ jsxc.gui = {
 
       // get selected items
       var jids = [];
-      var selectedItems = $("#jsxc_dialog #jsxc_dialog_buddylist .jsxc-checked");
+      var selectedItems = $("#jsxc_dialog #jsxc-etherpad-dialog-buddylist .jsxc-checked");
       $.each(selectedItems, function(index, item) {
         jids.push($(item).data('bid'));
       });
@@ -907,6 +907,49 @@ jsxc.gui = {
       defer.resolve({
         name : name, buddies : jids
       });
+
+    });
+
+    $('#jsxc_dialog .jsxc_cancel').click(function(ev) {
+      ev.stopPropagation();
+
+      jsxc.gui.dialog.close();
+
+      defer.reject("user canceled");
+
+    });
+
+    return defer.promise();
+
+  }, 
+  
+  
+  /**
+   * Show a dialog asking for new etherpad document name, and return a promise
+   */
+  showInviteContactsDialog : function() {
+
+    var defer = $.Deferred();
+
+    // show dialog
+    jsxc.gui.dialog.open(jsxc.gui.template.get('inviteContacts'));
+
+    // create user list to invite
+    jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc-invite-dialog-buddylist");
+
+    $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
+      ev.stopPropagation();
+      
+      // get selected items
+      var jids = [];
+      var selectedItems = $("#jsxc_dialog #jsxc-invite-dialog-buddylist .jsxc-checked");
+      $.each(selectedItems, function(index, item) {
+        jids.push($(item).data('bid'));
+      });
+
+      jsxc.gui.dialog.close();
+
+      defer.resolve(jids);
 
     });
 

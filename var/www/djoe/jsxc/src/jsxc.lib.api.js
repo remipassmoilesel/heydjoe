@@ -208,11 +208,7 @@ jsxc.api = {
     if (createAndInvite === true) {
 
       // create conversation
-      var rjid = jsxc.muc.createNewConversationWith(jidArray);
-
-      // invite users
-      jsxc.muc.inviteParticipants(rjid, jidArray);
-
+      jsxc.muc.createNewConversationWith(jidArray);
     }
 
   },

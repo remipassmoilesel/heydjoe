@@ -686,9 +686,51 @@ jsxc.muc = {
       jsxc.muc.scrollMemberListBy(bid, 0);
     });
 
+    var settingsList = win.find('.jsxc_settings ul');
+
+    // add invitation
+    var inviteLink = $(
+        '<a class="jsxc_inviteUsers" href="#"><span>Inviter des utilisateurs</span></a>');
+    inviteLink.click(function() {
+
+      jsxc.gui.showInviteContactsDialog()
+
+      // operation was accepted
+          .then(function(jids) {
+
+            // check if enought users to invite
+            if (jids.length < 1) {
+              jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+            }
+
+            // invite users
+            jsxc.muc.inviteParticipants(win.data("bid"), jids);
+
+            // report
+            if (jids.length < 2) {
+              jsxc.gui.feedback("<b>" + jids[0] + "</b> à été invité");
+            }
+
+            else {
+              jsxc.gui.feedback(
+                  "Les utilisateurs suivant ont été invités: <b>" + jids.join(", ") + "</b>");
+            }
+
+          })
+
+          // operation was canceled
+          .fail(function() {
+            jsxc.gui.feedback("Opération annulée");
+          });
+
+    });
+    settingsList.prepend($('<li>').append(inviteLink));
+
     // add pad link
     var padLink = $('<a class="jsxc_openpad" href="#"><span>Ouvrir un pad</span></a>');
     padLink.click(function() {
+
+      jsxc.gui.feedback("Pad en cours d'ouverture ...");
 
       var padId = bid.substr(0, 26).replace(/[^a-z0-9]+/gi, "") + "_" +
           jsxc.sha1.hash(bid).substr(0, 22);
@@ -698,7 +740,7 @@ jsxc.muc = {
       jsxc.etherpad.openpad(padId);
 
     });
-    win.find('.jsxc_settings ul').append($('<li>').append(padLink));
+    settingsList.prepend($('<li>').append(padLink));
 
     // add destroy link
     var destroy = $('<a>');
@@ -709,7 +751,7 @@ jsxc.muc = {
       self.destroy(bid);
     });
 
-    win.find('.jsxc_settings ul').append($('<li>').append(destroy));
+    settingsList.append($('<li>').append(destroy));
 
     if (roomdata.state > self.CONST.ROOMSTATE.INIT) {
       var member = jsxc.storage.getUserItem('member', bid) || {};
@@ -1163,7 +1205,7 @@ jsxc.muc = {
 
       jsxc.stats.addEvent("jsxc.muc.invitation.sent");
 
-      self.conn.muc.directInvite(room, jid, "Vous êtes invité à rejoindre une voncersation");
+      self.conn.muc.directInvite(room, jid, "Vous êtes invité à rejoindre une conversation");
     });
 
   },
@@ -1402,7 +1444,9 @@ jsxc.muc = {
   },
 
   /**
-   * Launch creation of a new conversation with buddy array.
+   * Launch creation of a new conversation with jid array.
+   *
+   * All members of array will be invited after room configuration
    *
    * @param buddiesId
    */
@@ -1410,7 +1454,7 @@ jsxc.muc = {
 
     jsxc.stats.addEvent("jsxc.muc.conversation.new");
 
-    jsxc.debug("New conversation created");
+    jsxc.debug("New conversation created", {buddies : buddies, title : title, subject : subject});
 
     var d = new Date();
 
