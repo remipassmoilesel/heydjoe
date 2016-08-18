@@ -437,6 +437,35 @@ jsxc.gui.actions = {
 
     });
 
+    /**
+     * Chat with users
+     * ============
+     */
+    $("#jsxc-chat-sidebar-search-chat").click(function() {
+
+      var checkedElements = self._getCheckedSearchUsers();
+
+      if (checkedElements.length < 1) {
+        jsxc.gui.feedback("Vous devez choisir au moins un contact");
+        return false;
+      }
+
+      $.each(checkedElements, function(index, element) {
+        var jid = $(element).data('jid');
+        jsxc.api.openChatWindow(jid);
+      });
+
+      var entries = $(".jsxc-search-users-results .jsxc-search-user-entry");
+
+      // clean search space
+      entries.animate({
+        'opacity' : "0"
+      }, 700, function() {
+        entries.remove();
+      });
+
+    });
+
   },
 
   _initNotificationsMenu : function() {

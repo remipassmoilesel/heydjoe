@@ -83,7 +83,7 @@ jsxc.gui.window = {
   },
 
   /**
-   * Init a window skeleton
+   * Init a window skeleton, if necessary, or return existing window
    *
    * @memberOf jsxc.gui.window
    * @param {String} bid
@@ -91,6 +91,7 @@ jsxc.gui.window = {
    */
   init : function(bid) {
 
+    // if window already exist, return the existing one
     if (jsxc.gui.window.get(bid).length > 0) {
       return jsxc.gui.window.get(bid);
     }
@@ -293,35 +294,55 @@ jsxc.gui.window = {
       jsxc.otr.enable(bid);
     }
 
-    // display warning if buddy is offline or none suscribed
-    var node = Strophe.getNodeFromJid(win.data('jid'));
-    if (win.data('status') === 'offline') {
-      win.find('.jsxc_textarea').prepend(
-          "<div class='jsxc-warning-offline'><i>" + node + "</i> est à présent déconnecté</div>");
-
-      win.find(".jsxc_textinput").keyup(function() {
-        if (win.data('status') !== 'offline') {
-          win.find(".jsxc-warning-offline").remove();
-        }
-      });
-    }
-
-    if (data.sub !== "both") {
-      win.find('.jsxc_textarea').prepend("<div class='jsxc-warning-notbuddy'><i>" + node +
-          "</i> n'est pas dans vos contacts. Votre interlocuteur peut refuser " +
-          "de voir vos messages.</div>");
-
-      win.find(".jsxc_textinput").keyup(function() {
-        if (win.data('status') !== 'offline') {
-          // TODO: to improve
-          win.find(".jsxc-warning-notbuddy").remove();
-        }
-      });
-    }
+    jsxc.gui.window.checkBuddy(bid);
 
     $(document).trigger('init.window.jsxc', [win]);
 
     return win;
+  },
+
+  /**
+   * Check status and presence suscribtion of buddy to display warnings in chat window
+   * @param bid
+   */
+  checkBuddy : function(bid) {
+
+    if (!bid) {
+      throw new Error("Invalid argument: " + bid);
+    }
+
+    // retrieve window
+    var win = jsxc.gui.window.get(bid);
+    if (win.length < 1) {
+      jsxc.debug("Buddy checks aborted, unable to find window", {bid : bid, win : win});
+      return;
+    }
+
+    // retrieve informations
+    var node = Strophe.getNodeFromJid(bid);
+    var data = jsxc.storage.getUserItem('buddy', bid);
+
+    // remove old warnings
+    win.find('.jsxc-warning-offline').remove();
+    win.find('.jsxc-warning-notbuddy').remove();
+
+    // show warning if user is not a buddy
+    if (data.sub !== "both") {
+      win.find('.jsxc_textarea').prepend("<div class='jsxc-warning-notbuddy'><i>" + node +
+          "</i> n'est pas dans vos contacts. Votre interlocuteur est peut être déconnecté ou peut refuser " +
+          "de voir vos messages.</div>");
+    }
+
+    else {
+
+      // display warning if buddy is offline
+      if (data.status === jsxc.CONST.STATUS.indexOf('offline')) {
+        win.find('.jsxc_textarea').prepend(
+            "<div class='jsxc-warning-offline'><i>" + node + "</i> est à présent déconnecté</div>");
+      }
+
+    }
+
   },
 
   /**

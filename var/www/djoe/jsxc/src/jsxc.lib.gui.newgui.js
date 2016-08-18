@@ -282,8 +282,6 @@ jsxc.newgui = {
       self.chatSidebarContent.showContent('jsxc-search-users');
     });
 
-    $("#jsxc-chat-sidebar-search-invite").button();
-
     var searchBar = $('#jsxc-chat-sidebar-search');
 
     searchBar.keyup(function() {
@@ -319,8 +317,8 @@ jsxc.newgui = {
     list.empty();
 
     var displayed = 0;
-
     var ownJid = Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid);
+
     $.each(results, function(index, element) {
 
       if (element.jid === ownJid) {
@@ -335,11 +333,27 @@ jsxc.newgui = {
 
       res.data('jid', element.jid);
 
+      // element to show is a buddy, an special icon is displayed and switched with checked icon on
+      // selection
       if (element._is_buddy === true) {
+        res.attr('title', element.username + " est dans vos contacts");
         res.addClass("jsxc-search-result-buddie");
+        res.click(function() {
+
+          if (res.hasClass("jsxc-search-result-buddie")) {
+            res.removeClass("jsxc-search-result-buddie");
+            res.addClass("jsxc-checked");
+          } else {
+            res.removeClass("jsxc-checked");
+            res.addClass("jsxc-search-result-buddie");
+          }
+
+        });
       }
 
+      // element to show is not a buddy
       else {
+        res.attr('title', element.username + " n'est pas dans vos contacts");
         res.click(function() {
           res.toggleClass("jsxc-checked");
         });

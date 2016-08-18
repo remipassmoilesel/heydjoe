@@ -1,18 +1,23 @@
-
+/**
+  Class applyed when user select multiple elements
+*/
 .jsxc-checked {
   text-decoration: underline;
-}
 
-.jsxc-checked:after {
-  content: " ";
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  background-size: 90%;
-  background-repeat: no-repeat;
-  margin: 0 3px 0 3px;
+  &:after {
 
-  background-image: image-url('newgui/check.svg');
+    content: " ";
+    width: 1em;
+    height: 0.9em;
+    display: inline-block;
+    background-size: 90%;
+    background-repeat: no-repeat;
+    margin: 0 0.5em 0 0.5em;
+
+    background-image: url('../img/newgui/check.svg');
+
+  }
+
 }
 
 .jsxc_right {
@@ -28,22 +33,20 @@
 .jsxc_rosterIsEmptyMessage {
   text-decoration: none;
   cursor: pointer;
-}
-
-.jsxc_rosterIsEmptyMessage:hover {
-  text-decoration: underline;
-  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
 }
 
 .jsxc-reconnect-message {
   text-decoration: none;
   cursor: pointer;
   margin: 1em;
-}
-
-.jsxc-reconnect-message:hover {
-  text-decoration: underline;
-  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
 }
 
 .jsxc-warning-offline {
@@ -520,7 +523,6 @@ img.jsxc_vCard {
 .jsxc_noNotice {
   cursor: default;
 }
-
 
 /**
    Ressources links and display in media panel

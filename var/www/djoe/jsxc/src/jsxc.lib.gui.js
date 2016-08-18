@@ -1372,24 +1372,55 @@ jsxc.gui = {
     });
   },
 
+  /**
+   * Show a warning if an unknown sender sent messages
+   *
+   * @param bid
+   * @param acceptMessage
+   */
   showUnknownSender : function(bid) {
+
     var confirmationText = jsxc.t('You_received_a_message_from_an_unknown_sender_', {
       sender : bid
     });
-    jsxc.gui.showConfirmDialog(confirmationText, function() {
 
-      jsxc.gui.dialog.close();
+    jsxc.gui.showConfirmDialog(confirmationText,
 
-      jsxc.storage.saveBuddy(bid, {
-        jid : bid, name : bid, status : 0, sub : 'none', res : []
-      });
+        /**
+         * User accept to see messages
+         */
+        function() {
 
-      jsxc.gui.window.open(bid);
+          jsxc.gui.dialog.close();
 
-    }, function() {
-      // reset state
-      jsxc.storage.removeUserItem('chat', bid);
-    });
+          // save buddy
+          jsxc.storage.saveBuddy(bid, {
+            jid : bid, name : bid, status : 0, sub : 'none', res : []
+          });
+
+          // init window and post reveived messages
+          jsxc.gui.window.init(bid);
+
+          var history = jsxc.storage.getUserItem('unknown-user-chat-history', bid);
+
+          // clear history
+          jsxc.storage.setUserItem('unknown-user-chat-history', bid, []);
+
+          $.each(history, function(index, message) {
+            jsxc.gui.window.postMessage(message);
+          });
+
+          jsxc.gui.window.open(bid);
+
+        },
+
+        /**
+         * User refused to see messages
+         */
+        function() {
+          jsxc.storage.setUserItem('unknown-user-chat-history', bid, []);
+        });
+
   },
 
   showSelectionDialog : function(header, msg, primary, option, primaryLabel, optionLabel) {

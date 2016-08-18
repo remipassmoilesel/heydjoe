@@ -474,45 +474,67 @@ TODO: Set up variables:
   }
 
   /**
-    Possible content of chat sidebar
+    Possible viewport of chat sidebar, to allow user to search other users to invite them or to chat with
   */
   #jsxc-search-users {
 
     display: none;
 
+    /**
+       Text field to enter search terms
+    */
     #jsxc-chat-sidebar-search {
       position: relative;
 
       border: solid 1px #DDDDDD;
       height: 2em;
       color: #222222;
-      width: 64%;
+      width: 40%;
 
       margin: 0.2em;
       margin-left: 0.6em;
       padding: 0.2em;
     }
 
+    /**
+      Button to invite checked budies
+    */
     #jsxc-chat-sidebar-search-invite {
+      position: relative;
+
+      width: 22%;
+      line-height: 0.7em;
+
+      margin: 0em;
+      padding: 0.2em;
+    }
+
+    /**
+      Button to open a chat window with users
+    */
+    #jsxc-chat-sidebar-search-chat {
       position: relative;
 
       width: 24%;
       line-height: 0.7em;
 
-      margin: 0.2em;
+      margin: 0em;
       padding: 0.2em;
     }
 
     .jsxc-search-result-buddie:after {
 
-      width: 1em;
-      height: 1em;
-      display: inline-block;
-      background-size: 100%;
-      background-repeat: no-repeat;
-      margin: 0 6px 0 6px;
+      content: ' ';
 
-      content: image-url("user_list_buddy.png");
+      display: inline-block;
+      width: 1em;
+      height: 0.9em;
+      margin: 0 0.5em 0 0.5em;
+
+      background-size: 90%;
+      background-repeat: no-repeat;
+      background-image: image-url("newgui/user-search-buddy.svg");
+
     }
 
     .jsxc-search-user-entry {

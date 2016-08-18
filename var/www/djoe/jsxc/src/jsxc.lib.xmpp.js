@@ -1025,6 +1025,7 @@ jsxc.xmpp = {
     }
 
     jsxc.gui.update(bid);
+    jsxc.gui.window.checkBuddy(bid);
     jsxc.gui.roster.reorder(bid);
 
     $(document).trigger('presence.jsxc', [from, status, presence]);
@@ -1107,29 +1108,40 @@ jsxc.xmpp = {
     var data = jsxc.storage.getUserItem('buddy', bid);
     var request = $(message).find("request[xmlns='urn:xmpp:receipts']");
 
+    // jid not in roster
     if (data === null) {
-      // jid not in roster
 
-      var chat = jsxc.storage.getUserItem('chat', bid) || [];
+      // load eventual previous messages
+      var unknownHistory = jsxc.storage.getUserItem('unknown-user-chat-history', bid) || [];
 
-      if (chat.length === 0) {
-        jsxc.notice.add(jsxc.t('Unknown_sender'),
-            jsxc.t('You_received_a_message_from_an_unknown_sender') + ' (' + bid + ').',
+      // show notice if necessary
+      if (unknownHistory.length < 1) {
+        jsxc.notice.add("Utilisateur inconnu",
+            "Vous avez reçu un message d'un utilisateur inconnu: " + Strophe.getNodeFromJid(bid),
             'gui.showUnknownSender', [bid]);
       }
 
-      var msg = jsxc.removeHTML(body);
-      msg = jsxc.escapeHTML(msg);
+      // keep message to eventually restore it
+      var messageToPost = {
+        bid : bid,
+        direction : jsxc.Message.IN,
+        msg : body,
+        encrypted : false,
+        forwarded : forwarded,
+        stamp : stamp
+      };
 
-      jsxc.storage.saveMessage(bid, 'in', msg, false, forwarded, stamp);
-
+      // save history, only 10 last messages
+      unknownHistory.push(messageToPost);
+      jsxc.storage.setUserItem('unknown-user-chat-history', bid, unknownHistory.slice(-10));
+      
       return true;
     }
 
     var win = jsxc.gui.window.init(bid);
 
     // If we now the full jid, we use it
-    if (type === 'chat') {
+    if (type === 'chat' && Strophe.getResourceFromJid(from) !== null) {
       win.data('jid', from);
       jsxc.storage.updateUserItem('buddy', bid, {
         jid : from
