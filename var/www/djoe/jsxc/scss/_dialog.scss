@@ -1,0 +1,126 @@
+
+#jsxc_dialog {
+  padding: 20px;
+  min-width: 320px;
+  max-width: 100%;
+  display: inline-block;
+  text-align: left;
+  position: relative;
+  background: #FFF;
+  width: auto;
+  border-radius: 5px;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    margin: 0;
+    padding: 0;
+  }
+
+  p {
+    margin-bottom: 1em;
+
+    input {
+      margin-bottom: 5px;
+      width: 60%;
+      outline: none;
+    }
+
+    input[type="submit"] {
+      width: auto;
+    }
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-size: 120%;
+    font-weight: bold;
+    margin-bottom: 10px;
+    margin-top: 20px;
+  }
+
+  .jsxc_right {
+    margin-top: 20px;
+  }
+
+  form {
+    fieldset {
+      margin-bottom: 30px;
+      padding: 0px 30px;
+      border: 1px solid #d9d9d9;
+
+      h3 {
+        font-size: 15px;
+        color: #000;
+        background-color: #f2f2f2;
+        padding: 10px;
+        margin: 0 -30px 10px -30px;
+      }
+    }
+
+    /*&.col-sm-6:nth-child(odd) {
+       clear: left;
+    }*/
+  }
+
+  legend {
+    border: 0;
+    font-size: 20px;
+  }
+
+  input {
+    outline: none;
+
+    &:invalid {
+      border: 1px solid $dialog_input_invalid;
+    }
+  }
+
+  .btn-group button {
+    margin-right: 0;
+  }
+
+  input[readonly] {
+    background-color: $dialog_input_readonly_bg;
+  }
+
+  .jsxc_inputinfo {
+    padding-left: 30%;
+    font-style: italic;
+    margin-top: -1em;
+  }
+
+  .jsxc_waiting {
+    &:before {
+      content: " ";
+      width: 1em;
+      height: 1em;
+      display: inline-block;
+      background-size: 100%;
+      margin: 0 3px 0 0;
+      background-image: image-url("loading.gif");
+    }
+  }
+
+  .jsxc_libraries, .jsxc_credits {
+    max-width: 300px;
+  }
+
+  .jsxc-etherpad-name {
+    margin: 0.7em;
+  }
+}

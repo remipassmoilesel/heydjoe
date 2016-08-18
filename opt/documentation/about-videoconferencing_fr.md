@@ -54,6 +54,7 @@ Ce qui donne pour notre exemple la séquence suivante:
 ![Principe de vidéo conférence en paire à paire](https://raw.githubusercontent.com/remipassmoilesel/djoe/master/documentation/notes/videoconference.png "Principe de vidéo conférence en paire à paire")
 
 ## Messages
+
 Les messages utilisés sont dérivés de la stanza XMPP `message` permettant d'envoyer à n'importe quel utilisateur un message texte ou plus de données si nécéssaire.
 
 Les messages utilisés ci-dessous ont toujours ces caractéristiques:
@@ -98,6 +99,13 @@ _Exemple de message_:
                      message='Remi vous invite à une vidéoconférence avec ...'/>
     </message>
 ```
+
+
+**Séquence d'initation de vidéoconférence:**
+* L'initiateur envoi une invitation à tous les participants
+* Chaque participants peut:
+  * Accepter la conférence, et envoyer un message d'acceptation à tous les participants
+  * Ou décliner la conférence, et envoyer un message d'arrêt à tous les participants
 
 ## Réception d'une invitation
 

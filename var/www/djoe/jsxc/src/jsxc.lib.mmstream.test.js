@@ -90,7 +90,7 @@ jsxc.mmstream.testCases = [
       };
 
       assert.ok(JSON.stringify(computed2) === JSON.stringify(expected2),
-          "Destinations selection ok (complete)");
+          "Destinations selection (complete)");
 
     }
   },
@@ -105,8 +105,19 @@ jsxc.mmstream.testCases = [
       var user = "a@domain.net/heyhey";
 
       self._setUserStatus(user, self.USER_STATUS.READY);
-      assert.ok(self._isBuddyReady(user) === true, "READY ok");
-      assert.ok(self._isBuddyParticipatingToVideoconference(user) === true, "Participating ok");
+      assert.ok(self._isBuddyReady(user) === true, "test status = READY");
+
+      self._setUserType(user, self.USER_TYPE.VIDEOCONF_INITIATOR);
+      assert.ok(self._isBuddyParticipatingToVideoconference(user) === true,
+          " test status = PARTICIPATING 1");
+
+      self._setUserType(user, self.USER_TYPE.VIDEOCONF_PARTICIPANT);
+      assert.ok(self._isBuddyParticipatingToVideoconference(user) === true,
+          " test status = PARTICIPATING 2");
+
+      self._setUserStatus(user, self.USER_STATUS.REJECTED);
+      assert.ok(self._isBuddyParticipatingToVideoconference(user) !== true,
+          " test status = PARTICIPATING 3");
 
       // delte user after, to not alter JSXC service
       delete self.videoconference.users[user];

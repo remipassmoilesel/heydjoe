@@ -83,7 +83,7 @@ jsxc.gui.window = {
   },
 
   /**
-   * Init a window skeleton
+   * Init a window skeleton, if necessary, or return existing window
    *
    * @memberOf jsxc.gui.window
    * @param {String} bid
@@ -91,6 +91,7 @@ jsxc.gui.window = {
    */
   init : function(bid) {
 
+    // if window already exist, return the existing one
     if (jsxc.gui.window.get(bid).length > 0) {
       return jsxc.gui.window.get(bid);
     }
@@ -293,9 +294,55 @@ jsxc.gui.window = {
       jsxc.otr.enable(bid);
     }
 
+    jsxc.gui.window.checkBuddy(bid);
+
     $(document).trigger('init.window.jsxc', [win]);
 
     return win;
+  },
+
+  /**
+   * Check status and presence suscribtion of buddy to display warnings in chat window
+   * @param bid
+   */
+  checkBuddy : function(bid) {
+
+    if (!bid) {
+      throw new Error("Invalid argument: " + bid);
+    }
+
+    // retrieve window
+    var win = jsxc.gui.window.get(bid);
+    if (win.length < 1) {
+      jsxc.debug("Buddy checks aborted, unable to find window", {bid : bid, win : win});
+      return;
+    }
+
+    // retrieve informations
+    var node = Strophe.getNodeFromJid(bid);
+    var data = jsxc.storage.getUserItem('buddy', bid);
+
+    // remove old warnings
+    win.find('.jsxc-warning-offline').remove();
+    win.find('.jsxc-warning-notbuddy').remove();
+
+    // show warning if user is not a buddy
+    if (data.sub !== "both") {
+      win.find('.jsxc_textarea').prepend("<div class='jsxc-warning-notbuddy'><i>" + node +
+          "</i> n'est pas dans vos contacts. Votre interlocuteur est peut être déconnecté ou peut refuser " +
+          "de voir vos messages.</div>");
+    }
+
+    else {
+
+      // display warning if buddy is offline
+      if (data.status === jsxc.CONST.STATUS.indexOf('offline')) {
+        win.find('.jsxc_textarea').prepend(
+            "<div class='jsxc-warning-offline'><i>" + node + "</i> est à présent déconnecté</div>");
+      }
+
+    }
+
   },
 
   /**
@@ -474,15 +521,6 @@ jsxc.gui.window = {
   _show : function(bid) {
     var win = jsxc.gui.window.get(bid);
     var duration = 0;
-
-    if (jsxc.isExtraSmallDevice()) {
-      if (parseFloat($('#jsxc_roster').css('right')) >= 0) {
-        duration = jsxc.gui.roster.toggle();
-      }
-
-      jsxc.gui.window.hide();
-      jsxc.gui.window.fullsize(bid);
-    }
 
     win.removeClass('jsxc_min').addClass('jsxc_normal');
     win.find('.jsxc_window').css('bottom', '0');
@@ -711,29 +749,32 @@ jsxc.gui.window = {
       jsxc.gui.window.highlight(bid);
     }
 
-    msg = msg.replace(jsxc.CONST.REGEX.URL, function(url) {
+    // msg = msg.replace(jsxc.CONST.REGEX.URL, function(url) {
+    //
+    //   var href = (url.match(/^https?:\/\//i)) ? url : 'http://' + url;
+    //
+    //   // @TODO use jquery element builder
+    //   return '<a href="' + href + '" target="_blank">' + url + '</a>';
+    // });
 
-      var href = (url.match(/^https?:\/\//i)) ? url : 'http://' + url;
+    // search ressources and replace urls
+    msg = jsxc.ressources.enlightenRessourcesInText(msg);
 
-      // @TODO use jquery element builder
-      return '<a href="' + href + '" target="_blank">' + url + '</a>';
-    });
-
-    msg = msg.replace(
-        new RegExp('(xmpp:)?(' + jsxc.CONST.REGEX.JID.source + ')(\\?[^\\s]+\\b)?', 'i'),
-        function(match, protocol, jid, action) {
-          if (protocol === 'xmpp:') {
-            if (typeof action === 'string') {
-              jid += action;
-            }
-
-            // @TODO use jquery element builder
-            return '<a href="xmpp:' + jid + '">xmpp:' + jid + '</a>';
-          }
-
-          // @TODO use jquery element builder
-          return '<a href="mailto:' + jid + '" target="_blank">mailto:' + jid + '</a>';
-        });
+    // msg = msg.replace(
+    //     new RegExp('(xmpp:)?(' + jsxc.CONST.REGEX.JID.source + ')(\\?[^\\s]+\\b)?', 'i'),
+    //     function(match, protocol, jid, action) {
+    //       if (protocol === 'xmpp:') {
+    //         if (typeof action === 'string') {
+    //           jid += action;
+    //         }
+    //
+    //         // @TODO use jquery element builder
+    //         return '<a href="xmpp:' + jid + '">xmpp:' + jid + '</a>';
+    //       }
+    //
+    //       // @TODO use jquery element builder
+    //       return '<a href="mailto:' + jid + '" target="_blank">mailto:' + jid + '</a>';
+    //     });
 
     // replace emoticons from XEP-0038 and pidgin with shortnames
     $.each(jsxc.gui.emotions, function(i, val) {

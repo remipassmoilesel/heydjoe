@@ -1,11 +1,6 @@
 /**
  * New Multimedia Stream Manager
  *
- * Intend to replace jsxc.lib.webrtc.js
- *
- * Modules can be switched by use jsxc.multimediaStreamSystem in
- * jsxc.lib.js
- *
  */
 
 jsxc.mmstream = {
@@ -267,6 +262,45 @@ jsxc.mmstream = {
   conn : null,
 
   /**
+   * Initialize and configure multimedia stream manager
+   */
+  init : function() {
+
+    var self = jsxc.mmstream;
+
+    // create strophe connexion
+    self.conn = jsxc.xmpp.conn;
+
+    // check if jingle strophe plugin exist
+    if (!self.conn.jingle) {
+      self._log('No jingle plugin found!', null, 'ERROR');
+      return;
+    }
+
+    self.messageHandler = self.conn.addHandler(jsxc.mmstream._onMessageReceived, null, 'message');
+
+    self._registerListenersOnAttached();
+
+    // check screen sharing capabilities
+    if (self._isNavigatorChrome() === true) {
+      self._isChromeExtensionInstalled();
+    }
+
+    var manager = self.conn.jingle.manager;
+
+    // listen for incoming jingle calls
+    manager.on('incoming', self._onIncomingJingleSession.bind(self));
+
+    manager.on('peerStreamAdded', self._onRemoteStreamAdded.bind(self));
+    manager.on('peerStreamRemoved', self._onRemoteStreamRemoved.bind(self));
+
+    self._log("MMStream module init");
+
+    // launch unit testing only in debug mode
+    jsxc.tests.runTests(jsxc.mmstream.testCases);
+  },
+
+  /**
    * Special log function here, to prefix logs
    *
    * @param message
@@ -326,7 +360,7 @@ jsxc.mmstream = {
    * @private
    */
   _setUserStatus : function(fulljid, status, overwrite) {
-    
+
     var self = jsxc.mmstream;
 
     // overwrite value by default
@@ -572,47 +606,6 @@ jsxc.mmstream = {
       }
 
     });
-  },
-
-  /**
-   * Initialize and configure multimedia stream manager
-   */
-  init : function() {
-
-    var self = jsxc.mmstream;
-
-    // create strophe connexion
-    self.conn = jsxc.xmpp.conn;
-
-    // check if jingle strophe plugin exist
-    if (!self.conn.jingle) {
-      self._log('No jingle plugin found!', null, 'ERROR');
-      return;
-    }
-
-    self.messageHandler = self.conn.addHandler(jsxc.mmstream._onMessageReceived, null, 'message');
-
-    self._registerListenersOnAttached();
-
-    // check screen sharing capabilities
-    if (self._isNavigatorChrome() === true) {
-      self._isChromeExtensionInstalled();
-    }
-
-    self.gui._initGui();
-
-    var manager = self.conn.jingle.manager;
-
-    // listen for incoming jingle calls
-    manager.on('incoming', self._onIncomingJingleSession.bind(self));
-
-    manager.on('peerStreamAdded', self._onRemoteStreamAdded.bind(self));
-    manager.on('peerStreamRemoved', self._onRemoteStreamRemoved.bind(self));
-
-    self._log("MMStream module init");
-
-    // launch unit testing only in debug mode
-    jsxc.tests.runTests(jsxc.mmstream.testCases);
   },
 
   /**
@@ -1049,20 +1042,6 @@ jsxc.mmstream = {
 
     // change user status
     self._setUserStatus(user, self.USER_STATUS.READY);
-
-    // special case: if initiator is re-invited in videoconference,
-    // we have to change status of all participants to ready to
-    // make him call them all
-    // if(initiator === user){
-    //
-    //   if(jsxc.mmstream.debug === true){
-    //     self._log("I am initiator, and I have to call everybody");
-    //   }
-    //
-    //   $.each(participants, function(index, element){
-    //     self._setUserStatus(element, self.USER_STATUS.READY);
-    //   });
-    // }
 
     // notify changes
     self._notifyVideoconferenceChanged();
@@ -1775,22 +1754,23 @@ jsxc.mmstream = {
     };
 
     // decline video call
-    var declineRemoteSession = function(error) {
+    var declineRemoteSession = function() {
 
       if (jsxc.mmstream.debug === true) {
         self._log("Call declined", session);
       }
 
-      session.decline();
-
-      jsxc.gui.feedback("Erreur lors de l'accès à la caméra et au micro: " + error);
-
-      self._log("Error while using audio/video", error);
+      session.end("decline", false);
 
       self._setUserStatus(fulljid, self.USER_STATUS.REJECTED);
 
       // notify changes
       self._notifyVideoconferenceChanged();
+    };
+
+    var errorWhileAccessingLocalStream = function(error) {
+      jsxc.gui.feedback("Erreur lors de l'accès à la caméra et au micro: " + error);
+      self._log("Error while using audio/video", error);
     };
 
     /**
@@ -1810,13 +1790,16 @@ jsxc.mmstream = {
             acceptRemoteSession(localStream);
           })
           .fail(function(error) {
-            declineRemoteSession(error);
+            declineRemoteSession();
+            errorWhileAccessingLocalStream(error);
           });
     }
 
     /**
      * Buddy participate to videoconference, accept his stream
-     */ else if (self._isBuddyParticipatingToVideoconference(fulljid) === true) {
+     */
+
+    else if (self._isBuddyParticipatingToVideoconference(fulljid) === true) {
 
       self._log("Participant accepted", {
         session : session, videoconference : self.videoconference
@@ -1838,7 +1821,8 @@ jsxc.mmstream = {
             acceptRemoteSession(localStream);
           })
           .fail(function(error) {
-            declineRemoteSession(error);
+            declineRemoteSession();
+            errorWhileAccessingLocalStream(error);
           });
 
     }
@@ -1855,8 +1839,8 @@ jsxc.mmstream = {
 
       // check if another multimedia session is currently running
       if (self.videoconference.occupied === true) {
-        jsxc.gui.feedback(node + " vous a contacté, mais vous êtes occupé");
-        declineRemoteSession("Occupé");
+        jsxc.gui.feedback("<b>" + node + "</b> vous a contacté, mais vous êtes occupé");
+        declineRemoteSession();
         return;
       }
       self.videoconference.occupied = true;
@@ -1873,13 +1857,15 @@ jsxc.mmstream = {
                   acceptRemoteSession(localStream);
                 })
                 .fail(function(error) {
-                  declineRemoteSession(error);
+                  declineRemoteSession();
+                  errorWhileAccessingLocalStream(error);
                 });
 
           })
 
           .fail(function() {
             jsxc.gui.feedback("Appel rejeté");
+            declineRemoteSession();
           });
     }
 
@@ -1986,9 +1972,9 @@ jsxc.mmstream = {
     // display video stream
     self.gui._showVideoStream(stream, fulljid);
 
-    // show sidebar if needed
-    if (self.gui.isSidepanelShown() !== true) {
-      self.gui.toggleVideoPanel();
+    // show media panel if needed
+    if (jsxc.newgui.isMediapanelShown() !== true) {
+      jsxc.newgui.toggleMediapanel();
     }
 
     // save session and stream
@@ -2211,7 +2197,8 @@ jsxc.mmstream = {
       // hangup and feedback
       self.hangupCall(fulljid);
 
-      jsxc.gui.feedback("Pas de réponse de " + Strophe.getNodeFromJid(fulljid));
+      jsxc.gui.feedback("Pas de réponse de " + Strophe.getNodeFromJid(fulljid) + " au bout de " +
+          (self.HANGUP_IF_NO_RESPONSE / 1000) + " s., l'appel est abandonné.");
 
     }, self.HANGUP_IF_NO_RESPONSE);
 
@@ -2364,15 +2351,18 @@ jsxc.mmstream = {
 
     self._log("Stop stream", stream);
 
-    $.each(stream.getTracks(), function(index, element) {
+    $.each(stream.getTracks(), function(index, track) {
 
-      element.stop();
+      track.stop();
 
-      if (typeof element.enabled !== "undefined") {
-        element.enabled = false;
+      if (typeof track.enabled !== "undefined") {
+        track.enabled = false;
       }
 
+      stream.removeTrack(track);
+
     });
+
   },
 
   /**
@@ -2398,6 +2388,12 @@ jsxc.mmstream = {
     if (self.conn.jingle.localStream) {
       self._stopStream(self.conn.jingle.localStream);
       self.conn.jingle.localStream = null;
+    }
+
+    // stop video element
+    var localVideo = $('#jsxc-media-panel #jsxc-local-video').get(0);
+    if (localVideo) {
+      localVideo.pause();
     }
   },
 
@@ -2432,34 +2428,6 @@ jsxc.mmstream = {
   },
 
   /**
-   * Update icon on presence or on caps.
-   *
-   * If no jid is given, all roster will be updated
-   *
-   * @memberOf jsxc.mmstream
-   * @param ev
-   * @param status
-   * @private
-   */
-  _onXmppEvent : function(ev, jid) {
-
-    var self = jsxc.mmstream;
-
-    if (jid) {
-      self.gui._updateIcon(jsxc.jidToBid(jid));
-      self.gui._updateVideoLink(jsxc.jidToBid(jid));
-    }
-
-    else {
-      self.gui._updateAllIcons();
-      self.gui._updateAllVideoLinks();
-    }
-
-    // preserve handler
-    return true;
-  },
-
-  /**
    * Attach listeners on connect
    * @private
    */
@@ -2467,17 +2435,11 @@ jsxc.mmstream = {
 
     var self = jsxc.mmstream;
 
-    if (self.conn.caps) {
-      $(document).on('caps.strophe', self._onXmppEvent);
-    }
+    // if (self.conn.caps) {
+    //   $(document).on('caps.strophe', self._onXmppEvent);
+    // }
 
     $(document).on('init.window.jsxc', self.gui._initChatWindow);
-
-    // TODO: to improve
-    $(document).on('presence.jsxc', self._onXmppEvent);
-    $(document).on("add.roster.jsxc", self.gui._onXmppEvent);
-    $(document).on("cloaded.roster.jsxc", self.gui._onXmppEvent);
-    $(document).on("buddyListChanged.jsxc", self.gui._onXmppEvent);
 
   },
 
@@ -2489,12 +2451,9 @@ jsxc.mmstream = {
     var self = jsxc.mmstream;
 
     // remove listeners added when attached
-    $(document).off('caps.strophe', self._onXmppEvent);
+    // $(document).off('caps.strophe', self._onXmppEvent);
 
     self.conn.deleteHandler(self.messageHandler);
-
-    // remove all videos
-    $("#jsxc_videoPanel .jsxc_videoThumbContainer").remove();
 
     // stop local stream
     self.stopLocalStream();
@@ -2507,13 +2466,12 @@ jsxc.mmstream = {
 };
 
 $(function() {
-  if (jsxc.multimediaStreamSystem && jsxc.multimediaStreamSystem === "multistream") {
 
-    var self = jsxc.mmstream;
+  var self = jsxc.mmstream;
 
-    $(document).on('attached.jsxc', self.init);
-    $(document).on('disconnected.jsxc', self._onDisconnected);
-    $(document).on('removed.gui.jsxc', self.gui.removeGui);
+  $(document).on('attached.jsxc', self.init);
+  $(document).on('disconnected.jsxc', self._onDisconnected);
+  $(document).on('removed.gui.jsxc', self.gui.removeGui);
 
-  }
 });
+

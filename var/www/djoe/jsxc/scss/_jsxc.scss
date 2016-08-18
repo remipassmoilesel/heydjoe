@@ -1,5 +1,69 @@
+/**
+  Class applyed when user select multiple elements
+*/
+.jsxc-checked {
+  text-decoration: underline;
+
+  &:after {
+
+    content: " ";
+    width: 1em;
+    height: 0.9em;
+    display: inline-block;
+    background-size: 90%;
+    background-repeat: no-repeat;
+    margin: 0 0.5em 0 0.5em;
+
+    background-image: url('../img/newgui/check.svg');
+
+  }
+
+}
+
 .jsxc_right {
   text-align: right;
+}
+
+.jsxc-title {
+  font-weight: bolder;
+  font-size: 1.3em;
+  color: white;
+}
+
+.jsxc_rosterIsEmptyMessage {
+  text-decoration: none;
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+.jsxc-reconnect-message {
+  text-decoration: none;
+  cursor: pointer;
+  margin: 1em;
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+.jsxc-warning-offline {
+  padding: 0.7em;
+  color: black;
+}
+
+.jsxc-warning-notbuddy {
+  padding: 0.7em;
+  color: darkBlue;
+}
+
+.jsxc-custom-tooltip {
+  background: black;
+  opacity: 1;
+  z-index: 800;
+  color: white;
 }
 
 .jsxc_center {
@@ -19,128 +83,6 @@
 
 .jsxc_maxWidth {
   max-width: 500px;
-}
-
-#jsxc_dialog {
-  padding: 20px;
-  min-width: 320px;
-  max-width: 100%;
-  display: inline-block;
-  text-align: left;
-  position: relative;
-  background: #FFF;
-  width: auto;
-  border-radius: 5px;
-
-  * {
-    box-sizing: border-box;
-  }
-
-  ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  li {
-    margin: 0;
-    padding: 0;
-  }
-
-  p {
-    margin-bottom: 1em;
-
-    input {
-      margin-bottom: 5px;
-      width: 60%;
-      outline: none;
-    }
-
-    input[type="submit"] {
-      width: auto;
-    }
-  }
-
-  hr {
-    border: 0;
-    border-top: 1px solid #eee;
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-
-  h3 {
-    font-size: 120%;
-    font-weight: bold;
-    margin-bottom: 10px;
-    margin-top: 20px;
-  }
-
-  .jsxc_right {
-    margin-top: 20px;
-  }
-
-  form {
-    fieldset {
-      margin-bottom: 30px;
-      padding: 0px 30px;
-      border: 1px solid #d9d9d9;
-
-      h3 {
-        font-size: 15px;
-        color: #000;
-        background-color: #f2f2f2;
-        padding: 10px;
-        margin: 0 -30px 10px -30px;
-      }
-    }
-
-    /*&.col-sm-6:nth-child(odd) {
-       clear: left;
-    }*/
-  }
-
-  legend {
-    border: 0;
-    font-size: 20px;
-  }
-
-  input {
-    outline: none;
-
-    &:invalid {
-      border: 1px solid $dialog_input_invalid;
-    }
-  }
-
-  .btn-group button {
-    margin-right: 0;
-  }
-
-  input[readonly] {
-    background-color: $dialog_input_readonly_bg;
-  }
-
-  .jsxc_inputinfo {
-    padding-left: 30%;
-    font-style: italic;
-    margin-top: -1em;
-  }
-
-  .jsxc_waiting {
-    &:before {
-      content: " ";
-      width: 1em;
-      height: 1em;
-      display: inline-block;
-      background-size: 100%;
-      margin: 0 3px 0 0;
-      background-image: image-url("loading.gif");
-    }
-  }
-
-  .jsxc_libraries, .jsxc_credits {
-    max-width: 300px;
-  }
 }
 
 .jsxc_avatar {
@@ -442,7 +384,7 @@ img.jsxc_vCard {
   background-image: image-url("delete_black.svg");
 }
 
-.jsxc_videoicon{
+.jsxc_videoicon {
   background-image: image-url("camera_icon_black.svg");
 }
 
@@ -497,8 +439,7 @@ img.jsxc_vCard {
   }
 }
 
-
-.jsxc_demotour_item{
+.jsxc_demotour_item {
 
   z-index: 9999;
 
@@ -509,12 +450,12 @@ img.jsxc_vCard {
 }
 
 // illustration of Chrome extension installation
-#jsxc_installationIllustration{
+#jsxc_installationIllustration {
   width: 70%;
   margin-left: 10%;
 }
 
-#jsxc_slaveClientWarning{
+#jsxc_slaveClientWarning {
 
   display: block;
   height: 30px;
@@ -533,7 +474,7 @@ img.jsxc_vCard {
   text-align: center;
 }
 
-#jsxc_noStorageWarning{
+#jsxc_noStorageWarning {
 
   display: block;
   height: 30px;
@@ -552,7 +493,7 @@ img.jsxc_vCard {
   text-align: center;
 }
 
-#jsxc_noscript_warning{
+#jsxc_noscript_warning {
 
   display: block;
   height: 30px;
@@ -579,10 +520,37 @@ img.jsxc_vCard {
   display: none;
 }
 
+.jsxc_noNotice {
+  cursor: default;
+}
 
+/**
+   Ressources links and display in media panel
+ */
+.jsxc-media-ressource-link {
+  color: darkblue;
+  cursor: pointer;
+  opacity: 0.8;
+}
 
+.jsxc-media-ressource-link:hover {
+  text-decoration: underline;
+  opacity: 1;
+}
 
+.jsxc-media-ressource-link:after {
 
+  content: " ";
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin: 0 3px 0 3px;
+
+  background-image: image-url('newgui/ressource-link.svg');
+
+}
 
 
 

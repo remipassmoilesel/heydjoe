@@ -1,0 +1,154 @@
+<div id="jsxc-chat-sidebar">
+
+  <!-- Sidebar header, always visible -->
+  <div id="jsxc-chat-sidebar-header">
+
+    <!-- toggle chat only -->
+    <!--<span class="jsxc-toggle-sidebar"></span>-->
+
+    <!-- toggle video -->
+    <span class="jsxc-toggle-mediapanel"></span>
+
+    <span class="jsxc-header-content"></span>
+
+    <!-- close chatsidebar -->
+    <span class="jsxc-close-chatsidebar"></span>
+
+    <!-- open settings menu -->
+    <span class="jsxc-toggle-settings"></span>
+
+  </div>
+
+  <!-- Chat sidebar content -->
+  <div id="jsxc-chat-sidebar-content">
+
+    <!-- Head of content, static -->
+    <div id="jsxc-action-bar">
+
+      <a id="jsxc-new-gui-filter-users">Utilisateurs</a>
+      <a id="jsxc-new-gui-filter-conversations">Discussions</a>
+
+      <a id="jsxc-select-buddies" class="jsxc-checked">Sélectionner</a>
+
+      <span id="jsxc-toggle-actions"></span>
+
+    </div>
+
+    <div id="jsxc-sidebar-content-viewport">
+
+      <div id="jsxc-settings-menu" class="jsxc-viewport-content">
+
+        <div class="jsxc-title">Paramètres</div>
+
+        <a class="jsxc-action_notImplementedYet">Mode muet: on | off</a>
+        <a class="jsxc-action_notImplementedYet">Interdire les appels vidéo: on | off</a>
+        <a class="jsxc-action_notImplementedYet">Notifications de bureau: on | off</a>
+
+        <div class="jsxc-content-separator"></div>
+
+        <a class="jsxc-action_clearLocalHistory">Effacer l'historique local des conversations</a>
+        <a class="jsxc-action_installScreenSharingExtension">Extension de capture d'écran</a>
+
+        <div class="jsxc-content-separator"></div>
+
+        <a class="jsxc-action_notImplementedYet">Données collectées</a>
+
+        <a class="jsxc-show-about-dialog">A propos</a>
+
+      </div>
+
+      <div id="jsxc-actions-menu" class="jsxc-viewport-content">
+
+        <div class="jsxc-title">Menu</div>
+
+        <a class="jsxc-action_search-user">Rechercher un utilisateur</a>
+        <a class="jsxc-action_manage-notifications">Notifications
+          <span class="jsxc_menu_notif_number"></span></a>
+
+        <div class="jsxc-content-separator"></div>
+
+        <a class="jsxc-action_new-conversation">Nouvelle conversation</a>
+        <a class="jsxc-action_invite-in-conversation">Inviter dans une
+          conversation</a>
+
+        <a class="jsxc-action_new-etherpad-document">Ouvrir un document
+          Etherpad</a>
+
+        <div class="jsxc-content-separator"></div>
+
+        <a class="jsxc-action_video-call">Appel vidéo</a>
+        <a class="jsxc-action_videoconference jsxc-action_notImplementedYet">Vidéo conférence</a>
+        <a class="jsxc-action_screensharing jsxc-action_notImplementedYet">Partager mon écran</a>
+
+        <div class="jsxc-content-separator"></div>
+
+        <a class="jsxc-action_delete-buddies">Supprimer</a>
+
+        <div>&nbsp;</div>
+
+      </div>
+
+      <!-- XEP 0055 user search-->
+      <div id="jsxc-search-users" class="jsxc-viewport-content">
+
+        <div class="jsxc-title">Rechercher</div>
+
+        <input id="jsxc-chat-sidebar-search" placeholder="Rechercher ..." type="text"/>
+        <input id="jsxc-chat-sidebar-search-invite" value="Inviter" type="button"/>
+        <input id="jsxc-chat-sidebar-search-chat" value="Discuter" type="button"/>
+
+        <div class="jsxc-search-users-results">
+
+        </div>
+
+      </div>
+
+      <!-- Notifications-->
+      <div id="jsxc-manage-notifications" class="jsxc-viewport-content">
+
+        <div class="jsxc-title">Notifications <span class="jsxc_menu_notif_number"></span></div>
+
+        <div id="jsxc-notifications">
+
+          <!-- Notification inserted here -->
+          <ul>
+
+          </ul>
+
+        </div>
+
+      </div>
+
+      <!-- buddy list, where stored contacts AND buddies -->
+      <div id="jsxc-buddy-list-container" class="jsxc-viewport-content">
+
+        <!-- We need to have a block before buddy list -->
+        <div>&nbsp;</div>
+
+        <ul id="jsxc_buddylist"></ul>
+
+      </div>
+
+    </div>
+
+
+    <div id="jsxc-status-bar">
+
+      <span class="jsxc-user-name"></span>
+
+      <select class="jsxc-select-status">
+        <option value="online" class="jsxc_online" data-i18n="Online"></option>
+        <option value="chat" class="jsxc_chat" data-i18n="Chatty"></option>
+        <option value="away" class="jsxc_away" data-i18n="Away"></option>
+        <option value="xa" class="jsxc_xa" data-i18n="Extended_away"></option>
+        <option value="dnd" class="jsxc_dnd" data-i18n="dnd"></option>
+      </select>
+
+      <span class="jsxc-login-button" title="Connexion"></span>
+      <span class="jsxc-logout-button" title="Déconnexion"></span>
+
+    </div>
+
+  </div>
+
+</div>

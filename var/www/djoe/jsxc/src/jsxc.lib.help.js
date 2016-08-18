@@ -106,8 +106,8 @@ jsxc.help = {
             attachTo : {element : 'body', on : 'top'},
             when : {
               'before-show' : function() {
-                jsxc.gui.roster.toggle("hidden");
-                jsxc.mmstream.gui.toggleVideoPanel(false);
+                // jsxc.gui.roster.toggle("hidden");
+                // jsxc.mmstream.gui.toggleVideoPanel(false);
               }
             }
           },
@@ -120,7 +120,7 @@ jsxc.help = {
             advanceOn : "#jsxc_toggleRoster click",
             when : {
               'before-hide' : function() {
-                jsxc.gui.roster.toggle("shown");
+                // jsxc.gui.roster.toggle("shown");
               }
             }
           },

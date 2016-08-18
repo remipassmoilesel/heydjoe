@@ -349,7 +349,7 @@ jsxc.storage = {
         }
 
         if (key.match(/^presence/)) {
-            jsxc.gui.changePresence(e.newValue, true);
+            jsxc.xmpp.changeOwnPresence(e.newValue, true);
         }
 
         if (key.match(/^options/) && e.newValue) {
@@ -544,10 +544,6 @@ jsxc.storage = {
             n = JSON.parse(e.newValue);
 
             jsxc.xmpp.addBuddy(n.username, n.alias);
-        }
-
-        if (key === 'roster') {
-            jsxc.gui.roster.toggle(e.newValue);
         }
 
         if (jsxc.master && key.match(new RegExp('^vcard' + jsxc.storage.SEP)) && e.newValue !== null && e.newValue.match(/^request:/)) {

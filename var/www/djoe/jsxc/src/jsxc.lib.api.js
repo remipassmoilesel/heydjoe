@@ -8,7 +8,7 @@ jsxc.api = {
   /**
    * Availables events can be used for register callbacks
    */
-  _availableEvents : ['onReconnectDemand', 'onBuddyAdded', 'onBuddyAccepted', "onInit"],
+  _availableEvents : ['onReconnectRequest', 'onBuddyAdded', 'onBuddyAccepted', "onInit"],
 
   /**
    * Registered callbacks
@@ -153,20 +153,58 @@ jsxc.api = {
     if (self.getBuddyList().indexOf(jid) < 0) {
 
       jsxc.storage.setUserItem('buddy', bid, {
-        jid: jid,
-        name: '',
-        status: 0,
-        sub: 'none',
-        msgstate: 0,
-        transferReq: -1,
-        trust: false,
-        res: [],
-        type: 'chat'
+        jid : jid,
+        name : '',
+        status : 0,
+        sub : 'none',
+        msgstate : 0,
+        transferReq : -1,
+        trust : false,
+        res : [],
+        type : 'chat'
       });
     }
 
     // open chat window
     jsxc.gui.window.open(bid);
+
+  },
+
+  /**
+   * Start a new conversation with given JIDs
+   *
+   * If an error occur, feedbacks are shown
+   *
+   */
+  createNewConversationWith : function(jidArray) {
+
+    var createAndInvite = true;
+
+    if (!jidArray || typeof jidArray.length === "undefined") {
+      throw new Error("Invalid argument: " + jidArray);
+    }
+
+    if (jidArray.length < 1) {
+      jsxc.gui.feedback("Vous devez sélectionner au moins un interlocuteur");
+      return;
+    }
+
+    $.each(jidArray, function(index, element) {
+      if (element.match(/.+@.+\..+/i) === null) {
+        jsxc.gui.feedback("Impossible de joindre: " + element);
+        createAndInvite = false;
+      }
+    });
+
+    if (createAndInvite === true) {
+
+      // create conversation
+      var rjid = jsxc.muc.createNewConversationWith(jidArray);
+
+      // invite users
+      jsxc.muc.inviteParticipants(rjid, jidArray);
+
+    }
 
   },
 
@@ -177,30 +215,25 @@ jsxc.api = {
     return jsxc.storage.getUserItem('buddylist') || [];
   },
 
-  isConnected: function(){
+  isConnected : function() {
     return jsxc.xmpp.conn !== null;
   },
 
   /**
    * Check if we are connected, if not show feedback, open roster and throw exception
    */
-  checkIfConnectedOrThrow: function(){
+  checkIfConnectedOrThrow : function() {
 
     var self = jsxc.api;
 
-    if(self.isConnected() !== true){
-      
+    if (self.isConnected() !== true) {
+
       self.feedback("Vous n'êtes pas connecté au client de messagerie");
-      jsxc.gui.roster.toggle("shown");
 
       throw new Error("Not connected to JSXC client");
     }
   },
 
-  /**
-   *
-   * @private
-   */
   spaceInvasion : function() {
 
     var self = jsxc.help;
@@ -260,6 +293,52 @@ jsxc.api = {
 
       resizable : false
     });
+
+  },
+
+  /**
+   * Show a toast and disconnect user
+   */
+  disconnect : function() {
+    jsxc.gui.feedback("Déconnexion en cours");
+    jsxc.xmpp.logout(false);
+  },
+
+  /**
+   * Reconnect user
+   */
+  reconnect : function() {
+    jsxc.gui.feedback("Connexion en cours");
+    var called = jsxc.api.callback("onReconnectRequest");
+    if (called < 1) {
+      jsxc.gui.showLoginBox();
+    }
+  },
+
+  startSimpleVideoCall : function(bid) {
+
+    var node = Strophe.getNodeFromJid(bid);
+    var buddy = jsxc.storage.getUserItem('buddy', bid);
+
+    if (!buddy) {
+      jsxc.gui.feedback("<b>" + node + "</b> n'est pas un utilisateur valide");
+      return;
+    }
+
+    if (buddy.status === jsxc.CONST.STATUS.indexOf("offline")) {
+      jsxc.gui.feedback("<b>" + node + "</b> n'est pas connecté");
+      return;
+    }
+
+    var jid = jsxc.getCurrentActiveJidForBid(bid);
+    if (jid === null) {
+      jsxc.gui.feedback("<b>" + node + "</b> n'est pas disponible");
+      return;
+    }
+
+    jsxc.gui.feedback("Appel vidéo en cours");
+
+    jsxc.mmstream.startSimpleVideoCall(jid);
 
   }
 

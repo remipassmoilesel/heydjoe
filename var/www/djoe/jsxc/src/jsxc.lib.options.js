@@ -316,10 +316,6 @@ jsxc.options = {
       var w = $(window).width() - $('#jsxc_windowListSB').width();
       var h = $(window).height();
 
-      if (jsxc.storage.getUserItem('roster') === 'shown') {
-        w -= $('#jsxc_roster').outerWidth(true);
-      }
-
       return {
         width : w, height : h
       };

@@ -5,11 +5,6 @@
  */
 jsxc = {
 
-  /**
-   * Video and file transfer system
-   */
-  multimediaStreamSystem : "multistream", // "original" || "multistream"
-
   /** Version of jsxc */
   version : '< $ app.version $ >',
 
@@ -151,14 +146,23 @@ jsxc = {
 
     var fulljid = null;
 
+    if (!bid) {
+      throw new Error("Invalid argument: " + bid);
+    }
+
+    // get buddy data
     var buddy = jsxc.storage.getUserItem('buddy', bid);
 
+    if(!buddy){
+      throw new Error("Invalid buddy: " + bid);
+    }
+    
     if (buddy.type && buddy.type === "groupchat") {
-      throw new Error("Cannot update groupchat resource");
+      throw new Error("Cannot update groupchat resource: " + bid);
     }
 
     // jid is present in buddy entrie, return it
-    if (buddy && buddy.jid && Strophe.getResourceFromJid(buddy.jid) !== null) {
+    if (buddy.jid && Strophe.getResourceFromJid(buddy.jid) !== null) {
       return buddy.jid;
     }
 
@@ -171,7 +175,7 @@ jsxc = {
 
     // no res available
     else {
-      jsxc.warn("Invalid buddy entry, no resource available: ", buddy);
+      //jsxc.warn("Invalid buddy entry, no resource available: ", buddy);
 
       return null;
     }
@@ -213,14 +217,13 @@ jsxc = {
     }
 
     // log to console
-    if(level === "ERROR"){
+    if (level === "ERROR") {
       console.error(formatted_msg, data || '');
     }
 
     else {
       console.log(formatted_msg, data || '');
     }
-
 
     // log in stat module if necessary
     if (jsxc.stats && jsxc.stats.addLogEntry) {
@@ -730,6 +733,13 @@ jsxc = {
       $("body").prepend(header);
     }
 
+    /**
+     *
+     * SLAVE UTILISATION DISABLED
+     *
+     * Instead of gui a warning message is displayed
+     *
+     */
     // jsxc.bid = jsxc.jidToBid(jsxc.storage.getItem('jid'));
     //
     // jsxc.gui.init();
@@ -1118,21 +1128,21 @@ jsxc = {
   attachMediaStream : function(element, stream) {
 
     // jsxc.xmpp.conn.jingle.RTC.attachMediaStream(element, stream);
-    
+
     setTimeout(function() {
 
       var video = $(element);
       var src = URL.createObjectURL(stream);
 
-      jsxc.debug("Attach media stream to video element", {"element" : video, "stream" : stream, "src": src});
-      
+      jsxc.debug("Attach media stream to video element",
+          {"element" : video, "stream" : stream, "src" : src});
+
       video.attr('src', src);
 
       //TODO: some browsers (Android Chrome, ...) want a user interaction before trigger play()
       video.get(0).play();
-      
-    }, jsxc.mmstream.DELAY_BEFORE_ATTACH);
 
+    }, jsxc.mmstream.DELAY_BEFORE_ATTACH);
 
   }
 

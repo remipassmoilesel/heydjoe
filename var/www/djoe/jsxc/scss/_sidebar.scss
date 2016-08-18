@@ -1,0 +1,593 @@
+/**
+
+TODO: Set up variables:
+- sidebar width and height
+- opacity before, after hover
+
+*/
+
+/**
+  The chat bar container
+*/
+#jsxc-chat-sidebar {
+
+  z-index: 80;
+
+  position: fixed;
+  bottom: 0px;
+  right: 20px;
+  overflow: hidden;
+
+  background: #1c94d4;
+  width: 250px;
+
+  box-shadow: 3px -3px 3px 3px rgba(0, 0, 0, 0.3);
+
+  /*
+  Don't set height here, sidebar must fit content
+  height: 2.5em;
+  */
+
+  /**
+  Top part of the chat sidebar, width notifications
+*/
+  #jsxc-chat-sidebar-header {
+
+    padding-top: 1.2em;
+    padding-left: 0.8em;
+    height: 30px;
+
+    color: white;
+    font-weight: bolder;
+
+  }
+
+  .jsxc-close-chatsidebar {
+
+    display: inline-block;
+    opacity: 0;
+
+    content: ' ';
+    width: 1em;
+    height: 1em;
+
+    float: right;
+
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin-right: 0.7em;
+    margin-left: 0.7em;
+
+    background-image: image-url('newgui/close.svg');
+
+    cursor: pointer;
+  }
+
+  /**
+    Menu icon to toggle chat sidebar
+  */
+  .jsxc-toggle-sidebar {
+    cursor: pointer;
+    background: image-url('newgui/toggle-sidebar-menu.svg');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    content: ' ';
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    margin-right: 0.7em;
+
+    opacity: 0.7;
+  }
+
+  .jsxc-toggle-sidebar:hover {
+    opacity: 1;
+  }
+
+  /**
+    In chat sidebar, filter display to show only users
+  */
+  #jsxc-new-gui-filter-users {
+    background-color: #EEEEEE;
+    color: silver;
+    cursor: pointer;
+    display: block;
+    float: right;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    width: 50%;
+  }
+
+  /**
+    In chat sidebar, filter display to show only users
+  */
+  #jsxc-new-gui-filter-conversations {
+    background-color: #EEEEEE;
+    color: silver;
+    cursor: pointer;
+    display: block;
+    float: left;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    width: 50%;
+  }
+
+  /**
+    Background of active filter, 'buddies' or 'conversations'
+  */
+  .jsxc-active-filter {
+    background: rgba(255, 255, 255, 0.5) !important;
+    color: rgb(28, 148, 212) !important;
+  }
+
+  /**
+    Center of sidebar, where content can shift between multiple panels
+  */
+  #jsxc-sidebar-content-viewport {
+    height: 68%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    margin: 3px;
+    border: solid 1px silver;
+  }
+
+  #jsxc-select-buddies {
+    display: inline-block;
+    clear: both;
+    padding: 6px;
+    text-align: right;
+    text-decoration: none;
+
+    cursor: pointer;
+    padding-right: 0.7em;
+    opacity: 0.7;
+
+    margin: 0.5em;
+
+  }
+
+  #jsxc-select-buddies:hover {
+    opacity: 1;
+  }
+
+  .jsxc-selection-mode-enabled {
+    background: #e9e9f5;
+    text-decoration: underline !important;
+  }
+
+  /**
+    Content of the chat sidebar
+  */
+  #jsxc-chat-sidebar-content {
+    background: white;
+    height: 0px;
+    overflow: hidden;
+  }
+
+  /**
+    Status bar with select button to change status and disconnect user
+  */
+  #jsxc-status-bar {
+
+    padding: 0.6em;
+
+    .jsxc-user-name {
+      display: block;
+      font-weight: bolder;
+      margin-left: 0.7em;
+    }
+
+    // special display for offline
+    .jsxc-user-name.jsxc_offline {
+      color: gray;
+      font-style: italic;
+    }
+
+    .jsxc-select-status {
+      margin: 0.7em;
+    }
+
+    .jsxc-logout-button {
+      content: ' ';
+      background-image: image-url('newgui/action-logout.svg');
+      background-repeat: no-repeat;
+      background-size: 100%;
+
+      cursor: pointer;
+
+      height: 15px;
+      width: 15px;
+      display: inline-block;
+
+      margin-left: 0.4em;
+      margin-right: 0.4em;
+    }
+
+    .jsxc-login-button {
+      content: ' ';
+      background-image: image-url('newgui/action-login.svg');
+      background-repeat: no-repeat;
+      background-size: 100%;
+
+      cursor: pointer;
+
+      height: 15px;
+      width: 15px;
+      display: inline-block;
+
+      margin-left: 0.4em;
+      margin-right: 0.4em;
+    }
+
+  }
+
+  .jsxc-toggle-settings {
+
+    cursor: pointer;
+
+    background: image-url('newgui/toggle-settings-menu.svg');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    content: ' ';
+
+    display: inline-block;
+
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+
+    margin-left: 0.7em;
+
+    float: right;
+
+    /** not visible first time */
+    opacity: 0;
+
+  }
+
+  #jsxc-toggle-settings:hover {
+    opacity: 1;
+  }
+
+  /**
+  Video icon to toggle chat mediapanel
+*/
+  .jsxc-toggle-mediapanel {
+    cursor: pointer;
+    background: image-url('newgui/toggle-mediapanel.svg');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    content: ' ';
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+
+    margin-right: 0.7em;
+    margin-left: 0.5em;
+    opacity: 0.7;
+  }
+
+  .jsxc-toggle-mediapanel:hover {
+    opacity: 1;
+  }
+
+  /**
+    Floating menu with actions related to buddies and work operations
+  */
+  #jsxc-toggle-actions {
+    content: ' ';
+    background: image-url('newgui/toggle-actions-menu.svg');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    content: ' ';
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+
+    float: right;
+
+    margin-top: 0.9em;
+    margin-left: 0.7em;
+    margin-right: 0.7em;
+
+    cursor: pointer;
+
+    opacity: 0.7;
+
+  }
+
+  #jsxc-toggle-actions:hover {
+    opacity: 1;
+  }
+
+  /**
+    Content of the chat sidebar header
+  */
+  .jsxc-header-content {
+    cursor: pointer;
+  }
+
+  /**
+    Separator used in menu
+
+  */
+  .jsxc-content-separator {
+    content: ' ';
+    height: 0.9em;
+    width: 70%;
+
+    border-bottom: solid 1px silver;
+    margin-bottom: 10px;
+    margin-left: 5px;
+  }
+
+  .jsxc-action_manage-notifications:before {
+
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
+
+    background-image: image-url('newgui/action-manage-notifications.svg');
+
+  }
+
+  .jsxc-action_video-call:before {
+
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
+
+    background-image: image-url('newgui/action-video-call.svg');
+
+  }
+
+  .jsxc-action_videoconference:before {
+
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
+
+    background-image: image-url('newgui/action-videoconference.svg');
+
+  }
+
+  .jsxc-action_screensharing:before {
+
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
+
+    background-image: image-url('newgui/action-screensharing.svg');
+
+  }
+
+  .jsxc-action_search-user:before {
+
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
+
+    background-image: image-url('newgui/action-search-users.svg');
+
+  }
+
+  .jsxc-action_new-conversation:before {
+
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
+
+    background-image: image-url('newgui/action-new-conversation.svg');
+
+  }
+
+  .jsxc-action_invite-in-conversation:before {
+
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
+
+    background-image: image-url('newgui/action-invite-in-conversation.svg');
+
+  }
+
+  .jsxc-action_new-etherpad-document:before {
+
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
+
+    background-image: image-url('newgui/action-new-etherpad-document.svg');
+
+  }
+
+  .jsxc-action_delete-buddies:before {
+
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
+
+    background-image: image-url('newgui/action-delete-buddies.svg');
+
+  }
+
+  .jsxc-action_logout:before {
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
+
+    background-image: image-url('newgui/action-logout.svg');
+
+  }
+
+  .jsxc-action_notImplementedYet {
+    cursor: not-allowed !important;
+  }
+
+  /**
+    Possible viewport of chat sidebar, to allow user to search other users to invite them or to chat with
+  */
+  #jsxc-search-users {
+
+    display: none;
+
+    /**
+       Text field to enter search terms
+    */
+    #jsxc-chat-sidebar-search {
+      position: relative;
+
+      border: solid 1px #DDDDDD;
+      height: 2em;
+      color: #222222;
+      width: 40%;
+
+      margin: 0.2em;
+      margin-left: 0.6em;
+      padding: 0.2em;
+    }
+
+    /**
+      Button to invite checked budies
+    */
+    #jsxc-chat-sidebar-search-invite {
+      position: relative;
+
+      width: 22%;
+      line-height: 0.7em;
+
+      margin: 0em;
+      padding: 0.2em;
+    }
+
+    /**
+      Button to open a chat window with users
+    */
+    #jsxc-chat-sidebar-search-chat {
+      position: relative;
+
+      width: 24%;
+      line-height: 0.7em;
+
+      margin: 0em;
+      padding: 0.2em;
+    }
+
+    .jsxc-search-result-buddie:after {
+
+      content: ' ';
+
+      display: inline-block;
+      width: 1em;
+      height: 0.9em;
+      margin: 0 0.5em 0 0.5em;
+
+      background-size: 90%;
+      background-repeat: no-repeat;
+      background-image: image-url("newgui/user-search-buddy.svg");
+
+    }
+
+    .jsxc-search-user-entry {
+      cursor: pointer;
+      border: solid 1px #cccccc;
+      padding: 0.4em;
+      margin-top: 0.2em;
+    }
+
+    .jsxc-search-users-results {
+      margin: 5px;
+      padding-top: 0.8em;
+    }
+
+    .jsxc-search-users-results a {
+      display: block;
+      width: 100%;
+    }
+
+    .jsxc-search-user-entry {
+      padding: 15px;
+    }
+
+  }
+
+  /**
+    A panel that can be displayed in #...content-viewport
+  */
+  .jsxc-viewport-content {
+
+    display: none;
+    width: 100%;
+    background: white;
+
+    a {
+      display: block;
+      padding: 0.5em;
+      padding-left: 0.7em;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .jsxc-title {
+      margin: 0.7em;
+      font-size: 1.1em;
+      font-weight: bolder;
+      color: darkgray;
+    }
+
+  }
+
+}

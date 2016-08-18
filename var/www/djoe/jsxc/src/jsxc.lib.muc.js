@@ -729,8 +729,8 @@ jsxc.muc = {
    * @param {string} presence Presence stanza
    */
   onPresence : function(event, from, status, presence) {
-    
-    if(!from){
+
+    if (!from) {
       return true;
     }
 
@@ -762,7 +762,7 @@ jsxc.muc = {
 
       jsxc.storage.setUserItem('roomNames', jsxc.xmpp.conn.muc.roomNames);
 
-      if (jsxc.gui.roster.getItem(room).length === 0) {
+      if (jsxc.gui.roster.getItem(room).length < 1) {
         var bl = jsxc.storage.getUserItem('buddylist');
         bl.push(room);
         jsxc.storage.setUserItem('buddylist', bl);
@@ -866,11 +866,11 @@ jsxc.muc = {
    * @returns {Boolean} Returns true on success
    */
   onPresenceError : function(event, from, presence) {
-    
-    if(!from){
+
+    if (!from) {
       return true;
     }
-    
+
     var self = jsxc.muc;
     var xdata = $(presence).find('x[xmlns="' + Strophe.NS.MUC + '"]');
     var room = jsxc.jidToBid(from);
@@ -1142,14 +1142,15 @@ jsxc.muc = {
 
     var self = jsxc.muc;
 
+    jsxc.debug("Invitation sent: ", {room : room, jidArray : jidArray});
+
     $.each(jidArray, function(index, jid) {
 
       jsxc.stats.addEvent("jsxc.muc.invitation.sent");
 
-      self.conn.muc.directInvite(room, jid,
-          "Vous êtes invité à rejoindre une voncersation");
+      self.conn.muc.directInvite(room, jid, "Vous êtes invité à rejoindre une voncersation");
     });
-    
+
   },
 
   /**
@@ -1394,6 +1395,8 @@ jsxc.muc = {
 
     jsxc.stats.addEvent("jsxc.muc.conversation.new");
 
+    jsxc.debug("New conversation created");
+
     var d = new Date();
 
     // prepare title of room. If no title, using all usernames sorted.
@@ -1438,6 +1441,8 @@ jsxc.muc = {
 
     // open window
     jsxc.gui.window.open(roomjid);
+
+    return roomjid;
   },
 
   /**

@@ -74,6 +74,8 @@ jsxc.gui = {
   /**
    * Creates application skeleton.
    *
+   * This function is called every time we are attached
+   *
    * @memberOf jsxc.gui
    */
   init : function() {
@@ -129,6 +131,16 @@ jsxc.gui = {
     // We need this often, so we creates some template jquery objects
     jsxc.gui.windowTemplate = $(jsxc.gui.template.get('chatWindow'));
     jsxc.gui.buddyTemplate = $(jsxc.gui.template.get('rosterBuddy'));
+
+    // change own presence informations
+    var updatePresenceInformations = function(event, pres) {
+      jsxc.gui.updatePresence('own', pres);
+    };
+    // add listener for own presences, and remove it on time
+    $(document).on('ownpresence.jsxc', updatePresenceInformations);
+    $(document).on('disconnected.jsxc', function() {
+      $(document).off('ownpresence.jsxc', updatePresenceInformations);
+    });
   },
 
   /**
@@ -139,8 +151,8 @@ jsxc.gui = {
    */
   tooltip : function(selector) {
     $(selector).tooltip({
-      show : {
-        delay : 600
+      tooltipClass : "jsxc-custom-tooltip", show : {
+        delay : 1000
       }, content : function() {
         return $(this).attr('title').replace(/\n/g, '<br />');
       }
@@ -171,8 +183,15 @@ jsxc.gui = {
     // Add online status
     jsxc.gui.updatePresence(bid, jsxc.CONST.STATUS[data.status]);
 
+    // limite name length to preserve ticks
+    var max = 21;
+    var dspName = "";
+    if (data.name) {
+      dspName = data.name.length > max ? data.name.substring(0, max - 3) + "..." : data.name;
+    }
+
     // Change name and add title
-    ue.find('.jsxc_name:first').add(spot).text(data.name).attr('title', jsxc.t('is_', {
+    ue.find('.jsxc_name:first').add(spot).text(dspName).attr('title', jsxc.t('is_', {
       status : jsxc.t(jsxc.CONST.STATUS[data.status])
     }));
 
@@ -775,6 +794,166 @@ jsxc.gui = {
     });
   },
 
+  showRemoveManyDialog : function(bidArray) {
+
+    // show dialog
+    jsxc.gui.dialog.open(jsxc.gui.template.get('removeManyDialog'));
+
+    var templateList = $('#jsxc_dialog .jsxc_elementsToRemove');
+
+    // show what will be deleted
+    $.each(bidArray, function(index, element) {
+      templateList.append($("<li>").text(element));
+    });
+
+    // delete if OK
+    $('#jsxc_dialog .jsxc_remove').click(function(ev) {
+      ev.stopPropagation();
+
+      $.each(bidArray, function(index, element) {
+
+        var data = jsxc.storage.getUserItem('buddy', element);
+        var type = data.type;
+
+        jsxc.xmpp.removeBuddy(element);
+
+        if (type === "groupchat") {
+          jsxc.xmpp.bookmarks.delete(element, false);
+        }
+
+      });
+
+      // close dialog
+      jsxc.gui.dialog.close();
+
+      jsxc.gui.feedback(bidArray.length + " éléments ont été supprimés");
+    });
+
+    $('#jsxc_dialog .jsxc_cancel').click(function() {
+      jsxc.gui.dialog.close();
+      jsxc.gui.feedback("Opération annulée");
+    });
+
+  },
+
+  /**
+   * Show a feedback message. Type can be 'info' or 'warn'
+   *
+   * @param selector
+   * @returns {JQuery|jQuery|HTMLElement}
+   */
+  feedback : function(message, type, timeout) {
+
+    jsxc.stats.addEvent("jsxc.feedback.toast");
+
+    var defaultType = "info";
+
+    var bgColors = {
+      info : '#1a1a1a', warn : '#520400',
+    };
+    var icons = {
+      info : 'info', warn : 'warning',
+    };
+
+    // show the toast
+    $.toast({
+      text : message, // Text that is to be shown in the toast
+      icon : icons[type || defaultType], // Type of toast icon
+      showHideTransition : 'slide', // fade, slide or plain
+      allowToastClose : true, // Boolean value true or false
+      hideAfter : timeout || 3000, // false to make it sticky or number representing the miliseconds
+                                   // as time after which toast needs to be hidden
+      stack : 3, // false if there should be only one toast at a time or a number representing the
+                 // maximum number of toasts to be shown at a time
+      position : 'top-center', // bottom-left or bottom-right or bottom-center or top-left or
+                               // top-right or top-center or mid-center or an object representing
+                               // the left, right, top, bottom values
+      textAlign : 'left',  // Text alignment i.e. left, right or center
+      loader : false,  // Whether to show loader or not. True by default
+      bgColor : bgColors[type || defaultType], // background color of toast
+    });
+
+  },
+
+  /**
+   * Show a dialog asking for new etherpad document name, and return a promise
+   */
+  showEtherpadCreationDialog : function() {
+
+    var defer = $.Deferred();
+
+    // show dialog
+    jsxc.gui.dialog.open(jsxc.gui.template.get('etherpadCreation'));
+
+    // create user list to invite
+    jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc_dialog_buddylist");
+
+    $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
+      ev.stopPropagation();
+
+      // get name of pad
+      var name = $("#jsxc_dialog .jsxc-etherpad-name").val();
+
+      // get selected items
+      var jids = [];
+      var selectedItems = $("#jsxc_dialog #jsxc_dialog_buddylist .jsxc-checked");
+      $.each(selectedItems, function(index, item) {
+        jids.push($(item).data('bid'));
+      });
+
+      jsxc.gui.dialog.close();
+
+      defer.resolve({
+        name : name, buddies : jids
+      });
+
+    });
+
+    $('#jsxc_dialog .jsxc_cancel').click(function(ev) {
+      ev.stopPropagation();
+
+      jsxc.gui.dialog.close();
+
+      defer.reject("user canceled");
+
+    });
+
+    return defer.promise();
+
+  },
+
+  /**
+   * Show a dialog asking for new etherpad document name, and return a promise
+   */
+  showIncomingEtherpadDialog : function(from) {
+
+    var defer = $.Deferred();
+
+    // show dialog
+    jsxc.gui.dialog.open(jsxc.gui.template.get('incomingEtherpad', from));
+
+    $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
+      ev.stopPropagation();
+
+      jsxc.gui.dialog.close();
+
+      defer.resolve("accepted");
+
+    });
+
+    $('#jsxc_dialog .jsxc_cancel').click(function(ev) {
+      ev.stopPropagation();
+
+      jsxc.gui.dialog.close();
+
+      defer.reject("user canceled");
+
+    });
+
+    return defer.promise();
+
+  },
+
   /**
    * Show a dialog to select a conversation
    *
@@ -787,17 +966,23 @@ jsxc.gui = {
 
     jsxc.gui.dialog.open(jsxc.gui.template.get('conversationSelectionDialog'));
 
-    jsxc.gui.createConversationList("#jsxc_dialogConversationList");
+    jsxc.gui.widgets.createConversationList("#jsxc_dialogConversationList");
 
     $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
       ev.stopPropagation();
 
       // get selected elements
-      var selItems = $("#jsxc_dialogConversationList .ui-selected");
+      var selItems = $("#jsxc_dialogConversationList .jsxc-checked");
+      var res = [];
 
-      defer.resolve(selItems);
+      $.each(selItems, function(index, element) {
+        res.push($(element).data('conversjid'));
+      });
 
       jsxc.gui.dialog.close();
+
+      defer.resolve(res);
+
     });
 
     $('#jsxc_dialog .jsxc_cancel').click(function(ev) {
@@ -887,7 +1072,7 @@ jsxc.gui = {
       jsxc.gui.showDebugLog();
     });
 
-    $('#jsxc_dialog .jsxc_spaceInvasion').click(function(){
+    $('#jsxc_dialog .jsxc_spaceInvasion').click(function() {
       jsxc.api.spaceInvasion();
     });
   },
@@ -1187,24 +1372,55 @@ jsxc.gui = {
     });
   },
 
+  /**
+   * Show a warning if an unknown sender sent messages
+   *
+   * @param bid
+   * @param acceptMessage
+   */
   showUnknownSender : function(bid) {
+
     var confirmationText = jsxc.t('You_received_a_message_from_an_unknown_sender_', {
       sender : bid
     });
-    jsxc.gui.showConfirmDialog(confirmationText, function() {
 
-      jsxc.gui.dialog.close();
+    jsxc.gui.showConfirmDialog(confirmationText,
 
-      jsxc.storage.saveBuddy(bid, {
-        jid : bid, name : bid, status : 0, sub : 'none', res : []
-      });
+        /**
+         * User accept to see messages
+         */
+        function() {
 
-      jsxc.gui.window.open(bid);
+          jsxc.gui.dialog.close();
 
-    }, function() {
-      // reset state
-      jsxc.storage.removeUserItem('chat', bid);
-    });
+          // save buddy
+          jsxc.storage.saveBuddy(bid, {
+            jid : bid, name : bid, status : 0, sub : 'none', res : []
+          });
+
+          // init window and post reveived messages
+          jsxc.gui.window.init(bid);
+
+          var history = jsxc.storage.getUserItem('unknown-user-chat-history', bid);
+
+          // clear history
+          jsxc.storage.setUserItem('unknown-user-chat-history', bid, []);
+
+          $.each(history, function(index, message) {
+            jsxc.gui.window.postMessage(message);
+          });
+
+          jsxc.gui.window.open(bid);
+
+        },
+
+        /**
+         * User refused to see messages
+         */
+        function() {
+          jsxc.storage.setUserItem('unknown-user-chat-history', bid, []);
+        });
+
   },
 
   showSelectionDialog : function(header, msg, primary, option, primaryLabel, optionLabel) {
@@ -1253,28 +1469,6 @@ jsxc.gui = {
     if (opt.primary && opt.option.cb) {
       dialog.find('.btn-primary').click(opt.option.cb);
     }
-  },
-
-  /**
-   * Change own presence to pres.
-   *
-   * @memberOf jsxc.gui
-   * @param pres {CONST.STATUS} New presence state
-   * @param external {boolean} True if triggered from other tab.
-   */
-  changePresence : function(pres, external) {
-
-    if (external !== true) {
-      jsxc.storage.setUserItem('presence', pres);
-    }
-
-    if (jsxc.master) {
-      jsxc.xmpp.sendPres();
-    }
-
-    $('#jsxc_presence > span').text($('#jsxc_presence .jsxc_inner ul .jsxc_' + pres).text());
-
-    jsxc.gui.updatePresence('own', pres);
   },
 
   /**
