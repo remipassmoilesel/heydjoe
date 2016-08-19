@@ -271,7 +271,11 @@ jsxc.mmstream.gui = {
     }
 
     // search element to remove
-    self.mediapanel.find(".jsxc_videoCallContainer video[data-fromjid='" + fulljid + "']").remove();
+    $("video").each(function() {
+      if ($(this).data("fromjid") === fulljid) {
+        jsxc.newgui.removeMediaRessource($(this).parents(".jsxc-media-ressource"));
+      }
+    });
 
   },
 
