@@ -107,7 +107,7 @@ jsxc.gui.widgets = {
     root.addClass("jsxc_buddy-list-container");
 
     // add list
-    var list = $("<ul class='jsxc-buddy-list'></ul>");
+    var list = $("<ul class='jsxc-selectable-buddy-list'></ul>");
     root.append(list);
 
     // update lists
