@@ -28,10 +28,44 @@ jsxc.ressources = {
    * Analyse text and return HTML code containing links to display ressources in the ressource
    * panel
    */
-  enlightenRessourcesInText : function(text) {
+  processRessourcesInText : function(text) {
 
     var self = jsxc.ressources;
 
+    /**
+     * Manager and ressource stack serves to prevent two filter to process
+     * the same ressource.
+     *
+     * Every filter have to test ressource before process it and
+     * register before processing
+     * @type {Array}
+     * @private
+     */
+    var _resStack = [];
+    var manager = {
+
+      _resStack : [],
+
+      /**
+       * Save ressource processed to prevent that
+       * other filter process it after
+       * @param res
+       */
+      saveRessource : function(res) {
+        _resStack.push(res);
+      },
+
+      /**
+       * Return true if filter can process ressource
+       * @param res
+       * @returns {boolean}
+       */
+      isFree : function(res) {
+        return _resStack.indexOf(res) === -1;
+      }
+    };
+
+    // iterate filters
     $.each(self.MEDIA_RESSOURCES, function(index, filter) {
 
       // here regex must be an array !
@@ -39,12 +73,41 @@ jsxc.ressources = {
         throw new Error("'regex' must be an array");
       }
 
+      var name = filter.name;
+
       for (var i = 0; i < filter.regex.length; i++) {
 
         var regex = filter.regex[i];
 
+        // text match filter
         if (text.match(regex)) {
-          text = text.replace(regex, filter.filterFunction);
+          text = text.replace(regex, function(match) {
+
+            // ressource have not been processed
+            if (manager.isFree(match)) {
+
+              manager.saveRessource(match);
+
+              // if filter provide link ask it
+              if (filter.getLink) {
+                // ask link with same arguments as filter function for replace
+                // to get access to all capturing groups
+                return filter.getLink.apply(self, arguments);
+              }
+
+              // otherwise default is show in mediapanel
+              else {
+                return self._getShowRessourceLink(match, name);
+              }
+
+            }
+
+            // ressource have already be processed
+            else {
+              return match;
+            }
+
+          });
         }
 
       }
@@ -66,12 +129,6 @@ jsxc.ressources = {
 
       //https://www.youtube.com/watch?v=FbuluDBHpfQ
       regex : [/https?:\/\/(www\.)?youtube\.[a-z]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/ig],
-
-      filterFunction : function() {
-        var self = jsxc.ressources;
-        var match = arguments[0];
-        return self._getShowRessourceLink(match, 'youtube');
-      },
 
       getEmbedded : function(ressourceOnly) {
         var self = jsxc.ressources;
@@ -96,12 +153,6 @@ jsxc.ressources = {
 //https://www.youtube.com/watch?v=FbuluDBHpfQ
       regex : [/https?:\/\/(www\.)?dailymotion\.[a-z]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/ig],
 
-      filterFunction : function() {
-        var self = jsxc.ressources;
-        var match = arguments[0];
-        return self._getShowRessourceLink(match, 'dailymotion');
-      },
-
       getEmbedded : function(ressourceOnly) {
         var self = jsxc.ressources;
 
@@ -120,27 +171,68 @@ jsxc.ressources = {
 
     },
 
-//     {
-//       name : 'http/https',
-//
-// //https://www.youtube.com/watch?v=FbuluDBHpfQ
-//       regex : [jsxc.CONST.REGEX.URL],
-//
-//       filterFunction : function() {
-//         var self = jsxc.ressources;
-//         var match = arguments[0];
-//         return self._getTrueLink(match);
-//       },
-//
-//       getEmbedded : function() {
-//         // don't return anything, just open in a naew window
-//         return null;
-//       }
-//
-//     }
+    {
+      name : 'http/https',
+
+      //https://www.youtube.com/watch?v=FbuluDBHpfQ
+      regex : [jsxc.CONST.REGEX.URL],
+
+      getLink : function(match) {
+        var self = jsxc.ressources;
+        return self._getTrueLink(match);
+      }
+
+    },
+
+    {
+      name : 'etherpad',
+
+      //++etherpad:etherpadid
+      //++e:etherpadid
+      regex : [/\+\+(e|etherpad):([-_a-z0-9]+)/ig],
+
+      getLink : function(match, prefix, etherpadId) {
+        var self = jsxc.ressources;
+        return self._getEtherpadLink(etherpadId);
+      }
+
+    },
+
+    {
+      name : 'spaceInvasion',
+
+      //++etherpad:etherpadid
+      //++e:etherpadid
+      regex : [/\+\+(spaceinvasion)/ig],
+
+      getLink : function() {
+        var self = jsxc.ressources;
+        return self._getSpaceInvasionLink();
+      }
+
+    },
+
+    {
+      name : 'user',
+
+      //++remi
+      regex : [/\+\+([-_a-z0-9]+)/ig],
+
+      getLink : function(match, user) {
+        var self = jsxc.ressources;
+        return self._getChatLink(user);
+      }
+
+    }
 
   ],
 
+  /**
+   * Return embedded code for a ressource
+   * @param name
+   * @param ressourceOnly
+   * @returns {*}
+   */
   getEmbeddedFor : function(name, ressourceOnly) {
 
     var self = jsxc.ressources;
@@ -157,7 +249,14 @@ jsxc.ressources = {
       throw new Error("Invalid ressource: " + name + " / " + ressourceOnly);
     }
 
-    return media.getEmbedded(ressourceOnly);
+    if (media.getEmbedded) {
+      return media.getEmbedded(ressourceOnly);
+    }
+
+    else {
+      return null;
+    }
+
   },
 
   _getEmbeddedErrorBlock : function(ressource) {
@@ -166,7 +265,7 @@ jsxc.ressources = {
   },
 
   /**
-   * Return an HTML link
+   * Return an HTML/Javascript link to open a ressource
    * @param ressource
    * @returns {string}
    * @private
@@ -186,9 +285,48 @@ jsxc.ressources = {
     // add prefix to ressource
     ressource = prefix ? prefix + ":" + ressource : ressource;
 
+    var title = "Ouvrir: " + ressource;
+
     // return HTML link
-    return '<a class="jsxc-media-ressource-link" onclick="jsxc.newgui.openMediaRessource(\'' +
-        ressource + '\')">' + ressourceLabel + '</a>';
+    return '<a class="jsxc-media-ressource-link" title="' + title +
+        '" onclick="jsxc.newgui.openMediaRessource(\'' + ressource + '\')">' + ressourceLabel +
+        '</a>';
+  },
+
+  /**
+   * Return a link to chat with someone
+   * @param user
+   * @returns {string}
+   * @private
+   */
+  _getChatLink : function(user) {
+
+    // format ressource to show it
+    var ressourceLabel = user.length < 50 ? user : user.substr(0, 17) + "...";
+
+    var jid = user + "@" + jsxc.options.xmpp.domain;
+
+    var title = "Discuter avec: " + user;
+
+    return '<a class="jsxc-media-ressource-link" title="' + title +
+        '" onclick="jsxc.api.openChatWindow(\'' + jid + '\')">' + ressourceLabel + '</a>';
+  },
+
+  /**
+   * Return a link to chat with someone
+   * @param user
+   * @returns {string}
+   * @private
+   */
+  _getEtherpadLink : function(etherpadId) {
+
+    // format ressource to show it
+    var ressourceLabel = etherpadId.length < 50 ? etherpadId : etherpadId.substr(0, 17) + "...";
+
+    var title = "Ouvrir un pas: " + etherpadId;
+
+    return '<a class="jsxc-media-ressource-link" title="' + title +
+        '" onclick="jsxc.etherpad.openpad(\'' + etherpadId + '\')">' + ressourceLabel + '</a>';
   },
 
   _getTrueLink : function(href) {
@@ -196,9 +334,16 @@ jsxc.ressources = {
     // format ressource to show it
     var ressourceLabel = href.length < 50 ? href : href.substr(0, 17) + "...";
 
-    return '<a class="jsxc-media-ressource-link" target="_blank" href="' + href + '">' +
-        ressourceLabel + '</a>';
+    var title = "Ouvrir dans une nouvelle fenêtre: " + href;
 
+    return '<a class="jsxc-media-ressource-link" title="' + title + '" target="_blank" href="' +
+        href + '">' + ressourceLabel + '</a>';
+
+  },
+
+  _getSpaceInvasionLink : function() {
+    return '<a class="jsxc-media-ressource-link" title="Space Invasion !" ' +
+        'onclick="jsxc.api.spaceInvasion()">Space Invasion !</a>';
   }
 
 };

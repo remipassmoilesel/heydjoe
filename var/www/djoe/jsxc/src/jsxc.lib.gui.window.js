@@ -754,7 +754,7 @@ jsxc.gui.window = {
     // });
 
     // search ressources and replace urls
-    msg = jsxc.ressources.enlightenRessourcesInText(msg);
+    msg = jsxc.ressources.processRessourcesInText(msg);
 
     // msg = msg.replace(
     //     new RegExp('(xmpp:)?(' + jsxc.CONST.REGEX.JID.source + ')(\\?[^\\s]+\\b)?', 'i'),
