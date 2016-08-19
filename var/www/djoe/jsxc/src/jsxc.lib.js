@@ -281,7 +281,7 @@ jsxc = {
 
         // here we call directly this method to be sure it have time to execute
         jsxc.xmpp.disconnected();
-
+        
         // TODO: try to send "presence=unaivalable" from here ?
 
         jsxc.error("Disconnected before leaving page");

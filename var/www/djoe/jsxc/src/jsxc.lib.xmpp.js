@@ -14,9 +14,18 @@ jsxc.xmpp = {
   _receivedPresences : 0,
 
   /**
-   * Timer for sending presence to server every n ms
+   * Timer for sending presences to server every n ms
+   * This interval is a HIGH frequency interval, used when user have interactions with GUI.
    */
   AUTO_PRESENCE_SENDING_INTERVAL : 4000,
+
+  /**
+   * This timer is used to send presences at LOW frequency.
+   *
+   * This is a workaround to avoid presence distribution problems at connexion,
+   * when reconnected, ...
+   */
+  LOW_PRESENCE_SENDING_INTERVAL : 8000,
 
   /**
    * Maximum sending, -1 to disable
@@ -158,6 +167,7 @@ jsxc.xmpp = {
 
           if (jsxc.master === true) {
             self.enableOnGuiActivityPresenceSending();
+            self.enableLowPresenceSend();
           }
 
           break;
@@ -215,7 +225,15 @@ jsxc.xmpp = {
     }
   },
 
-  _debugPresences : false, _lastAutoPresenceSent : -1,
+  /**
+   * If set to true, parameters and calls are logged
+   */
+  _debugPresences : false,
+
+  /**
+   * Last datetime of auto presence send
+   */
+  _lastAutoPresenceSent : -1,
 
   /**
    * Automatic sending of presence to inform all users at 'n' ms interval of our state and
@@ -227,7 +245,7 @@ jsxc.xmpp = {
 
     if (self._debugPresences === true) {
 
-      jsxc.debug(self._launched + " ..Starting auto presence sending timer", {
+      jsxc.debug(" ...Starting auto presence sending timer", {
         interval : self.AUTO_PRESENCE_SENDING_INTERVAL, max : self.AUTO_PRESENCE_SENDING_MAX
       });
 
@@ -265,6 +283,7 @@ jsxc.xmpp = {
       self._lastAutoPresenceSent = now;
 
       // send presence
+      // TODO: remove disco stuff to light presences ?
       self.sendPres();
 
       i = i + 1;
@@ -293,13 +312,30 @@ jsxc.xmpp = {
 
     jsxc.debug("Sending presences on gui activity");
 
-    // remove eventually older timers
-    gui.off("mouseover", "*", self.launchAutoPresenceTimer);
-    gui.off("mouseout", "*", self.stopAutoPresenceTimer);
+    if (jsxc.master) {
+      // remove eventually older timers
+      gui.off("mouseover", "*", self.launchAutoPresenceTimer);
+      gui.off("mouseout", "*", self.stopAutoPresenceTimer);
 
-    // add timers
-    gui.mouseover(self.launchAutoPresenceTimer);
-    gui.mouseout(self.stopAutoPresenceTimer);
+      // add timers
+      gui.mouseover(self.launchAutoPresenceTimer);
+      gui.mouseout(self.stopAutoPresenceTimer);
+    }
+
+  },
+
+  /**
+   * Low presence send is necessary to inform user of our presence if XMPP server
+   * do not distribute presences to our buddylist at connexion
+   *
+   */
+  enableLowPresenceSend : function() {
+
+    var self = jsxc.xmpp;
+
+    setInterval(function() {
+      jsxc.xmpp.sendPres();
+    }, self.LOW_PRESENCE_SENDING_INTERVAL);
 
   },
 
