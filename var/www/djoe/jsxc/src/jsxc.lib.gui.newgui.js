@@ -4,7 +4,7 @@
  *
  * Gui is divided in two parts: mediapanel on the top of sreen and chat sidebar on right.
  * Here all stuff to initiate this GUI go here (openning, closing, ...) except "functionnnalities"
- * that have to be in 'gui.actions'
+ * that have to be in 'gui.interactions'
  *
  *
  * @memberOf jsxc

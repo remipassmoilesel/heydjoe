@@ -4,11 +4,11 @@
  * All init functions are called onlys once, when GUI is preparing, whenever disconnections happend
  *
  */
-jsxc.gui.actions = {
+jsxc.gui.interactions = {
 
   init : function() {
 
-    var self = jsxc.gui.actions;
+    var self = jsxc.gui.interactions;
 
     self._initSettingsMenu();
 
@@ -95,7 +95,7 @@ jsxc.gui.actions = {
    */
   _initStatusMenu : function() {
 
-    // var self = jsxc.gui.actions;
+    // var self = jsxc.gui.interactions;
     var newgui = jsxc.newgui;
 
     var loginBtn = $('#jsxc-status-bar .jsxc-login-button');
@@ -184,7 +184,7 @@ jsxc.gui.actions = {
    */
   _initActionMenu : function() {
 
-    var self = jsxc.gui.actions;
+    var self = jsxc.gui.interactions;
 
     /**
      * Start a multi user chat
@@ -350,7 +350,7 @@ jsxc.gui.actions = {
    */
   _initSettingsMenu : function() {
 
-    // var self = jsxc.gui.actions;
+    // var self = jsxc.gui.interactions;
     var newgui = jsxc.newgui;
 
     /**
@@ -404,7 +404,7 @@ jsxc.gui.actions = {
    */
   _initSearchMenu : function() {
 
-    var self = jsxc.gui.actions;
+    var self = jsxc.gui.interactions;
     // var newgui = jsxc.newgui;
 
     /**

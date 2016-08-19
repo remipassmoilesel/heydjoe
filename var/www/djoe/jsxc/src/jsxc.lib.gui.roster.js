@@ -53,7 +53,7 @@ jsxc.gui.roster = {
 
     // new gui init
     jsxc.newgui.init();
-    jsxc.gui.actions.init();
+    jsxc.gui.interactions.init();
 
     jsxc.gui.roster.ready = true;
 
