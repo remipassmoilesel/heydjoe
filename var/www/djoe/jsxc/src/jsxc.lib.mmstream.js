@@ -639,7 +639,7 @@ jsxc.mmstream = {
 
     // ignore eventual messages from current user
     if ($(stanza).attr("from") === self.conn.jid) {
-      self._log("Ignoring message from current user: ", stanza, "ERROR");
+      //self._log("Ignoring message from current user: ", stanza, "ERROR");
 
       // keep handler
       return true;

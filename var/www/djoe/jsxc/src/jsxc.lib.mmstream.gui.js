@@ -264,7 +264,7 @@ jsxc.mmstream.gui = {
    */
   _hideVideoStream : function(fulljid) {
 
-    var self = jsxc.mmstream.gui;
+    // var self = jsxc.mmstream.gui;
 
     if (Strophe.getResourceFromJid(fulljid) === null) {
       throw new Error("JID must be full jid");

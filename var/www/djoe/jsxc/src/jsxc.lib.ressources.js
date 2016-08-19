@@ -75,39 +75,41 @@ jsxc.ressources = {
 
       var name = filter.name;
 
+      var replaceFilter = function(match) {
+
+        // ressource have not been processed
+        if (manager.isFree(match)) {
+
+          manager.saveRessource(match);
+
+          // if filter provide link ask it
+          if (filter.getLink) {
+            // ask link with same arguments as filter function for replace
+            // to get access to all capturing groups
+            return filter.getLink.apply(self, arguments);
+          }
+
+          // otherwise default is show in mediapanel
+          else {
+            return self._getShowRessourceLink(match, name);
+          }
+
+        }
+
+        // ressource have already be processed
+        else {
+          return match;
+        }
+
+      };
+
       for (var i = 0; i < filter.regex.length; i++) {
 
         var regex = filter.regex[i];
 
         // text match filter
         if (text.match(regex)) {
-          text = text.replace(regex, function(match) {
-
-            // ressource have not been processed
-            if (manager.isFree(match)) {
-
-              manager.saveRessource(match);
-
-              // if filter provide link ask it
-              if (filter.getLink) {
-                // ask link with same arguments as filter function for replace
-                // to get access to all capturing groups
-                return filter.getLink.apply(self, arguments);
-              }
-
-              // otherwise default is show in mediapanel
-              else {
-                return self._getShowRessourceLink(match, name);
-              }
-
-            }
-
-            // ressource have already be processed
-            else {
-              return match;
-            }
-
-          });
+          text = text.replace(regex, replaceFilter);
         }
 
       }

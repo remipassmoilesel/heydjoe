@@ -39,7 +39,9 @@ jsxc.gui.interactions = {
    * @returns {Array}
    * @private
    */
-  _getCheckedElements : function() {
+  _getCheckedElementsOrAskFor : function() {
+
+    var defer = $.Deferred();
 
     var all = $("#jsxc_buddylist li");
     var rslt = [];
@@ -47,13 +49,28 @@ jsxc.gui.interactions = {
     all.each(function() {
       var element = $(this);
       if (element.find(".jsxc-checked").length > 0) {
-        rslt.push({
-          jid : element.data('jid'), bid : element.data('bid')
-        });
+        rslt.push(element.data('jid'));
       }
     });
 
-    return rslt;
+    // if no elements, show only buddies here
+    //TODO Present conversations ?
+    if (rslt.length < 1) {
+
+      jsxc.gui.showInviteContactsDialog()
+          .then(function(result) {
+            defer.resolve(result);
+          })
+          .fail(function() {
+            defer.reject("canceled");
+          });
+    }
+
+    else {
+      defer.resolve(rslt);
+    }
+
+    return defer.promise();
 
   },
 
@@ -62,7 +79,9 @@ jsxc.gui.interactions = {
    * @returns {Array}
    * @private
    */
-  _getCheckedBuddies : function() {
+  _getCheckedBuddiesOrAskFor : function() {
+
+    var defer = $.Deferred();
 
     var all = $("#jsxc_buddylist li");
     var rslt = [];
@@ -70,13 +89,26 @@ jsxc.gui.interactions = {
     all.each(function() {
       var element = $(this);
       if (element.data('type') === 'chat' && element.find(".jsxc-checked").length > 0) {
-        rslt.push({
-          bid : element.data('bid'), status : element.data('status')
-        });
+        rslt.push(element.data('bid'));
       }
     });
 
-    return rslt;
+    if (rslt.length < 1) {
+
+      jsxc.gui.showInviteContactsDialog()
+          .then(function(result) {
+            defer.resolve(result);
+          })
+          .fail(function() {
+            defer.reject("canceled");
+          });
+    }
+
+    else {
+      defer.resolve(rslt);
+    }
+
+    return defer.promise();
 
   },
 
@@ -194,11 +226,18 @@ jsxc.gui.interactions = {
     $('#jsxc-chat-sidebar .jsxc-action_new-conversation').click(function() {
 
       var selected = [];
-      $.each(self._getCheckedElements(), function(index, element) {
-        selected.push(element.bid);
-      });
+      self._getCheckedBuddiesOrAskFor()
+          .then(function(results) {
+            $.each(results, function(index, element) {
+              selected.push(element);
+            });
 
-      jsxc.api.createNewConversationWith(selected);
+            jsxc.api.createNewConversationWith(selected);
+          })
+          .fail(function() {
+            jsxc.gui.feedback('Opération annulée');
+          });
+
     });
 
     /**
@@ -208,22 +247,30 @@ jsxc.gui.interactions = {
 
     $('.jsxc-action_delete-buddies').click(function() {
 
-      var buddies = self._getCheckedElements();
+      self._getCheckedElementsOrAskFor()
 
-      // check if buddies are checked
-      if (buddies.length < 1) {
-        jsxc.gui.feedback("Vous devez sélectionner un élément au moins");
-        return;
-      }
+          .then(function(buddies) {
 
-      // get bid
-      var bidArray = [];
-      $.each(buddies, function(index, element) {
-        bidArray.push(element.bid);
-      });
+            // check if buddies are checked
+            if (buddies.length < 1) {
+              jsxc.gui.feedback("Vous devez sélectionner un élément au moins");
+              return;
+            }
 
-      // show confirmation dialog
-      jsxc.gui.showRemoveManyDialog(bidArray);
+            // get bid
+            var bidArray = [];
+            $.each(buddies, function(index, element) {
+              bidArray.push(element);
+            });
+
+            // show confirmation dialog
+            jsxc.gui.showRemoveManyDialog(bidArray);
+
+          })
+
+          .fail(function() {
+            jsxc.gui.feedback("Opération annulée");
+          });
 
     });
 
@@ -233,38 +280,44 @@ jsxc.gui.interactions = {
      */
     $('#jsxc-actions-menu .jsxc-action_invite-in-conversation').click(function() {
 
-      var buddies = self._getCheckedBuddies();
-      if (buddies.length < 1) {
-        jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
-        return;
-      }
+      self._getCheckedBuddiesOrAskFor()
+          .then(function(buddies) {
 
-      var toInvite = [];
-      $.each(buddies, function(index, element) {
-        toInvite.push(element.bid);
-      });
-
-      // show dialog
-      jsxc.gui.showConversationSelectionDialog()
-
-      // user clicks OK
-          .done(function(conversations) {
-
-            if (conversations.length < 1) {
+            if (buddies.length < 1) {
               jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
               return;
             }
 
-            $.each(conversations, function(index, cjid) {
-              jsxc.muc.inviteParticipants(cjid, toInvite);
+            var toInvite = [];
+            $.each(buddies, function(index, element) {
+              toInvite.push(element);
             });
 
-            jsxc.gui.feedback("Les utilisateurs ont été invités");
+            // show dialog
+            jsxc.gui.showConversationSelectionDialog()
 
+            // user clicks OK
+                .done(function(conversations) {
+
+                  if (conversations.length < 1) {
+                    jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+                    return;
+                  }
+
+                  $.each(conversations, function(index, cjid) {
+                    jsxc.muc.inviteParticipants(cjid, toInvite);
+                  });
+
+                  jsxc.gui.feedback("Les utilisateurs ont été invités");
+
+                })
+
+                .fail(function() {
+                  jsxc.gui.feedback("Opération annulée");
+                });
           })
-
           .fail(function() {
-            jsxc.gui.feedback("Opération annulée");
+            jsxc.gui.feedback('Opération annulée');
           });
 
     });
@@ -303,42 +356,50 @@ jsxc.gui.interactions = {
     $("#jsxc-actions-menu .jsxc-action_video-call").click(function() {
 
       // get selected budies
-      var buddies = self._getCheckedBuddies();
-      if (buddies.length < 1) {
-        jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
-        return;
-      }
+      self._getCheckedBuddiesOrAskFor()
 
-      // get full jid of buddies
-      var fjidArray = [];
-      var unavailables = [];
-      $.each(buddies, function(index, element) {
+          .then(function(buddies) {
 
-        var fjid = jsxc.getCurrentActiveJidForBid(element.bid);
+            if (buddies.length < 1) {
+              jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+              return;
+            }
 
-        if (fjid === null || element.status === "offline") {
-          unavailables.push(Strophe.getNodeFromJid(element.bid));
-        } else {
-          fjidArray.push(jsxc.getCurrentActiveJidForBid(element.bid));
-        }
+            // get full jid of buddies
+            var fjidArray = [];
+            var unavailables = [];
+            $.each(buddies, function(index, element) {
 
-      });
+              var fjid = jsxc.getCurrentActiveJidForBid(element);
 
-      // check how many participants are unavailable
-      if (unavailables.length === 1) {
-        jsxc.gui.feedback("<b>" + unavailables[0] + "</b> n'est pas disponible");
-        return;
-      }
+              if (fjid === null || jsxc.isBuddyOnline(element) === true) {
+                unavailables.push(Strophe.getNodeFromJid(element));
+              } else {
+                fjidArray.push(jsxc.getCurrentActiveJidForBid(element));
+              }
 
-      else if (unavailables.length > 1) {
-        jsxc.gui.feedback("<b>" + unavailables.join(", ") + "</b> ne sont pas disponibles");
-        return;
-      }
+            });
 
-      // call buddies
-      $.each(fjidArray, function(index, fjid) {
-        jsxc.mmstream.startSimpleVideoCall(fjid);
-      });
+            // check how many participants are unavailable
+            if (unavailables.length === 1) {
+              jsxc.gui.feedback("<b>" + unavailables[0] + "</b> n'est pas disponible");
+              return;
+            }
+
+            else if (unavailables.length > 1) {
+              jsxc.gui.feedback("<b>" + unavailables.join(", ") + "</b> ne sont pas disponibles");
+              return;
+            }
+
+            // call buddies
+            $.each(fjidArray, function(index, fjid) {
+              jsxc.mmstream.startSimpleVideoCall(fjid);
+            });
+
+          })
+          .fail(function() {
+            jsxc.gui.feedback('Opération annulée');
+          });
 
     });
 

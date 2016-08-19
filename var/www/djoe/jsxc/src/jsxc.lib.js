@@ -153,10 +153,10 @@ jsxc = {
     // get buddy data
     var buddy = jsxc.storage.getUserItem('buddy', bid);
 
-    if(!buddy){
+    if (!buddy) {
       throw new Error("Invalid buddy: " + bid);
     }
-    
+
     if (buddy.type && buddy.type === "groupchat") {
       throw new Error("Cannot update groupchat resource: " + bid);
     }
@@ -281,7 +281,7 @@ jsxc = {
 
         // here we call directly this method to be sure it have time to execute
         jsxc.xmpp.disconnected();
-        
+
         // TODO: try to send "presence=unaivalable" from here ?
 
         jsxc.error("Disconnected before leaving page");
@@ -290,6 +290,11 @@ jsxc = {
 
     }
 
+  },
+
+  isBuddyOnline : function(fjid) {
+    var buddy = jsxc.storage.getUserItem("buddy", Strophe.getBareJidFromJid(fjid));
+    return buddy && jsxc.CONST.STATUS.indexOf("offline") !== buddy.status;
   },
 
   /**

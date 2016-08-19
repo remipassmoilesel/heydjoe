@@ -1184,9 +1184,7 @@ jsxc.muc = {
 
           // save configuration
           jsxc.storage.updateUserItem('buddy', room, 'config', form);
-
-          // invite users
-          self.inviteParticipants(room, roomdata.initialParticipants);
+      
         },
 
         // configuration fail
@@ -1508,6 +1506,9 @@ jsxc.muc = {
 
     // open window
     jsxc.gui.window.open(roomjid);
+
+    // invite users
+    jsxc.muc.inviteParticipants(roomjid, initialParticipants);
 
     return roomjid;
   },

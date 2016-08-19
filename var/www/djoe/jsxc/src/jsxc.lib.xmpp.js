@@ -25,7 +25,7 @@ jsxc.xmpp = {
    * This is a workaround to avoid presence distribution problems at connexion,
    * when reconnected, ...
    */
-  LOW_PRESENCE_SENDING_INTERVAL : 8000,
+  LOW_PRESENCE_SENDING_INTERVAL : 12000,
 
   /**
    * Maximum sending, -1 to disable
