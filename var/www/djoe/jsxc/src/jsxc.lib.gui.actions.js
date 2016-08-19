@@ -363,6 +363,15 @@ jsxc.gui.actions = {
     });
 
     /**
+     * Show collected datas
+     * ==================
+     */
+    $('#jsxc-chat-sidebar .jsxc-action_showCollectedDatas').click(function(event) {
+      window.open(jsxc.options.stats.destinationUrl + "/visualization/");
+      event.stopPropagation();
+    });
+
+    /**
      * Clear local history of conversations
      * ====================================
      */
