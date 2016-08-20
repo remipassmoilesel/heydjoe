@@ -1027,8 +1027,8 @@ jsxc.xmpp = {
 
     data.res = sortedRes;
 
-    // notify is buddy has come online
-    if (data.status === 0 && maxStatus > 0) {
+    // notify is buddy has come online, and only buddies
+    if (data.status === 0 && maxStatus > 0 && data.type === 'chat') {
       jsxc.notification.notify({
         title : data.name, msg : jsxc.t('has_come_online'), source : bid
       });
