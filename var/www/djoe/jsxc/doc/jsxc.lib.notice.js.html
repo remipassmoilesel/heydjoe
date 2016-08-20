@@ -33,120 +33,183 @@
  * @memberOf jsxc
  */
 jsxc.notice = {
-    /** Number of notices. */
-    _num: 0,
 
-    /**
-     * Loads the saved notices.
-     *
-     * @memberOf jsxc.notice
-     */
-    load: function () {
-        // reset list
-        $('#jsxc_notice ul li').remove();
+  /** Number of notices. */
+  _num : 0,
 
-        $('#jsxc_roster .jsxc_menu_notif_number').text('');
-        jsxc.notice._num = 0;
+  /**
+   * Loads the saved notices.
+   *
+   * @memberOf jsxc.notice
+   */
+  load : function() {
 
-        var saved = jsxc.storage.getUserItem('notices') || [];
-        var key = null;
+    var self = this;
 
-        // console.log(jsxc.storage.getUserItem('notices'));
+    // reset list
+    $('#jsxc-notifications ul li').remove();
 
-        for (key in saved) {
-            if (saved.hasOwnProperty(key)) {
-                var val = saved[key];
+    $('#jsxc_roster .jsxc_menu_notif_number').text('');
+    jsxc.notice._num = 0;
 
-                jsxc.notice.add(val.msg, val.description, val.fnName, val.fnParams, key);
-            }
-        }
-    },
+    var saved = jsxc.storage.getUserItem('notices') || [];
+    var key = null;
 
-    /**
-     * Add a new notice to the stack;
-     *
-     * @memberOf jsxc.notice
-     * @param msg Header message
-     * @param description Notice description
-     * @param fnName Function name to be called if you open the notice
-     * @param fnParams Array of params for function
-     * @param id Notice id
-     */
-    add: function (msg, description, fnName, fnParams, id) {
-        var nid = id || Date.now();
-        var list = $('#jsxc_notice ul');
-        var notice = $('&lt;li/>');
+    for (key in saved) {
+      if (saved.hasOwnProperty(key)) {
+        var val = saved[key];
 
-        notice.click(function () {
-            jsxc.notice.remove(nid);
-
-            jsxc.exec(fnName, fnParams);
-
-            return false;
-        });
-
-        notice.text(msg + " " + description);
-        notice.attr('title', description || '');
-        notice.attr('data-nid', nid);
-        list.append(notice);
-
-        $('#jsxc_roster .jsxc_menu_notif_number').text(++jsxc.notice._num);
-
-        if (!id) {
-            var saved = jsxc.storage.getUserItem('notices') || {};
-            saved[nid] = {
-                msg: msg,
-                description: description,
-                fnName: fnName,
-                fnParams: fnParams
-            };
-
-            console.log(saved);
-
-            jsxc.storage.setUserItem('notices', saved);
-
-            jsxc.notification.notify(msg, description || '', null, true, jsxc.CONST.SOUNDS.NOTICE);
-        }
-    },
-
-    /**
-     * Removes notice from stack
-     *
-     * @memberOf jsxc.notice
-     * @param nid The notice id
-     */
-    remove: function (nid) {
-        var el = $('#jsxc_notice li[data-nid=' + nid + ']');
-
-        el.remove();
-        $('#jsxc_roster .jsxc_menu_notif_number').text(--jsxc.notice._num || '');
-
-        var s = jsxc.storage.getUserItem('notices');
-        delete s[nid];
-        jsxc.storage.setUserItem('notices', s);
-    },
-
-    /**
-     * Check if there is already a notice for the given function name.
-     *
-     * @memberOf jsxc.notice
-     * @param {string} fnName Function name
-     * @returns {boolean} True if there is >0 functions with the given name
-     */
-    has: function (fnName) {
-        var saved = jsxc.storage.getUserItem('notices') || [];
-        var has = false;
-
-        $.each(saved, function (index, val) {
-            if (val.fnName === fnName) {
-                has = true;
-
-                return false;
-            }
-        });
-
-        return has;
+        // add notice but do not trigger event for each
+        jsxc.notice.add(val.msg, val.description, val.fnName, val.fnParams, key, false);
+      }
     }
+
+    self._showNoNoticeContent();
+
+    $(document).trigger("notice.jsxc");
+  },
+
+  /**
+   * Display "No notifications" in notifications list if there are no notifications
+   * @private
+   */
+  _showNoNoticeContent : function() {
+    if ($('#jsxc-notifications ul li').length &lt; 1) {
+      $('#jsxc-notifications ul').append("&lt;li class='jsxc_noNotice'>Aucune notification&lt;/li>");
+    }
+
+    else {
+      $('#jsxc-notifications .jsxc_noNotice').remove();
+    }
+  },
+
+  /**
+   * Add a new notice to the stack
+   *
+   * Trigger an event by default
+   *
+   * Id is specified when we are loading old events stored in browser
+   *
+   * @memberOf jsxc.notice
+   * @param msg Header message
+   * @param description Notice description
+   * @param fnName Function name to be called if you open the notice
+   * @param fnParams Array of params for function
+   * @param id Notice id
+   */
+  add : function(msg, description, fnName, fnParams, id, triggerEvent) {
+
+    var self = this;
+
+    // trigger an jquery event by default
+    triggerEvent = typeof triggerEvent === "undefined" ? true : false;
+
+    // id of notice, now or previous choosen id
+    var nid = id || Date.now();
+    var list = $('#jsxc-notifications ul');
+
+    // create notice and append it to the notice list
+    var notice = $('&lt;li/>');
+    notice.click(function() {
+
+      // remove notice
+      jsxc.notice.remove(nid);
+
+      // exec attached function
+      jsxc.exec(fnName, fnParams);
+
+      // trigger event, number of notices changed
+      $(document).trigger("notice.jsxc");
+
+      return false;
+    });
+
+    notice.text(msg + " " + description);
+    notice.attr('title', description || '');
+    notice.attr('data-nid', nid);
+    list.append(notice);
+
+    // update totla notifications number
+    jsxc.notice._num++;
+    self.updateNotificationNumbers();
+
+    if (!id) {
+      var saved = jsxc.storage.getUserItem('notices') || {};
+      saved[nid] = {
+        msg : msg, description : description, fnName : fnName, fnParams : fnParams
+      };
+
+      jsxc.storage.setUserItem('notices', saved);
+
+      jsxc.notification.notify(msg, description || '', null, true, jsxc.CONST.SOUNDS.NOTICE);
+    }
+
+    // show no notice content if needed
+    self._showNoNoticeContent();
+
+    if (triggerEvent) {
+      $(document).trigger("notice.jsxc");
+    }
+  },
+
+  /**
+   * Update places where are displayed notification numbers
+   */
+  updateNotificationNumbers : function() {
+    $('#jsxc_roster .jsxc_menu_notif_number').text(jsxc.notice._num);
+  },
+
+  /**
+   * Get notification numbers
+   * @returns {number}
+   */
+  getNotificationsNumber : function() {
+    return jsxc.notice._num || 0;
+  },
+
+  /**
+   * Removes notice from stack
+   *
+   * @memberOf jsxc.notice
+   * @param nid The notice id
+   */
+  remove : function(nid) {
+
+    var self = this;
+
+    var el = $('#jsxc-notifications li[data-nid=' + nid + ']');
+
+    el.remove();
+    $('#jsxc_roster .jsxc_menu_notif_number').text(--jsxc.notice._num || '');
+
+    var s = jsxc.storage.getUserItem('notices');
+    delete s[nid];
+    jsxc.storage.setUserItem('notices', s);
+
+    self._showNoNoticeContent();
+  },
+
+  /**
+   * Check if there is already a notice for the given function name.
+   *
+   * @memberOf jsxc.notice
+   * @param {string} fnName Function name
+   * @returns {boolean} True if there is >0 functions with the given name
+   */
+  has : function(fnName) {
+    var saved = jsxc.storage.getUserItem('notices') || [];
+    var has = false;
+
+    $.each(saved, function(index, val) {
+      if (val.fnName === fnName) {
+        has = true;
+
+        return false;
+      }
+    });
+
+    return has;
+  }
 };
 </code></pre>
         </article>
@@ -158,13 +221,13 @@ jsxc.notice = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.webrtc.html">webrtc</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li><li><a href="menu.html">menu</a></li></ul><h3>Global</h3><ul><li><a href="global.html#root">root</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateRoomList">updateRoomList</a></li><li><a href="global.html#updateUserList">updateUserList</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Jul 05 2016 00:44:42 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sat Aug 20 2016 11:51:14 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

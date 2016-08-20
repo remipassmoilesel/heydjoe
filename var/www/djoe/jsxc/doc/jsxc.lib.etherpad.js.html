@@ -33,51 +33,264 @@
 
 jsxc.etherpad = {
 
-    /**
-     * Return true if Etherpad is enabled
-     * @returns {boolean}
-     */
-    isEtherpadEnabled: function () {
-        var opts = jsxc.options.get("etherpad");
-        return opts.enabled === true;
-    },
+  XMPP_INVITATIONS : {
 
-    getEtherpadLinkFor: function (padId) {
-        var opts = jsxc.options.get("etherpad");
-        return opts.ressource + 'p/' + padId + '?showControls=true&amp;showChat=false&amp;showLineNumbers=true&amp;useMonospaceFont=true';
-    },
+    XMPP_ELEMENT_NAME : "etherpad",
 
+    PADID_ATTR : "padid",
 
-    /**
-     * Open a new pad in a window
-     * @param bid
-     */
-    openpad: function (padId) {
+    ALL_USERS_ATTR : "allusers",
 
-        if (jsxc.etherpad.isEtherpadEnabled() === false) {
-            jsxc.warn('Etherpad not enabled');
-            jsxc.gui.feedback("Etherpad n'est pas activé.");
-            return;
-        }
+    INVITATIONID_ATTR : "id",
 
+    STATUS_ATTR : "status",
 
-        // embedable code of pad
-        var embedCode = '&lt;iframe name="embed_readwrite" src="' + jsxc.etherpad.getEtherpadLinkFor(padId) + '" style="width: 100%; height: 100%">&lt;/iframe>';        // container for pad
-        var dialogId = "jsxc_pad_" + padId;
-        var dialog = $("&lt;div>&lt;/div>").attr('id', dialogId);
-        dialog.append(embedCode);
+    STATUS_INVITATION : "invitation",
 
-        // add and show dialog
-        $("body").append(dialog);
+    STATUS_REFUSED : "refused"
 
-        dialog.dialog({
-            height: 400,
-            width: 600
-        });
+  },
+
+  _init : function() {
+
+    var self = jsxc.etherpad;
+
+    self.conn = jsxc.xmpp.conn;
+
+    self._messageHandler = self.conn.addHandler(jsxc.etherpad._onMessageReceived, null, 'message');
+  },
+
+  /**
+   * Return true if Etherpad is enabled
+   * @returns {boolean}
+   */
+  isEtherpadEnabled : function() {
+    var opts = jsxc.options.get("etherpad");
+    return opts.enabled === true;
+  },
+
+  /**
+   * Return a link corresponding to an pad id
+   * @param padId
+   * @returns {string}
+   */
+  getEtherpadLinkFor : function(padId) {
+
+    if (typeof padId === "undefined") {
+      throw new Error("Invalid pad id: " + padId);
+    }
+
+    var opts = jsxc.options.get("etherpad");
+    return opts.ressource + 'p/' + padId +
+        '?showControls=true&amp;showChat=false&amp;showLineNumbers=true&amp;useMonospaceFont=true';
+  },
+
+  /**
+   * Return the code to embed to display pad
+   * @param padId
+   * @returns {string}
+   * @private
+   */
+  _getEmbeddedCode : function(padId) {
+    return '&lt;iframe class="jsxc-etherpad-frame" name="embed_readwrite" src="' +
+        jsxc.etherpad.getEtherpadLinkFor(padId) + '" style="width: 100%; height: 85%">&lt;/iframe>';
+  },
+
+  /**
+   * Open a new pad in a window
+   * @param bid
+   */
+  openpad : function(padId) {
+
+    var self = jsxc.etherpad;
+    var newgui = jsxc.newgui;
+
+    jsxc.stats.addEvent('jsxc.etherpad.opened');
+
+    if (self.isEtherpadEnabled() === false) {
+      jsxc.warn('Etherpad not enabled');
+      jsxc.gui.feedback("Etherpad n'est pas activé.");
+      return;
+    }
+
+    jsxc.debug("Openning new pad", padId);
+
+    var embedded = self._getEmbeddedCode(padId);
+    newgui.addMediaRessource(embedded, 'Etherpad: ' + padId);
+
+    if (newgui.isMediapanelShown() !== true) {
+      newgui.toggleMediapanel();
+    }
+
+  },
+
+  /**
+   * Send invitations to join a pad. Not using a particular XEP for now.
+   * @param padId
+   * @param jidArray
+   */
+  sendInvitations : function(padId, jidArray) {
+
+    jsxc.debug("Sending etherpad invitations", {padId : padId, jidArray : jidArray});
+
+    var self = jsxc.etherpad;
+
+    if (self.conn === null) {
+      throw new Error("Disconnected");
+    }
+
+    if (!padId) {
+      throw new Error("Invalid argument: " + padId);
+    }
+
+    if (!jidArray || !jidArray.length) {
+      throw new Error("Invalid argument: " + jidArray);
+    }
+
+    var invitation = {};
+    invitation[self.XMPP_INVITATIONS.PADID_ATTR] = padId;
+    invitation[self.XMPP_INVITATIONS.ALL_USERS_ATTR] = jidArray.join(",");
+    invitation[self.XMPP_INVITATIONS.STATUS_ATTR] = self.XMPP_INVITATIONS.STATUS_INVITATION;
+    invitation[self.XMPP_INVITATIONS.INVITATIONID_ATTR] = self.conn.getUniqueId();
+
+    // XMPP message stanza
+    var msg = $msg({
+      from : self.conn.jid
+    }).c(self.XMPP_INVITATIONS.XMPP_ELEMENT_NAME, invitation);
+
+    var sent = [];
+
+    // send to everybody
+    $.each(jidArray, function(index, jid) {
+
+      if (jid !== self.conn.jid) {
+        var adressedMessage = $(msg.toString()).attr("to", jid);
+        self.conn.send(adressedMessage);
+
+        sent.push(jid);
+      }
+
+    });
+
+  },
+
+  /**
+   * Send an XMPP message notifying that document is refused by user.
+   * @private
+   */
+  _sendEtherpadRefusedMessage : function(to, padId, invitationId) {
+
+    jsxc.debug("Sending etherpad refused message", {invitationId : invitationId});
+
+    var self = jsxc.etherpad;
+
+    if (!to) {
+      throw new Error("Invalid argument: " + padId);
+    }
+    if (!padId) {
+      throw new Error("Invalid argument: " + padId);
+    }
+    if (!invitationId) {
+      throw new Error("Invalid argument: " + invitationId);
+    }
+
+    var message = {};
+    message[self.XMPP_INVITATIONS.PADID_ATTR] = padId;
+    message[self.XMPP_INVITATIONS.STATUS_ATTR] = self.XMPP_INVITATIONS.STATUS_REFUSED;
+    message[self.XMPP_INVITATIONS.INVITATIONID_ATTR] = invitationId;
+
+    // XMPP message stanza
+    var msg = $msg({
+      from : self.conn.jid, to : to
+    }).c(self.XMPP_INVITATIONS.XMPP_ELEMENT_NAME, message);
+
+    // send message
+    self.conn.send(msg);
+
+  },
+
+  /**
+   * Check if we receive an etherpad invitation
+   * @private
+   */
+  _onMessageReceived : function(stanza) {
+
+    var self = jsxc.etherpad;
+
+    // ignore eventual messages from current user
+    if ($(stanza).attr("from") === self.conn.jid) {
+      //self._log("Ignoring message from current user: ", stanza, "ERROR");
+
+      // keep handler
+      return true;
+    }
+
+    // check if stanza is a videoconference invitation
+    var etherpad = $(stanza).find(self.XMPP_INVITATIONS.XMPP_ELEMENT_NAME);
+
+    if (etherpad.length > 0) {
+
+      var from = $(stanza).attr("from");
+      var node = Strophe.getNodeFromJid(from);
+      var padId = etherpad.attr(self.XMPP_INVITATIONS.PADID_ATTR);
+      var invitationId = etherpad.attr(self.XMPP_INVITATIONS.INVITATIONID_ATTR);
+
+      var status = (etherpad.attr('status') || '').trim();
+
+      // we have been just invited
+      if (self.XMPP_INVITATIONS.STATUS_INVITATION === status) {
+
+        jsxc.gui.showIncomingEtherpadDialog(node)
+            .then(function() {
+              jsxc.gui.feedback("Le document va être ouvert");
+              self.openpad(padId);
+            })
+
+            .fail(function() {
+              jsxc.gui.feedback("Document refusé");
+              self._sendEtherpadRefusedMessage(from, padId, invitationId);
+            });
+
+      }
+
+      // someone refused a pas
+      else if (self.XMPP_INVITATIONS.STATUS_REFUSED === status) {
+        jsxc.gui.feedback("&lt;b>" + node + "&lt;/b> a refusé le document");
+      }
 
     }
 
-};</code></pre>
+    // preserve handler
+    return true;
+
+  },
+
+  /**
+   * Called when we are disconnected from XMPP server.
+   *
+   * Allows to remove handlers
+   *
+   * @private
+   */
+  _onDisconnected : function() {
+
+    var self = jsxc.etherpad;
+
+    self.conn.deleteHandler(self._messageHandler);
+
+  }
+
+};
+
+$(function() {
+
+  var self = jsxc.etherpad;
+
+  $(document).on('attached.jsxc', self._init);
+  $(document).on('disconnected.jsxc', self._onDisconnected);
+
+});
+</code></pre>
         </article>
     </section>
 
@@ -87,13 +300,13 @@ jsxc.etherpad = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.webrtc.html">webrtc</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li><li><a href="menu.html">menu</a></li></ul><h3>Global</h3><ul><li><a href="global.html#root">root</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateRoomList">updateRoomList</a></li><li><a href="global.html#updateUserList">updateUserList</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Jul 05 2016 00:44:42 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sat Aug 20 2016 11:51:14 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

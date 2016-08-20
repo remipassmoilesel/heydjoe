@@ -1,0 +1,1 @@
+# Here are some style dependencies for JSXC, specially for dialogs

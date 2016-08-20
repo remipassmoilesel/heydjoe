@@ -1,5 +1,4 @@
 .idea/
-
 node_modules
 bower_components
 memos
@@ -11,7 +10,6 @@ opt/openfire/resources/security/*
 opt/djoe-docker-image/dependencies/*.tar.gz
 
 var/www/djoe/jsxc/dev/
-var/www/djoe/jsxc/build/
 var/www/djoe/jsxc/tmp/
 var/www/djoe/jsxc.original/
 

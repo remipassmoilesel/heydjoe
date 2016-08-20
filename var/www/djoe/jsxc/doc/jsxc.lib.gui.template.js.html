@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: jsxc.lib.gui.template.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: jsxc.lib.gui.template.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+jsxc.gui.template = {};
+
+/**
+ * Return requested template and replace all placeholder
+ *
+ * @memberOf jsxc.gui.template;
+ * @param {type} name template name
+ * @param {type} bid
+ * @param {type} msg
+ * @returns {String} HTML Template
+ */
+jsxc.gui.template.get = function(name, bid, msg) {
+
+  // common placeholder
+  var ph = {
+    my_priv_fingerprint : jsxc.storage.getUserItem('priv_fingerprint') ?
+        jsxc.storage.getUserItem('priv_fingerprint').replace(/(.{8})/g, '$1 ') :
+        jsxc.t('not_available'),
+    my_jid : jsxc.storage.getItem('jid') || '',
+    my_node : Strophe.getNodeFromJid(jsxc.storage.getItem('jid') || '') || '',
+    root : jsxc.options.root,
+    app_name : jsxc.options.app_name,
+    version : jsxc.version
+  };
+
+  // placeholder depending on bid
+  if (bid) {
+    var data = jsxc.storage.getUserItem('buddy', bid);
+
+    $.extend(ph, {
+      bid_priv_fingerprint : (data &amp;&amp; data.fingerprint) ?
+          data.fingerprint.replace(/(.{8})/g, '$1 ') : jsxc.t('not_available'),
+      bid_jid : bid,
+      bid_name : (data &amp;&amp; data.name) ? data.name : bid
+    });
+  }
+
+  // placeholder depending on msg
+  if (msg) {
+    $.extend(ph, {
+      msg : msg
+    });
+  }
+
+  var ret = jsxc.gui.template[name];
+
+  if (typeof(ret) === 'string') {
+    // prevent 404
+    ret = ret.replace(/\{\{root\}\}/g, ph.root);
+
+    // convert to string
+
+    // ret = $('&lt;div>').append($(ret).i18n()).html();
+    ret = $('&lt;div>').append(jsxc.localization.processHtmlString(ret)).html();
+
+    // replace placeholders
+    ret = ret.replace(/\{\{([a-zA-Z0-9_\-]+)\}\}/g, function(s, key) {
+      return (typeof ph[key] === 'string') ? ph[key] : s;
+    });
+
+    return ret;
+  }
+
+  jsxc.debug('Template not available: ' + name);
+  return name;
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sat Aug 20 2016 11:51:14 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
