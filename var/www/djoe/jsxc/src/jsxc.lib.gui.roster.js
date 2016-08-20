@@ -101,7 +101,8 @@ jsxc.gui.roster = {
     while (history.length > i) {
       var message = new jsxc.Message(history[i]);
       if (message.direction !== jsxc.Message.SYS) {
-        $('[data-bid="' + bid + '"]').find('.jsxc_lastmsg .jsxc_text').html(message.msg);
+        $('[data-bid="' + bid + '"]').find('.jsxc_lastmsg .jsxc_text').html(
+            jsxc.stripHtml(message.msg));
         break;
       }
       i++;

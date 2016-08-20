@@ -292,6 +292,22 @@ jsxc = {
 
   },
 
+  /**
+   * Return an HTML free string
+   * @param html
+   * @returns {*|string|string}
+   */
+  stripHtml : function(html) {
+    var tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  },
+
+  /**
+   * Return true if buddy is online
+   * @param fjid
+   * @returns {*|user|boolean}
+   */
   isBuddyOnline : function(fjid) {
     var buddy = jsxc.storage.getUserItem("buddy", Strophe.getBareJidFromJid(fjid));
     return buddy && jsxc.CONST.STATUS.indexOf("offline") !== buddy.status;

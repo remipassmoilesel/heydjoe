@@ -839,7 +839,7 @@ jsxc.gui.window = {
     }
 
     if (direction !== 'sys') {
-      $('[data-bid="' + bid + '"]').find('.jsxc_lastmsg .jsxc_text').html(msg);
+      $('[data-bid="' + bid + '"]').find('.jsxc_lastmsg .jsxc_text').html(jsxc.stripHtml(msg));
     }
 
     if (jsxc.Message.getDOM(uid).length > 0) {
