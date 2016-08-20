@@ -15,8 +15,16 @@
     li {
       cursor: pointer;
       line-height: 1.6em;
+      margin: 0.2em !important;
+      padding: 0.2em 0.2em 0.2em 1em !important;
+      background: #EEEEEE;
     }
 
+    .jsxc-checked {
+      background: silver;
+      background: #d1deff;
+    }
+    
   }
 }
 
