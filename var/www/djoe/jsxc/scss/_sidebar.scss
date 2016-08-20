@@ -272,11 +272,7 @@ TODO: Set up variables:
 
     margin-right: 0.7em;
     margin-left: 0.5em;
-    opacity: 0.7;
-  }
 
-  .jsxc-toggle-mediapanel:hover {
-    opacity: 1;
   }
 
   /**
@@ -588,6 +584,23 @@ TODO: Set up variables:
       font-weight: bolder;
       color: darkgray;
     }
+
+  }
+
+  /**
+    Link in notifications panel that allow user to remove all notifications on one click
+  */
+  .jsxc-action_rejectAllNotifications:before {
+
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
+
+    background-image: image-url('newgui/action-reject-all-notifications.svg');
 
   }
 

@@ -542,7 +542,42 @@ jsxc.gui.interactions = {
 
   },
 
+  /**
+   * Where user can manage notifications: reject or accept them, remove them....
+   * @private
+   */
   _initNotificationsMenu : function() {
+
+    /**
+     * Reject all notifications
+     * ========================
+     *
+     */
+    $('#jsxc-manage-notifications .jsxc-action_rejectAllNotifications').click(function() {
+
+      if ($('#jsxc-notifications ul li[data-nid]').length < 1) {
+        jsxc.gui.feedback("Aucune notification à rejeter");
+        return;
+      }
+
+      jsxc.gui.showConfirmDialog("Etes vous sur de vouloir rejeter toutes les notifications ?",
+
+          function() {
+
+            jsxc.gui.dialog.close();
+
+            $('#jsxc-notifications ul li[data-nid]').each(function() {
+              jsxc.notice.remove($(this).data('nid'));
+            });
+
+            jsxc.gui.feedback("Notifications rejetées");
+          },
+
+          function() {
+            jsxc.gui.feedback("Opération annulée");
+          });
+
+    });
 
   }
 

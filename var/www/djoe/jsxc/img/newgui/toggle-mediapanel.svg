@@ -57,7 +57,8 @@
      id="layer1"
      transform="translate(0,-1036.375)">
     <g
-       id="g4180">
+       id="g4180"
+       transform="matrix(1,0,0,1.4028157,2e-7,-420.69107)">
       <path
          inkscape:connector-curvature="0"
          id="path6"
@@ -66,8 +67,9 @@
       <path
          id="rect4150"
          transform="translate(0,1036.375)"
-         d="M 1.2441406 5.3535156 L 1.2441406 13.066406 L 14.755859 13.066406 L 14.755859 5.3535156 L 1.2441406 5.3535156 z M 4.6679688 6.5507812 L 11.332031 6.5507812 L 11.332031 7.4375 L 4.6679688 7.4375 L 4.6679688 6.5507812 z M 4.6679688 8.7675781 L 11.332031 8.7675781 L 11.332031 9.6542969 L 4.6679688 9.6542969 L 4.6679688 8.7675781 z M 4.6679688 10.982422 L 11.332031 10.982422 L 11.332031 11.869141 L 4.6679688 11.869141 L 4.6679688 10.982422 z "
-         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+         d="m 1.2441406,5.3535156 0,7.7128904 13.5117184,0 0,-7.7128904 -13.5117184,0 z m 3.4238282,1.1972656 6.6640622,0 0,0.8867188 -6.6640622,0 0,-0.8867188 z m 0,2.2167969 6.6640622,0 0,0.8867188 -6.6640622,0 0,-0.8867188 z m 0,2.2148439 6.6640622,0 0,0.886719 -6.6640622,0 0,-0.886719 z"
+         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         inkscape:connector-curvature="0" />
     </g>
   </g>
 </svg>
