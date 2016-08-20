@@ -446,7 +446,9 @@ jsxc.gui.window = {
     }
 
     // animate closing
-    win.find(".jsxc_window").animate({"height" : "0px"}, 500,
+    win.find(".jsxc_window").animate({
+      "height" : "0px"
+    }, 500,
 
         function() {
 
