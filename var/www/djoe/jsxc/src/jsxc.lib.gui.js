@@ -99,6 +99,13 @@ jsxc.gui = {
     $('#jsxc_windowListSB .jsxc_scrollRight').click(function() {
       jsxc.gui.scrollWindowListBy(200);
     });
+
+    $('#jsxc_windowListSB .jsxc_closeAllWindows').click(function() {
+      $("#jsxc_windowList .jsxc_windowItem").each(function() {
+        jsxc.gui.window.close($(this).data('bid'));
+      });
+    });
+
     $('#jsxc_windowList').on('wheel', function(ev) {
       if ($('#jsxc_windowList').data('isOver')) {
         jsxc.gui.scrollWindowListBy((ev.originalEvent.wheelDelta > 0) ? 200 : -200);
@@ -921,9 +928,8 @@ jsxc.gui = {
 
     return defer.promise();
 
-  }, 
-  
-  
+  },
+
   /**
    * Show a dialog asking for new etherpad document name, and return a promise
    */
@@ -939,7 +945,7 @@ jsxc.gui = {
 
     $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
       ev.stopPropagation();
-      
+
       // get selected items
       var jids = [];
       var selectedItems = $("#jsxc_dialog #jsxc-invite-dialog-buddylist .jsxc-checked");

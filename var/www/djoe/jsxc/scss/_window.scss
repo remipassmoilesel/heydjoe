@@ -69,8 +69,9 @@
   position: fixed;
   left: 0;
   bottom: 0;
-  width: 30px;
+  width: 45px;
   height: 30px;
+  z-index: 100;
 
   @media (max-width: 768px) {
     display: none;
