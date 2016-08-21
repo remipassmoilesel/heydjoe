@@ -412,8 +412,6 @@ jsxc.xmpp = {
     // Hide dropdown menu
     $('body').click();
 
-    jsxc.triggeredFromElement = (typeof complete === 'boolean') ? complete : true;
-
     // restore all otr objects
     $.each(jsxc.storage.getUserItem('otrlist') || {}, function(i, val) {
       jsxc.otr.create(val);
@@ -664,25 +662,14 @@ jsxc.xmpp = {
 
     $('#jsxc_windowList').remove();
 
-    if (jsxc.triggeredFromElement) {
-      $(document).trigger('toggle.roster.jsxc', ['hidden', 0]);
-      $('#jsxc_roster').remove();
-
-      if (jsxc.triggeredFromLogout) {
-        window.location = jsxc.options.logoutElement.attr('href');
-      }
-
-      $(document).trigger("removed.gui.jsxc");
-
-    } else {
-      jsxc.gui.roster.noConnection();
-    }
+    jsxc.gui.roster.noConnection();
 
     window.clearInterval(jsxc.keepalive);
     jsxc.role_allocation = false;
     jsxc.master = false;
     jsxc.storage.removeItem('alive');
 
+    
     jsxc.error("Disconnected from JSXC");
 
   },

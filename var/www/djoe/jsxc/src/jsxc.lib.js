@@ -38,9 +38,6 @@ jsxc = {
   /** True if login through box */
   triggeredFromBox : false,
 
-  /** True if logout through element click */
-  triggeredFromElement : false,
-
   /** True if logout through logout click */
   triggeredFromLogout : false,
 

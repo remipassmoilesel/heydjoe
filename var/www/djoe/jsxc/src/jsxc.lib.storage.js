@@ -326,7 +326,7 @@ jsxc.storage = {
         }
 
         // master alive
-        if (!jsxc.master && (key === 'alive' || key === 'alive_busy') && !jsxc.triggeredFromElement) {
+        if (!jsxc.master && (key === 'alive' || key === 'alive_busy')) {
 
             // reset timeouts
             jsxc.to = $.grep(jsxc.to, function (timeout) {
@@ -522,12 +522,7 @@ jsxc.storage = {
         // logout
         if (key === 'sid') {
             if (!e.newValue) {
-                // if (jsxc.master && jsxc.xmpp.conn) {
-                // jsxc.xmpp.conn.disconnect();
-                // jsxc.triggeredFromElement = true;
-                // }
                 jsxc.xmpp.logout();
-
             }
             return;
         }

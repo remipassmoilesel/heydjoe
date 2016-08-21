@@ -324,7 +324,7 @@ $(function() {
     // credential must be stored on page
     var cred = SilverpeasCustomModule.credentials;
 
-    /** Correction JSXC Options */
+    /** Corrective for JSXC Options */
     options.xmpp.url = cred.httpBindUrl;
     options.xmpp.domain = cred.xmppDomain;
     options.root = cred.silverpeasContext + "/chatclient";
