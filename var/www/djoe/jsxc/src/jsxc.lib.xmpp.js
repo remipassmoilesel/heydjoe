@@ -167,7 +167,7 @@ jsxc.xmpp = {
 
           if (jsxc.master === true) {
             self.enableOnGuiActivityPresenceSending();
-            self.enableLowPresenceSend();
+            self.enableLowPresenceTimer();
           }
 
           break;
@@ -177,7 +177,8 @@ jsxc.xmpp = {
         case Strophe.Status.DISCONNECTED:
           $(document).trigger('disconnected.jsxc');
 
-          self.stopAutoPresenceTimer();
+          self.disableAutoPresenceSending();
+          self.disableLowPresenceTimer();
 
           break;
         case Strophe.Status.CONNFAIL:
@@ -290,7 +291,7 @@ jsxc.xmpp = {
 
       // stop auto sending if necessary
       if (self.AUTO_PRESENCE_SENDING_MAX > 0 && i > self.AUTO_PRESENCE_SENDING_MAX) {
-        self.stopAutoPresenceTimer();
+        self.disableAutoPresenceSending();
       }
 
     };
@@ -315,34 +316,44 @@ jsxc.xmpp = {
     if (jsxc.master) {
       // remove eventually older timers
       gui.off("mouseover", "*", self.launchAutoPresenceTimer);
-      gui.off("mouseout", "*", self.stopAutoPresenceTimer);
+      gui.off("mouseout", "*", self.disableAutoPresenceSending);
 
       // add timers
       gui.mouseover(self.launchAutoPresenceTimer);
-      gui.mouseout(self.stopAutoPresenceTimer);
+      gui.mouseout(self.disableAutoPresenceSending);
     }
 
   },
+
+  /**
+   * Low presence timer id
+   */
+  _lowPresenceTimer : null,
 
   /**
    * Low presence send is necessary to inform user of our presence if XMPP server
    * do not distribute presences to our buddylist at connexion
    *
    */
-  enableLowPresenceSend : function() {
+  enableLowPresenceTimer : function() {
 
     var self = jsxc.xmpp;
 
-    setInterval(function() {
+    self._lowPresenceTimer = setInterval(function() {
       jsxc.xmpp.sendPres();
     }, self.LOW_PRESENCE_SENDING_INTERVAL);
 
   },
 
+  disableLowPresenceTimer : function() {
+    var self = jsxc.xmpp;
+    clearInterval(self._lowPresenceTimer);
+  },
+
   /**
    * Stop automatic sending of presence
    */
-  stopAutoPresenceTimer : function() {
+  disableAutoPresenceSending : function() {
 
     var self = jsxc.xmpp;
 
