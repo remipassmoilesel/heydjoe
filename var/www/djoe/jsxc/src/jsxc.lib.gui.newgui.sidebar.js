@@ -362,11 +362,9 @@ $.extend(jsxc.newgui, {
     // timer to display a warnings if connexion time is too logn
     var connexionTimer = function() {
 
-      // remove connexion button
-      $("#jsxc-connexion-menu #jsxc-connexion-submit").remove();
-
       // display warning
-      $("#jsxc-connexion-menu #jsxc-login-warning").css({'display' : 'block'});
+      $("#jsxc-connexion-menu #jsxc-login-warning").css({'display' : 'block', 'opacity' : '0px'})
+          .animate({opacity : '1px'}, self.OPACITY_ANIMATION_DURATION);
 
     };
 

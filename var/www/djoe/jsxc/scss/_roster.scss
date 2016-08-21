@@ -1,20 +1,5 @@
 #jsxc_roster {
 
-  //font-size: 13px;
-  //
-  //position: fixed;
-  //top: 0px;
-  //bottom: 0;
-  //right: 0;
-  //width: 200px;
-  //overflow: visible;
-  //border-left: 1px solid #e1e1e1;
-
-  /*border-left: 1px solid $roster_border_left;*/
-  //z-index: 80;
-  //margin-left: 10px;
-  //background-color: $roster_bg;
-
   a {
     cursor: pointer;
   }
@@ -66,7 +51,8 @@
 
   p {
     color: $roster_color;
-    padding: 10px;
+    padding-left: 0.8em;
+    padding-right: 0.8em;
 
     a {
       color: $roster_a;

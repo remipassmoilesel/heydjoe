@@ -117,6 +117,7 @@ jsxc.newgui = {
     // where user can manage notifications
     self._initNotificationsPanel();
 
+    // (re) connexion panel
     self._initConnexionMenu();
 
     // optionnal
