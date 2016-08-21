@@ -604,4 +604,33 @@ TODO: Set up variables:
 
   }
 
+  /**
+    Connexion panel in chat sidebar, which allow user to reconnect
+  */
+  #jsxc-connexion-menu {
+
+    input[type=text] {
+      margin-left: 1.5em;
+      width: 170px;
+    }
+
+    input[type=password] {
+      margin-left: 1.5em;
+      width: 170px;
+    }
+
+    input[type=button] {
+      margin: 1.5em;
+    }
+
+    #jsxc-login-warning {
+      font-style: italic;
+      margin: 1em;
+      color: darkblue;
+
+      display: none;
+    }
+
+  }
+
 }

@@ -143,7 +143,7 @@ jsxc.api = {
    */
   openChatWindow : function(jid) {
 
-    if(!jid){
+    if (!jid) {
       jsxc.gui.feedback("Utilisateur invalide: " + jid);
     }
 
@@ -151,7 +151,7 @@ jsxc.api = {
     var bid = jsxc.jidToBid(jid);
     var node = Strophe.getNodeFromJid(jid);
 
-    if(!node){
+    if (!node) {
       jsxc.gui.feedback("Utilisateur invalide: " + jid);
     }
 
@@ -318,13 +318,24 @@ jsxc.api = {
   },
 
   /**
-   * Reconnect user
+   * Reconnect user. Try to call an registered callback or show the default connexion panel
    */
   reconnect : function() {
-    jsxc.gui.feedback("Connexion en cours");
+
+    var newgui = jsxc.newgui;
+
     var called = jsxc.api.callback("onReconnectRequest");
+
     if (called < 1) {
-      jsxc.gui.showLoginBox();
+
+      if (newgui.isChatSidebarShown() !== true) {
+        newgui.toggleChatSidebar();
+      }
+
+      if (newgui.isConnexionMenuShown() !== true) {
+        newgui.toggleConnexionMenu();
+      }
+
     }
   },
 

@@ -155,7 +155,8 @@ jsxc.xmpp = {
 
     var callback = function(status, condition) {
 
-      jsxc.debug(Object.getOwnPropertyNames(Strophe.Status)[status] + ': ' + condition);
+      jsxc.debug("Strophe connexion changed: " + Object.getOwnPropertyNames(Strophe.Status)[status],
+          {status : status, condition : condition});
 
       switch (status) {
         case Strophe.Status.CONNECTING:

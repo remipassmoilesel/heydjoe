@@ -345,6 +345,114 @@ $.extend(jsxc.newgui, {
   },
 
   /**
+   * Init the connexion panel
+   * @private
+   */
+  _initConnexionMenu : function() {
+
+    var self = jsxc.newgui;
+
+    var button = $('#jsxc-connexion-menu #jsxc-connexion-submit');
+
+    var releaseButton = function() {
+      button.attr('value', 'Connexion');
+      button.prop('disabled', false);
+    };
+
+    // timer to display a warnings if connexion time is too logn
+    var connexionTimer = function() {
+
+      // remove connexion button
+      $("#jsxc-connexion-menu #jsxc-connexion-submit").remove();
+
+      // display warning
+      $("#jsxc-connexion-menu #jsxc-login-warning").css({'display' : 'block'});
+
+    };
+
+    // display warning after 10s
+    var connexionTimerValueMs = 10000;
+    var connexionTimerId = -1;
+
+    button.click(function() {
+
+      if (jsxc.xmpp.conn) {
+        jsxc.gui.feedback("Vous êtes déjà connecté");
+        return;
+      }
+
+      // lock connexion button
+      button.attr('value', 'Veuillez patienter ...');
+      button.prop('disabled', true);
+
+      // check login and password
+      var login = $('#jsxc-connexion-login').val();
+      var password = $('#jsxc-connexion-password').val();
+
+      if (!login) {
+        jsxc.gui.feedback('Identifiant incorrect');
+        return;
+      }
+
+      if (!password) {
+        jsxc.gui.feedback('Mot de passe incorrect');
+        return;
+      }
+
+      // register handlers for connexion results
+      $(document).on('authfail.jsxc', function() {
+
+        clearTimeout(connexionTimerId);
+
+        jsxc.gui.feedback('Echec de la connexion');
+
+        releaseButton();
+
+      });
+
+      $(document).on('connected.jsxc', function() {
+
+        clearTimeout(connexionTimerId);
+
+        jsxc.gui.feedback('Connexion réussie');
+
+        releaseButton();
+
+        self.toggleBuddyList();
+
+      });
+
+      // connexion
+      try {
+
+        connexionTimerId = setTimeout(connexionTimer, connexionTimerValueMs);
+
+        jsxc.xmpp.login(login, password);
+      } catch (e) {
+        console.error(e);
+        jsxc.gui.feedback('Erreur lors de la connexion: ' + e);
+        releaseButton();
+      }
+
+    });
+
+  },
+
+  /**
+   * Open or close settings menu
+   */
+  toggleConnexionMenu : function() {
+    jsxc.newgui.chatSidebarContent.toggleContent('jsxc-connexion-menu');
+  },
+
+  /**
+   * Return true if chat sidebar is shown
+   */
+  isConnexionMenuShown : function() {
+    return jsxc.newgui.chatSidebarContent.isContentVisible('jsxc-connexion-menu');
+  },
+
+  /**
    * Open or close settings menu
    */
   toggleActionsMenu : function() {
@@ -549,6 +657,13 @@ $.extend(jsxc.newgui, {
    */
   isChatSidebarShown : function() {
     return $("#jsxc-chat-sidebar-content").hasClass("jsxc-deploy");
+  },
+
+  /**
+   * Open or close buddy list
+   */
+  toggleBuddyList : function() {
+    jsxc.newgui.chatSidebarContent.toggleContent('jsxc-buddy-list-container');
   },
 
   /**

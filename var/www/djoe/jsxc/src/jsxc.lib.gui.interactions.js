@@ -133,69 +133,38 @@ jsxc.gui.interactions = {
     var loginBtn = $('#jsxc-status-bar .jsxc-login-button');
     var logoutBtn = $('#jsxc-status-bar .jsxc-logout-button');
 
-    // display own presence information
+    // listen connection state to display informations and controls
     $(document).on('ownpresence.jsxc', function() {
       newgui.updateOwnPresenceIndicator();
     });
+
     $(document).on('attached.jsxc', function() {
       newgui.updateOwnPresenceIndicator();
     });
+
     $(document).on('disconnected.jsxc', function() {
       newgui.updateOwnPresenceIndicator(true);
+      newgui.hideAndShow(loginBtn, logoutBtn);
+    });
+
+    $(document).on('connected.jsxc', function() {
+      newgui.hideAndShow(logoutBtn, loginBtn);
     });
     newgui.updateOwnPresenceIndicator();
 
-    /**
-     * Hide one element and show a second one
-     * @param toShow
-     * @param toHide
-     */
-    var hideAndShow = function(toShow, toHide) {
-
-      // hide old element
-      toHide.animate({
-        opacity : 0
-      }, newgui.OPACITY_ANIMATION_DURATION, function() {
-        toHide.css('display', 'none');
-
-        // show new one
-        toShow.css({
-          'display' : 'inline-block', 'opacity' : 0
-        });
-        toShow.animate({
-          'opacity' : '1'
-        }, newgui.OPACITY_ANIMATION_DURATION);
-      });
-
-    };
-
     // log out button
     logoutBtn.click(function() {
-
-      // disconnect
       jsxc.api.disconnect();
-      hideAndShow(loginBtn, logoutBtn);
-
     });
 
     // login button
     loginBtn.click(function() {
-
       jsxc.api.reconnect();
-
-      $(document).one('connected.jsxc', function() {
-        hideAndShow(logoutBtn, loginBtn);
-      });
-
     });
 
     // show login / logout on connect
     if (jsxc.xmpp.conn) {
-      hideAndShow(logoutBtn, loginBtn);
-    } else {
-      $(document).one('attached.jsxc', function() {
-        hideAndShow(logoutBtn, loginBtn);
-      });
+      newgui.hideAndShow(logoutBtn, loginBtn);
     }
 
     // make status bar selectable

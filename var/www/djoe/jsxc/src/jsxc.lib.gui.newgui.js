@@ -117,6 +117,8 @@ jsxc.newgui = {
     // where user can manage notifications
     self._initNotificationsPanel();
 
+    self._initConnexionMenu();
+
     // optionnal
     // self.initMediaPanelMouseNavigation();
 
@@ -143,7 +145,6 @@ jsxc.newgui = {
     // init multimedia stream gui
     jsxc.mmstream.gui._initGui();
   },
-
 
   /**
    * Utility to toggle a floating menu visible or hidden
@@ -204,6 +205,32 @@ jsxc.newgui = {
       });
 
     }
+
+  },
+
+  /**
+   * Utility to hide one element and show a second one with animations
+   * @param toShow
+   * @param toHide
+   */
+  hideAndShow : function(toShow, toHide) {
+
+    var self = jsxc.newgui;
+
+    // hide old element
+    toHide.animate({
+      opacity : 0
+    }, self.OPACITY_ANIMATION_DURATION, function() {
+      toHide.css('display', 'none');
+
+      // show new one
+      toShow.css({
+        'display' : 'inline-block', 'opacity' : 0
+      });
+      toShow.animate({
+        'opacity' : '1'
+      }, self.OPACITY_ANIMATION_DURATION);
+    });
 
   }
 

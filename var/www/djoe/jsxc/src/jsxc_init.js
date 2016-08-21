@@ -291,7 +291,7 @@ $(function() {
     };
 
     jsxc.api.registerCustomModule({
-      name : "Silverpeas", module : SilverpeasCustomModule,
+      name : "Silverpeas", module : SilverpeasCustomModule
     });
 
     var SilverpeasCallbackSet = {
@@ -334,8 +334,6 @@ $(function() {
 
     jsxc.api.Silverpeas.connect();
   }
-
-
-
+  
 });
 
