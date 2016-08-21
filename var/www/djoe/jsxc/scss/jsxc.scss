@@ -2,8 +2,8 @@
 @import "dep";
 
 //fonts
-$font_sans: Arial, sans-serif;
-$font_serif: serif;
+$font_sans: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
+$font_serif: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
 
 @import "modules";
 @import "buddylist";
@@ -23,18 +23,14 @@ $font_serif: serif;
 @import "sidebar";
 @import "mediapanel";
 
+#jsxc_roster, #jsxc_windowList {
 
-/**
-  Workaround to avoid strange properties from other style sources
-*/
-
-#jsxc {
   font-family: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
   font-size: 13px !important;
-}
 
-#jsxc_roster {
-
+  /**
+  Scrollbars
+  */
   .ui-accordion-content {
     background: white;
   }
@@ -43,6 +39,21 @@ $font_serif: serif;
     opacity: 0.6;
   }
 
+  /**
+    Buttons
+  */
+  .btn {
+    margin: 0.2em;
+  }
+
+  .btn-default {
+    background: #ffffff !important;
+    color: darkGray !important;
+  }
+
+  .btn-primary {
+    background: #337ab7 !important;
+    color: #fff !important
+  }
+
 }
-
-

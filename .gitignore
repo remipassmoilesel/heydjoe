@@ -12,6 +12,7 @@ opt/djoe-docker-image/dependencies/*.tar.gz
 var/www/djoe/jsxc/dev/
 var/www/djoe/jsxc/tmp/
 var/www/djoe/jsxc.original/
+var/www/djoe/plugin-moodle/
 
 var/www/djoe/playground/
 var/www/djoe/stats-module/

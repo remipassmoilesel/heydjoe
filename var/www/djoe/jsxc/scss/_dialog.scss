@@ -123,4 +123,21 @@
   .jsxc-etherpad-name {
     margin: 0.7em;
   }
+
+  /**
+    Buttons
+  */
+  .btn {
+    margin: 0.2em;
+  }
+
+  .btn-default {
+    background: #ffffff !important;
+    color: darkGray !important;
+  }
+
+  .btn-primary {
+    background: #337ab7 !important;
+    color: #fff !important
+  }
 }
