@@ -696,7 +696,7 @@ jsxc.muc = {
     var inviteLink = $('<a class="jsxc_inviteUsers"><span>Inviter des utilisateurs</span></a>');
     inviteLink.click(function() {
 
-      jsxc.gui.showInviteContactsDialog()
+      jsxc.gui.showSelectContactsDialog()
 
       // operation was accepted
           .then(function(jids) {

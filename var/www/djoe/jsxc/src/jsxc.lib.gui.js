@@ -843,7 +843,9 @@ jsxc.gui = {
   showRemoveManyDialog : function(bidArray) {
 
     // show dialog
-    jsxc.gui.dialog.open(jsxc.gui.template.get('removeManyDialog'));
+    jsxc.gui.dialog.open(jsxc.gui.template.get('removeManyDialog'), {
+      'noClose' : true
+    });
 
     var templateList = $('#jsxc_dialog .jsxc_elementsToRemove');
 
@@ -929,7 +931,9 @@ jsxc.gui = {
     var defer = $.Deferred();
 
     // show dialog
-    jsxc.gui.dialog.open(jsxc.gui.template.get('etherpadCreation'));
+    jsxc.gui.dialog.open(jsxc.gui.template.get('etherpadCreation'), {
+      'noClose' : true
+    });
 
     // create user list to invite
     jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc-etherpad-dialog-buddylist");
@@ -971,12 +975,14 @@ jsxc.gui = {
   /**
    * Show a dialog asking for new etherpad document name, and return a promise
    */
-  showInviteContactsDialog : function() {
+  showSelectContactsDialog : function() {
 
     var defer = $.Deferred();
 
     // show dialog
-    jsxc.gui.dialog.open(jsxc.gui.template.get('inviteContacts'));
+    jsxc.gui.dialog.open(jsxc.gui.template.get('inviteContacts'), {
+      'noClose' : true
+    });
 
     // create user list to invite
     jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc-invite-dialog-buddylist");

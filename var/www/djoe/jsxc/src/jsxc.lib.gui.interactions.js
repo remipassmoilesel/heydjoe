@@ -57,7 +57,7 @@ jsxc.gui.interactions = {
     //TODO Present conversations ?
     if (rslt.length < 1) {
 
-      jsxc.gui.showInviteContactsDialog()
+      jsxc.gui.showSelectContactsDialog()
           .then(function(result) {
             defer.resolve(result);
           })
@@ -95,7 +95,7 @@ jsxc.gui.interactions = {
 
     if (rslt.length < 1) {
 
-      jsxc.gui.showInviteContactsDialog()
+      jsxc.gui.showSelectContactsDialog()
           .then(function(result) {
             defer.resolve(result);
           })
@@ -186,6 +186,7 @@ jsxc.gui.interactions = {
   _initActionMenu : function() {
 
     var self = jsxc.gui.interactions;
+    var mmstream = jsxc.mmstream;
 
     /**
      * Start a multi user chat
@@ -341,7 +342,7 @@ jsxc.gui.interactions = {
 
               var fjid = jsxc.getCurrentActiveJidForBid(element);
 
-              if (fjid === null || jsxc.isBuddyOnline(element) === true) {
+              if (fjid === null || jsxc.isBuddyOnline(element) === false) {
                 unavailables.push(Strophe.getNodeFromJid(element));
               } else {
                 fjidArray.push(jsxc.getCurrentActiveJidForBid(element));
@@ -362,8 +363,66 @@ jsxc.gui.interactions = {
 
             // call buddies
             $.each(fjidArray, function(index, fjid) {
-              jsxc.mmstream.startSimpleVideoCall(fjid);
+              mmstream.startSimpleVideoCall(fjid);
             });
+
+          })
+          .fail(function() {
+            jsxc.gui.feedback('Opération annulée');
+          });
+
+    });
+
+    /**
+     * Video conférence
+     * ================
+     *
+     */
+    $("#jsxc-actions-menu .jsxc-action_videoconference").click(function() {
+
+      // get selected budies
+      self._getCheckedBuddiesOrAskFor()
+
+          .then(function(buddies) {
+
+            if (buddies.length < 1) {
+              jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+              return;
+            }
+
+            if (buddies.length > mmstream.VIDEOCONFERENCE_MAX_PARTICIPANTS) {
+              jsxc.gui.feedback("La vidéoconférence est limitée à 6 participants");
+              return;
+            }
+
+            // get full jid of buddies
+            var fjidArray = [];
+            var unavailables = [];
+            $.each(buddies, function(index, element) {
+
+              var fjid = jsxc.getCurrentActiveJidForBid(element);
+
+              if (fjid === null || jsxc.isBuddyOnline(element) === false) {
+                unavailables.push(Strophe.getNodeFromJid(element));
+              } else {
+                fjidArray.push(jsxc.getCurrentActiveJidForBid(element));
+              }
+
+            });
+
+            // check how many participants are unavailable
+            if (unavailables.length === 1) {
+              jsxc.gui.feedback("<b>" + unavailables[0] + "</b> n'est pas disponible");
+              return;
+            }
+
+            else if (unavailables.length > 1) {
+              jsxc.gui.feedback("<b>" + unavailables.join(", ") + "</b> ne sont pas disponibles");
+              return;
+            }
+
+            // start videoconference
+            mmstream.startVideoconference(fjidArray);
 
           })
           .fail(function() {
@@ -382,6 +441,7 @@ jsxc.gui.interactions = {
 
     // var self = jsxc.gui.interactions;
     var newgui = jsxc.newgui;
+    var mmstream = jsxc.mmstream;
 
     /**
      * Open settings menu
@@ -418,7 +478,7 @@ jsxc.gui.interactions = {
     });
 
     $('#jsxc-settings-menu .jsxc-action_installScreenSharingExtension').click(function() {
-      jsxc.mmstream.gui.showInstallScreenSharingExtensionDialog();
+      mmstream.gui.showInstallScreenSharingExtensionDialog();
     });
 
     // about dialog

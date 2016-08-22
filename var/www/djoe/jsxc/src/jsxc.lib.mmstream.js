@@ -12,16 +12,14 @@ jsxc.mmstream = {
   debug : true,
 
   /**
+   * Maximum number of participants to a videoconference
+   */
+  VIDEOCONFERENCE_MAX_PARTICIPANTS : 6,
+
+  /**
    * Auto accept only for debug purpose
    */
   auto_accept_debug : false,
-
-  /**
-   * Delay before attach video, to let navigator create all elements needed.
-   *
-   * Workaround for Firefox
-   */
-  DELAY_BEFORE_ATTACH : 700,
 
   /**
    * Hangup call if no response
@@ -715,6 +713,8 @@ jsxc.mmstream = {
     // case 1: I have to join the videoconference
     if (target === self.conn.jid) {
 
+      self.videoconference.occupied = true;
+
       if (jsxc.mmstream.debug === true) {
         self._log("I have to join videoconference");
       }
@@ -734,11 +734,13 @@ jsxc.mmstream = {
                 // user cannot access to camera
                 .fail(function(error) {
                   jsxc.gui.feedback("Accès à la caméra refusé" + (error ? ": " + error : ""));
+                  self.videoconference.occupied = false;
                 });
 
           })
           .fail(function() {
             jsxc.gui.feedback("Invitation refusée");
+            self.videoconference.occupied = false;
           });
     }
 
@@ -777,9 +779,6 @@ jsxc.mmstream = {
     }
     self.videoconference.occupied = true;
 
-    // reset acceptance flag
-    self.videoconference.accepted = false;
-
     // check how many participants
     if (participants.length < 1) {
       self._log('Too few participants', {stanza : stanza, participants : participants}, 'ERROR');
@@ -794,6 +793,12 @@ jsxc.mmstream = {
       self._log("_onVideoconferenceInvitationReceived",
           {fulljid : initiator, videoconference : self.videoconference});
     }
+
+    var decline = function(message) {
+      jsxc.gui.feedback(message);
+      self._declineVideconference(initiator, participants, invitationId, error);
+      self.videoconference.occupied = false;
+    };
 
     /**
      * Show videoconference dialog confirmation
@@ -815,16 +820,14 @@ jsxc.mmstream = {
 
               // user cannot access to camera
               .fail(function(error) {
-                jsxc.gui.feedback("Accès à la caméra refusé" + (error ? ": " + error : ""));
-                self._declineVideconference(initiator, participants, invitationId, error);
+                decline("Accès à la caméra refusé");
               });
 
         })
 
         // video conference is rejected
         .fail(function(error) {
-          jsxc.gui.feedback("Vidéo conférence rejetée" + (error ? ": " + error : ""));
-          self._declineVideconference(initiator, participants, invitationId, error);
+          decline("Vidéo conférence rejetée");
         });
 
   },
@@ -1297,10 +1300,19 @@ jsxc.mmstream = {
 
     var self = jsxc.mmstream;
 
+    jsxc.stats.addEvent("jsxc.mmstream.videoconference.start");
+
+    if (!fulljidArray || fulljidArray.constructor !== Array) {
+      throw new Error("Illegal argument: " + fulljidArray);
+    }
+
+    if (fulljidArray.length > self.VIDEOCONFERENCE_MAX_PARTICIPANTS) {
+      throw new Error("Too much participants. Number: " + fulljidArray.length + " / Max: " +
+          self.VIDEOCONFERENCE_MAX_PARTICIPANTS);
+    }
+
     // check if navigator is compatible
     self.checkNavigatorCompatibility("videoconference");
-
-    jsxc.stats.addEvent("jsxc.mmstream.videoconference.start");
 
     if (jsxc.mmstream.debug === true) {
       self._log("startVideoconference", [fulljidArray, message]);
@@ -1309,7 +1321,7 @@ jsxc.mmstream = {
     // check if another multimedia session is currently running
     if (self.videoconference.occupied === true) {
       jsxc.gui.feedback(
-          "Vous ne pouvez pas commencer une vidéoconférence, veuillez d'abord raccrocher tous vos appels multimédia");
+          "Vous ne pouvez pas commencer une vidéoconférence maintenant, veuillez d'abord terminer tous vos appels multimédia");
       return;
     }
     self.videoconference.occupied = true;
@@ -2355,12 +2367,6 @@ jsxc.mmstream = {
 
       track.stop();
 
-      if (typeof track.enabled !== "undefined") {
-        track.enabled = false;
-      }
-
-      stream.removeTrack(track);
-
     });
 
   },
@@ -2377,7 +2383,7 @@ jsxc.mmstream = {
       // here signaled as error for debug purposes
 
       //self._log("Stop local stream", [self.localStream, self.conn.jingle.localStream]);
-      self._log("Stop local stream", [self.localStream, self.conn.jingle.localStream], 'ERROR');
+      self._log("Stop local stream", [self.localStream, self.conn.jingle.localStream]);
     }
 
     if (self.localStream) {
