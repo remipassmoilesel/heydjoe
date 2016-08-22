@@ -106,7 +106,7 @@ jsxc.mmstream.gui = {
     // remove all items from list
     list.find("li").remove();
 
-    if (Object.keys(mmstream.videoconference.users) < 1) {
+    if (Object.keys(mmstream.multimediacache.users) < 1) {
 
       var it = $("<li>");
       it.text("Aucune connexion en cours");
@@ -116,7 +116,7 @@ jsxc.mmstream.gui = {
     }
 
     // iterate users
-    $.each(mmstream.videoconference.users, function(fulljid, item) {
+    $.each(mmstream.multimediacache.users, function(fulljid, item) {
 
       var it = $("<li>");
 

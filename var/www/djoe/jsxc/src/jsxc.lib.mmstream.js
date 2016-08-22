@@ -113,12 +113,12 @@ jsxc.mmstream = {
   autoHangupCalls : {},
 
   /**
-   * List of videoconference users
+   * List of multimedia users
    *
    * Every current active call must be registered here
    *
    */
-  videoconference : {
+  multimediacache : {
 
     /**
      * Last date of launch
@@ -332,7 +332,7 @@ jsxc.mmstream = {
       throw new Error("Incorrect JID, must be full: " + fulljid);
     }
 
-    self.videoconference.users[fulljid] = {
+    self.multimediacache.users[fulljid] = {
 
       node : Strophe.getNodeFromJid(fulljid),
 
@@ -373,17 +373,17 @@ jsxc.mmstream = {
     }
 
     // create user if not exist
-    if (!self.videoconference.users[fulljid]) {
+    if (!self.multimediacache.users[fulljid]) {
       self._log("Status change: user was created", fulljid, 'INFO');
       self._createUserEntry(fulljid);
 
-      self.videoconference.users[fulljid].status = status;
+      self.multimediacache.users[fulljid].status = status;
     }
 
     else {
       if (overwrite === true) {
         // update status
-        self.videoconference.users[fulljid].status = status;
+        self.multimediacache.users[fulljid].status = status;
       }
     }
 
@@ -412,19 +412,19 @@ jsxc.mmstream = {
     overwrite = typeof overwrite !== 'undefined' ? overwrite : true;
 
     // create user if not exist
-    if (!self.videoconference.users[fulljid]) {
+    if (!self.multimediacache.users[fulljid]) {
       self._log("Type change: user was created", fulljid, 'INFO');
       self._createUserEntry(fulljid);
 
       // update status
-      self.videoconference.users[fulljid].type = type;
+      self.multimediacache.users[fulljid].type = type;
 
     }
 
     else {
       if (overwrite === true) {
         // update status
-        self.videoconference.users[fulljid].type = type;
+        self.multimediacache.users[fulljid].type = type;
       }
     }
 
@@ -476,8 +476,8 @@ jsxc.mmstream = {
       throw new Error("Incorrect JID, must be full: " + fulljid);
     }
 
-    return self.videoconference.users[fulljid] && self.videoconference.users[fulljid].status ?
-        self.videoconference.users[fulljid].status : null;
+    return self.multimediacache.users[fulljid] && self.multimediacache.users[fulljid].status ?
+        self.multimediacache.users[fulljid].status : null;
 
   },
 
@@ -497,8 +497,8 @@ jsxc.mmstream = {
       throw new Error("Incorrect JID, must be full: " + fulljid);
     }
 
-    return self.videoconference.users[fulljid] && self.videoconference.users[fulljid].status &&
-        self.videoconference.users[fulljid].status === self.USER_STATUS.READY;
+    return self.multimediacache.users[fulljid] && self.multimediacache.users[fulljid].status &&
+        self.multimediacache.users[fulljid].status === self.USER_STATUS.READY;
 
   },
 
@@ -518,9 +518,9 @@ jsxc.mmstream = {
       throw new Error("Incorrect JID, must be full: " + fulljid);
     }
 
-    return self.videoconference.users[fulljid] && self.videoconference.users[fulljid].status &&
-        (self.videoconference.users[fulljid].status === self.USER_STATUS.CONNECTED ||
-        self.videoconference.users[fulljid].status === self.USER_STATUS.CONNECTING);
+    return self.multimediacache.users[fulljid] && self.multimediacache.users[fulljid].status &&
+        (self.multimediacache.users[fulljid].status === self.USER_STATUS.CONNECTED ||
+        self.multimediacache.users[fulljid].status === self.USER_STATUS.CONNECTING);
 
   },
 
@@ -540,11 +540,11 @@ jsxc.mmstream = {
       throw new Error("Incorrect JID, must be full: " + fulljid);
     }
 
-    return self.videoconference.users[fulljid] && self.videoconference.users[fulljid].type &&
-        (self.videoconference.users[fulljid].type === self.USER_TYPE.VIDEOCONF_INITIATOR ||
-        self.videoconference.users[fulljid].type === self.USER_TYPE.VIDEOCONF_PARTICIPANT) &&
-        self.videoconference.users[fulljid].status &&
-        self.videoconference.users[fulljid].status !== self.USER_STATUS.REJECTED;
+    return self.multimediacache.users[fulljid] && self.multimediacache.users[fulljid].type &&
+        (self.multimediacache.users[fulljid].type === self.USER_TYPE.VIDEOCONF_INITIATOR ||
+        self.multimediacache.users[fulljid].type === self.USER_TYPE.VIDEOCONF_PARTICIPANT) &&
+        self.multimediacache.users[fulljid].status &&
+        self.multimediacache.users[fulljid].status !== self.USER_STATUS.REJECTED;
 
   },
 
@@ -561,9 +561,9 @@ jsxc.mmstream = {
       self._log(" !!!!! Videoconference cleared");
     }
 
-    self.videoconference.lastLaunch = -1;
-    self.videoconference.users = {};
-    self.videoconference.accepted = false;
+    self.multimediacache.lastLaunch = -1;
+    self.multimediacache.users = {};
+    self.multimediacache.accepted = false;
 
     $(document).trigger("videoconference-changed.jsxc");
 
@@ -589,18 +589,18 @@ jsxc.mmstream = {
       throw new Error("Unknown mode in _purgeVideoconferenceCache: " + mode);
     }
 
-    self.videoconference.lastLaunch = -1;
+    self.multimediacache.lastLaunch = -1;
 
-    $.each(self.videoconference.users, function(fulljid) {
+    $.each(self.multimediacache.users, function(fulljid) {
 
       // we found jid and we have to remove all array ids from cache
       if (fulljidArray.indexOf(fulljid) > -1 && mode === "purge") {
-        delete self.videoconference.users[fulljid];
+        delete self.multimediacache.users[fulljid];
       }
 
       // we dont found jid and we have to remove all jids not in array from cache
       else if (fulljidArray.indexOf(fulljid) < 0 && mode === "others") {
-        delete self.videoconference.users[fulljid];
+        delete self.multimediacache.users[fulljid];
       }
 
     });
@@ -656,7 +656,7 @@ jsxc.mmstream = {
 
       // received an invitation
       if (status === self.XMPP_VIDEOCONFERENCE.STATUS.INIT) {
-        jsxc.stats.addEvent("jsxc.mmstream.videoconference.invitationReceived");
+        jsxc.stats.addEvent("jsxc.mmstream.multimediacache.invitationReceived");
         self._onVideoconferenceInvitationReceived(stanza, video);
       }
 
@@ -672,7 +672,7 @@ jsxc.mmstream = {
 
       // some user is reinvited in videoconference
       else if (status === self.XMPP_VIDEOCONFERENCE.STATUS.REINVITATION) {
-        jsxc.stats.addEvent("jsxc.mmstream.videoconference.invitationReceived");
+        jsxc.stats.addEvent("jsxc.mmstream.multimediacache.invitationReceived");
         self._onReinvitationReceived(stanza, video);
       }
 
@@ -713,7 +713,7 @@ jsxc.mmstream = {
     // case 1: I have to join the videoconference
     if (target === self.conn.jid) {
 
-      self.videoconference.occupied = true;
+      self.multimediacache.occupied = true;
 
       if (jsxc.mmstream.debug === true) {
         self._log("I have to join videoconference");
@@ -734,13 +734,13 @@ jsxc.mmstream = {
                 // user cannot access to camera
                 .fail(function(error) {
                   jsxc.gui.feedback("Accès à la caméra refusé" + (error ? ": " + error : ""));
-                  self.videoconference.occupied = false;
+                  self.multimediacache.occupied = false;
                 });
 
           })
           .fail(function() {
             jsxc.gui.feedback("Invitation refusée");
-            self.videoconference.occupied = false;
+            self.multimediacache.occupied = false;
           });
     }
 
@@ -771,13 +771,13 @@ jsxc.mmstream = {
     var datetime = video.attr(self.XMPP_VIDEOCONFERENCE.DATETIME_ATTR);
 
     // check if another multimedia session is currently running
-    if (self.videoconference.occupied === true) {
+    if (self.multimediacache.occupied === true) {
       jsxc.gui.feedback(
           initiator_node + " vous a invité à une vidéoconférence, mais vous êtes occupé.");
       self._declineVideconference(initiator, participants, invitationId, "Occupé !");
       return;
     }
-    self.videoconference.occupied = true;
+    self.multimediacache.occupied = true;
 
     // check how many participants
     if (participants.length < 1) {
@@ -791,13 +791,13 @@ jsxc.mmstream = {
 
     if (jsxc.mmstream.debug === true) {
       self._log("_onVideoconferenceInvitationReceived",
-          {fulljid : initiator, videoconference : self.videoconference});
+          {fulljid : initiator, videoconference : self.multimediacache});
     }
 
     var decline = function(message) {
       jsxc.gui.feedback(message);
       self._declineVideconference(initiator, participants, invitationId, error);
-      self.videoconference.occupied = false;
+      self.multimediacache.occupied = false;
     };
 
     /**
@@ -849,8 +849,8 @@ jsxc.mmstream = {
     var error = "";
 
     // check if a participant to videoconference
-    if (self.videoconference.userList.indexOf(fulljid) < 0 &&
-        self.videoconference.initiator !== fulljid) {
+    if (self.multimediacache.userList.indexOf(fulljid) < 0 &&
+        self.multimediacache.initiator !== fulljid) {
       error = "'" + node + "' ne participe pas à la vidéo conférence en cours.";
     }
 
@@ -873,8 +873,8 @@ jsxc.mmstream = {
           //TODO dialog
 
           // send invitations
-          var participants = self.videoconference.userList;
-          var initiator = self.videoconference.initiator;
+          var participants = self.multimediacache.userList;
+          var initiator = self.multimediacache.initiator;
           var node = Strophe.getNodeFromJid(self.conn.jid);
 
           self._sendVideoconferenceInvitations(participants,
@@ -903,7 +903,7 @@ jsxc.mmstream = {
 
     var self = jsxc.mmstream;
 
-    jsxc.stats.addEvent("jsxc.mmstream.videoconference.accepted");
+    jsxc.stats.addEvent("jsxc.mmstream.multimediacache.accepted");
 
     // set to true if all users have already accepted videoconference
     reaccept = typeof reaccept !== "undefined" ? reaccept : false;
@@ -913,12 +913,12 @@ jsxc.mmstream = {
     self._purgeVideoconferenceCache(participants.concat([initiator]), "others");
 
     // keep informations
-    self.videoconference.userList = participants;
-    self.videoconference.initiator = initiator;
+    self.multimediacache.userList = participants;
+    self.multimediacache.initiator = initiator;
 
     // store buddies was already ready
     var alreadyReady = [];
-    $.each(self.videoconference.users, function(fulljid) {
+    $.each(self.multimediacache.users, function(fulljid) {
       if (self._isBuddyReady(fulljid) === true) {
         alreadyReady.push(fulljid);
       }
@@ -941,10 +941,10 @@ jsxc.mmstream = {
     self._setUserType(self.conn.jid, self.USER_TYPE.SELF);
     self._setUserStatus(self.conn.jid, self.USER_STATUS.SELF);
 
-    self.videoconference.lastLaunch = datetime;
+    self.multimediacache.lastLaunch = datetime;
 
     // acceptance flag
-    self.videoconference.accepted = true;
+    self.multimediacache.accepted = true;
 
     // simulate all users we must call are ready beacuse they have already accepted videoconference
     if (reaccept === true) {
@@ -977,7 +977,7 @@ jsxc.mmstream = {
 
     var self = jsxc.mmstream;
 
-    jsxc.stats.addEvent("jsxc.mmstream.videoconference.decline");
+    jsxc.stats.addEvent("jsxc.mmstream.multimediacache.decline");
 
     self._log("declineVideconference", error);
 
@@ -1003,7 +1003,7 @@ jsxc.mmstream = {
 
     // accept people was waiting
     // iterate people was waiting
-    $.each(self.videoconference.users, function(fulljid) {
+    $.each(self.multimediacache.users, function(fulljid) {
 
       if (usersToCall.indexOf(fulljid) !== -1 && self._isBuddyReady(fulljid) === true) {
 
@@ -1050,7 +1050,7 @@ jsxc.mmstream = {
     self._notifyVideoconferenceChanged();
 
     // call users which are ready, be only if conference is accepted
-    if (self.videoconference.accepted === true) {
+    if (self.multimediacache.accepted === true) {
       self._videoconferenceCallUsersReady(initiator, participants);
     }
   },
@@ -1263,7 +1263,7 @@ jsxc.mmstream = {
     // send one invitation to each participants and eventually to initator if this is a reinvitation
     $.each(participants.concat(initiator), function(index, fulljid) {
 
-      jsxc.stats.addEvent("jsxc.mmstream.videoconference.sendInvitation");
+      jsxc.stats.addEvent("jsxc.mmstream.multimediacache.sendInvitation");
 
       if (fulljid !== self.conn.jid) {
 
@@ -1300,7 +1300,7 @@ jsxc.mmstream = {
 
     var self = jsxc.mmstream;
 
-    jsxc.stats.addEvent("jsxc.mmstream.videoconference.start");
+    jsxc.stats.addEvent("jsxc.mmstream.multimediacache.start");
 
     if (!fulljidArray || fulljidArray.constructor !== Array) {
       throw new Error("Illegal argument: " + fulljidArray);
@@ -1319,14 +1319,14 @@ jsxc.mmstream = {
     }
 
     // check if another multimedia session is currently running
-    if (self.videoconference.occupied === true) {
+    if (self.multimediacache.occupied === true) {
       jsxc.gui.feedback(
           "Vous ne pouvez pas commencer une vidéoconférence maintenant, veuillez d'abord terminer tous vos appels multimédia");
       return;
     }
-    self.videoconference.occupied = true;
+    self.multimediacache.occupied = true;
 
-    self.videoconference.accepted = false;
+    self.multimediacache.accepted = false;
 
     // require local stream to prevent errors
     self._requireLocalStream()
@@ -1335,7 +1335,7 @@ jsxc.mmstream = {
           // clear previous video conference informations
           self._clearVideoconferenceCache();
 
-          self.videoconference.accepted = true;
+          self.multimediacache.accepted = true;
 
           // auto accept all participants streams
           self._updateAllVideoconferenceUsers(fulljidArray, self.USER_STATUS.NOT_READY);
@@ -1348,14 +1348,14 @@ jsxc.mmstream = {
           self._notifyVideoconferenceChanged();
 
           // keep informations
-          self.videoconference.userList = fulljidArray;
-          self.videoconference.initiator = self.conn.jid;
+          self.multimediacache.userList = fulljidArray;
+          self.multimediacache.initiator = self.conn.jid;
 
           try {
 
             // send an invitation to each participant
             var ret = self._sendVideoconferenceInvitations(fulljidArray, message);
-            self.videoconference.lastLaunch = ret.datetime;
+            self.multimediacache.lastLaunch = ret.datetime;
 
             jsxc.gui.feedback("La vidéoconférence va bientôt commencer ...");
 
@@ -1373,7 +1373,7 @@ jsxc.mmstream = {
         .fail(function(error) {
           jsxc.gui.feedback("Accès à la caméra refusé" + (error ? ": " + error : ""));
 
-          self.videoconference.occupied = false;
+          self.multimediacache.occupied = false;
         });
 
   },
@@ -1449,12 +1449,12 @@ jsxc.mmstream = {
     }
 
     // check if another multimedia session is currently running
-    if (self.videoconference.occupied === true) {
+    if (self.multimediacache.occupied === true) {
       jsxc.gui.feedback(
           "Vous ne pouvez pas commencer un partage d'écran, veuillez d'abord raccrocher tous vos appels multimédia");
       return;
     }
-    self.videoconference.occupied = true;
+    self.multimediacache.occupied = true;
 
     try {
 
@@ -1472,7 +1472,7 @@ jsxc.mmstream = {
       jsxc.gui.feedback(
           "Erreur lors de l'envoi des invitations. Veuillez rafraichir la page et réessayer.");
 
-      self.videoconference.occupied = false;
+      self.multimediacache.occupied = false;
     }
   },
 
@@ -1513,7 +1513,9 @@ jsxc.mmstream = {
       if (self._isNavigatorChrome() !== true) {
         message = "Le partage d'écran n'est pas disponible avec votre navigateur. Utilisez Chrome.";
       }
-    } else {
+    }
+    
+    else {
       throw new Error("Unknown task: " + task);
     }
 
@@ -1743,7 +1745,7 @@ jsxc.mmstream = {
     var self = jsxc.mmstream;
 
     if (jsxc.mmstream.debug === true) {
-      self._log("_onIncomingCall", {videoconference : self.videoconference});
+      self._log("_onIncomingCall", {videoconference : self.multimediacache});
     }
 
     // send signal to partner
@@ -1814,12 +1816,12 @@ jsxc.mmstream = {
     else if (self._isBuddyParticipatingToVideoconference(fulljid) === true) {
 
       self._log("Participant accepted", {
-        session : session, videoconference : self.videoconference
+        session : session, videoconference : self.multimediacache
       });
 
       if (jsxc.mmstream.debug === true) {
         self._log("Buddy accepted ", {
-          fulljid : fulljid, videoconference : self.videoconference
+          fulljid : fulljid, videoconference : self.multimediacache
         });
       }
 
@@ -1850,12 +1852,12 @@ jsxc.mmstream = {
       self._log("Incoming call ", session);
 
       // check if another multimedia session is currently running
-      if (self.videoconference.occupied === true) {
+      if (self.multimediacache.occupied === true) {
         jsxc.gui.feedback("<b>" + node + "</b> vous a contacté, mais vous êtes occupé");
         declineRemoteSession();
         return;
       }
-      self.videoconference.occupied = true;
+      self.multimediacache.occupied = true;
 
       self._setUserType(fulljid, self.USER_TYPE.SIMPLE_VIDEO_CALL);
       self._notifyVideoconferenceChanged();
@@ -1990,11 +1992,11 @@ jsxc.mmstream = {
     }
 
     // save session and stream
-    if (!self.videoconference.users[fulljid]) {
+    if (!self.multimediacache.users[fulljid]) {
       self._createUserEntry(fulljid);
     }
-    self.videoconference.users[fulljid].session = session;
-    self.videoconference.users[fulljid].stream = stream;
+    self.multimediacache.users[fulljid].session = session;
+    self.multimediacache.users[fulljid].stream = stream;
 
     // show local video if needed
     if (self.gui.isLocalVideoShown() !== true) {
@@ -2010,8 +2012,8 @@ jsxc.mmstream = {
    */
   getActiveSession : function(fulljid) {
     var self = jsxc.mmstream;
-    return self.videoconference.users[fulljid] && self.videoconference.users[fulljid].session ?
-        self.videoconference.users[fulljid].session : null;
+    return self.multimediacache.users[fulljid] && self.multimediacache.users[fulljid].session ?
+        self.multimediacache.users[fulljid].session : null;
   },
 
   /**
@@ -2021,8 +2023,8 @@ jsxc.mmstream = {
    */
   getActiveStream : function(fulljid) {
     var self = jsxc.mmstream;
-    return self.videoconference.users[fulljid] && self.videoconference.users[fulljid].stream ?
-        self.videoconference.users[fulljid].stream : null;
+    return self.multimediacache.users[fulljid] && self.multimediacache.users[fulljid].stream ?
+        self.multimediacache.users[fulljid].stream : null;
   },
 
   /**
@@ -2044,9 +2046,9 @@ jsxc.mmstream = {
     // stop the stream
     self._stopStream(stream);
 
-    if (self.videoconference.users[fulljid]) {
-      delete self.videoconference.users[fulljid].session;
-      delete self.videoconference.users[fulljid].stream;
+    if (self.multimediacache.users[fulljid]) {
+      delete self.multimediacache.users[fulljid].session;
+      delete self.multimediacache.users[fulljid].stream;
     }
 
     else {
@@ -2071,7 +2073,7 @@ jsxc.mmstream = {
 
     var res = [];
 
-    $.each(self.videoconference.users, function(index, item) {
+    $.each(self.multimediacache.users, function(index, item) {
       if (item.session) {
         res.push(item.session);
       }
@@ -2100,12 +2102,12 @@ jsxc.mmstream = {
     }
 
     // check if another multimedia session is currently running
-    if (self.videoconference.occupied === true) {
+    if (self.multimediacache.occupied === true) {
       jsxc.gui.feedback(
           "Vous ne pouvez pas commencer un appel vidéo, veuillez d'abord raccrocher tous vos appels multimédia");
       return;
     }
-    self.videoconference.occupied = true;
+    self.multimediacache.occupied = true;
 
     self.checkNavigatorCompatibility("videoconference");
 
@@ -2235,10 +2237,10 @@ jsxc.mmstream = {
     var fulljid = session.peerID;
 
     // save jingle state for debug purposes
-    if (!self.videoconference.users[fulljid]) {
+    if (!self.multimediacache.users[fulljid]) {
       self._createUserEntry(fulljid);
     }
-    self.videoconference.users[fulljid].jingleState = state;
+    self.multimediacache.users[fulljid].jingleState = state;
 
     // mmstream status
     var status;
@@ -2279,7 +2281,7 @@ jsxc.mmstream = {
         self.stopLocalStream();
 
         // turn off occupied flag to let people call
-        self.videoconference.occupied = false;
+        self.multimediacache.occupied = false;
 
       }
 
@@ -2327,7 +2329,7 @@ jsxc.mmstream = {
       self._log("Hangup all calls");
     }
 
-    $.each(self.videoconference.users, function(fulljid) {
+    $.each(self.multimediacache.users, function(fulljid) {
       self.hangupCall(fulljid);
     });
 

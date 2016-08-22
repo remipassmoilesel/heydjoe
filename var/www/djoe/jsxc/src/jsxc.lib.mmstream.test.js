@@ -120,7 +120,7 @@ jsxc.mmstream.testCases = [
           " test status = PARTICIPATING 3");
 
       // delte user after, to not alter JSXC service
-      delete self.videoconference.users[user];
+      delete self.multimediacache.users[user];
 
     }
   }
