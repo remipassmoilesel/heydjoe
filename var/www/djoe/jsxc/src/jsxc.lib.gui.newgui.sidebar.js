@@ -161,7 +161,18 @@ $.extend(jsxc.newgui, {
     // if not, display online buddies
     else {
       var online = $('#jsxc_buddylist li[data-status!="offline"][data-type="chat"]').length;
-      headerContent.append('<span>' + online + ' personne(s) en ligne</span>');
+      var message;
+      if (online === 0) {
+        message = "Aucune activité";
+      }
+
+      else if (online === 1) {
+        message = "1 personne en ligne";
+      } else {
+        message = online + " personnes en ligne";
+      }
+
+      headerContent.append('<span>' + message + '</span>');
     }
 
     // keep handler if used like this
@@ -426,7 +437,7 @@ $.extend(jsxc.newgui, {
         connexionTimerId = setTimeout(connexionTimer, connexionTimerValueMs);
 
         jsxc.xmpp.login(login, password);
-        
+
       } catch (e) {
         console.error(e);
         jsxc.gui.feedback('Erreur lors de la connexion: ' + e);
