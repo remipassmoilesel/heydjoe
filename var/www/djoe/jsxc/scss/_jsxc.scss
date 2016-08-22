@@ -554,7 +554,6 @@ img.jsxc_vCard {
 
 }
 
-
 #jsxc-root {
 
   a {
@@ -588,18 +587,11 @@ img.jsxc_vCard {
   }
 
   input {
-    //position: absolute;
-    margin: 0;
-    height: 2em;
-    padding: 7px 6px 5px;
-    font-size: 13px;
+    font-size: 1em;
     border: 1px solid #ddd;
-    box-sizing: border-box;
     background-image: none;
     background-color: $roster_input_bg;
     border-radius: 3px;
-    box-shadow: inner 0 0 5px $roster_input_shadow;
-    outline: none;
   }
 
   input[type=button] {
@@ -776,7 +768,6 @@ img.jsxc_vCard {
     }
   }
 }
-
 
 #jsxc_avatar {
   cursor: default !important;

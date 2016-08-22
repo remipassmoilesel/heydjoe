@@ -80,15 +80,37 @@ jsxc.gui = {
    */
   init : function() {
 
-    // Prevent duplicate windowList
-    if ($('#jsxc_windowList').length > 0) {
+    // gui already exist, return
+    if ($('#jsxc-root').length > 0) {
       return;
     }
 
+    // We need these templates often, so we creates some template jquery objects
+    jsxc.gui.windowTemplate = $(jsxc.gui.template.get('chatWindow'));
+    jsxc.gui.buddyTemplate = $(jsxc.gui.template.get('rosterBuddy'));
+
+    // Append GUI on document
+    jsxc.debug("Adding GUI and roster init");
+
+    var skeleton = $("<div id='jsxc-root'></div>");
+    skeleton.append($(jsxc.gui.template.get('newgui_chatsidebar')));
+    skeleton.append($(jsxc.gui.template.get('newgui_mediapanel')));
+    skeleton.append($(jsxc.gui.template.get('windowList')));
+
+    $(jsxc.options.rosterAppend + ':first').append(skeleton);
+
+    // new gui init
+    jsxc.newgui.init();
+    jsxc.gui.interactions.init();
+
+    // init roster element
+    jsxc.gui.roster.init();
+
+    jsxc.gui.tooltip('#jsxc-root');
+    jsxc.gui.tooltip('#jsxc_windowList');
+
     jsxc.gui.regShortNames = new RegExp(emojione.regShortNames.source + '|(' +
         Object.keys(jsxc.gui.emoticonList.core).join('|') + ')', 'gi');
-
-    $('body').append($(jsxc.gui.template.get('windowList')));
 
     $(window).resize(jsxc.gui.updateWindowListSB);
     $('#jsxc_windowList').resize(jsxc.gui.updateWindowListSB);
@@ -112,8 +134,6 @@ jsxc.gui = {
       }
     });
 
-    jsxc.gui.tooltip('#jsxc_windowList');
-
     var fo = jsxc.options.get('favicon');
     if (fo && fo.enable) {
       jsxc.gui.favicon = new Favico({
@@ -123,27 +143,6 @@ jsxc.gui = {
       jsxc.gui.favicon.badge(jsxc.storage.getUserItem('unreadMsg') || 0);
     }
 
-    // init GUI only once
-    if ($('#jsxc-root').length < 1) {
-
-      jsxc.debug("Adding GUI and roster init");
-
-      var skeleton = $("<div id='jsxc-root'></div>");
-      skeleton.append($(jsxc.gui.template.get('newgui_chatsidebar')));
-      skeleton.append($(jsxc.gui.template.get('newgui_mediapanel')));
-
-      $(jsxc.options.rosterAppend + ':first').append(skeleton);
-
-      // new gui init
-      jsxc.newgui.init();
-      jsxc.gui.interactions.init();
-
-      // init roster element
-      jsxc.gui.roster.init();
-
-      jsxc.gui.tooltip('#jsxc-root');
-    }
-
     // prepare regexp for emotions
     $.each(jsxc.gui.emotions, function(i, val) {
       // escape characters
@@ -151,10 +150,6 @@ jsxc.gui = {
       reg = '(' + reg.split(' ').join('|') + ')';
       jsxc.gui.emotions[i][2] = new RegExp(reg, 'g');
     });
-
-    // We need this often, so we creates some template jquery objects
-    jsxc.gui.windowTemplate = $(jsxc.gui.template.get('chatWindow'));
-    jsxc.gui.buddyTemplate = $(jsxc.gui.template.get('rosterBuddy'));
 
     // change own presence informations
     var updatePresenceInformations = function(event, pres) {
