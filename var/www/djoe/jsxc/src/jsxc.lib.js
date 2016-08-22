@@ -835,7 +835,7 @@ jsxc = {
       // create or load DSA key
       jsxc.otr.createDSA();
     }
-    
+
   },
 
   /**
@@ -1138,16 +1138,18 @@ jsxc = {
    *
    * Example: attachMediaStream($("<video>").get(0), stream);
    *
+   * Here another solution can be watch element and wait for visibility but for now there is no
+   * largely compatible solutions
+   *
    * @param stream
    * @param element
    */
   attachMediaStream : function(element, stream) {
 
-    // jsxc.xmpp.conn.jingle.RTC.attachMediaStream(element, stream);
+    var video = $(element);
 
-    setTimeout(function() {
+    var attach = function() {
 
-      var video = $(element);
       var src = URL.createObjectURL(stream);
 
       jsxc.debug("Attach media stream to video element",
@@ -1156,9 +1158,28 @@ jsxc = {
       video.attr('src', src);
 
       //TODO: some browsers (Android Chrome, ...) want a user interaction before trigger play()
-      video.get(0).play();
+      try {
+        video.get(0).play();
+      } catch (e) {
+        jsxc.error("Error while attaching video", {error : e});
+      }
 
-    }, jsxc.mmstream.DELAY_BEFORE_ATTACH);
+    };
+
+    // attach if visible
+    if (video.is(':visible')) {
+      attach();
+    }
+
+    // or ait until it does
+    else {
+      var interv = setInterval(function() {
+        if (video.is(':visible')) {
+          clearInterval(interv);
+          attach();
+        }
+      }, 800);
+    }
 
   }
 
