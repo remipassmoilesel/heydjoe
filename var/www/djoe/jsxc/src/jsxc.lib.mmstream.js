@@ -789,12 +789,17 @@ jsxc.mmstream = {
       return true;
     }
 
+    self.multimediacache.accepted = false;
+
     if (jsxc.mmstream.debug === true) {
       self._log("_onVideoconferenceInvitationReceived",
           {fulljid : initiator, videoconference : self.multimediacache});
     }
 
-    var decline = function(message) {
+    var decline = function(message, error) {
+
+      jsxc.error("Videoconference declined: ", error);
+
       jsxc.gui.feedback(message);
       self._declineVideconference(initiator, participants, invitationId, error);
       self.multimediacache.occupied = false;
@@ -820,14 +825,14 @@ jsxc.mmstream = {
 
               // user cannot access to camera
               .fail(function(error) {
-                decline("Accès à la caméra refusé");
+                decline("Accès à la caméra refusé", error);
               });
 
         })
 
         // video conference is rejected
         .fail(function(error) {
-          decline("Vidéo conférence rejetée");
+          decline("Vidéo conférence rejetée", error);
         });
 
   },
@@ -1451,7 +1456,7 @@ jsxc.mmstream = {
     // check if another multimedia session is currently running
     if (self.multimediacache.occupied === true) {
       jsxc.gui.feedback(
-          "Vous ne pouvez pas commencer un partage d'écran, veuillez d'abord raccrocher tous vos appels multimédia");
+          "Vous ne pouvez pas commencer une vidéoconférence maintenant, veuillez d'abord terminer tous vos appels multimédia");
       return;
     }
     self.multimediacache.occupied = true;
@@ -1514,7 +1519,7 @@ jsxc.mmstream = {
         message = "Le partage d'écran n'est pas disponible avec votre navigateur. Utilisez Chrome.";
       }
     }
-    
+
     else {
       throw new Error("Unknown task: " + task);
     }
@@ -2104,7 +2109,7 @@ jsxc.mmstream = {
     // check if another multimedia session is currently running
     if (self.multimediacache.occupied === true) {
       jsxc.gui.feedback(
-          "Vous ne pouvez pas commencer un appel vidéo, veuillez d'abord raccrocher tous vos appels multimédia");
+          "Vous ne pouvez pas commencer une vidéoconférence maintenant, veuillez d'abord terminer tous vos appels multimédia");
       return;
     }
     self.multimediacache.occupied = true;
