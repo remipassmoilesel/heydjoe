@@ -72,12 +72,7 @@
   width: 45px;
   height: 30px;
   z-index: 100;
-  display: block;
-
-  @media (max-width: 768px) {
-    display: none;
-  }
-
+  
   > {
     div {
       box-sizing: border-box;
@@ -96,12 +91,6 @@
       }
     }
 
-    .jsxc_disabled {
-      background-color: $windowListSB_bg_disabled !important;
-      color: $windowListSB_color_disabled;
-      cursor: default !important;
-      display: none;
-    }
   }
 }
 

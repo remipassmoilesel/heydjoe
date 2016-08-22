@@ -361,14 +361,34 @@ jsxc.gui = {
    */
   updateWindowListSB : function() {
 
+    var newgui = jsxc.newgui;
     var wins = $("#jsxc_windowList .jsxc_window");
+    var sb = $('#jsxc_windowListSB');
 
     if (wins.length > 1) {
-      $('#jsxc_windowListSB > div').removeClass('jsxc_disabled');
+
+      if (sb.css('display') !== 'block') {
+        sb.css({
+          opacity : 0, display : 'block',
+        }).animate({
+          opacity : 1
+        }, newgui.OPACITY_ANIMATION_DURATION);
+      }
+
     }
 
     else {
-      $('#jsxc_windowListSB > div').addClass('jsxc_disabled');
+
+      if (sb.css('display') === 'block') {
+        sb.animate({
+          opacity : 0
+        }, newgui.OPACITY_ANIMATION_DURATION, function() {
+          sb.css({
+            display : 'none',
+          });
+        });
+      }
+
     }
 
   },
