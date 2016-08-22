@@ -426,6 +426,7 @@ $.extend(jsxc.newgui, {
         connexionTimerId = setTimeout(connexionTimer, connexionTimerValueMs);
 
         jsxc.xmpp.login(login, password);
+        
       } catch (e) {
         console.error(e);
         jsxc.gui.feedback('Erreur lors de la connexion: ' + e);

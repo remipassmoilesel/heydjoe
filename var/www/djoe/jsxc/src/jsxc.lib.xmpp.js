@@ -374,7 +374,7 @@ jsxc.xmpp = {
    * @param {boolean} complete If set to false, roster will not be removed
    * @returns {Boolean}
    */
-  logout : function(complete) {
+  logout : function() {
 
     var self = jsxc.xmpp;
 
@@ -397,7 +397,7 @@ jsxc.xmpp = {
     jsxc.storage.removeUserItem('unreadMsg');
 
     if (!jsxc.master) {
-      $('#jsxc_roster').remove();
+      $('#jsxc-root').remove();
       $('#jsxc_windowlist').remove();
 
       $(document).trigger("removed.gui.jsxc");
@@ -490,8 +490,6 @@ jsxc.xmpp = {
    */
   attached : function() {
 
-    $('#jsxc_roster').removeClass('jsxc_noConnection');
-
     jsxc.xmpp.conn.addHandler(jsxc.xmpp.onRosterChanged, 'jabber:iq:roster', 'iq', 'set');
     jsxc.xmpp.conn.addHandler(jsxc.xmpp.onMessage, null, 'message', 'chat');
     jsxc.xmpp.conn.addHandler(jsxc.xmpp.onReceived, null, 'message');
@@ -543,8 +541,6 @@ jsxc.xmpp = {
       // in order to not overide existing presence information, we send
       // pres first after roster is ready
       $(document).one('cloaded.roster.jsxc', jsxc.xmpp.sendPres);
-
-      $('#jsxc_roster > p:first').remove();
 
       var iq = $iq({
         type : 'get'
@@ -831,8 +827,6 @@ jsxc.xmpp = {
     if (!jsxc.storage.getUserItem('buddylist') ||
         jsxc.storage.getUserItem('buddylist').length === 0) {
       jsxc.gui.roster.empty();
-    } else {
-      $('#jsxc_roster > p:first').remove();
     }
 
     // preserve handler

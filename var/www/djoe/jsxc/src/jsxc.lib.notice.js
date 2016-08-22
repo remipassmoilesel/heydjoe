@@ -21,7 +21,7 @@ jsxc.notice = {
     // reset list
     $('#jsxc-notifications ul li').remove();
 
-    $('#jsxc_roster .jsxc_menu_notif_number').text('');
+    $('#jsxc-root .jsxc_menu_notif_number').text('');
     jsxc.notice._num = 0;
 
     var saved = jsxc.storage.getUserItem('notices') || [];
@@ -128,7 +128,7 @@ jsxc.notice = {
    * Update places where are displayed notification numbers
    */
   updateNotificationNumbers : function() {
-    $('#jsxc_roster .jsxc_menu_notif_number').text(jsxc.notice._num);
+    $('#jsxc-root .jsxc_menu_notif_number').text(jsxc.notice._num);
   },
 
   /**
@@ -152,7 +152,7 @@ jsxc.notice = {
     var el = $('#jsxc-notifications li[data-nid=' + nid + ']');
 
     el.remove();
-    $('#jsxc_roster .jsxc_menu_notif_number').text(--jsxc.notice._num || '');
+    $('#jsxc-root .jsxc_menu_notif_number').text(--jsxc.notice._num || '');
 
     var s = jsxc.storage.getUserItem('notices');
     delete s[nid];

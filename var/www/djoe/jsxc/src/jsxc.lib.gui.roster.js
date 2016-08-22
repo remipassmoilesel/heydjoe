@@ -18,22 +18,7 @@ jsxc.gui.roster = {
    * @returns {undefined}
    */
   init : function() {
-
-    jsxc.debug("Roster init");
-
-    // adding roster skeleton to body, or other choosen element
-    // $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('roster')));
-
-    /**
-     * Chatsidebar and mediapanel are grouped in '#jsxc_roster', for historical reasons
-     * @type {*|JQuery|jQuery|HTMLElement}
-     */
-    var skeleton = $("<div id='jsxc_roster'></div>");
-    skeleton.append($(jsxc.gui.template.get('newgui_chatsidebar')));
-    skeleton.append($(jsxc.gui.template.get('newgui_mediapanel')));
-
-    $(jsxc.options.rosterAppend + ':first').append(skeleton);
-
+    
     // display or hide offline buddies
     if (jsxc.options.get('hideOffline')) {
       $('#jsxc_buddylist').addClass('jsxc_hideOffline');
@@ -47,13 +32,7 @@ jsxc.gui.roster = {
     var pres = jsxc.storage.getUserItem('presence') || 'online';
     jsxc.xmpp.changeOwnPresence(pres);
 
-    jsxc.gui.tooltip('#jsxc_roster');
-
     jsxc.notice.load();
-
-    // new gui init
-    jsxc.newgui.init();
-    jsxc.gui.interactions.init();
 
     jsxc.gui.roster.ready = true;
 
@@ -326,38 +305,9 @@ jsxc.gui.roster = {
   },
 
   /**
-   * Toogle complete roster
-   *
-   * @param {string} state Toggle to state
-   */
-  toggle : function(state) {
-
-    jsxc.debug("Toggle roster is deprecated", null, "ERROR");
-
-    var duration;
-
-    var roster = $('#jsxc_roster');
-    var wl = $('#jsxc_windowList');
-
-    wl.removeClass('jsxc_roster_hidden jsxc_roster_shown').addClass('jsxc_roster_' + state);
-
-    duration = parseFloat(roster.css('transitionDuration') || 0) * 1000;
-
-    setTimeout(function() {
-      jsxc.gui.updateWindowListSB();
-    }, duration);
-
-    $(document).trigger('toggle.roster.jsxc', [state, duration]);
-
-    return duration;
-  },
-
-  /**
    * Shows a text with link to a login box that no connection exists.
    */
   noConnection : function() {
-
-    $('#jsxc_roster').addClass('jsxc_noConnection');
 
     $('#jsxc_buddylist').empty();
 

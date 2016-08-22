@@ -835,9 +835,7 @@ jsxc = {
       // create or load DSA key
       jsxc.otr.createDSA();
     }
-
-    jsxc.gui.updateAvatar($('#jsxc_roster > .jsxc_bottom'),
-        jsxc.jidToBid(jsxc.storage.getItem('jid')), 'own');
+    
   },
 
   /**

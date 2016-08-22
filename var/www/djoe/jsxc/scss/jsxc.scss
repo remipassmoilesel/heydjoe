@@ -9,7 +9,6 @@ $font_serif: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
 @import "buddylist";
 @import "state";
 @import "emoticons";
-@import "roster";
 @import "window";
 @import "muc";
 
@@ -23,7 +22,7 @@ $font_serif: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
 @import "sidebar";
 @import "mediapanel";
 
-#jsxc_roster, #jsxc_windowList {
+#jsxc-root, #jsxc_windowList {
 
   font-family: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
   font-size: 13px !important;

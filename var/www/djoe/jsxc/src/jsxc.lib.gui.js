@@ -123,8 +123,25 @@ jsxc.gui = {
       jsxc.gui.favicon.badge(jsxc.storage.getUserItem('unreadMsg') || 0);
     }
 
-    if (!jsxc.el_exists('#jsxc_roster')) {
+    // init GUI only once
+    if ($('#jsxc-root').length < 1) {
+
+      jsxc.debug("Adding GUI and roster init");
+
+      var skeleton = $("<div id='jsxc-root'></div>");
+      skeleton.append($(jsxc.gui.template.get('newgui_chatsidebar')));
+      skeleton.append($(jsxc.gui.template.get('newgui_mediapanel')));
+
+      $(jsxc.options.rosterAppend + ':first').append(skeleton);
+
+      // new gui init
+      jsxc.newgui.init();
+      jsxc.gui.interactions.init();
+
+      // init roster element
       jsxc.gui.roster.init();
+
+      jsxc.gui.tooltip('#jsxc-root');
     }
 
     // prepare regexp for emotions
@@ -338,16 +355,22 @@ jsxc.gui = {
   /**
    * Updates scrollbar handlers.
    *
+   * SB are shown if there are more than 2 windows
+   *
    * @memberOf jsxc.gui
    */
   updateWindowListSB : function() {
 
-    if ($('#jsxc_windowList>ul').width() > $('#jsxc_windowList').width()) {
+    var wins = $("#jsxc_windowList .jsxc_window");
+
+    if (wins.length > 1) {
       $('#jsxc_windowListSB > div').removeClass('jsxc_disabled');
-    } else {
-      $('#jsxc_windowListSB > div').addClass('jsxc_disabled');
-      $('#jsxc_windowList>ul').css('right', '0px');
     }
+
+    else {
+      $('#jsxc_windowListSB > div').addClass('jsxc_disabled');
+    }
+
   },
 
   /**
