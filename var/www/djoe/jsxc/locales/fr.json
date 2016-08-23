@@ -160,12 +160,12 @@
     "Start_video_call": "Démarrer l'appel vidéo",
     "Join_chat": "Joindre la discussion",
     "Join": "Joindre",
-    "Room": "Salon",
+    "Room": "Conversation",
     "Nickname": "Pseudo",
-    "left_the_building": "__nickname__ a quitté l'immeuble",
-    "entered_the_room": "__nickname__ entre dans le salon",
+    "left_the_building": "__nickname__ a quitté la conversation",
+    "entered_the_room": "__nickname__ entre dans la conversation",
     "is_now_known_as": "__oldNickname__ est maintenant connu comme __newNickname__",
-    "This_room_is": "Ce salon est",
+    "This_room_is": "Cette conversation est",
     "muc_hidden": {
       "keyword": "caché",
       "description": "ne peut être trouvé avec une recherche"
