@@ -366,36 +366,130 @@ $.extend(jsxc.newgui, {
 
     var self = jsxc.newgui;
 
-    var button = $('#jsxc-connexion-menu #jsxc-connexion-submit');
-
-    var releaseButton = function() {
-      button.attr('value', 'Connexion');
-      button.prop('disabled', false);
-    };
-
-    // timer to display a warnings if connexion time is too logn
-    var connexionTimer = function() {
-
-      // display warning
-      $("#jsxc-connexion-menu #jsxc-login-warning").css({'display' : 'block', 'opacity' : '0px'})
-          .animate({opacity : '1px'}, self.OPACITY_ANIMATION_DURATION);
-
-    };
-
-    // display warning after 10s
-    var connexionTimerValueMs = 10000;
+    // display warning if connexion time > 10s
+    var connexionTimerValueMs = 12000;
     var connexionTimerId = -1;
 
-    button.click(function() {
+    /**
+     * Display a standby message while connecting
+     * @param visible
+     */
+    var showStandBy = function(visible) {
+
+      var standby = $("#jsxc-connexion-menu #jsxc-login-standby");
+
+      if (visible === true) {
+        standby.css({'display' : 'block', 'opacity' : 0})
+            .animate({opacity : 1}, self.OPACITY_ANIMATION_DURATION);
+      }
+
+      else {
+        standby.css({'display' : 'none', 'opacity' : 0});
+      }
+    };
+
+    /**
+     * Display a warning message in case of anormal fail of connection
+     * @param visible
+     */
+    var showWarning = function(visible) {
+
+      var warning = $("#jsxc-connexion-menu #jsxc-login-warning");
+
+      if (visible === true) {
+        warning.css({'display' : 'block', 'opacity' : 0})
+            .animate({opacity : 1}, self.OPACITY_ANIMATION_DURATION);
+      }
+
+      else {
+        warning.css({'display' : 'none', 'opacity' : 0});
+      }
+    };
+
+    /**
+     * Watch if connexion take too logn time
+     */
+    var watchConnexionTimer = function() {
+
+      // display warning
+      showStandBy(false);
+      showWarning(true);
+
+      jsxc.gui.feedback('Echec de la connexion');
+
+      // reset jsxc
+      jsxc.xmpp.logout();
+      jsxc.xmpp.disconnected();
+
+    };
+
+    /**
+     * Triggered if credentials are invalid
+     */
+    var authFail = function() {
+
+      clearTimeout(connexionTimerId);
+
+      jsxc.gui.feedback('Identifiants incorrects');
+
+      showStandBy(false);
+
+      // reset jsxc
+      jsxc.xmpp.logout();
+      jsxc.xmpp.disconnected();
+
+    };
+
+    /**
+     * Triggered if connection fail
+     */
+    var connFail = function() {
+
+      clearTimeout(connexionTimerId);
+
+      jsxc.gui.feedback('Echec de la connexion');
+
+      showStandBy(false);
+
+      // reset jsxc
+      jsxc.xmpp.logout();
+      jsxc.xmpp.disconnected();
+
+    };
+
+    /**
+     * Triggered if connexion success
+     */
+    var connSuccess = function() {
+
+      clearTimeout(connexionTimerId);
+
+      // reset fields
+      $('#jsxc-connexion-login').val('');
+      $('#jsxc-connexion-password').val('');
+
+      // remove uneeded hadndlers
+      $(document).off('authfail.jsxc', authFail);
+      $(document).off('disconnected.jsxc', connFail);
+      $(document).off('connected.jsxc', connSuccess);
+
+      jsxc.gui.feedback('Connexion réussie');
+
+      showStandBy(false);
+
+      self.toggleBuddyList();
+
+    };
+
+    /**
+     * Click on "Connection" button
+     */
+    $('#jsxc-connexion-menu #jsxc-connexion-submit').click(function() {
 
       if (jsxc.xmpp.conn) {
         jsxc.gui.feedback("Vous êtes déjà connecté");
         return;
       }
-
-      // lock connexion button
-      button.attr('value', 'Veuillez patienter ...');
-      button.prop('disabled', true);
 
       // check login and password
       var login = $('#jsxc-connexion-login').val();
@@ -411,40 +505,33 @@ $.extend(jsxc.newgui, {
         return;
       }
 
-      // register handlers for connexion results
-      $(document).on('authfail.jsxc', function() {
+      showWarning(false);
+      showStandBy(true);
 
-        clearTimeout(connexionTimerId);
+      // authentication fail
+      $(document).off('authfail.jsxc', authFail);
+      $(document).one('authfail.jsxc', authFail);
 
-        jsxc.gui.feedback('Echec de la connexion');
+      // connexion fail
+      $(document).off('disconnected.jsxc', connFail);
+      $(document).one('disconnected.jsxc', connFail);
 
-        releaseButton();
-
-      });
-
-      $(document).on('connected.jsxc', function() {
-
-        clearTimeout(connexionTimerId);
-
-        jsxc.gui.feedback('Connexion réussie');
-
-        releaseButton();
-
-        self.toggleBuddyList();
-
-      });
+      // connexion success
+      $(document).off('connected.jsxc', connSuccess);
+      $(document).one('connected.jsxc', connSuccess);
 
       // connexion
       try {
 
-        connexionTimerId = setTimeout(connexionTimer, connexionTimerValueMs);
+        connexionTimerId = setTimeout(watchConnexionTimer, connexionTimerValueMs);
 
         jsxc.xmpp.login(login, password);
 
       } catch (e) {
         console.error(e);
         jsxc.gui.feedback('Erreur lors de la connexion: ' + e);
-        releaseButton();
+
+        showStandBy(false);
       }
 
     });

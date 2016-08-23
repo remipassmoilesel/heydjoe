@@ -625,7 +625,20 @@ TODO: Set up variables:
 
     #jsxc-login-warning {
       font-style: italic;
-      margin: 1em;
+      margin-top: 0.6em;
+      margin-left: 1em;
+      margin-right: 1em;
+      color: darkred;
+      text-align: justify;
+
+      display: none;
+    }
+
+    #jsxc-login-standby{
+      font-style: italic;
+      margin-top: 0.6em;
+      margin-left: 1em;
+      margin-right: 1em;
       color: darkblue;
       text-align: justify;
 
