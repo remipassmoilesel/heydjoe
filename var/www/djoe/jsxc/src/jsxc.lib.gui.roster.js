@@ -207,8 +207,11 @@ jsxc.gui.roster = {
    * @return {JQueryObject} Roster list element
    */
   remove : function(bid) {
+
     var res = jsxc.gui.roster.getItem(bid).detach();
-    $(document).trigger('remove.roster.jsxc', [bid]);
+
+    // It is a bad idea to trigger here. Remove is used in reorder, so events are too many
+    // $(document).trigger('remove.roster.jsxc', [bid]);
 
     return res;
   },

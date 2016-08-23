@@ -68,7 +68,6 @@ jsxc.gui.widgets = {
 
     // update each time buddy list change
     $(document).on("add.roster.jsxc", updateConversationList);
-    $(document).on("remove.roster.jsxc", updateConversationList);
     $(document).on("cloaded.roster.jsxc", updateConversationList);
 
     // first update
@@ -158,7 +157,6 @@ jsxc.gui.widgets = {
 
     // update each time buddy list change
     $(document).on("add.roster.jsxc", updateBuddyList);
-    $(document).on("remove.roster.jsxc", updateBuddyList);
     $(document).on("cloaded.roster.jsxc", updateBuddyList);
 
     // first update
