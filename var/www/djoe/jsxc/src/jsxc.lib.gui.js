@@ -980,7 +980,7 @@ jsxc.gui = {
     var defer = $.Deferred();
 
     // show dialog
-    jsxc.gui.dialog.open(jsxc.gui.template.get('inviteContacts'), {
+    jsxc.gui.dialog.open(jsxc.gui.template.get('selectContacts'), {
       'noClose' : true
     });
 
