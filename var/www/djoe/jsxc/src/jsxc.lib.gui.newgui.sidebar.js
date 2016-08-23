@@ -296,16 +296,16 @@ $.extend(jsxc.newgui, {
       // element to show is a buddy, an special icon is displayed and switched with checked icon on
       // selection
       if (element._is_buddy === true) {
-        res.attr('title', element.username + " est dans vos contacts");
-        res.addClass("jsxc-search-result-buddie");
+        res.attr('title', element.username + ' est dans vos contacts');
+        res.addClass('jsxc-search-result-buddie');
         res.click(function() {
 
-          if (res.hasClass("jsxc-search-result-buddie")) {
-            res.removeClass("jsxc-search-result-buddie");
-            res.addClass("jsxc-checked");
+          if (res.hasClass('jsxc-search-result-buddie')) {
+            res.removeClass('jsxc-search-result-buddie');
+            res.addClass('jsxc-checked');
           } else {
-            res.removeClass("jsxc-checked");
-            res.addClass("jsxc-search-result-buddie");
+            res.removeClass('jsxc-checked');
+            res.addClass('jsxc-search-result-buddie');
           }
 
         });
@@ -313,9 +313,9 @@ $.extend(jsxc.newgui, {
 
       // element to show is not a buddy
       else {
-        res.attr('title', element.username + " n'est pas dans vos contacts");
+        res.attr('title', element.username + ' n\'est pas dans vos contacts');
         res.click(function() {
-          res.toggleClass("jsxc-checked");
+          res.toggleClass('jsxc-checked');
         });
       }
 
@@ -546,7 +546,7 @@ $.extend(jsxc.newgui, {
 
     self._log("toggleBuddyFilter: " + mode);
 
-    self.unselectAllElements();
+    self.toggleSelectionMode(false);
 
     // set filter for future adding
     roster.setFilterMode(mode);
@@ -626,18 +626,26 @@ $.extend(jsxc.newgui, {
 
   },
 
-  toggleSelectionMode : function() {
+  /**
+   * Toggle selection mode in chat sidebar
+   *
+   * When enabled selection mode allow user to select multiple users with ticks
+   *
+   * @param enabled
+   */
+  toggleSelectionMode : function(enabled) {
 
     var self = jsxc.newgui;
 
-    self._log("toggleSelectionMode: " + self._selectionMode);
-
     var list = self._getBuddyList();
 
-    self._selectionMode = !self._selectionMode;
+    enabled = typeof enabled !== 'undefined' ? enabled : !self._selectionMode;
+    self._selectionMode = enabled;
 
     // enable selection mode
-    if (self._selectionMode === false) {
+    if (self._selectionMode === true) {
+
+      $('#jsxc-select-buddies').addClass("jsxc-checked");
 
       // remove all click handler and replace it by selector
       list.each(function() {
@@ -661,6 +669,8 @@ $.extend(jsxc.newgui, {
 
     // disable selection mode
     else {
+
+      $('#jsxc-select-buddies').removeClass("jsxc-checked");
 
       self.unselectAllElements();
 

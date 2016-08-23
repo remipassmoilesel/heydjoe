@@ -77,8 +77,6 @@ jsxc.newgui = {
       buddyFilter.addClass("jsxc-active-filter");
       conversationFilter.removeClass("jsxc-active-filter");
     });
-    self.toggleBuddyFilter('buddies');
-    buddyFilter.addClass("jsxc-active-filter");
 
     conversationFilter.click(function() {
       self.toggleBuddyFilter('conversations');
@@ -86,10 +84,13 @@ jsxc.newgui = {
       buddyFilter.removeClass("jsxc-active-filter");
     });
 
+    // activate buddy on launch
+    self.toggleBuddyFilter('buddies');
+    buddyFilter.addClass("jsxc-active-filter");
+
     // selection mode
     $("#jsxc-select-buddies").click(function() {
       self.toggleSelectionMode();
-      $(this).toggleClass("jsxc-checked");
     });
 
     $("#jsxc-chat-sidebar-header").click(function() {
