@@ -804,6 +804,9 @@ $.extend(jsxc.newgui, {
 
   /**
    * Get all checked elements from buddylist, conversations AND buddies
+   *
+   * If no one is selected, ask user about
+   *
    * @returns {Array}
    * @private
    */
@@ -814,24 +817,7 @@ $.extend(jsxc.newgui, {
 
     var defer = $.Deferred();
 
-    var all = self._getBuddyList();
-    var rslt = [];
-
-    // search for checked elements
-    all.each(function() {
-
-      var element = $(this);
-
-      // continue if we need only buddies
-      if (buddiesOnly === true && element.data('type') === 'groupchat') {
-        return true;
-      }
-
-      if (element.find(".jsxc-checked").length > 0) {
-        rslt.push(element.data('jid'));
-      }
-
-    });
+    var rslt = self.getCheckedElements(buddiesOnly);
 
     // some elements are checked, return them
     if (rslt.length > 0) {
@@ -859,11 +845,54 @@ $.extend(jsxc.newgui, {
 
   /**
    * Get checked elements from buddylist, and only the buddies
+   *
+   * If no one is selected, ask user about
+   *
    * @returns {Array}
    * @private
    */
   getCheckedBuddiesOrAskFor : function() {
     return jsxc.newgui.getCheckedElementsOrAskFor(true);
+  },
+
+  /**
+   * Return checked elements
+   */
+  getCheckedElements : function(buddiesOnly) {
+
+    var self = jsxc.newgui;
+
+    buddiesOnly = typeof buddiesOnly !== 'undefined' ? buddiesOnly : false;
+
+    var all = self._getBuddyList();
+    var rslt = [];
+
+    // search for checked elements
+    all.each(function() {
+
+      var element = $(this);
+
+      // continue if we need only buddies
+      if (buddiesOnly === true && element.data('type') === 'groupchat') {
+        return true;
+      }
+
+      if (element.find(".jsxc-checked").length > 0) {
+        rslt.push(element.data('jid'));
+      }
+
+    });
+
+    return rslt;
+
+  },
+
+  /**
+   * Return checked buddies
+   */
+  getCheckedBuddies : function() {
+    var self = jsxc.newgui;
+    return self.getCheckedElements(true);
   },
 
   /**

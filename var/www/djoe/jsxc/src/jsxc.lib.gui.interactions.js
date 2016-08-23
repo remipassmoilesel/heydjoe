@@ -107,7 +107,7 @@ jsxc.gui.interactions = {
    */
   _initActionMenu : function() {
 
-    var self = jsxc.gui.interactions;
+    // var self = jsxc.gui.interactions;
     var mmstream = jsxc.mmstream;
     var newgui = jsxc.newgui;
 
@@ -221,8 +221,11 @@ jsxc.gui.interactions = {
      */
     $("#jsxc-actions-menu .jsxc-action_new-etherpad-document").click(function() {
 
+      // check if some buddies are already selected
+      var selected = newgui.getCheckedBuddies();
+      
       // show dialog
-      jsxc.gui.showEtherpadCreationDialog()
+      jsxc.gui.showEtherpadCreationDialog(selected)
 
           .then(function(res) {
 

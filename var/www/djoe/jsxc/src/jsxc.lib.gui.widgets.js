@@ -66,10 +66,6 @@ jsxc.gui.widgets = {
 
     };
 
-    // update each time buddy list change
-    $(document).on("add.roster.jsxc", updateConversationList);
-    $(document).on("cloaded.roster.jsxc", updateConversationList);
-
     // first update
     updateConversationList();
 
@@ -98,7 +94,9 @@ jsxc.gui.widgets = {
    *
    * @param selector
    */
-  createBuddyList : function(selector) {
+  createBuddyList : function(selector, selectedJids) {
+
+    selectedJids = selectedJids || [];
 
     var root = $(selector);
     root.empty();
@@ -138,6 +136,10 @@ jsxc.gui.widgets = {
               $(this).toggleClass("jsxc-checked");
             });
 
+        if (selectedJids.indexOf(jid) > -1) {
+          li.addClass('jsxc-checked');
+        }
+
         list.append(li);
 
         buddyNumber++;
@@ -154,10 +156,6 @@ jsxc.gui.widgets = {
       }
 
     };
-
-    // update each time buddy list change
-    $(document).on("add.roster.jsxc", updateBuddyList);
-    $(document).on("cloaded.roster.jsxc", updateBuddyList);
 
     // first update
     updateBuddyList();

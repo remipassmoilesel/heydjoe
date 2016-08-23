@@ -880,10 +880,10 @@ jsxc.gui = {
 
       $.each(bidArray, function(index, element) {
 
-        var data = jsxc.storage.getUserItem('buddy', element);
-        var type = data.type;
-
         jsxc.xmpp.removeBuddy(element);
+
+        var data = jsxc.storage.getUserItem('buddy', element);
+        var type = data ? data.type : null;
 
         if (type === "groupchat") {
           jsxc.xmpp.bookmarks.delete(element, false);
@@ -946,7 +946,7 @@ jsxc.gui = {
   /**
    * Show a dialog asking for new etherpad document name, and return a promise
    */
-  showEtherpadCreationDialog : function() {
+  showEtherpadCreationDialog : function(selectedJids) {
 
     var defer = $.Deferred();
 
@@ -956,7 +956,8 @@ jsxc.gui = {
     });
 
     // create user list to invite
-    jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc-etherpad-dialog-buddylist");
+    var buddyList = jsxc.gui.widgets.createBuddyList(
+        "#jsxc_dialog #jsxc-etherpad-dialog-buddylist", selectedJids);
 
     $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
       ev.stopPropagation();
@@ -988,6 +989,14 @@ jsxc.gui = {
 
     });
 
+    $('#jsxc_dialog .jsxc_refresh').click(function(ev) {
+      ev.stopPropagation();
+
+      jsxc.gui.feedback('Mise à jour en cours ...');
+
+      buddyList.updateBuddyList();
+    });
+
     return defer.promise();
 
   },
@@ -1005,7 +1014,7 @@ jsxc.gui = {
     });
 
     // create user list to invite
-    jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc-invite-dialog-buddylist");
+    var buddyList = jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc-invite-dialog-buddylist");
 
     $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
       ev.stopPropagation();
@@ -1030,6 +1039,14 @@ jsxc.gui = {
 
       defer.reject("user canceled");
 
+    });
+
+    $('#jsxc_dialog .jsxc_refresh').click(function(ev) {
+      ev.stopPropagation();
+
+      jsxc.gui.feedback('Mise à jour en cours ...');
+
+      buddyList.updateBuddyList();
     });
 
     return defer.promise();
@@ -1078,9 +1095,9 @@ jsxc.gui = {
 
     var defer = $.Deferred();
 
-    jsxc.gui.dialog.open(jsxc.gui.template.get('conversationSelectionDialog'));
+    jsxc.gui.dialog.open(jsxc.gui.template.get('selectConversations'));
 
-    jsxc.gui.widgets.createConversationList("#jsxc_dialogConversationList");
+    var conversList = jsxc.gui.widgets.createConversationList("#jsxc_dialogConversationList");
 
     $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
       ev.stopPropagation();
@@ -1104,6 +1121,14 @@ jsxc.gui = {
 
       defer.reject("user canceled");
 
+    });
+
+    $('#jsxc_dialog .jsxc_refresh').click(function(ev) {
+      ev.stopPropagation();
+
+      jsxc.gui.feedback('Mise à jour en cours ...');
+
+      conversList.updateConversationList();
     });
 
     return defer.promise();
