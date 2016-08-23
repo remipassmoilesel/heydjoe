@@ -5,6 +5,8 @@
 $font_sans: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
 $font_serif: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
 
+@import "root";
+
 @import "modules";
 @import "buddylist";
 @import "state";
@@ -12,7 +14,6 @@ $font_serif: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
 @import "window";
 @import "muc";
 
-@import "root";
 @import "dialog";
 
 @import "widgets";

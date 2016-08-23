@@ -321,9 +321,9 @@
       width: 100%;
       height: 44px;
       margin: 0;
-      padding: 3px;
-      padding-left: 40px;
-      padding-right: 10px;
+      padding: 3px !important;
+      padding-left: 40px !important;
+      padding-right: 10px !important;
       outline: none;
       border-radius: 0;
       box-sizing: border-box;
@@ -360,6 +360,20 @@
         opacity: 1.0;
       }
     }
+
+    .jsxc_video {
+      content: " ";
+      display: inline-block;
+      background-size: 60%;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-image: image-url("camera_icon_white.svg");
+
+      &:hover {
+        opacity: 1 !important;
+      }
+    }
+
   }
 
   .jsxc_close {
@@ -374,6 +388,7 @@
   .jsxc_more {
     background-image: image-url("more_white.svg");
     opacity: 0.4;
+    width: 28px;
   }
 
   .ui-resizable-w {

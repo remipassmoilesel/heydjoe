@@ -95,9 +95,11 @@ jsxc.gui = {
     var skeleton = $("<div id='jsxc-root'></div>");
     skeleton.append($(jsxc.gui.template.get('newgui_chatsidebar')));
     skeleton.append($(jsxc.gui.template.get('newgui_mediapanel')));
-    skeleton.append($(jsxc.gui.template.get('windowList')));
 
     $(jsxc.options.rosterAppend + ':first').append(skeleton);
+
+    // window list must stay here, otherwise too mush style problems appear
+    $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('windowList')));
 
     // new gui init
     jsxc.newgui.init();
@@ -123,9 +125,13 @@ jsxc.gui = {
     });
 
     $('#jsxc_windowListSB .jsxc_closeAllWindows').click(function() {
+
       $("#jsxc_windowList .jsxc_windowItem").each(function() {
         jsxc.gui.window.close($(this).data('bid'));
       });
+
+      // replace list after close all, to avoid future window appear out of screen
+      $('#jsxc_windowList ul').css('right', '0px');
     });
 
     $('#jsxc_windowList').on('wheel', function(ev) {
@@ -364,7 +370,7 @@ jsxc.gui = {
 
       if (sb.css('display') !== 'block') {
         sb.css({
-          opacity : 0, display : 'block',
+          opacity : 0, display : 'block'
         }).animate({
           opacity : 1
         }, newgui.OPACITY_ANIMATION_DURATION);
@@ -379,7 +385,7 @@ jsxc.gui = {
           opacity : 0
         }, newgui.OPACITY_ANIMATION_DURATION, function() {
           sb.css({
-            display : 'none',
+            display : 'none'
           });
         });
       }
