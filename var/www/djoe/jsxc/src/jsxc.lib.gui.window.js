@@ -36,28 +36,42 @@ jsxc.gui.window = {
       if (winBid === bid) {
 
         // add user in array if necessary
-        var usersComposing = self.data("usersComposing") || [];
+        var usersComposing = self.data("users-composing") || [];
         if (usersComposing.indexOf(user) === -1) {
           usersComposing.push(user);
-          self.data("usersComposing", usersComposing);
+          self.data("users-composing", usersComposing);
         }
 
         var textarea = self.find(".jsxc_textarea");
         var composingNotif = textarea.find(".jsxc_userComposing");
 
-        // add notification if necessary
-        if (composingNotif.length < 1) {
-          textarea.append("<div class='jsxc_userComposing jsxc_chatmessage jsxc_sys'></div>");
-          composingNotif = textarea.find(".jsxc_userComposing");
-        }
+        // scroll to bottom
+        jsxc.gui.window.scrollDown(winBid);
 
         // change text
         var msg = usersComposing.length > 1 ? " sont en train d'écrire ..." :
             " est en train d'écrire ...";
-        composingNotif.html(usersComposing.join(", ") + msg);
 
-        // scroll to bottom
-        jsxc.gui.window.scrollDown(winBid);
+        // notification not present, add it
+        if (composingNotif.length < 1) {
+
+          composingNotif = $("<div class='jsxc_userComposing jsxc_chatmessage jsxc_sys'></div>");
+          composingNotif.css({opacity : 0, display : 'block'});
+          composingNotif.html(usersComposing.join(", ") + msg);
+
+          textarea.append(composingNotif);
+
+          composingNotif.animate({opacity : 1}, 600);
+        }
+
+        // notification present, modify it and show it if necessary
+        else {
+          composingNotif.html(usersComposing.join(", ") + msg);
+
+          if (composingNotif.css('opacity') !== '1') {
+            composingNotif.animate({opacity : 1}, 600);
+          }
+        }
 
         // hide notification after delay
         if ($(this).data("composingTimeout")) {
@@ -68,7 +82,13 @@ jsxc.gui.window = {
 
             setTimeout(function() {
 
-              textarea.find(".jsxc_userComposing").remove();
+              composingNotif.animate({opacity : 0},
+
+                  600,
+
+                  function() {
+                    composingNotif.remove();
+                  });
 
               // empty user list
               self.data("usersComposing", []);
@@ -447,8 +467,8 @@ jsxc.gui.window = {
 
     // animate closing
     win.find(".jsxc_window").animate({
-      "height" : "0px"
-    }, 500,
+          "height" : "0px"
+        }, 500,
 
         function() {
 
