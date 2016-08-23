@@ -396,15 +396,6 @@ jsxc.xmpp = {
     jsxc.storage.removeUserItem('windowlist');
     jsxc.storage.removeUserItem('unreadMsg');
 
-    if (!jsxc.master) {
-      $('#jsxc-root').remove();
-      $('#jsxc_windowlist').remove();
-
-      $(document).trigger("removed.gui.jsxc");
-
-      return true;
-    }
-
     if (jsxc.xmpp.conn === null) {
       return true;
     }
@@ -655,8 +646,6 @@ jsxc.xmpp = {
     $(document).off('authfail.jsxc', jsxc.xmpp.onAuthFail);
 
     jsxc.xmpp.conn = null;
-
-    $('#jsxc_windowList').remove();
 
     jsxc.gui.roster.noConnection();
 
