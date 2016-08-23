@@ -33,13 +33,27 @@ jsxc.mmstream.gui = {
     var mmstream = jsxc.mmstream;
 
     // update user status on event
-    $(document).on("videoconference-changed.jsxc", self._videoconferenceChanged);
+    $(document).on('multimediacache-changed.jsxc', self._multimediacacheChanged);
 
     self.mediapanel = $("#jsxc-mediapanel");
 
-    // init terminate all button
+    /**
+     * Init terminate all link. Here it is important that user can clear multimedia cache to
+     * correct possible errors
+     */
     self.mediapanel.find('.jsxc_mmstreamTerminateAll').click(function() {
+
       mmstream._hangUpAll();
+
+      // clear multimedia cache here and occupied flag
+      setTimeout(function() {
+
+        mmstream._clearMultimediacache();
+
+        jsxc.gui.feedback('Appels terminés, système réinitialisé');
+
+      }, 800);
+
     });
 
   },
@@ -51,13 +65,13 @@ jsxc.mmstream.gui = {
    *
    * @private
    */
-  _videoconferenceChanged : function(event, data) {
+  _multimediacacheChanged : function(event, data) {
 
     var self = jsxc.mmstream.gui;
     var mmstream = jsxc.mmstream;
 
     if (jsxc.mmstream.debug === true) {
-      self._log("On videoconference changed", {
+      self._log("On multimedia cache changed", {
         event : event, data : data
       });
     }
@@ -124,10 +138,24 @@ jsxc.mmstream.gui = {
       it.addClass("jsxcVideoConf_" + item.type);
       it.attr("title", item.type + ": " + item.status);
 
+      var link;
+
+      // user is participating to a videoconference, add link to reinvite him if needed
       if (mmstream._isBuddyParticipatingToVideoconference(fulljid) === true) {
-        var link = $("<a href='#'>");
-        link.click(function() {
+        link = $("<a>").click(function() {
           mmstream.reinviteUserInVideoconference(fulljid);
+        });
+        link.text(item.node);
+
+        list.append(it.append(link));
+      }
+
+      // user is participating to sreensharing, and we are initator. add link to reinvite
+      // participants
+      else if (mmstream._isBuddyScreensharingRecipient(fulljid) === true) {
+
+        link = $("<a>").click(function() {
+          mmstream.reinviteUserInScreensharing(fulljid);
         });
         link.text(item.node);
 
@@ -140,6 +168,44 @@ jsxc.mmstream.gui = {
       }
 
     });
+
+  },
+
+  /**
+   * Show local screen stream in media panel. Do not ask for screen stream, if stream not exist,
+   * error is raised.
+   */
+  showLocalScreenStream : function() {
+
+    var mmstream = jsxc.mmstream;
+    var newgui = jsxc.newgui;
+
+    if (mmstream.multimediacache.screenStream === null) {
+      throw new Error("Screen stream is null");
+    }
+
+    // create container for video and title
+    var videoCtr = $("<div>").addClass('jsxc_screenStreamContainer');
+
+    // create video element and store jid
+    var video = $("<video>").addClass("jsxc_mediaPanelLocalScreenStream");
+    videoCtr.append(video);
+
+    // create hangup button
+    var hangup = $("<div>").addClass('jsxc_hangUpControl jsxc_videoControl').click(function() {
+      mmstream._hangUpAll();
+      jsxc.newgui.removeMediaRessource($(this).parents(".jsxc-media-ressource"));
+    });
+
+    // append video
+    jsxc.newgui.addMediaRessource(videoCtr, "Votre écran", {titleControls : [hangup]});
+
+    // attach video after append elements
+    mmstream.attachMediaStream(video, mmstream.multimediacache.screenStream);
+
+    if (newgui.isMediapanelShown() !== true) {
+      newgui.toggleMediapanel();
+    }
 
   },
 
@@ -222,7 +288,8 @@ jsxc.mmstream.gui = {
       throw new Error("JID must be full jid");
     }
 
-    var self = jsxc.mmstream.gui;
+    var mmstream = jsxc.mmstream;
+    var self = mmstream.gui;
     var node = Strophe.getNodeFromJid(fulljid);
 
     // check if video is not already present
@@ -240,14 +307,14 @@ jsxc.mmstream.gui = {
 
     // create hangup button
     var hangup = $("<div>").addClass('jsxc_hangUpControl jsxc_videoControl').click(function() {
-      jsxc.mmstream.hangupCall(fulljid);
+      mmstream.hangupCall(fulljid);
       jsxc.newgui.removeMediaRessource($(this).parents(".jsxc-media-ressource"));
     });
 
     // create fullscreen button
     var fullscreen = $("<div>").addClass('jsxc_fullscreenControl jsxc_videoControl').click(
         function() {
-          jsxc.mmstream.gui._showVideoFullscreen(fulljid);
+          mmstream.gui._showVideoFullscreen(fulljid);
         });
 
     // append video
@@ -255,7 +322,7 @@ jsxc.mmstream.gui = {
         {titleControls : [hangup, fullscreen]});
 
     // attach video after append elements
-    jsxc.attachMediaStream(video.get(0), stream);
+    mmstream.attachMediaStream(video, stream);
   },
 
   /**
@@ -285,13 +352,14 @@ jsxc.mmstream.gui = {
    */
   showLocalVideo : function() {
 
+    var self = jsxc.mmstream.gui;
     var mmstream = jsxc.mmstream;
+
+    self._log("Show local stream");
 
     mmstream._requireLocalStream()
         .done(function(localStream) {
-
-          jsxc.attachMediaStream("#jsxc-local-video", localStream);
-
+          mmstream.attachMediaStream($("#jsxc-local-video"), localStream);
         })
         .fail(function(error) {
           jsxc.gui.feedback("Erreur lors de l'accès à la caméra et au micro: " + error);
@@ -395,6 +463,51 @@ jsxc.mmstream.gui = {
   },
 
   /**
+   * Show an "accept / decline" dialog for an incoming call
+   */
+  _showIncomingScreensharingDialog : function(bid) {
+
+    if (!bid) {
+      throw new Error("Invalid argument: " + bid);
+    }
+
+    var self = jsxc.mmstream.gui;
+
+    var defer = $.Deferred();
+
+    bid = Strophe.getBareJidFromJid(bid);
+
+    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('incomingScreensharing', bid), {
+      noClose : true, name : 'incoming_screensharing'
+    });
+
+    self._ringOnIncoming();
+
+    dialog.find('.jsxc_accept').click(function() {
+
+      self._stopRinging();
+
+      defer.resolve("ACCEPT");
+
+      jsxc.gui.dialog.close();
+
+    });
+
+    dialog.find('.jsxc_reject').click(function() {
+
+      self._stopRinging();
+
+      defer.reject("REJECT");
+
+      jsxc.gui.dialog.close();
+
+    });
+
+    return defer.promise();
+
+  },
+
+  /**
    *
    * @param bid
    * @returns {*}
@@ -412,8 +525,8 @@ jsxc.mmstream.gui = {
 
     bid = Strophe.getBareJidFromJid(bid);
 
-    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('videoReinviteUser_' + mode, bid), {
-      noClose : true, name : 'video_reinvite_user'
+    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('reinviteUser_' + mode, bid), {
+      noClose : true, name : 'reinvite_user'
     });
 
     dialog.find('.jsxc_accept').click(function() {
@@ -426,7 +539,7 @@ jsxc.mmstream.gui = {
 
     dialog.find('.jsxc_reject').click(function() {
 
-      defer.fail("REJECT");
+      defer.reject("REJECT");
 
       jsxc.gui.dialog.close();
 
@@ -483,7 +596,8 @@ jsxc.mmstream.gui = {
    */
   _showVideoFullscreen : function(fulljid) {
 
-    var self = jsxc.mmstream.gui;
+    var mmstream = jsxc.mmstream;
+    var self = mmstream.gui;
     var newgui = jsxc.newgui;
 
     if (Strophe.getResourceFromJid(fulljid) === null) {
@@ -522,7 +636,7 @@ jsxc.mmstream.gui = {
     var stream = jsxc.mmstream.getActiveStream(fulljid);
 
     if (stream) {
-      jsxc.attachMediaStream(video.get(0), stream);
+      mmstream.attachMediaStream(video, stream);
     }
 
     else {

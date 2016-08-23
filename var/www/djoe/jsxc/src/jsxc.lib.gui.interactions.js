@@ -431,6 +431,69 @@ jsxc.gui.interactions = {
 
     });
 
+    /**
+     * Screen sharing
+     * ===============
+     *
+     */
+    $("#jsxc-actions-menu .jsxc-action_screensharing").click(function() {
+
+      // get selected budies
+      self._getCheckedBuddiesOrAskFor()
+
+          .then(function(buddies) {
+
+            if (buddies.length < 1) {
+              jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+              return;
+            }
+
+            mmstream.checkNavigatorCompatibility("screensharing");
+
+            mmstream.isChromeExtensionInstalled()
+
+                .fail(function() {
+                  mmstream.gui.showInstallScreenSharingExtensionDialog();
+                  return;
+                })
+
+                .then(function() {
+
+                  // get full jid of buddies
+                  var fjidArray = [];
+                  var unavailables = [];
+                  $.each(buddies, function(index, element) {
+
+                    var fjid = jsxc.getCurrentActiveJidForBid(element);
+
+                    if (fjid === null || jsxc.isBuddyOnline(element) === false) {
+                      unavailables.push(Strophe.getNodeFromJid(element));
+                    } else {
+                      fjidArray.push(jsxc.getCurrentActiveJidForBid(element));
+                    }
+
+                  });
+
+                  // check how many participants are unavailable
+                  if (unavailables.length === 1) {
+                    jsxc.gui.feedback("<b>" + unavailables[0] + "</b> n'est pas disponible");
+                    return;
+                  }
+
+                  else if (unavailables.length > 1) {
+                    jsxc.gui.feedback(
+                        "<b>" + unavailables.join(", ") + "</b> ne sont pas disponibles");
+                    return;
+                  }
+
+                  // call buddies
+                  mmstream.startScreenSharingMultiPart(fjidArray);
+
+                });
+          });
+
+    });
+
   },
 
   /**

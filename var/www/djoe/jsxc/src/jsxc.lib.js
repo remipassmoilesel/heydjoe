@@ -1131,56 +1131,6 @@ jsxc = {
     console.error("Stack trace");
     console.error("Time: " + time);
     console.error((new Error()).stack);
-  },
-
-  /**
-   * Attach a video stream with element
-   *
-   * Example: attachMediaStream($("<video>").get(0), stream);
-   *
-   * Here another solution can be watch element and wait for visibility but for now there is no
-   * largely compatible solutions
-   *
-   * @param stream
-   * @param element
-   */
-  attachMediaStream : function(element, stream) {
-
-    var video = $(element);
-
-    var attach = function() {
-
-      var src = URL.createObjectURL(stream);
-
-      jsxc.debug("Attach media stream to video element",
-          {"element" : video, "stream" : stream, "src" : src});
-
-      video.attr('src', src);
-
-      //TODO: some browsers (Android Chrome, ...) want a user interaction before trigger play()
-      try {
-        video.get(0).play();
-      } catch (e) {
-        jsxc.error("Error while attaching video", {error : e});
-      }
-
-    };
-
-    // attach if visible
-    if (video.is(':visible')) {
-      attach();
-    }
-
-    // or ait until it does
-    else {
-      var interv = setInterval(function() {
-        if (video.is(':visible')) {
-          clearInterval(interv);
-          attach();
-        }
-      }, 800);
-    }
-
   }
 
 };

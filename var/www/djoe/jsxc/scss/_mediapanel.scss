@@ -61,8 +61,8 @@
 
   .jsxc_mediaPanelRemoteVideo {
 
-    min-width: 300px;
-    min-height: 300px;
+    min-width: 200px;
+    min-height: 200px;
 
     max-height: 420px;
   }
@@ -282,6 +282,16 @@
     &:hover {
       opacity: 1;
     }
+  }
+
+  /**
+    Local screen stream
+  */
+  .jsxc_mediaPanelLocalScreenStream{
+    min-width: 200px;
+    min-height: 200px;
+
+    max-height: 420px;
   }
 
   .jsxc_fullscreenVideo {

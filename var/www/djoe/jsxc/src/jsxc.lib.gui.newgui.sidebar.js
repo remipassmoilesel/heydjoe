@@ -161,6 +161,7 @@ $.extend(jsxc.newgui, {
     // if not, display online buddies
     else {
       var online = $('#jsxc_buddylist li[data-status!="offline"][data-type="chat"]').length;
+
       var message;
       if (online === 0) {
         message = "Aucune activité";
@@ -168,7 +169,9 @@ $.extend(jsxc.newgui, {
 
       else if (online === 1) {
         message = "1 personne en ligne";
-      } else {
+      }
+
+      else {
         message = online + " personnes en ligne";
       }
 

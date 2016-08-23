@@ -43,6 +43,7 @@
     "require": true,
     "QUnit": true,
     "Tether": true,
+    "MediaStream": true,
     "URL": true
   }
 }
