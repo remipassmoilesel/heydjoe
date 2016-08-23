@@ -546,10 +546,11 @@ $.extend(jsxc.newgui, {
 
     self._log("toggleBuddyFilter: " + mode);
 
+    self.unselectAllElements();
+
     // set filter for future adding
     roster.setFilterMode(mode);
 
-    // TODO check how was selected buddies in original JSXC
     var list = self._getBuddyList();
 
     // hide all
@@ -597,6 +598,34 @@ $.extend(jsxc.newgui, {
 
   },
 
+  /**
+   * Unselect all buddies and conversations
+   */
+  unselectAllElements : function() {
+
+    var self = jsxc.newgui;
+
+    self._getBuddyList().find('.jsxc-checked').removeClass('jsxc-checked');
+
+    self._updateSelectedCount();
+
+  },
+
+  /**
+   * Update buddy count next the selection mode button
+   */
+  _updateSelectedCount : function() {
+
+    var self = jsxc.newgui;
+
+    var count = self._getBuddyList().find('.jsxc-checked').length;
+
+    var text = count > 0 ? '(' + count + ')' : '';
+
+    $('#jsxc-select-buddies .jsxc-selected-number').text(text);
+
+  },
+
   toggleSelectionMode : function() {
 
     var self = jsxc.newgui;
@@ -607,6 +636,7 @@ $.extend(jsxc.newgui, {
 
     self._selectionMode = !self._selectionMode;
 
+    // enable selection mode
     if (self._selectionMode === false) {
 
       // remove all click handler and replace it by selector
@@ -616,14 +646,23 @@ $.extend(jsxc.newgui, {
         element.off('click');
 
         element.on('click', function() {
+
           var toDecorate = $(this).find('div.jsxc_name');
           self._toggleBuddySelected(toDecorate);
+
+          self._updateSelectedCount();
         });
 
       });
+
+      self._updateSelectedCount();
+
     }
 
+    // disable selection mode
     else {
+
+      self.unselectAllElements();
 
       // remove all click handler and replace it by selector
       list.each(function() {
@@ -638,6 +677,7 @@ $.extend(jsxc.newgui, {
         });
 
       });
+
     }
 
   },
@@ -663,6 +703,70 @@ $.extend(jsxc.newgui, {
     // TODO check how was selected buddies in original JSXC
     return $("#jsxc_buddylist li.jsxc_rosteritem");
 
+  },
+
+  /**
+   * Get all checked elements from buddylist, conversations AND buddies
+   * @returns {Array}
+   * @private
+   */
+  getCheckedElementsOrAskFor : function(buddiesOnly) {
+
+    var self = jsxc.newgui;
+    buddiesOnly = typeof buddiesOnly !== 'undefined' ? buddiesOnly : false;
+
+    var defer = $.Deferred();
+
+    var all = self._getBuddyList();
+    var rslt = [];
+
+    // search for checked elements
+    all.each(function() {
+
+      var element = $(this);
+
+      // continue if we need only buddies
+      if (buddiesOnly === true && element.data('type') === 'groupchat') {
+        return true;
+      }
+
+      if (element.find(".jsxc-checked").length > 0) {
+        rslt.push(element.data('jid'));
+      }
+
+    });
+
+    // some elements are checked, return them
+    if (rslt.length > 0) {
+
+      // unselect all, to prevent mistakes
+      self.unselectAllElements();
+
+      defer.resolve(rslt);
+    }
+
+    // no elements checked, show BUDDY selection dialog only
+    else {
+      jsxc.gui.showSelectContactsDialog()
+          .then(function(result) {
+            defer.resolve(result);
+          })
+          .fail(function() {
+            defer.reject("canceled");
+          });
+    }
+
+    return defer.promise();
+
+  },
+
+  /**
+   * Get checked elements from buddylist, and only the buddies
+   * @returns {Array}
+   * @private
+   */
+  getCheckedBuddiesOrAskFor : function() {
+    return jsxc.newgui.getCheckedElementsOrAskFor(true);
   },
 
   /**

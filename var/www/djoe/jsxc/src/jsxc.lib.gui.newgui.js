@@ -89,7 +89,7 @@ jsxc.newgui = {
     // selection mode
     $("#jsxc-select-buddies").click(function() {
       self.toggleSelectionMode();
-      $(this).toggleClass("jsxc-selection-mode-enabled");
+      $(this).toggleClass("jsxc-checked");
     });
 
     $("#jsxc-chat-sidebar-header").click(function() {

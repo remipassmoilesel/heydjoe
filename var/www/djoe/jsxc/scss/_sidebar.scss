@@ -151,15 +151,15 @@ TODO: Set up variables:
 
     margin: 0.5em;
 
-  }
 
-  #jsxc-select-buddies:hover {
-    opacity: 1;
-  }
+    &:hover {
+      opacity: 1;
+    }
 
-  .jsxc-selection-mode-enabled {
-    background: #e9e9f5;
-    text-decoration: underline !important;
+    &.jsxc-checked{
+      text-decoration: underline !important;
+    }
+
   }
 
   /**

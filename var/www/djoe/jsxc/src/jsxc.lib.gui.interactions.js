@@ -35,84 +35,6 @@ jsxc.gui.interactions = {
   },
 
   /**
-   * Get all checked elements from buddylist, conversations AND buddies
-   * @returns {Array}
-   * @private
-   */
-  _getCheckedElementsOrAskFor : function() {
-
-    var defer = $.Deferred();
-
-    var all = $("#jsxc_buddylist li");
-    var rslt = [];
-
-    all.each(function() {
-      var element = $(this);
-      if (element.find(".jsxc-checked").length > 0) {
-        rslt.push(element.data('jid'));
-      }
-    });
-
-    // if no elements, show only buddies here
-    //TODO Present conversations ?
-    if (rslt.length < 1) {
-
-      jsxc.gui.showSelectContactsDialog()
-          .then(function(result) {
-            defer.resolve(result);
-          })
-          .fail(function() {
-            defer.reject("canceled");
-          });
-    }
-
-    else {
-      defer.resolve(rslt);
-    }
-
-    return defer.promise();
-
-  },
-
-  /**
-   * Get checked elements from buddylist, and only the buddies
-   * @returns {Array}
-   * @private
-   */
-  _getCheckedBuddiesOrAskFor : function() {
-
-    var defer = $.Deferred();
-
-    var all = $("#jsxc_buddylist li");
-    var rslt = [];
-
-    all.each(function() {
-      var element = $(this);
-      if (element.data('type') === 'chat' && element.find(".jsxc-checked").length > 0) {
-        rslt.push(element.data('bid'));
-      }
-    });
-
-    if (rslt.length < 1) {
-
-      jsxc.gui.showSelectContactsDialog()
-          .then(function(result) {
-            defer.resolve(result);
-          })
-          .fail(function() {
-            defer.reject("canceled");
-          });
-    }
-
-    else {
-      defer.resolve(rslt);
-    }
-
-    return defer.promise();
-
-  },
-
-  /**
    * Return checked elements from search user panel
    * @returns {JQuery|*|jQuery|HTMLElement}
    * @private
@@ -187,6 +109,7 @@ jsxc.gui.interactions = {
 
     var self = jsxc.gui.interactions;
     var mmstream = jsxc.mmstream;
+    var newgui = jsxc.newgui;
 
     /**
      * Start a multi user chat
@@ -196,7 +119,7 @@ jsxc.gui.interactions = {
     $('#jsxc-chat-sidebar .jsxc-action_new-conversation').click(function() {
 
       var selected = [];
-      self._getCheckedBuddiesOrAskFor()
+      newgui.getCheckedBuddiesOrAskFor()
           .then(function(results) {
             $.each(results, function(index, element) {
               selected.push(element);
@@ -217,7 +140,7 @@ jsxc.gui.interactions = {
 
     $('.jsxc-action_delete-buddies').click(function() {
 
-      self._getCheckedElementsOrAskFor()
+      newgui.getCheckedElementsOrAskFor()
 
           .then(function(buddies) {
 
@@ -250,7 +173,7 @@ jsxc.gui.interactions = {
      */
     $('#jsxc-actions-menu .jsxc-action_invite-in-conversation').click(function() {
 
-      self._getCheckedBuddiesOrAskFor()
+      newgui.getCheckedBuddiesOrAskFor()
           .then(function(buddies) {
 
             if (buddies.length < 1) {
@@ -326,7 +249,7 @@ jsxc.gui.interactions = {
     $("#jsxc-actions-menu .jsxc-action_video-call").click(function() {
 
       // get selected budies
-      self._getCheckedBuddiesOrAskFor()
+      newgui.getCheckedBuddiesOrAskFor()
 
           .then(function(buddies) {
 
@@ -381,7 +304,7 @@ jsxc.gui.interactions = {
     $("#jsxc-actions-menu .jsxc-action_videoconference").click(function() {
 
       // get selected budies
-      self._getCheckedBuddiesOrAskFor()
+      newgui.getCheckedBuddiesOrAskFor()
 
           .then(function(buddies) {
 
@@ -439,7 +362,7 @@ jsxc.gui.interactions = {
     $("#jsxc-actions-menu .jsxc-action_screensharing").click(function() {
 
       // get selected budies
-      self._getCheckedBuddiesOrAskFor()
+      newgui.getCheckedBuddiesOrAskFor()
 
           .then(function(buddies) {
 
