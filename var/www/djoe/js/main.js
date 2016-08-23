@@ -11,7 +11,7 @@ $(function() {
   /**
    Logins disponibles
    */
-  var availablesLogins = ["remi", "david", "yohann", "miguel", "aurore", "nicolas", "sebastien"];
+  var availablesLogins = ["remi", "david", "yohann", "miguel", "aurore", "nicolas", "sebastien", "jules", "jacques", "paul"];
 
   var webAdminUrl = "http://" + pageDomain + ":9090/";
   var consoleAdminUrl = "http://" + pageDomain + ":9091/";
