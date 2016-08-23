@@ -476,7 +476,7 @@ jsxc.gui.window = {
           jsxc.storage.removeUserItem('window', bid);
 
           // delete data from unknown sender
-          if (jsxc.storage.getUserItem('buddylist').indexOf(bid) < 0) {
+          if (jsxc.storage.getUserItem('buddylist') && jsxc.storage.getUserItem('buddylist').indexOf(bid) < 0) {
             jsxc.storage.removeUserItem('buddy', bid);
             jsxc.storage.removeUserItem('chat', bid);
           }

@@ -125,13 +125,7 @@ jsxc.gui = {
     });
 
     $('#jsxc_windowListSB .jsxc_closeAllWindows').click(function() {
-
-      $("#jsxc_windowList .jsxc_windowItem").each(function() {
-        jsxc.gui.window.close($(this).data('bid'));
-      });
-
-      // replace list after close all, to avoid future window appear out of screen
-      $('#jsxc_windowList ul').css('right', '0px');
+      jsxc.gui.closeAllChatWindows();
     });
 
     $('#jsxc_windowList').on('wheel', function(ev) {
@@ -161,11 +155,31 @@ jsxc.gui = {
     var updatePresenceInformations = function(event, pres) {
       jsxc.gui.updatePresence('own', pres);
     };
+
     // add listener for own presences, and remove it on time
     $(document).on('ownpresence.jsxc', updatePresenceInformations);
     $(document).on('disconnected.jsxc', function() {
       $(document).off('ownpresence.jsxc', updatePresenceInformations);
     });
+
+    // remove all window chen disconnected
+    $(document).on('disconnected.jsxc', function() {
+      jsxc.gui.closeAllChatWindows();
+    });
+  },
+
+  /**
+   * Close all chat windows
+   */
+  closeAllChatWindows : function() {
+
+    $("#jsxc_windowList .jsxc_windowItem").each(function() {
+      jsxc.gui.window.close($(this).data('bid'));
+    });
+
+    // replace list after close all, to avoid future window appear out of screen
+    $('#jsxc_windowList ul').css('right', '0px');
+
   },
 
   /**
