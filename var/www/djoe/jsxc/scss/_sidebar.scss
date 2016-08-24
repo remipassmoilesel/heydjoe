@@ -64,28 +64,6 @@ TODO: Set up variables:
   }
 
   /**
-    Menu icon to toggle chat sidebar
-  */
-  .jsxc-toggle-sidebar {
-    cursor: pointer;
-    background: image-url('newgui/toggle-sidebar-menu.svg');
-    background-size: 90%;
-    background-repeat: no-repeat;
-    content: ' ';
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    vertical-align: middle;
-    margin-right: 0.7em;
-
-    opacity: 0.7;
-  }
-
-  .jsxc-toggle-sidebar:hover {
-    opacity: 1;
-  }
-
-  /**
     In chat sidebar, filter display to show only users
   */
   #jsxc-new-gui-filter-users {

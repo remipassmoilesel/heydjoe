@@ -55,15 +55,6 @@ jsxc.newgui = {
      * Header: Always visible
      *
      */
-    // open and close chat sidebar
-    var togglechat = $("#jsxc-chat-sidebar-header .jsxc-toggle-sidebar");
-    togglechat.click(function(event) {
-      self.toggleChatSidebar();
-      if (self.isContentVisible('jsxc-buddy-list-container') === false) {
-        self.toggleBuddyList();
-      }
-      event.stopPropagation();
-    });
 
     // open and close video panel
     var togglevideo = $("#jsxc-chat-sidebar-header .jsxc-toggle-mediapanel");
@@ -98,7 +89,15 @@ jsxc.newgui = {
     });
 
     $("#jsxc-chat-sidebar-header").click(function() {
+
+      // show buddy list on open
+      if (self.chatSidebarContent.isMainContentVisible() === false &&
+          self.isChatSidebarShown() === false) {
+        self.chatSidebarContent.showMainContent();
+      }
+
       self.toggleChatSidebar();
+
     });
 
     // close media panel
