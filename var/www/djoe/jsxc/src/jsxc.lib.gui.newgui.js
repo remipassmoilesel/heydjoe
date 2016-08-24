@@ -57,8 +57,12 @@ jsxc.newgui = {
      */
     // open and close chat sidebar
     var togglechat = $("#jsxc-chat-sidebar-header .jsxc-toggle-sidebar");
-    togglechat.click(function() {
+    togglechat.click(function(event) {
       self.toggleChatSidebar();
+      if (self.isContentVisible('jsxc-buddy-list-container') === false) {
+        self.toggleBuddyList();
+      }
+      event.stopPropagation();
     });
 
     // open and close video panel
@@ -327,7 +331,7 @@ jsxc.newgui = {
       }
 
     };
-    
+
     return ret;
   }
 
