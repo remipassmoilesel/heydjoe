@@ -65,7 +65,7 @@ jsxc.notification = {
       };
     }
 
-    if (jsxc.hasFocus() && !o.force) {
+    if (jsxc.hasFocus() && o.force !== true) {
       return; // Tab is visible
     }
 
@@ -281,7 +281,7 @@ jsxc.notification = {
    * Return true if notifications are showed
    */
   isNotificationShowed : function() {
-    return jsxc.options && jsxc.options.get('hideNotification') &&
+    return jsxc.options && jsxc.options.get('hideNotification') !== true &&
         jsxc.notification.hasPermission();
   },
 
@@ -294,7 +294,7 @@ jsxc.notification = {
    */
   hideNotifications : function(external) {
     if (external !== true) {
-      jsxc.options.set('hideNotification', false);
+      jsxc.options.set('hideNotification', true);
     }
   },
 
@@ -309,7 +309,7 @@ jsxc.notification = {
    */
   showNotifications : function(external) {
     if (external !== true) {
-      jsxc.options.set('hideNotification', true);
+      jsxc.options.set('hideNotification', false);
     }
   }
 
