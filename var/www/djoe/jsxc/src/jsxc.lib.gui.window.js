@@ -21,7 +21,7 @@ jsxc.gui.window = {
    */
   showComposingPresence : function(from, type) {
 
-    var bid = Strophe.getBareJidFromJid(from);
+    var bid = jsxc.jidToBid(from);
     var user = type === "chat" ? Strophe.getNodeFromJid(from) : Strophe.getResourceFromJid(from);
 
     // iterate window list

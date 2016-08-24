@@ -295,7 +295,7 @@ jsxc.gui.roster = {
         }).c('query', {
           xmlns : 'jabber:iq:roster'
         }).c('item', {
-          jid : Strophe.getBareJidFromJid(d.jid), name : newname
+          jid : jsxc.jidToBid(d.jid), name : newname
         });
         jsxc.xmpp.conn.sendIQ(iq);
       } else if (d.type === 'groupchat') {

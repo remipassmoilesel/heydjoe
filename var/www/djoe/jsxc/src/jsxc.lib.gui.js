@@ -281,7 +281,7 @@ jsxc.gui = {
       ue.removeClass('jsxc_oneway');
     }
 
-    var info = Strophe.getBareJidFromJid(data.jid) + '\n';
+    var info = jsxc.jidToBid(data.jid) + '\n';
     info += jsxc.t('Subscription') + ': ' + jsxc.t(data.sub) + '\n';
     info += jsxc.t('Status') + ': ' + jsxc.t(jsxc.CONST.STATUS[data.status]);
 
@@ -359,10 +359,10 @@ jsxc.gui = {
       };
 
       // workaround for https://github.com/strophe/strophejs/issues/172
-      if (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid)) {
+      if (jsxc.jidToBid(jid) === jsxc.jidToBid(jsxc.xmpp.conn.jid)) {
         jsxc.xmpp.conn.vcard.get(handler_cb, error_cb);
       } else {
-        jsxc.xmpp.conn.vcard.get(handler_cb, Strophe.getBareJidFromJid(jid), error_cb);
+        jsxc.xmpp.conn.vcard.get(handler_cb, jsxc.jidToBid(jid), error_cb);
       }
     }
   },
@@ -694,7 +694,7 @@ jsxc.gui = {
       'noClose' : true
     });
 
-    $('#jsxc_dialog .jsxc_their_jid').text(Strophe.getBareJidFromJid(from));
+    $('#jsxc_dialog .jsxc_their_jid').text(jsxc.jidToBid(from));
 
     $('#jsxc_dialog .jsxc_deny').click(function(ev) {
       ev.stopPropagation();
@@ -729,7 +729,7 @@ jsxc.gui = {
       'noClose' : true
     });
 
-    $('#jsxc_dialog .jsxc_buddyName').text(Strophe.getBareJidFromJid(buddyName));
+    $('#jsxc_dialog .jsxc_buddyName').text(jsxc.jidToBid(buddyName));
 
     $('#jsxc_dialog .jsxc_deny').click(function(ev) {
       ev.stopPropagation();
@@ -1732,7 +1732,7 @@ jsxc.gui = {
       var spot = $("<span>X</span>").addClass("jsxc_spot");
       var href = $(this).attr("href").replace(/^ *(mailto|xmpp):/, "").trim();
 
-      if (href !== '' && href !== Strophe.getBareJidFromJid(jsxc.storage.getItem("jid"))) {
+      if (href !== '' && href !== jsxc.jidToBid(jsxc.storage.getItem("jid"))) {
         var bid = jsxc.jidToBid(href);
         var self = $(this);
         var s = self.prev();

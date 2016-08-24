@@ -559,7 +559,7 @@ jsxc.xmpp = {
 
   saveSessionParameter : function() {
 
-    var nomJid = Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid).toLowerCase() + '/' +
+    var nomJid = jsxc.jidToBid(jsxc.xmpp.conn.jid).toLowerCase() + '/' +
         Strophe.getResourceFromJid(jsxc.xmpp.conn.jid);
 
     // Save sid and jid
@@ -893,7 +893,7 @@ jsxc.xmpp = {
     var bid = jsxc.jidToBid(jid);
 
     // ignore own presence
-    if (bid === Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid)) {
+    if (bid === jsxc.jidToBid(jsxc.xmpp.conn.jid)) {
       return true;
     }
 
@@ -1130,7 +1130,7 @@ jsxc.xmpp = {
       from = $(stanza).attr('from');
     }
 
-    var jid = Strophe.getBareJidFromJid(from);
+    var jid = jsxc.jidToBid(from);
     bid = jsxc.jidToBid(jid);
     var data = jsxc.storage.getUserItem('buddy', bid);
     var request = $(message).find("request[xmlns='urn:xmpp:receipts']");
@@ -1297,7 +1297,7 @@ jsxc.xmpp = {
     }).c('query', {
       xmlns : 'jabber:iq:roster'
     }).c('item', {
-      jid : Strophe.getBareJidFromJid(jid), subscription : 'remove'
+      jid : jsxc.jidToBid(jid), subscription : 'remove'
     });
     jsxc.xmpp.conn.sendIQ(iq);
 
@@ -1390,7 +1390,7 @@ jsxc.xmpp = {
    */
   _sendMessage : function(jid, msg, uid) {
     var data = jsxc.storage.getUserItem('buddy', jsxc.jidToBid(jid)) || {};
-    var isBar = (Strophe.getBareJidFromJid(jid) === jid);
+    var isBar = (jsxc.jidToBid(jid) === jid);
     var type = data.type || 'chat';
 
     var xmlMsg = $msg({

@@ -441,7 +441,7 @@ jsxc.mmstream.gui = {
 
     var defer = $.Deferred();
 
-    bid = Strophe.getBareJidFromJid(bid);
+    bid = jsxc.jidToBid(bid);
 
     var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('incomingCall', bid), {
       noClose : true, name : 'incoming_call_dialog'
@@ -486,7 +486,7 @@ jsxc.mmstream.gui = {
 
     var defer = $.Deferred();
 
-    bid = Strophe.getBareJidFromJid(bid);
+    bid = jsxc.jidToBid(bid);
 
     var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('incomingScreensharing', bid), {
       noClose : true, name : 'incoming_screensharing'
@@ -534,7 +534,7 @@ jsxc.mmstream.gui = {
       throw new Error("Unkown mode: " + mode);
     }
 
-    bid = Strophe.getBareJidFromJid(bid);
+    bid = jsxc.jidToBid(bid);
 
     var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('reinviteUser_' + mode, bid), {
       noClose : true, name : 'reinvite_user'

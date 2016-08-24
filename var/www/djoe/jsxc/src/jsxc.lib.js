@@ -147,7 +147,7 @@ jsxc = {
       throw new Error("Invalid argument: " + bid);
     }
 
-    bid = Strophe.getBareJidFromJid(bid);
+    bid = jsxc.jidToBid(bid);
 
     // get buddy data
     var buddy = jsxc.storage.getUserItem('buddy', bid);
@@ -308,7 +308,7 @@ jsxc = {
    * @returns {*|user|boolean}
    */
   isBuddyOnline : function(fjid) {
-    var buddy = jsxc.storage.getUserItem("buddy", Strophe.getBareJidFromJid(fjid));
+    var buddy = jsxc.storage.getUserItem("buddy", jsxc.jidToBid(fjid));
     return buddy && jsxc.CONST.STATUS.indexOf("offline") !== buddy.status;
   },
 

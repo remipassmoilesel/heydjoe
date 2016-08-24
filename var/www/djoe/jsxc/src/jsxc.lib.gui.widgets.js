@@ -33,7 +33,7 @@ jsxc.gui.widgets = {
       $.each(conversList, function(index, jid) {
 
         // check type of element: buddie / conversation
-        var infos = jsxc.storage.getUserItem('buddy', Strophe.getBareJidFromJid(jid));
+        var infos = jsxc.storage.getUserItem('buddy', jsxc.jidToBid(jid));
 
         if ((infos.type === 'groupchat') !== true) {
           return true;
@@ -117,7 +117,7 @@ jsxc.gui.widgets = {
       var buddyNumber = 0;
       $.each(buddyList, function(index, jid) {
 
-        var bid = Strophe.getBareJidFromJid(jid);
+        var bid = jsxc.jidToBid(jid);
 
         // check type of element: buddie / conversation
         var infos = jsxc.storage.getUserItem('buddy', bid);

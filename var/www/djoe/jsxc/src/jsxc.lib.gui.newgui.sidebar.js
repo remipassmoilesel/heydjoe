@@ -277,7 +277,7 @@ $.extend(jsxc.newgui, {
     list.empty();
 
     var displayed = 0;
-    var ownJid = Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid);
+    var ownJid = jsxc.jidToBid(jsxc.xmpp.conn.jid);
 
     $.each(results, function(index, element) {
 
