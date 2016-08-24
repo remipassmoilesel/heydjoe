@@ -533,9 +533,19 @@ jsxc.gui.interactions = {
     });
 
     var videoIndicator = jsxc.newgui.createStateIndicator('.jsxc-action_disableVideoCalls');
+    videoIndicator.toggleState(mmstream.isVideoCallsDisabled());
+
     $('#jsxc-settings-menu .jsxc-action_disableVideoCalls').click(function() {
 
       videoIndicator.toggleState();
+
+      if (videoIndicator.getState() === true) {
+        mmstream.disableVideoCalls();
+      }
+
+      else {
+        mmstream.enableVideoCalls();
+      }
 
     });
 

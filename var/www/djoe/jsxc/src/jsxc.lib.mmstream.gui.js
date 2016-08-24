@@ -176,9 +176,15 @@ jsxc.mmstream.gui = {
    * error is raised.
    */
   showLocalScreenStream : function() {
-
+    
     var mmstream = jsxc.mmstream;
+    var self = mmstream.gui;
     var newgui = jsxc.newgui;
+
+    if (mmstream.isVideoCallsDisabled() === true) {
+      self._log('Calls are disabled');
+      return;
+    }
 
     if (mmstream.multimediacache.screenStream === null) {
       throw new Error("Screen stream is null");
@@ -356,6 +362,11 @@ jsxc.mmstream.gui = {
     var mmstream = jsxc.mmstream;
 
     self._log("Show local stream");
+
+    if (mmstream.isVideoCallsDisabled() === true) {
+      self._log('Calls are disabled');
+      return;
+    }
 
     mmstream._requireLocalStream()
         .done(function(localStream) {

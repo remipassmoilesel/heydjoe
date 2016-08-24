@@ -712,9 +712,10 @@ jsxc.mmstream = {
   _onMessageReceived : function(stanza) {
 
     var self = jsxc.mmstream;
+    var from = $(stanza).attr("from");
 
     // ignore eventual messages from current user
-    if ($(stanza).attr("from") === self.conn.jid) {
+    if (from === self.conn.jid) {
       //self._log("Ignoring message from current user: ", stanza, "ERROR");
 
       // keep handler
@@ -724,6 +725,7 @@ jsxc.mmstream = {
     // check if stanza is a videoconference invitation
     var video = $(stanza).find(self.XMPP_VIDEOCONFERENCE.ELEMENT_NAME);
     var screen = $(stanza).find(self.XMPP_SCREENSHARING.ELEMENT_NAME);
+    // var node = Strophe.getNodeFromJid(from);
     var status;
 
     /**
@@ -734,7 +736,7 @@ jsxc.mmstream = {
       status = video.attr(self.XMPP_VIDEOCONFERENCE.STATUS_ATTR);
 
       if (jsxc.mmstream.debug) {
-        self._log("_onMessageReceived " + status, {status : status, stanza : stanza});
+        self._log("_onMessageReceived: " + status, {status : status, stanza : stanza});
       }
 
       // received an invitation
@@ -818,12 +820,23 @@ jsxc.mmstream = {
     var datetime = screen.attr(self.XMPP_SCREENSHARING.DATETIME_ATTR);
     var now = new Date().getTime();
     var from = $(stanza).attr("from");
+    var node = Strophe.getNodeFromJid(from);
 
     var decline = function() {
       self._sendScreensharingConfirmationMessage(self.XMPP_SCREENSHARING.STATUS.DECLINED, datetime,
           from);
     };
 
+    if (self.isVideoCallsDisabled() === true) {
+
+      jsxc.gui.feedback('<b>' + node +
+          '</b> a éssayé de vous inviter à partager son écran, mais les appels multimédia sont désactivés.');
+
+      decline();
+      return;
+    }
+
+    // check if occupied AFTER disable calls
     if (self._isClientOccupied(from) !== false) {
       decline();
       return;
@@ -1021,7 +1034,19 @@ jsxc.mmstream = {
         video.attr(self.XMPP_VIDEOCONFERENCE.USERS_ATTR) || "");
     var datetime = video.attr(self.XMPP_VIDEOCONFERENCE.DATETIME_ATTR);
 
+    // check if calls are disabled
+    if (self.isVideoCallsDisabled() === true) {
+
+      jsxc.gui.feedback('<b>' + initiator_node +
+          '</b> a éssayé de vous inviter à une vidéoconférence, mais les appels multimédia sont désactivés.');
+
+      self._declineVideconference(initiator, participants, invitationId, "Occupé !");
+
+      return;
+    }
+
     // check if another multimedia session is currently running
+    // AFTER disable calls
     if (self._isClientOccupied(initiator) !== false) {
       self._declineVideconference(initiator, participants, invitationId, "Occupé !");
       return;
@@ -1339,14 +1364,15 @@ jsxc.mmstream = {
     // terminate all conversations, even if waiting
     self._hangUpAll();
 
-    // dont clear caches here, to show who declined videoconference
-    // self._clearMultimediacache();
-
     // close dialog if needed
     jsxc.gui.dialog.close('video_conference_incoming');
 
     // show toast
     jsxc.gui.feedback("La videoconférence à été annulée par " + Strophe.getNodeFromJid(from));
+
+    setTimeout(function() {
+      self._clearMultimediacache();
+    }, 1000);
 
   },
 
@@ -1556,6 +1582,12 @@ jsxc.mmstream = {
 
     jsxc.stats.addEvent("jsxc.mmstream.multimediacache.start");
 
+    if (self.isVideoCallsDisabled() === true) {
+      jsxc.gui.feedback('Les appels multimédia sont désactivés.');
+      self._log('Calls are disabled');
+      return;
+    }
+
     if (!fulljidArray || fulljidArray.constructor !== Array) {
       throw new Error("Illegal argument: " + fulljidArray);
     }
@@ -1694,6 +1726,12 @@ jsxc.mmstream = {
 
     if (jsxc.mmstream.debug === true) {
       self._log("startScreenSharingMultiPart", [fulljidArray, message]);
+    }
+
+    if (self.isVideoCallsDisabled() === true) {
+      jsxc.gui.feedback('Les appels multimédia sont désactivés.');
+      self._log('Calls are disabled');
+      return;
     }
 
     jsxc.stats.addEvent("jsxc.mmstream.screensharing.multipart.start");
@@ -2040,6 +2078,17 @@ jsxc.mmstream = {
       self._log("_onIncomingJingleSession", {session : session});
     }
 
+    if (self.isVideoCallsDisabled() === true) {
+
+      var node = Strophe.getNodeFromJid(session.peerID);
+      jsxc.gui.feedback('<b>' + node +
+          '</b> a éssayé de vous contacter, mais les appels multimédia sont désactivés.');
+
+      session.end("decline", false);
+
+      return;
+    }
+
     // session.on('change:sessionState', self._onConnectionStateChanged);
     session.on('change:connectionState', self._onVideoSessionStateChanged);
 
@@ -2318,7 +2367,12 @@ jsxc.mmstream = {
     var self = jsxc.mmstream;
 
     if (jsxc.mmstream.debug === true) {
-      self._log("_onRemoteStreamAdded", [session, stream]);
+      self._log('_onRemoteStreamAdded', [session, stream]);
+    }
+
+    if (self.isVideoCallsDisabled() === true) {
+      self._log('Calls are disabled');
+      return;
     }
 
     // TODO check if video and audio is present
@@ -2403,6 +2457,14 @@ jsxc.mmstream = {
     // Hide stream AFTER removed session
     self.gui._hideVideoStream(fulljid);
 
+    // check if no connection is running
+    if (self.getCurrentVideoSessions().length < 1) {
+
+      // turn off occupied flag to let people call
+      self.multimediacache.occupied = false;
+
+    }
+
     // Do not set status here, it will be set in _onVideoSessionStateChanged
     //self._setUserStatus(fulljid, self.USER_STATUS.DISCONNECTED);
 
@@ -2440,9 +2502,17 @@ jsxc.mmstream = {
 
     var node = Strophe.getNodeFromJid(fulljid);
 
+    if (self.isVideoCallsDisabled() === true) {
+      jsxc.gui.feedback('Les appels multimédia sont désactivés.');
+      self._log('Calls are disabled');
+      return;
+    }
+
+    jsxc.stats.addEvent("jsxc.mmstream.videocall.simplecall");
+
     // check if user connected
     if (self._isBuddyConnectingOrConnected(fulljid) === true) {
-      jsxc.gui.feedback(node + " est déjà connecté ou en cours de connexion");
+      jsxc.gui.feedback(node + ' est déjà connecté ou en cours de connexion');
       return;
     }
 
@@ -2861,6 +2931,34 @@ jsxc.mmstream = {
     });
 
     return available;
+  },
+
+  _videoCallsDisabled : false,
+
+  /**
+   * Disable all video calls
+   *
+   */
+  disableVideoCalls : function() {
+    // here option is not stored in localstorage
+    // jsxc.options.set('disableVideoCalls', true);
+
+    jsxc.mmstream._videoCallsDisabled = true;
+  },
+
+  enableVideoCalls : function() {
+    // here option is not stored in localstorage
+    // jsxc.options.set('disableVideoCalls', false);
+
+    jsxc.mmstream._videoCallsDisabled = false;
+  },
+
+  /**
+   * Return true if video calls are disabled
+   * @returns {boolean}
+   */
+  isVideoCallsDisabled : function() {
+    return jsxc.mmstream._videoCallsDisabled;
   },
 
   /**

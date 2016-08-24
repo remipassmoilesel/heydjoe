@@ -147,6 +147,8 @@ jsxc = {
       throw new Error("Invalid argument: " + bid);
     }
 
+    bid = Strophe.getBareJidFromJid(bid);
+
     // get buddy data
     var buddy = jsxc.storage.getUserItem('buddy', bid);
 
