@@ -123,7 +123,7 @@ jsxc.rest = {
 
             return $.ajax(req);
 
-        },
+        }
 
     }
 

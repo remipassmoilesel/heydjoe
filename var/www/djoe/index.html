@@ -2,40 +2,41 @@
 <html>
 
 <head>
-  <title>Prototype JSXC / Etherpad / Openfire</title>
+  <title>Hey Djoe !</title>
 
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-
-  <link href="css/main.css" media="all" rel="stylesheet" type="text/css"/>
-
+  <!-- XMPP client dependencies -->
   <link href="css/jquery-ui.silverpeas/jquery-ui.css" media="all" rel="stylesheet" type="text/css"/>
-  <link href="jsxc/dev/css/jsxc.css" media="all" rel="stylesheet" type="text/css"/>
-
   <script src="bower_components/jquery/dist/jquery.js"></script>
   <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+  <!-- end XMPP client dependencies -->
 
+  <!-- XMPP client -->
+  <link href="jsxc/dev/css/jsxc.css" media="all" rel="stylesheet" type="text/css"/>
   <script src="jsxc/dev/lib/jsxc.dep.js"></script>
   <script src="jsxc/dev/jsxc.js"></script>
   <script src="jsxc/dev/jsxc_init.js"></script>
+  <!-- end XMPP client -->
+
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+
+  <link href="css/main.css" media="all" rel="stylesheet" type="text/css"/>
+  <link href="jquery.xmppinspector/jquery.xmppinspector.css" media="all" rel="stylesheet" type="text/css"/>
 
   <script src="bower_components/chance/chance.js"></script>
+  <script src="jquery.eventconsole/jquery.eventconsole.js"></script>
+  <script src="jquery.xmppinspector/jquery.xmppinspector.js"></script>
+  <script src="jquery.storageconsole/jquery.storageconsole.js"></script>
 
   <script src="js/main.js"></script>
-
-  <script src="jquery.eventconsole/jquery.eventconsole.js"></script>
-
-  <link href="jquery.xmppinspector/jquery.xmppinspector.css" media="all" rel="stylesheet" type="text/css"/>
-  <script src="jquery.xmppinspector/jquery.xmppinspector.js"></script>
-
-  <script src="js/storageConsole.js"></script>
-
 
 </head>
 
 <body>
+
+<!-- Warning for non javascript users -->
 
 <noscript>
   <div id="jsxc_noscript_warning">Vous devez activer Javascript pour utiliser la messagerie</div>
@@ -55,237 +56,151 @@
        alt="Fork me on GitHub">
 </a>
 
+
+<!-- Main content -->
+
 <div id="content">
 
-  <!-- Bandeau -->
-  <img src="images/logo.jpg" style="float: left; width: 20%"/>
 
-  <div class="textContent">
+  <!-- Main content header -->
 
-    <h1>Prototype JSXC / Etherpad / Openfire</h1>
+  <div class="header">
 
-    Destiné à la découverte d'outils de communication en temps réel.
+    <img src="images/logo.jpg" class="mainLogo"/>
+
+    <h1>Hey Djoe !</h1>
+
+    Messagerie instantanée multimédia destinée à l'intégration
 
   </div>
 
-  <div id="tabs" style="margin-bottom: 100px; clear: both; margin-top: 40px;">
+
+  <!-- Présentation -->
+
+  <h2>Bienvenue !</h2>
+
+  <p>Cette espace est dédié à l'essai et au développement de Djoe, une messagerie instantanée
+    multimédia destinée à l'intégration. Cette messagerie est disponible sous licence GPLv3: vous
+    pouvez copier, modifier et distribuer
+    ce matériel librement !</p>
+
+
+  <!-- Connexion form -->
+
+  <p>Pour vous connecter: </p>
+
+  <div id="connexionForm">
 
     <ul>
-      <li><a href="#tabs-3">Client JSXC</a></li>
-      <li><a href="#tabs-2">Informations utiles</a></li>
+      <li>
+        <div class="fieldDescription">
+          <input type="radio" name="loginMode" value="predefined" checked/>
+          Choisissez un compte prédéfini:
+        </div>
+        <select id="predefinedJidList"></select>
+      </li>
+
+      <li>
+        <div class="fieldDescription">
+          <input type="radio" name="loginMode" value="random"/>
+          Ou saisissez l'identifiant que vous souhaitez:
+        </div>
+        <input type="text" id="randomLogin"/>
+        <input type="button" id="refreshRandomLogin" value="*"/>
+      </li>
+
+      <li>
+        <div class="fieldDescription">&nbsp;</div>
+        <button id="connectButton">
+          Connexion
+        </button>
+        <button id="disconnectButton">
+          Déconnexion
+        </button>
+      </li>
+      <li>
+          <div id="feedbackArea">&nbsp;</div>
+      </li>
+    </ul>
+  </div>
+
+
+  <!-- Warning about use -->
+
+  <div>
+    <p class="usageWarning">Attention: </p>
+
+    <ul>
+      <li>Les outils utilisés sont modernes, votre navigateur doit absolument être à jour
+        pour utiliser ce système
+      </li>
+      <li>Le travail mis à disposition est en constante évolution,
+        par conséquent les serveurs peuvent être momentanément indisponibles
+      </li>
+      <li>N'utilisez pas cette plateforme pour des communications confidentielles</li>
+    </ul>
+  </div>
+
+
+  <!-- Some flowers -->
+
+  <div>
+    <p>Ce système à été développé grâce a de formidables projets libres:
+
+    <ul>
+      <li>JSXC: un client web XMPP modifié permettant la messagerie instantanée texte et multimédia
+      </li>
+      <li>Etherpad: une solution d'édition en ligne collaborative</li>
+      <li>Openfire: un serveur XMPP libre</li>
+      <li>rfc5766-turn-server: un serveur relai multimédia</li>
     </ul>
 
-    <!--
-    *
-    *
-    *
-    *
-    *
-    Informations utiles
-    *
-    *
-    *
-    *
-    *
-    *
-    -->
-    <div id="tabs-2">
+    </p>
+  </div>
 
-      <table class="table-striped" id="infoDisplay">
 
-        <tr>
-          <th>Nom</th>
-          <th>Valeur</th>
-        </tr>
+  <h2>Visites guidées</h2>
+  <p>Une fois connecté au client essayez une des <i>visites guidées</i> pour découvrir les
+    fonctionnalités offertes:</p>
 
-        <tr>
-          <td colspan="2" style="padding: 20px;"><a href="#" onclick="jsxc.tests.showTestBox()">Afficher les tests unitaires</a></td>
-        </tr>
+  <div>
+    <select id="tutorials" disabled>
+      <option>Veuillez vous connecter</option>
+    </select>
+    <button disabled id="startDemoTour">Commencer la visite guidée</button>
+  </div>
 
-        <!-- voir dans le script js/jsxc_init.js -->
 
-      </table>
+  <h2>Suggestions / Signalement d'erreurs</h2>
+  <a href="https://im.silverpeas.net/etherpad/p/suggestions" target="_blank">N'hésitez pas !</a>
 
-      <!-- inspecteur XMPP -->
-      <p>&nbsp;</p>
+  <h2>Nouveautés ?</h2>
+  <a href="https://im.silverpeas.net/etherpad/p/feuille-de-route" target="_blank">Consultez la
+    feuille de route</a>
+
+
+  <h2>Informations de développement</h2>
+
+  <div>
+    <button id="deployDevInf">Afficher les informations</button>
+
+    <div id="developperInformations">
+
+      <div id="links"></div>
+
+      <!-- XMPP Inspector -->
       <div id="xmppInspector"></div>
 
-      <!-- console JQuery -->
-      <p>&nbsp;</p>
+      <!-- Jquery event console -->
       <div id="eventsConsole"></div>
 
-      <!-- console Storage-->
-      <p>&nbsp;</p>
+      <!-- Storage console-->
       <div id="storageConsole"></div>
 
     </div>
 
-    <!--
-    *
-    *
-    *
-    *
-    *
-    *
-    Introduction à JSXC
-    *
-    *
-    *
-    *
-    *
-    *
-    -->
-
-    <div id="tabs-3">
-
-      <div class="tabBlock">
-
-        <h2>Bienvenue !</h2>
-
-        Ce site est un espace de démonstration et de développement dédié aux technologies de
-        communication en temps réel. Vous pourrez essayer ici:
-
-        <ul>
-          <li>JSXC: un client XMPP modifié permettant la messagerie instantanée texte et vidéo</li>
-          <li>Etherpad: une solution d'édition en ligne collaborative</li>
-          <li>Openfire: un serveur XMPP libre</li>
-        </ul>
-
-
-        Ces outils sont en libre accès pour démonstration alors n'hésitez pas !
-
-        <p><b style="color: #1B29A4">Attention: </b></p>
-
-        <ul>
-          <li><i>Les outils utilisés sont modernes, votre navigateur doit absolument être à jour
-            pour utiliser ce système</i></li>
-          <li><i>Le travail mis à disposition est en constante évolution,
-            par conséquent les serveurs peuvent être momentanément indisponibles</i></li>
-        </ul>
-
-      </div>
-
-
-      <div class="tabBlock">
-        <h2>Connexion</h2>
-
-        <!-- Connexion form-->
-        <table class="connexionForm">
-
-          <tr>
-            <td>Chosissez un compte prédéfini:</td>
-            <td><select id="predefinedJidList"></select></td>
-            <td><input type="radio" name="loginMode" value="predefined" checked/></td>
-
-            <td rowspan="3" class="buttons">
-              <button id="connectButton">
-                Connexion au client JSXC
-              </button>
-              <br/>
-              <br/>
-              <button id="disconnectButton">
-                Déconnexion
-              </button>
-
-              <div id="feedbackArea" style="margin: 15px;"></div>
-
-            </td>
-          </tr>
-
-          <tr>
-            <td>Ou saisissez le login que vous souhaitez:</td>
-            <td><input type="text" id="randomLogin"/>
-              <input type="button" id="refreshRandomLogin" value="*"/></td>
-            <td><input type="radio" name="loginMode" value="random"/></td>
-          </tr>
-
-          <tr>
-            <td>&nbsp;</td>
-          </tr>
-
-        </table>
-
-      </div>
-
-
-      <div class="tabBlock">
-
-        <h2>Visites guidées</h2>
-        Une fois connecté au client essayez une des <i>visites guidées</i> pour découvrir les
-        fonctionnalités offertes:
-
-        <div>
-          <select id="tutorials" disabled>
-            <option>Veuillez vous connecter</option>
-          </select>
-          <button disabled id="startDemoTour">Commencer la visite guidée</button>
-        </div>
-
-
-      </div>
-
-
-      <div class="tabBlock">
-
-        <h2>Suggestions / Signalement d'erreurs</h2>
-        N'hésitez pas: <a href="http://im.silverpeas.net:9001/p/suggestions" target="_blank">http://im.silverpeas.net:9001/p/suggestions</a>
-
-      </div>
-
-
-      <div class="tabBlock">
-
-        <h2>Nouveautés ?</h2>
-        Regardez la feuille de route:
-        <a href="http://im.silverpeas.net:9001/p/feuille-de-route" target="_blank">http://im.silverpeas.net:9001/p/feuille-de-route</a>
-
-      </div>
-
-
-      <div class="tabBlock">
-        <h2>Ajouter un contact</h2>
-        <div>
-          <p>
-            Pour communiquer avec quelqu'un vous devez d'abord l'ajouter à vos contacts:
-          </p>
-
-          <pre>Menu > Rechercher "Ajouter" > Ajouter un contact</pre>
-
-          <img src="images/add-contact.png"/>
-        </div>
-
-      </div>
-
-
-      <div class="tabBlock">
-        <h2>Discuter</h2>
-
-        <p>
-          Pour discuter avec quelqu'un, ajoutez le à vos contacts puis cliquez sur son nom à droite
-          de
-          l'écran.
-          Si vous utilisez <a href="https://brave.com/downloads.html" target="_blank">Brave</a>,
-          Chrome ou Firefox vous pouvez essayer de démarer une vidéo conférence.
-          Cliquez sur l'icône en forme de caméra en haut de l'espace de conversation.
-        </p>
-        <p>
-          Cette fonctionnalité n'est pas encore correctement configurée, les connexions échouent
-          selon la configuration réseau.
-        </p>
-
-
-      </div>
-
-    </div>
-
   </div>
-
 </div>
-
-<!--<script>-->
-<!--$("a").attr('target', '_blank');-->
-<!--</script>-->
-
 
 </body>
 

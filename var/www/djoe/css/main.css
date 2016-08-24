@@ -1,59 +1,82 @@
 body {
-    margin-top: 30px;
-    font-family: "Century Gothic", "Trebuchet MS", "Arial", "sans serif";
-    font-size: 13px;
+  margin-top: 30px;
+  font-family: "Century Gothic", "Trebuchet MS", "Arial", "sans serif";
+  font-size: 13px;
 }
 
-.tabBlock{
-  margin-top: 10px;
-  margin-bottom: 25px;
-
-}
-
-.connexionForm{
-    margin: 15px;
-    border: none;
-}
-
-.connexionForm td{
-    vertical-align: top;
-    padding: 4px;
-}
-
-.connexionForm .buttons{
-    text-align: right;
+.header {
+  clear: both;
+  margin-bottom: 2em;
 }
 
 #content {
-    width: 70%;
-    margin: auto;
+  width: 70%;
+  margin: auto;
+  margin-bottom: 100px;
 }
 
-#infoDisplay {
-    width: 100%;
-    margin: auto;
+#content h2 {
+  clear: both;
+  margin-top: 1em;
 }
 
-#availablesAccounts {
-    width: 100%;
-    margin: auto;
-    margin-top: 20px;
-    margin-bottom: 20px;
+.mainLogo {
+  float: right;
+  height: 90px;
 }
 
-.textContent {
-    margin-top: 20px;
-    margin-bottom: 20px;
+.usageWarning {
+  color: #1B29A4;
+  font-weight: bolder;
 }
 
-#connexionButton {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+#links {
+  margin: 15px;
 }
 
-#tabs img {
-    border: solid 2px silver;
-    margin: auto;
+#links .name {
+  width: 40%;
+  display: inline-block;
+}
+
+#developperInformations {
+  display: none;
+  overflow: auto;
+  margin-top: 1em;
+}
+
+#storageConsole {
+  margin: 15px;
+}
+
+#xmppInspector {
+  margin: 15px;
+}
+
+#eventsConsole {
+  margin: 15px;
+}
+
+#connexionForm ul {
+  margin-bottom: 1em;
+}
+
+#connexionForm ul {
+  list-style: none;
+}
+
+#connexionForm li {
+  margin: 1em;
+}
+
+#connexionForm .fieldDescription {
+  width: 60%;
+  display: inline-block;
+}
+
+#feedbackArea {
+  color: darkGray;
+  font-weight: bolder;
+  font-style: italic;
+  text-align: right;
 }

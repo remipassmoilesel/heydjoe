@@ -1,83 +1,59 @@
 $(function() {
 
+  /**
+   *
+   * Various informations
+   *
+   *
+   */
+
   // page domain
   var pageDomain = "im.silverpeas.net";
 
   // xmpp domain
   var xmppDomain = "im.silverpeas.net";
 
+  // default credentials
+  var availablesLogins = ["remi", "david", "yohann", "miguel", "aurore", "nicolas", "sebastien",
+    "jules", "jacques", "paul"];
   var defaultPassword = "azerty";
 
-  /**
-   Logins disponibles
-   */
-  var availablesLogins = ["remi", "david", "yohann", "miguel", "aurore", "nicolas", "sebastien", "jules", "jacques", "paul"];
-
   var webAdminUrl = "http://" + pageDomain + ":9090/";
-  var consoleAdminUrl = "http://" + pageDomain + ":9091/";
-  var etherpadUrl = "https://im.silverpeas.net/etherpad/p/%%name%%?showControls=true&showChat=false&showLineNumbers=true&useMonospaceFont=true";
+  var etherpadUrl = "https://" + pageDomain + "/etherpad/";
   var consoleUrl = "https://" + pageDomain + "/xmpp-console/";
   var discoUrl = "https://" + pageDomain + "/xmpp-disco/";
 
-  var xmppResource = "heyDjoe";
-
   /**
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
+   * Dev tools
    *
    */
 
   // Initialize consoles
   $("#eventsConsole").eventConsole();
-  new StorageConsole("storageConsole");
+  $("#storageConsole").storageConsole();
 
   $(document).on("attached.jsxc", function() {
     $("#xmppInspector").xmppInspector(jsxc.xmpp.conn);
   });
 
-  // index tabs
-  $("#tabs").tabs();
+  /**
+   * Connection feedbacks
+   *
+   */
 
   // Listen connexion fail
   $(document).on("authfail.jsxc", function() {
     jsxc.xmpp.logout(true);
-    $("#feedbackArea").html("<b>Echec de la connexion. Rechargez la page puis rééssayez !</b>");
+    $("#feedbackArea").html("Echec de la connexion. Rechargez la page puis rééssayez !");
   });
 
   // listen connexion success
   $(document).on("attached.jsxc", function() {
-    $("#feedbackArea").html("<i>Connexion établie</i>");
+    $("#feedbackArea").html("Connexion établie");
   });
 
   /**
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
+   * Connection form
    */
 
   // create and show random login
@@ -104,7 +80,6 @@ $(function() {
     $(".connexionForm input[value='random']").trigger("click");
   });
 
-  // connexion button
   $('#connectButton').click(function() {
 
     var userNode;
@@ -120,6 +95,7 @@ $(function() {
     userNode = userNode.trim().toLowerCase();
     var userJid = userNode + "@" + xmppDomain;
 
+    // create user if needed
     jsxc.rest.openfire.createUser(userNode)
 
         .then(function() {
@@ -138,7 +114,6 @@ $(function() {
           if (codes.indexOf(response.status) !== -1) {
             jsxc.start(userJid, defaultPassword);
 
-            
           }
 
           // other fail
@@ -159,32 +134,6 @@ $(function() {
     jsxc.xmpp.logout(true);
   });
 
-  /**
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   */
-
-  // create pad
-  $('#newPadButton').click(function() {
-    window.open(etherpadUrl.replace("%%name%%", $("#newPadName").val()), '_blank');
-  });
-
-  /**
-   *
-   *
-   *
-   *
-   *
-   *
-   */
-
   // show availables accounts
   for (var i = 0; i < availablesLogins.length; i++) {
     var lg = availablesLogins[i];
@@ -194,15 +143,7 @@ $(function() {
   }
 
   /**
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
+   * Demo tours
    *
    */
 
@@ -227,71 +168,37 @@ $(function() {
     jsxc.help.launchTutorial($("#tutorials").val());
   });
 
-  /**
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   */
-
   // utils and informations
-  var appendToUtilsInfo = function(name, elmt) {
-    $('#infoDisplay').append("<tr><td>" + (name || '') + "</td><td>" + elmt + "</td><tr/>");
+  var appendToLinks = function(name, target) {
+
+    var element = $('<div>');
+    element.append($('<span class="name">').text(name + ": "));
+
+    var targetTxt = target.length < 50 ? target : target.substr(0, 47) + "...";
+    element.append(
+        $('<a class="target">').text(targetTxt).attr('href', target).attr('target', '_blank'));
+
+    $("#links").append(element);
   };
 
-  appendToUtilsInfo('Feuille de route',
-      '<a target="_blank" href="http://' + pageDomain + ':9001/p/feuille-de-route">http://' +
-      pageDomain + ':9001/p/feuille-de-route</a>');
+  var devBlock = $("#developperInformations");
+  $("#deployDevInf").click(function() {
+    if (devBlock.is(':visible') === false) {
+      devBlock.css({'display' : 'block', 'opacity' : '0'}).animate({opacity : '1'}, 1000);
+    }
+  });
 
-  appendToUtilsInfo('Activité du serveur',
-      '<a target="_blank" href="http://im.silverpeas.net:8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1day&color=black">http://im.silverpeas.net:8080/monitorix-cgi/...</a>');
-
-  appendToUtilsInfo('Console XMPP',
-      '<a target="_blank" href="' + consoleUrl + '">' + consoleUrl + '</a>');
-
-  appendToUtilsInfo('Découverte de services XMPP',
-      '<a target="_blank" href="' + discoUrl + '">' + discoUrl + '</a>');
-
-  appendToUtilsInfo('API REST Openfire',
-      '<a target="_blank" href="openfire-rest/">openfire-rest/</a>');
-
-  appendToUtilsInfo('Domaine utilisé', pageDomain);
-
-  appendToUtilsInfo('Domaine XMPP utilisé', xmppDomain);
-
-  appendToUtilsInfo('Nom XMPP du client', xmppResource);
-
-  appendToUtilsInfo('Administration web Openfire',
-      '<a target="_blank" href="' + webAdminUrl + '">' + webAdminUrl + '</a>');
-
-  appendToUtilsInfo('Administration console Openfire',
-      '<a target="_blank" href="' + consoleAdminUrl + '">' + consoleAdminUrl + '</a>');
-
-  appendToUtilsInfo('Etherpad',
-      '<a target="_blank" href="' + etherpadUrl + '">' + etherpadUrl + '</a>');
-
-  appendToUtilsInfo('Wiki JSXC',
-      '<a target="_blank" href="https://github.com/jsxc/jsxc/wiki">https://github.com/jsxc/jsxc/wiki</a>');
-
-  appendToUtilsInfo('Liste de ressources',
-      '<a target="_blank" href="https://docs.google.com/spreadsheets/d/1qDF4yB3Tpd9Red2sYfCgnISfMBvddke5pYTrwUThyN8/edit#gid=365481387">https://docs.google.com/spreadsheets/...</a>');
+  appendToLinks('Domaine', pageDomain);
+  appendToLinks('Domaine XMPP', xmppDomain);
+  appendToLinks('Feuille de route', 'https://' + pageDomain + '/etherpad/p/feuille-de-route');
+  appendToLinks('Statistiques recueillies', 'https://' + pageDomain + '/stats/visualization/');
+  appendToLinks('Activité du serveur', 'http://' + pageDomain +
+      '/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1day&color=black');
+  appendToLinks('Console XMPP', consoleUrl);
+  appendToLinks('Découverte de services XMPP', discoUrl);
+  appendToLinks('API REST Openfire', 'https://' + pageDomain + '/openfire-rest');
+  appendToLinks('Administration web Openfire', webAdminUrl);
+  appendToLinks('Etherpad', etherpadUrl);
+  appendToLinks('Wiki JSXC', 'https://github.com/jsxc/jsxc/wiki');
 
 });
