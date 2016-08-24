@@ -33,6 +33,11 @@ jsxc.newgui = {
 
   OPACITY_ANIMATION_DURATION : '500',
 
+  /**
+   * Half of the animation duration
+   */
+  STATE_INDICATOR_ANIMATION_DURATION : 100,
+
   _log : function(message, data, level) {
     jsxc.debug('[NGUI] ' + message, data, level);
   },
@@ -238,11 +243,6 @@ jsxc.newgui = {
     });
 
   },
-
-  /**
-   * Half of the animation duration
-   */
-  STATE_INDICATOR_ANIMATION_DURATION : 100,
 
   /**
    * Create a state indicator informing user that something is turned on or off

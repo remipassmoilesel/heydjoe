@@ -13,7 +13,8 @@ jsxc.options = {
   },
 
   /**
-   * Stats support. Stats is a small module enabling logs and events transmission to a distant server.
+   * Stats support. Stats is a small module enabling logs and events transmission to a distant
+   * server.
    *
    * ** All datas are strictly anonymous
    */
@@ -42,7 +43,7 @@ jsxc.options = {
     /**
      * Interresting log level, beware of not overload browser
      */
-    sentLogLevels: ['WARN', 'ERROR']
+    sentLogLevels : ['WARN', 'ERROR']
   },
 
   /** name of container application (e.g. owncloud or SOGo) */
@@ -214,9 +215,6 @@ jsxc.options = {
   /** Set to true if you want to hide offline buddies. */
   hideOffline : false,
 
-  /** Mute notification sound? */
-  muteNotification : false,
-
   /**
    * If no avatar is found, this function is called.
    *
@@ -322,5 +320,16 @@ jsxc.options = {
     }
   },
 
-  maxStorableSize : 1000000
+  maxStorableSize : 1000000,
+
+  /**
+   * If true, notification sounds will be muted
+   */
+  muteNotification : false,
+
+  /**
+   * If true, desktop notifications will be hidden
+   */
+  hideNotification : false
+
 };
