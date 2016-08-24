@@ -77,6 +77,7 @@ jsxc.gui.interactions = {
     // log out button
     logoutBtn.click(function() {
       jsxc.api.disconnect();
+      jsxc.newgui.toggleBuddyList();
     });
 
     // login button
