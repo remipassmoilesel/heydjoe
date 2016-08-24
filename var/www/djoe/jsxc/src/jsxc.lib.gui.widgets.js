@@ -122,7 +122,7 @@ jsxc.gui.widgets = {
         // check type of element: buddie / conversation
         var infos = jsxc.storage.getUserItem('buddy', bid);
 
-        if ((infos.type === 'chat') !== true) {
+        if (infos.type === 'groupchat') {
           return true;
         }
 
