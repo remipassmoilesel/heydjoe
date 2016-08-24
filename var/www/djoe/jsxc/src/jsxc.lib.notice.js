@@ -158,6 +158,8 @@ jsxc.notice = {
     delete s[nid];
     jsxc.storage.setUserItem('notices', s);
 
+    self.updateNotificationNumbers();
+    
     self._showNoNoticeContent();
   },
 
