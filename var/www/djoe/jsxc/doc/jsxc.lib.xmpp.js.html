@@ -183,7 +183,8 @@ jsxc.xmpp = {
 
     var callback = function(status, condition) {
 
-      jsxc.debug(Object.getOwnPropertyNames(Strophe.Status)[status] + ': ' + condition);
+      jsxc.debug("Strophe connexion changed: " + Object.getOwnPropertyNames(Strophe.Status)[status],
+          {status : status, condition : condition});
 
       switch (status) {
         case Strophe.Status.CONNECTING:
@@ -195,7 +196,7 @@ jsxc.xmpp = {
 
           if (jsxc.master === true) {
             self.enableOnGuiActivityPresenceSending();
-            self.enableLowPresenceSend();
+            self.enableLowPresenceTimer();
           }
 
           break;
@@ -205,7 +206,8 @@ jsxc.xmpp = {
         case Strophe.Status.DISCONNECTED:
           $(document).trigger('disconnected.jsxc');
 
-          self.stopAutoPresenceTimer();
+          self.disableAutoPresenceSending();
+          self.disableLowPresenceTimer();
 
           break;
         case Strophe.Status.CONNFAIL:
@@ -318,7 +320,7 @@ jsxc.xmpp = {
 
       // stop auto sending if necessary
       if (self.AUTO_PRESENCE_SENDING_MAX > 0 &amp;&amp; i > self.AUTO_PRESENCE_SENDING_MAX) {
-        self.stopAutoPresenceTimer();
+        self.disableAutoPresenceSending();
       }
 
     };
@@ -343,34 +345,44 @@ jsxc.xmpp = {
     if (jsxc.master) {
       // remove eventually older timers
       gui.off("mouseover", "*", self.launchAutoPresenceTimer);
-      gui.off("mouseout", "*", self.stopAutoPresenceTimer);
+      gui.off("mouseout", "*", self.disableAutoPresenceSending);
 
       // add timers
       gui.mouseover(self.launchAutoPresenceTimer);
-      gui.mouseout(self.stopAutoPresenceTimer);
+      gui.mouseout(self.disableAutoPresenceSending);
     }
 
   },
+
+  /**
+   * Low presence timer id
+   */
+  _lowPresenceTimer : null,
 
   /**
    * Low presence send is necessary to inform user of our presence if XMPP server
    * do not distribute presences to our buddylist at connexion
    *
    */
-  enableLowPresenceSend : function() {
+  enableLowPresenceTimer : function() {
 
     var self = jsxc.xmpp;
 
-    setInterval(function() {
+    self._lowPresenceTimer = setInterval(function() {
       jsxc.xmpp.sendPres();
     }, self.LOW_PRESENCE_SENDING_INTERVAL);
 
   },
 
+  disableLowPresenceTimer : function() {
+    var self = jsxc.xmpp;
+    clearInterval(self._lowPresenceTimer);
+  },
+
   /**
    * Stop automatic sending of presence
    */
-  stopAutoPresenceTimer : function() {
+  disableAutoPresenceSending : function() {
 
     var self = jsxc.xmpp;
 
@@ -390,7 +402,7 @@ jsxc.xmpp = {
    * @param {boolean} complete If set to false, roster will not be removed
    * @returns {Boolean}
    */
-  logout : function(complete) {
+  logout : function() {
 
     var self = jsxc.xmpp;
 
@@ -412,23 +424,12 @@ jsxc.xmpp = {
     jsxc.storage.removeUserItem('windowlist');
     jsxc.storage.removeUserItem('unreadMsg');
 
-    if (!jsxc.master) {
-      $('#jsxc_roster').remove();
-      $('#jsxc_windowlist').remove();
-
-      $(document).trigger("removed.gui.jsxc");
-
-      return true;
-    }
-
     if (jsxc.xmpp.conn === null) {
       return true;
     }
 
     // Hide dropdown menu
     $('body').click();
-
-    jsxc.triggeredFromElement = (typeof complete === 'boolean') ? complete : true;
 
     // restore all otr objects
     $.each(jsxc.storage.getUserItem('otrlist') || {}, function(i, val) {
@@ -508,8 +509,6 @@ jsxc.xmpp = {
    */
   attached : function() {
 
-    $('#jsxc_roster').removeClass('jsxc_noConnection');
-
     jsxc.xmpp.conn.addHandler(jsxc.xmpp.onRosterChanged, 'jabber:iq:roster', 'iq', 'set');
     jsxc.xmpp.conn.addHandler(jsxc.xmpp.onMessage, null, 'message', 'chat');
     jsxc.xmpp.conn.addHandler(jsxc.xmpp.onReceived, null, 'message');
@@ -562,8 +561,6 @@ jsxc.xmpp = {
       // pres first after roster is ready
       $(document).one('cloaded.roster.jsxc', jsxc.xmpp.sendPres);
 
-      $('#jsxc_roster > p:first').remove();
-
       var iq = $iq({
         type : 'get'
       }).c('query', {
@@ -590,7 +587,7 @@ jsxc.xmpp = {
 
   saveSessionParameter : function() {
 
-    var nomJid = Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid).toLowerCase() + '/' +
+    var nomJid = jsxc.jidToBid(jsxc.xmpp.conn.jid).toLowerCase() + '/' +
         Strophe.getResourceFromJid(jsxc.xmpp.conn.jid);
 
     // Save sid and jid
@@ -678,27 +675,14 @@ jsxc.xmpp = {
 
     jsxc.xmpp.conn = null;
 
-    $('#jsxc_windowList').remove();
-
-    if (jsxc.triggeredFromElement) {
-      $(document).trigger('toggle.roster.jsxc', ['hidden', 0]);
-      $('#jsxc_roster').remove();
-
-      if (jsxc.triggeredFromLogout) {
-        window.location = jsxc.options.logoutElement.attr('href');
-      }
-
-      $(document).trigger("removed.gui.jsxc");
-
-    } else {
-      jsxc.gui.roster.noConnection();
-    }
+    jsxc.gui.roster.noConnection();
 
     window.clearInterval(jsxc.keepalive);
     jsxc.role_allocation = false;
     jsxc.master = false;
     jsxc.storage.removeItem('alive');
 
+    
     jsxc.error("Disconnected from JSXC");
 
   },
@@ -860,8 +844,6 @@ jsxc.xmpp = {
     if (!jsxc.storage.getUserItem('buddylist') ||
         jsxc.storage.getUserItem('buddylist').length === 0) {
       jsxc.gui.roster.empty();
-    } else {
-      $('#jsxc_roster > p:first').remove();
     }
 
     // preserve handler
@@ -939,7 +921,7 @@ jsxc.xmpp = {
     var bid = jsxc.jidToBid(jid);
 
     // ignore own presence
-    if (bid === Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid)) {
+    if (bid === jsxc.jidToBid(jsxc.xmpp.conn.jid)) {
       return true;
     }
 
@@ -1055,10 +1037,10 @@ jsxc.xmpp = {
 
     data.res = sortedRes;
 
-    // notify is buddy has come online
-    if (data.status === 0 &amp;&amp; maxStatus > 0) {
+    // notify is buddy has come online, and only buddies
+    if (data.status === 0 &amp;&amp; maxStatus > 0 &amp;&amp; data.type !== 'groupchat') {
       jsxc.notification.notify({
-        title : data.name, msg : jsxc.t('has_come_online'), source : bid
+        title : data.name, msg : 'Est connecté', source : bid, force: true
       });
     }
 
@@ -1176,7 +1158,7 @@ jsxc.xmpp = {
       from = $(stanza).attr('from');
     }
 
-    var jid = Strophe.getBareJidFromJid(from);
+    var jid = jsxc.jidToBid(from);
     bid = jsxc.jidToBid(jid);
     var data = jsxc.storage.getUserItem('buddy', bid);
     var request = $(message).find("request[xmlns='urn:xmpp:receipts']");
@@ -1343,7 +1325,7 @@ jsxc.xmpp = {
     }).c('query', {
       xmlns : 'jabber:iq:roster'
     }).c('item', {
-      jid : Strophe.getBareJidFromJid(jid), subscription : 'remove'
+      jid : jsxc.jidToBid(jid), subscription : 'remove'
     });
     jsxc.xmpp.conn.sendIQ(iq);
 
@@ -1436,7 +1418,7 @@ jsxc.xmpp = {
    */
   _sendMessage : function(jid, msg, uid) {
     var data = jsxc.storage.getUserItem('buddy', jsxc.jidToBid(jid)) || {};
-    var isBar = (Strophe.getBareJidFromJid(jid) === jid);
+    var isBar = (jsxc.jidToBid(jid) === jid);
     var type = data.type || 'chat';
 
     var xmlMsg = $msg({
@@ -1653,13 +1635,13 @@ jsxc.xmpp.carbons = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_updateSelectedCount">_updateSelectedCount</a></li><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#getCheckedBuddies">getCheckedBuddies</a></li><li><a href="global.html#getCheckedElements">getCheckedElements</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isConnexionMenuShown">isConnexionMenuShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleBuddyList">toggleBuddyList</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleConnexionMenu">toggleConnexionMenu</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSelectionMode">toggleSelectionMode</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#unselectAllElements">unselectAllElements</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sat Aug 20 2016 11:51:14 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Aug 24 2016 16:53:03 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

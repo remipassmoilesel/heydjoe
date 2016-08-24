@@ -42,8 +42,11 @@ jsxc.notification = {
    * @memberOf jsxc.notification
    */
   init : function() {
+
     $(document).on('postmessagein.jsxc', function(event, bid, msg) {
+
       msg = (msg &amp;&amp; msg.match(/^\?OTR/)) ? jsxc.t('Encrypted_message') : msg;
+
       var data = jsxc.storage.getUserItem('buddy', bid);
 
       jsxc.notification.notify({
@@ -51,7 +54,9 @@ jsxc.notification = {
           name : data.name
         }), msg : msg, soundFile : jsxc.CONST.SOUNDS.MSG, source : bid
       });
+
     });
+
   },
 
   /**
@@ -66,8 +71,10 @@ jsxc.notification = {
    * @param source Bid which triggered this notification
    */
   notify : function(title, msg, d, force, soundFile, loop, source) {
+
     if (!jsxc.options.notification || !jsxc.notification.hasPermission()) {
-      return; // notifications disabled
+      jsxc.debug('Notification triggered, but disabled', {arguments : arguments});
+      return;
     }
 
     var o;
@@ -86,11 +93,11 @@ jsxc.notification = {
       };
     }
 
-    if (jsxc.hasFocus() &amp;&amp; !o.force) {
+    if (jsxc.hasFocus() &amp;&amp; o.force !== true) {
       return; // Tab is visible
     }
 
-    var icon = o.icon || jsxc.options.root + '/img/XMPP_logo.png';
+    var icon = o.icon || jsxc.options.root + '/img/newgui/desktop-notification.png';
 
     if (typeof o.source === 'string') {
       var data = jsxc.storage.getUserItem('buddy', o.source);
@@ -105,6 +112,11 @@ jsxc.notification = {
 
       if (typeof o.soundFile === 'string') {
         jsxc.notification.playSound(o.soundFile, o.loop, o.force);
+      }
+
+      // notifications are hidden
+      if (jsxc.notification.isNotificationShowed() !== true) {
+        return;
       }
 
       var popup = new Notification(jsxc.t(o.title), {
@@ -225,8 +237,7 @@ jsxc.notification = {
       return;
     }
 
-    if (jsxc.options.get('muteNotification') || jsxc.storage.getUserItem('presence') === 'dnd') {
-      // sound mute or own presence is dnd
+    if (jsxc.notification.isSoundMuted() === true) {
       return;
     }
 
@@ -269,8 +280,6 @@ jsxc.notification = {
    *        false.
    */
   muteSound : function(external) {
-    $('#jsxc_menu .jsxc_muteNotification').text(jsxc.t('Unmute'));
-
     if (external !== true) {
       jsxc.options.set('muteNotification', true);
     }
@@ -284,12 +293,54 @@ jsxc.notification = {
    *        false.
    */
   unmuteSound : function(external) {
-    $('#jsxc_menu .jsxc_muteNotification').text(jsxc.t('Mute'));
-
     if (external !== true) {
       jsxc.options.set('muteNotification', false);
     }
+  },
+
+  /**
+   * Return true if sound is muted
+   */
+  isSoundMuted : function() {
+    return jsxc.options &amp;&amp; jsxc.options.get('muteNotification');
+  },
+
+  /**
+   * Return true if notifications are showed
+   */
+  isNotificationShowed : function() {
+    return jsxc.options &amp;&amp; jsxc.options.get('hideNotification') !== true &amp;&amp;
+        jsxc.notification.hasPermission();
+  },
+
+  /**
+   * Hide notifications.
+   *
+   * @memberOf jsxc.notification
+   * @param {boolean} external True if triggered from external tab. Default:
+   *        false.
+   */
+  hideNotifications : function(external) {
+    if (external !== true) {
+      jsxc.options.set('hideNotification', true);
+    }
+  },
+
+  /**
+   * Show notifications. It just set flag.
+   *
+   * If desktop notifications are disabled in browser nothing will be done.
+   *
+   * @memberOf jsxc.notification
+   * @param {boolean} external True if triggered from external tab. Default:
+   *        false.
+   */
+  showNotifications : function(external) {
+    if (external !== true) {
+      jsxc.options.set('hideNotification', false);
+    }
   }
+
 };
 </code></pre>
         </article>
@@ -301,13 +352,13 @@ jsxc.notification = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_updateSelectedCount">_updateSelectedCount</a></li><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#getCheckedBuddies">getCheckedBuddies</a></li><li><a href="global.html#getCheckedElements">getCheckedElements</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isConnexionMenuShown">isConnexionMenuShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleBuddyList">toggleBuddyList</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleConnexionMenu">toggleConnexionMenu</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSelectionMode">toggleSelectionMode</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#unselectAllElements">unselectAllElements</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sat Aug 20 2016 11:51:14 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Aug 24 2016 16:53:03 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

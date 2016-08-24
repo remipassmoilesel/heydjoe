@@ -1,5 +1,5 @@
 /*!
- * djoe v1.0.0 - 2016-08-20
+ * djoe v1.0.0 - 2016-08-24
  * 
  * Copyright (c) 2016  <br>
  * Released under the GPL-3.0 license
@@ -106,9 +106,6 @@
 
 	  /** True if login through box */
 	  triggeredFromBox : false,
-
-	  /** True if logout through element click */
-	  triggeredFromElement : false,
 
 	  /** True if logout through logout click */
 	  triggeredFromLogout : false,
@@ -218,6 +215,8 @@
 	    if (!bid) {
 	      throw new Error("Invalid argument: " + bid);
 	    }
+
+	    bid = jsxc.jidToBid(bid);
 
 	    // get buddy data
 	    var buddy = jsxc.storage.getUserItem('buddy', bid);
@@ -378,7 +377,7 @@
 	   * @returns {*|user|boolean}
 	   */
 	  isBuddyOnline : function(fjid) {
-	    var buddy = jsxc.storage.getUserItem("buddy", Strophe.getBareJidFromJid(fjid));
+	    var buddy = jsxc.storage.getUserItem("buddy", jsxc.jidToBid(fjid));
 	    return buddy && jsxc.CONST.STATUS.indexOf("offline") !== buddy.status;
 	  },
 
@@ -908,8 +907,6 @@
 	      jsxc.otr.createDSA();
 	    }
 
-	    jsxc.gui.updateAvatar($('#jsxc_roster > .jsxc_bottom'),
-	        jsxc.jidToBid(jsxc.storage.getItem('jid')), 'own');
 	  },
 
 	  /**
@@ -1205,35 +1202,6 @@
 	    console.error("Stack trace");
 	    console.error("Time: " + time);
 	    console.error((new Error()).stack);
-	  },
-
-	  /**
-	   * Attach a video stream with element
-	   *
-	   * Example: attachMediaStream($("<video>").get(0), stream);
-	   *
-	   * @param stream
-	   * @param element
-	   */
-	  attachMediaStream : function(element, stream) {
-
-	    // jsxc.xmpp.conn.jingle.RTC.attachMediaStream(element, stream);
-
-	    setTimeout(function() {
-
-	      var video = $(element);
-	      var src = URL.createObjectURL(stream);
-
-	      jsxc.debug("Attach media stream to video element",
-	          {"element" : video, "stream" : stream, "src" : src});
-
-	      video.attr('src', src);
-
-	      //TODO: some browsers (Android Chrome, ...) want a user interaction before trigger play()
-	      video.get(0).play();
-
-	    }, jsxc.mmstream.DELAY_BEFORE_ATTACH);
-
 	  }
 
 	};
@@ -1396,7 +1364,8 @@
 
 	    var callback = function(status, condition) {
 
-	      jsxc.debug(Object.getOwnPropertyNames(Strophe.Status)[status] + ': ' + condition);
+	      jsxc.debug("Strophe connexion changed: " + Object.getOwnPropertyNames(Strophe.Status)[status],
+	          {status : status, condition : condition});
 
 	      switch (status) {
 	        case Strophe.Status.CONNECTING:
@@ -1408,7 +1377,7 @@
 
 	          if (jsxc.master === true) {
 	            self.enableOnGuiActivityPresenceSending();
-	            self.enableLowPresenceSend();
+	            self.enableLowPresenceTimer();
 	          }
 
 	          break;
@@ -1418,7 +1387,8 @@
 	        case Strophe.Status.DISCONNECTED:
 	          $(document).trigger('disconnected.jsxc');
 
-	          self.stopAutoPresenceTimer();
+	          self.disableAutoPresenceSending();
+	          self.disableLowPresenceTimer();
 
 	          break;
 	        case Strophe.Status.CONNFAIL:
@@ -1531,7 +1501,7 @@
 
 	      // stop auto sending if necessary
 	      if (self.AUTO_PRESENCE_SENDING_MAX > 0 && i > self.AUTO_PRESENCE_SENDING_MAX) {
-	        self.stopAutoPresenceTimer();
+	        self.disableAutoPresenceSending();
 	      }
 
 	    };
@@ -1556,34 +1526,44 @@
 	    if (jsxc.master) {
 	      // remove eventually older timers
 	      gui.off("mouseover", "*", self.launchAutoPresenceTimer);
-	      gui.off("mouseout", "*", self.stopAutoPresenceTimer);
+	      gui.off("mouseout", "*", self.disableAutoPresenceSending);
 
 	      // add timers
 	      gui.mouseover(self.launchAutoPresenceTimer);
-	      gui.mouseout(self.stopAutoPresenceTimer);
+	      gui.mouseout(self.disableAutoPresenceSending);
 	    }
 
 	  },
+
+	  /**
+	   * Low presence timer id
+	   */
+	  _lowPresenceTimer : null,
 
 	  /**
 	   * Low presence send is necessary to inform user of our presence if XMPP server
 	   * do not distribute presences to our buddylist at connexion
 	   *
 	   */
-	  enableLowPresenceSend : function() {
+	  enableLowPresenceTimer : function() {
 
 	    var self = jsxc.xmpp;
 
-	    setInterval(function() {
+	    self._lowPresenceTimer = setInterval(function() {
 	      jsxc.xmpp.sendPres();
 	    }, self.LOW_PRESENCE_SENDING_INTERVAL);
 
 	  },
 
+	  disableLowPresenceTimer : function() {
+	    var self = jsxc.xmpp;
+	    clearInterval(self._lowPresenceTimer);
+	  },
+
 	  /**
 	   * Stop automatic sending of presence
 	   */
-	  stopAutoPresenceTimer : function() {
+	  disableAutoPresenceSending : function() {
 
 	    var self = jsxc.xmpp;
 
@@ -1603,7 +1583,7 @@
 	   * @param {boolean} complete If set to false, roster will not be removed
 	   * @returns {Boolean}
 	   */
-	  logout : function(complete) {
+	  logout : function() {
 
 	    var self = jsxc.xmpp;
 
@@ -1625,23 +1605,12 @@
 	    jsxc.storage.removeUserItem('windowlist');
 	    jsxc.storage.removeUserItem('unreadMsg');
 
-	    if (!jsxc.master) {
-	      $('#jsxc_roster').remove();
-	      $('#jsxc_windowlist').remove();
-
-	      $(document).trigger("removed.gui.jsxc");
-
-	      return true;
-	    }
-
 	    if (jsxc.xmpp.conn === null) {
 	      return true;
 	    }
 
 	    // Hide dropdown menu
 	    $('body').click();
-
-	    jsxc.triggeredFromElement = (typeof complete === 'boolean') ? complete : true;
 
 	    // restore all otr objects
 	    $.each(jsxc.storage.getUserItem('otrlist') || {}, function(i, val) {
@@ -1721,8 +1690,6 @@
 	   */
 	  attached : function() {
 
-	    $('#jsxc_roster').removeClass('jsxc_noConnection');
-
 	    jsxc.xmpp.conn.addHandler(jsxc.xmpp.onRosterChanged, 'jabber:iq:roster', 'iq', 'set');
 	    jsxc.xmpp.conn.addHandler(jsxc.xmpp.onMessage, null, 'message', 'chat');
 	    jsxc.xmpp.conn.addHandler(jsxc.xmpp.onReceived, null, 'message');
@@ -1775,8 +1742,6 @@
 	      // pres first after roster is ready
 	      $(document).one('cloaded.roster.jsxc', jsxc.xmpp.sendPres);
 
-	      $('#jsxc_roster > p:first').remove();
-
 	      var iq = $iq({
 	        type : 'get'
 	      }).c('query', {
@@ -1803,7 +1768,7 @@
 
 	  saveSessionParameter : function() {
 
-	    var nomJid = Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid).toLowerCase() + '/' +
+	    var nomJid = jsxc.jidToBid(jsxc.xmpp.conn.jid).toLowerCase() + '/' +
 	        Strophe.getResourceFromJid(jsxc.xmpp.conn.jid);
 
 	    // Save sid and jid
@@ -1891,27 +1856,14 @@
 
 	    jsxc.xmpp.conn = null;
 
-	    $('#jsxc_windowList').remove();
-
-	    if (jsxc.triggeredFromElement) {
-	      $(document).trigger('toggle.roster.jsxc', ['hidden', 0]);
-	      $('#jsxc_roster').remove();
-
-	      if (jsxc.triggeredFromLogout) {
-	        window.location = jsxc.options.logoutElement.attr('href');
-	      }
-
-	      $(document).trigger("removed.gui.jsxc");
-
-	    } else {
-	      jsxc.gui.roster.noConnection();
-	    }
+	    jsxc.gui.roster.noConnection();
 
 	    window.clearInterval(jsxc.keepalive);
 	    jsxc.role_allocation = false;
 	    jsxc.master = false;
 	    jsxc.storage.removeItem('alive');
 
+	    
 	    jsxc.error("Disconnected from JSXC");
 
 	  },
@@ -2073,8 +2025,6 @@
 	    if (!jsxc.storage.getUserItem('buddylist') ||
 	        jsxc.storage.getUserItem('buddylist').length === 0) {
 	      jsxc.gui.roster.empty();
-	    } else {
-	      $('#jsxc_roster > p:first').remove();
 	    }
 
 	    // preserve handler
@@ -2152,7 +2102,7 @@
 	    var bid = jsxc.jidToBid(jid);
 
 	    // ignore own presence
-	    if (bid === Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid)) {
+	    if (bid === jsxc.jidToBid(jsxc.xmpp.conn.jid)) {
 	      return true;
 	    }
 
@@ -2268,10 +2218,10 @@
 
 	    data.res = sortedRes;
 
-	    // notify is buddy has come online
-	    if (data.status === 0 && maxStatus > 0) {
+	    // notify is buddy has come online, and only buddies
+	    if (data.status === 0 && maxStatus > 0 && data.type !== 'groupchat') {
 	      jsxc.notification.notify({
-	        title : data.name, msg : jsxc.t('has_come_online'), source : bid
+	        title : data.name, msg : 'Est connecté', source : bid, force: true
 	      });
 	    }
 
@@ -2389,7 +2339,7 @@
 	      from = $(stanza).attr('from');
 	    }
 
-	    var jid = Strophe.getBareJidFromJid(from);
+	    var jid = jsxc.jidToBid(from);
 	    bid = jsxc.jidToBid(jid);
 	    var data = jsxc.storage.getUserItem('buddy', bid);
 	    var request = $(message).find("request[xmlns='urn:xmpp:receipts']");
@@ -2556,7 +2506,7 @@
 	    }).c('query', {
 	      xmlns : 'jabber:iq:roster'
 	    }).c('item', {
-	      jid : Strophe.getBareJidFromJid(jid), subscription : 'remove'
+	      jid : jsxc.jidToBid(jid), subscription : 'remove'
 	    });
 	    jsxc.xmpp.conn.sendIQ(iq);
 
@@ -2649,7 +2599,7 @@
 	   */
 	  _sendMessage : function(jid, msg, uid) {
 	    var data = jsxc.storage.getUserItem('buddy', jsxc.jidToBid(jid)) || {};
-	    var isBar = (Strophe.getBareJidFromJid(jid) === jid);
+	    var isBar = (jsxc.jidToBid(jid) === jid);
 	    var type = data.type || 'chat';
 
 	    var xmlMsg = $msg({
@@ -2871,16 +2821,14 @@
 	  debug : true,
 
 	  /**
+	   * Maximum number of participants to a videoconference
+	   */
+	  VIDEOCONFERENCE_MAX_PARTICIPANTS : 6,
+
+	  /**
 	   * Auto accept only for debug purpose
 	   */
 	  auto_accept_debug : false,
-
-	  /**
-	   * Delay before attach video, to let navigator create all elements needed.
-	   *
-	   * Workaround for Firefox
-	   */
-	  DELAY_BEFORE_ATTACH : 700,
 
 	  /**
 	   * Hangup call if no response
@@ -2895,42 +2843,42 @@
 	   */
 	  XMPP_VIDEOCONFERENCE : {
 
-	    ELEMENT_NAME : "videoconference",
+	    ELEMENT_NAME : 'videoconference',
 
 	    /**
 	     * Status attribute, indicating the status of videoconference
 	     */
-	    STATUS_ATTR : "status",
+	    STATUS_ATTR : 'status',
 
 	    /**
 	     * List of all users of videoconference, NOT including initiator
 	     */
-	    USERS_ATTR : "users",
+	    USERS_ATTR : 'users',
 
 	    /**
 	     * Date time of current message
 	     */
-	    DATETIME_ATTR : "datetime",
+	    DATETIME_ATTR : 'datetime',
 
 	    /**
 	     * ID attribute of conference
 	     */
-	    ID_ATTR : "id",
+	    ID_ATTR : 'id',
 
 	    /**
 	     * User who initiate the videoconference
 	     */
-	    INITIATOR_ATTR : "initiator",
+	    INITIATOR_ATTR : 'initiator',
 
 	    /**
 	     * Optionnal readable message
 	     */
-	    MESSAGE_ATTR : "message",
+	    MESSAGE_ATTR : 'message',
 
 	    /**
 	     * Reinvite field, optionnal
 	     */
-	    REINVITE_ATTR : "reinvite",
+	    REINVITE_ATTR : 'reinvite',
 
 	    /**
 	     * Status argument describing the status of the videoconference
@@ -2944,24 +2892,48 @@
 	       * videoconference
 	       *
 	       */
-	      INIT : "initiate",
+	      INIT : 'initiate',
 
 	      /**
 	       * Confirmation sent by all participants, except initiator, to all participants
 	       */
-	      ACCEPTED : "accepted",
+	      ACCEPTED : 'accepted',
 
 	      /**
 	       * Decline message sent to all participants
 	       */
-	      ABORT : "abort",
+	      ABORT : 'abort',
 
 	      /**
 	       * Can be send to reinvite a lost user
 	       */
-	      REINVITATION : "reinvitation"
+	      REINVITATION : 'reinvitation'
 
 	    }
+	  },
+
+	  SCREENSHARING_INVITATION_EXPIRATION : 10000,
+
+	  XMPP_SCREENSHARING : {
+
+	    ELEMENT_NAME : 'screensharing',
+
+	    STATUS_ATTR : 'status',
+
+	    DATETIME_ATTR : 'datetime',
+
+	    STATUS : {
+
+	      INIT : 'init',
+
+	      REINVITE : 'reinvite',
+
+	      DECLINED : 'declined',
+
+	      ACCEPT : 'accept'
+
+	    }
+
 	  },
 
 	  /**
@@ -2974,12 +2946,12 @@
 	  autoHangupCalls : {},
 
 	  /**
-	   * List of videoconference users
+	   * List of multimedia users
 	   *
 	   * Every current active call must be registered here
 	   *
 	   */
-	  videoconference : {
+	  multimediacache : {
 
 	    /**
 	     * Last date of launch
@@ -2995,6 +2967,10 @@
 	     * True if current user confirm that conference is accepted
 	     */
 	    accepted : false,
+
+	    screenStream : null,
+
+	    localStream : null,
 
 	    /**
 	     * All users have to interact with video conference
@@ -3030,7 +3006,17 @@
 	    /**
 	     * Simple video call, exclusive
 	     */
-	    SIMPLE_VIDEO_CALL : 'SIMPLE_VIDEO_CALL'
+	    SIMPLE_VIDEO_CALL : 'SIMPLE_VIDEO_CALL',
+
+	    /**
+	     * User is sharing his screen
+	     */
+	    SCREENSHARING_INITITATOR : 'SCREENSHARING_INITITATOR',
+
+	    /**
+	     * User is receiving screen stream
+	     */
+	    SCREENSHARING_RECIPIENT : 'SCREENSHARING_RECIPIENT'
 
 	  },
 
@@ -3081,9 +3067,9 @@
 	    HAS_DECLINED_VIDEOCONFERENCE : "HAS_DECLINED_VIDEOCONFERENCE",
 
 	    /**
-	     * User have been rejected
+	     * User has rejected video call
 	     */
-	    REJECTED : "REJECTED"
+	    HAS_REJECT_CALL : "HAS_REJECT_CALL"
 	  },
 
 	  /** required disco features for video call */
@@ -3094,11 +3080,6 @@
 	  reqFileFeatures : ['urn:xmpp:jingle:1', 'urn:xmpp:jingle:apps:file-transfer:3'],
 
 	  /**
-	   * True if navigator can share is screen
-	   */
-	  screenSharingCapable : false,
-
-	  /**
 	   * Messages for Chrome communicate with Chrome extension
 	   */
 	  chromeExtensionMessages : {
@@ -3107,11 +3088,6 @@
 	    getScreenSourceId : "djoe.screencapture-extension." + "get-screen-source-id",
 	    getAPTSourceId : "djoe.screencapture-extension." + "get-audio-plus-tab-source-id"
 	  },
-
-	  /**
-	   * Where local stream is stored, to avoid too many stream creation
-	   */
-	  localStream : null,
 
 	  /**
 	   *
@@ -3142,7 +3118,7 @@
 
 	    // check screen sharing capabilities
 	    if (self._isNavigatorChrome() === true) {
-	      self._isChromeExtensionInstalled();
+	      self.isChromeExtensionInstalled();
 	    }
 
 	    var manager = self.conn.jingle.manager;
@@ -3176,8 +3152,8 @@
 	   * @param userArray
 	   * @private
 	   */
-	  _notifyVideoconferenceChanged : function(userArray) {
-	    $(document).trigger("videoconference-changed.jsxc", userArray ? {users : userArray} : null);
+	  _notifyMultimediacacheChanged : function(userArray) {
+	    $(document).trigger("multimediacache-changed.jsxc", userArray ? {users : userArray} : null);
 	  },
 
 	  /**
@@ -3193,7 +3169,7 @@
 	      throw new Error("Incorrect JID, must be full: " + fulljid);
 	    }
 
-	    self.videoconference.users[fulljid] = {
+	    self.multimediacache.users[fulljid] = {
 
 	      node : Strophe.getNodeFromJid(fulljid),
 
@@ -3234,17 +3210,17 @@
 	    }
 
 	    // create user if not exist
-	    if (!self.videoconference.users[fulljid]) {
+	    if (!self.multimediacache.users[fulljid]) {
 	      self._log("Status change: user was created", fulljid, 'INFO');
 	      self._createUserEntry(fulljid);
 
-	      self.videoconference.users[fulljid].status = status;
+	      self.multimediacache.users[fulljid].status = status;
 	    }
 
 	    else {
 	      if (overwrite === true) {
 	        // update status
-	        self.videoconference.users[fulljid].status = status;
+	        self.multimediacache.users[fulljid].status = status;
 	      }
 	    }
 
@@ -3273,22 +3249,32 @@
 	    overwrite = typeof overwrite !== 'undefined' ? overwrite : true;
 
 	    // create user if not exist
-	    if (!self.videoconference.users[fulljid]) {
+	    if (!self.multimediacache.users[fulljid]) {
 	      self._log("Type change: user was created", fulljid, 'INFO');
 	      self._createUserEntry(fulljid);
 
 	      // update status
-	      self.videoconference.users[fulljid].type = type;
+	      self.multimediacache.users[fulljid].type = type;
 
 	    }
 
 	    else {
 	      if (overwrite === true) {
 	        // update status
-	        self.videoconference.users[fulljid].type = type;
+	        self.multimediacache.users[fulljid].type = type;
 	      }
 	    }
 
+	  },
+
+	  /**
+	   * Return true if user is sharing his screen
+	   * @private
+	   */
+	  _isScreensharingInitiator : function(fulljid) {
+	    var self = jsxc.mmstream;
+	    return self.multimediacache.users[fulljid] &&
+	        self.multimediacache.users[fulljid].type === self.USER_TYPE.SCREENSHARING_INITITATOR;
 	  },
 
 	  /**
@@ -3318,7 +3304,7 @@
 	    });
 
 	    // trigger only once
-	    self._notifyVideoconferenceChanged(triggeredDatas);
+	    self._notifyMultimediacacheChanged(triggeredDatas);
 
 	  },
 
@@ -3337,8 +3323,28 @@
 	      throw new Error("Incorrect JID, must be full: " + fulljid);
 	    }
 
-	    return self.videoconference.users[fulljid] && self.videoconference.users[fulljid].status ?
-	        self.videoconference.users[fulljid].status : null;
+	    return self.multimediacache.users[fulljid] && self.multimediacache.users[fulljid].status ?
+	        self.multimediacache.users[fulljid].status : null;
+
+	  },
+
+	  /**
+	   * Return the user status or null if user not exist
+	   * @param fulljid
+	   * @returns {*}
+	   * @private
+	   */
+	  getUserType : function(fulljid) {
+
+	    var self = jsxc.mmstream;
+
+	    // check if jid is full
+	    if (!fulljid || !Strophe.getResourceFromJid(fulljid)) {
+	      throw new Error("Incorrect JID, must be full: " + fulljid);
+	    }
+
+	    return self.multimediacache.users[fulljid] && self.multimediacache.users[fulljid].type ?
+	        self.multimediacache.users[fulljid].type : null;
 
 	  },
 
@@ -3358,8 +3364,8 @@
 	      throw new Error("Incorrect JID, must be full: " + fulljid);
 	    }
 
-	    return self.videoconference.users[fulljid] && self.videoconference.users[fulljid].status &&
-	        self.videoconference.users[fulljid].status === self.USER_STATUS.READY;
+	    return self.multimediacache.users[fulljid] && self.multimediacache.users[fulljid].status &&
+	        self.multimediacache.users[fulljid].status === self.USER_STATUS.READY;
 
 	  },
 
@@ -3379,9 +3385,27 @@
 	      throw new Error("Incorrect JID, must be full: " + fulljid);
 	    }
 
-	    return self.videoconference.users[fulljid] && self.videoconference.users[fulljid].status &&
-	        (self.videoconference.users[fulljid].status === self.USER_STATUS.CONNECTED ||
-	        self.videoconference.users[fulljid].status === self.USER_STATUS.CONNECTING);
+	    return self.multimediacache.users[fulljid] && self.multimediacache.users[fulljid].status &&
+	        (self.multimediacache.users[fulljid].status === self.USER_STATUS.CONNECTED ||
+	        self.multimediacache.users[fulljid].status === self.USER_STATUS.CONNECTING);
+
+	  },
+
+	  /**
+	   * Return true if buddy is a screensharing recipient
+	   * @private
+	   */
+	  _isBuddyScreensharingRecipient : function(fulljid) {
+
+	    var self = jsxc.mmstream;
+
+	    // check if jid is full
+	    if (!fulljid || !Strophe.getResourceFromJid(fulljid)) {
+	      throw new Error("Incorrect JID, must be full: " + fulljid);
+	    }
+
+	    return self.multimediacache.users[fulljid] && self.multimediacache.users[fulljid].type &&
+	        self.multimediacache.users[fulljid].type === self.USER_TYPE.SCREENSHARING_RECIPIENT;
 
 	  },
 
@@ -3401,11 +3425,11 @@
 	      throw new Error("Incorrect JID, must be full: " + fulljid);
 	    }
 
-	    return self.videoconference.users[fulljid] && self.videoconference.users[fulljid].type &&
-	        (self.videoconference.users[fulljid].type === self.USER_TYPE.VIDEOCONF_INITIATOR ||
-	        self.videoconference.users[fulljid].type === self.USER_TYPE.VIDEOCONF_PARTICIPANT) &&
-	        self.videoconference.users[fulljid].status &&
-	        self.videoconference.users[fulljid].status !== self.USER_STATUS.REJECTED;
+	    return self.multimediacache.users[fulljid] && self.multimediacache.users[fulljid].type &&
+	        (self.multimediacache.users[fulljid].type === self.USER_TYPE.VIDEOCONF_INITIATOR ||
+	        self.multimediacache.users[fulljid].type === self.USER_TYPE.VIDEOCONF_PARTICIPANT) &&
+	        self.multimediacache.users[fulljid].status &&
+	        self.multimediacache.users[fulljid].status !== self.USER_STATUS.HAS_REJECT_CALL;
 
 	  },
 
@@ -3414,19 +3438,21 @@
 	   *
 	   * @private
 	   */
-	  _clearVideoconferenceCache : function() {
+	  _clearMultimediacache : function() {
 
 	    var self = jsxc.mmstream;
 
 	    if (jsxc.mmstream.debug === true) {
-	      self._log(" !!!!! Videoconference cleared");
+	      self._log("Multimedia cache cleared");
 	    }
 
-	    self.videoconference.lastLaunch = -1;
-	    self.videoconference.users = {};
-	    self.videoconference.accepted = false;
+	    self.multimediacache.lastLaunch = -1;
+	    self.multimediacache.users = {};
+	    self.multimediacache.accepted = false;
 
-	    $(document).trigger("videoconference-changed.jsxc");
+	    self.multimediacache.occupied = false;
+
+	    $(document).trigger('multimediacache-changed.jsxc');
 
 	  },
 
@@ -3450,18 +3476,18 @@
 	      throw new Error("Unknown mode in _purgeVideoconferenceCache: " + mode);
 	    }
 
-	    self.videoconference.lastLaunch = -1;
+	    self.multimediacache.lastLaunch = -1;
 
-	    $.each(self.videoconference.users, function(fulljid) {
+	    $.each(self.multimediacache.users, function(fulljid) {
 
 	      // we found jid and we have to remove all array ids from cache
 	      if (fulljidArray.indexOf(fulljid) > -1 && mode === "purge") {
-	        delete self.videoconference.users[fulljid];
+	        delete self.multimediacache.users[fulljid];
 	      }
 
 	      // we dont found jid and we have to remove all jids not in array from cache
 	      else if (fulljidArray.indexOf(fulljid) < 0 && mode === "others") {
-	        delete self.videoconference.users[fulljid];
+	        delete self.multimediacache.users[fulljid];
 	      }
 
 	    });
@@ -3495,9 +3521,10 @@
 	  _onMessageReceived : function(stanza) {
 
 	    var self = jsxc.mmstream;
+	    var from = $(stanza).attr("from");
 
 	    // ignore eventual messages from current user
-	    if ($(stanza).attr("from") === self.conn.jid) {
+	    if (from === self.conn.jid) {
 	      //self._log("Ignoring message from current user: ", stanza, "ERROR");
 
 	      // keep handler
@@ -3506,13 +3533,19 @@
 
 	    // check if stanza is a videoconference invitation
 	    var video = $(stanza).find(self.XMPP_VIDEOCONFERENCE.ELEMENT_NAME);
+	    var screen = $(stanza).find(self.XMPP_SCREENSHARING.ELEMENT_NAME);
+	    // var node = Strophe.getNodeFromJid(from);
+	    var status;
 
+	    /**
+	     * Videoconference message
+	     */
 	    if (video.length > 0) {
 
-	      var status = video.attr("status");
+	      status = video.attr(self.XMPP_VIDEOCONFERENCE.STATUS_ATTR);
 
 	      if (jsxc.mmstream.debug) {
-	        self._log("_onMessageReceived " + status, {status : status, stanza : stanza});
+	        self._log("_onMessageReceived: " + status, {status : status, stanza : stanza});
 	      }
 
 	      // received an invitation
@@ -3533,7 +3566,7 @@
 
 	      // some user is reinvited in videoconference
 	      else if (status === self.XMPP_VIDEOCONFERENCE.STATUS.REINVITATION) {
-	        jsxc.stats.addEvent("jsxc.mmstream.videoconference.invitationReceived");
+	        jsxc.stats.addEvent("jsxc.mmstream.videoconference.re-invitationReceived");
 	        self._onReinvitationReceived(stanza, video);
 	      }
 
@@ -3544,8 +3577,181 @@
 
 	    }
 
+	    /**
+	     * Screensharing message
+	     */ else if (screen.length > 0) {
+
+	      status = screen.attr(self.XMPP_SCREENSHARING.STATUS_ATTR);
+
+	      if (status === self.XMPP_SCREENSHARING.STATUS.INIT) {
+	        jsxc.stats.addEvent("jsxc.mmstream.screensharing.invitationReceived");
+	        self._onScreensharingInvitationReceived(stanza, screen);
+	      }
+
+	      else if (status === self.XMPP_SCREENSHARING.STATUS.ACCEPT) {
+	        self._onScreensharingAcceptReceived(stanza, screen);
+	      }
+
+	      else if (status === self.XMPP_SCREENSHARING.STATUS.DECLINE) {
+	        self._onScreensharingDeclineReceived(stanza, screen);
+	      }
+
+	      else if (status === self.XMPP_SCREENSHARING.STATUS.REINVITE) {
+	        jsxc.stats.addEvent("jsxc.mmstream.screensharing.re-invitationReceived");
+	        self._onScreensharingInvitationReceived(stanza, screen);
+	      }
+
+	      // invalid message
+	      else {
+	        self._log("Invalid screensharing message: ", stanza, "ERROR");
+	      }
+
+	    }
+
 	    // keep handler
 	    return true;
+
+	  },
+
+	  /**
+	   * Triggered when screen sharing invitation received
+	   *
+	   * If user accept, a confirmation is sent to initator
+	   *
+	   * @param stanza
+	   * @param screen
+	   * @private
+	   */
+	  _onScreensharingInvitationReceived : function(stanza, screen) {
+
+	    var self = jsxc.mmstream;
+
+	    var datetime = screen.attr(self.XMPP_SCREENSHARING.DATETIME_ATTR);
+	    var now = new Date().getTime();
+	    var from = $(stanza).attr("from");
+	    var node = Strophe.getNodeFromJid(from);
+
+	    var decline = function() {
+	      self._sendScreensharingConfirmationMessage(self.XMPP_SCREENSHARING.STATUS.DECLINED, datetime,
+	          from);
+	    };
+
+	    if (self.isVideoCallsDisabled() === true) {
+
+	      jsxc.gui.feedback('<b>' + node +
+	          '</b> a éssayé de vous inviter à partager son écran, mais les appels multimédia sont désactivés.');
+
+	      decline();
+	      return;
+	    }
+
+	    // check if occupied AFTER disable calls
+	    if (self._isClientOccupied(from) !== false) {
+	      decline();
+	      return;
+	    }
+
+	    if (now - datetime > self.SCREENSHARING_INVITATION_EXPIRATION) {
+	      jsxc.gui.feedback("Vous avez reçu une invitation de partage d'écran, mais elle est périmée");
+	      decline();
+	      return;
+	    }
+
+	    self.gui._showIncomingScreensharingDialog(from)
+	        .then(function() {
+	          jsxc.gui.feedback("Partage d'écran accepté");
+
+	          self._setUserType(from, self.USER_TYPE.SCREENSHARING_INITITATOR);
+
+	          self._sendScreensharingConfirmationMessage(self.XMPP_SCREENSHARING.STATUS.ACCEPT,
+	              datetime, from);
+	        })
+	        .fail(function() {
+	          jsxc.gui.feedback("Partage d'écran refusé");
+	          decline();
+	        });
+
+	  },
+
+	  /**
+	   * Send screen sharing confirmation: accept or decline
+	   * @param status
+	   * @param datetime
+	   * @param to
+	   * @private
+	   */
+	  _sendScreensharingConfirmationMessage : function(status, datetime, to) {
+
+	    if (!status || !datetime || !to) {
+	      throw new Error("Invalid argument: " + status + " / " + datetime + " / " + to);
+	    }
+
+	    var self = jsxc.mmstream;
+
+	    // videoconference item
+	    var screen = {};
+	    screen[self.XMPP_SCREENSHARING.DATETIME_ATTR] = datetime;
+	    screen[self.XMPP_SCREENSHARING.STATUS_ATTR] = status;
+
+	    // XMPP message stanza
+	    var msg = $msg({
+
+	      from : self.conn.jid,
+
+	      to : to
+
+	    }).c(self.XMPP_SCREENSHARING.ELEMENT_NAME, screen);
+
+	    self.conn.send(msg);
+
+	    if (jsxc.mmstream.debug === true) {
+	      self._log("_sendAcceptScreensharingMessage", {to : to, datetime : datetime, status : status});
+	    }
+
+	  },
+
+	  /**
+	   * Triggered if a user decline a screen sharing
+	   *
+	   * We have to show a feedback and change status
+	   *
+	   * @param stanza
+	   * @param screen
+	   * @private
+	   */
+	  _onScreensharingDeclineReceived : function(stanza) {
+
+	    var self = jsxc.mmstream;
+	    var from = $(stanza).attr('from');
+
+	    self._setUserStatus(from, self.USER_STATUS.HAS_REJECT_CALL);
+
+	    jsxc.gui.feedback("Partage d'écran refusé par <b>" + Strophe.getNodeFromJid(from) + "</b>");
+
+	  },
+
+	  /**
+	   * Triggered if a user accept a screen sharing
+	   *
+	   * We have to initiate a session and send screen stream
+	   *
+	   * @param stanza
+	   * @param screen
+	   * @private
+	   */
+	  _onScreensharingAcceptReceived : function(stanza) {
+
+	    var self = jsxc.mmstream;
+	    var from = $(stanza).attr('from');
+
+	    if (self.multimediacache.screenStream === null) {
+	      throw new Error("Screen stream is null");
+	    }
+
+	    // openning jingle session
+	    var session = self.conn.jingle.initiate(from, self.multimediacache.screenStream);
+
+	    session.on('change:connectionState', self._onVideoSessionStateChanged);
 
 	  },
 
@@ -3574,6 +3780,15 @@
 	    // case 1: I have to join the videoconference
 	    if (target === self.conn.jid) {
 
+	      // TODO: check if client is free ?
+	      // check if client is free
+	      // if(self._isClientOccupied(from) !== false){
+	      //   decline();
+	      //   return;
+	      // }
+
+	      self.multimediacache.occupied = true;
+
 	      if (jsxc.mmstream.debug === true) {
 	        self._log("I have to join videoconference");
 	      }
@@ -3593,11 +3808,13 @@
 	                // user cannot access to camera
 	                .fail(function(error) {
 	                  jsxc.gui.feedback("Accès à la caméra refusé" + (error ? ": " + error : ""));
+	                  self.multimediacache.occupied = false;
 	                });
 
 	          })
 	          .fail(function() {
 	            jsxc.gui.feedback("Invitation refusée");
+	            self.multimediacache.occupied = false;
 	          });
 	    }
 
@@ -3613,7 +3830,6 @@
 	   *  Triggered if we received a videoconference invitation
 	   *
 	   * @param stanza
-	   * @returns {boolean}
 	   * @private
 	   */
 	  _onVideoconferenceInvitationReceived : function(stanza, video) {
@@ -3627,32 +3843,50 @@
 	        video.attr(self.XMPP_VIDEOCONFERENCE.USERS_ATTR) || "");
 	    var datetime = video.attr(self.XMPP_VIDEOCONFERENCE.DATETIME_ATTR);
 
+	    // check if calls are disabled
+	    if (self.isVideoCallsDisabled() === true) {
+
+	      jsxc.gui.feedback('<b>' + initiator_node +
+	          '</b> a éssayé de vous inviter à une vidéoconférence, mais les appels multimédia sont désactivés.');
+
+	      self._declineVideconference(initiator, participants, invitationId, "Occupé !");
+
+	      return;
+	    }
+
 	    // check if another multimedia session is currently running
-	    if (self.videoconference.occupied === true) {
-	      jsxc.gui.feedback(
-	          initiator_node + " vous a invité à une vidéoconférence, mais vous êtes occupé.");
+	    // AFTER disable calls
+	    if (self._isClientOccupied(initiator) !== false) {
 	      self._declineVideconference(initiator, participants, invitationId, "Occupé !");
 	      return;
 	    }
-	    self.videoconference.occupied = true;
-
-	    // reset acceptance flag
-	    self.videoconference.accepted = false;
 
 	    // check how many participants
 	    if (participants.length < 1) {
 	      self._log('Too few participants', {stanza : stanza, participants : participants}, 'ERROR');
-
-	      jsxc.gui.feedback("Invitation à une vidéo conférence reçue mais invalide.");
-
-	      // stop but keep handler
-	      return true;
+	      jsxc.gui.feedback(
+	          'Vous avez reçu une invitation à une vidéoconférence de <b>' + initiator_node +
+	          '</b>, mais elle est invalide.');
+	      return;
 	    }
+
+	    self.multimediacache.accepted = false;
 
 	    if (jsxc.mmstream.debug === true) {
 	      self._log("_onVideoconferenceInvitationReceived",
-	          {fulljid : initiator, videoconference : self.videoconference});
+	          {fulljid : initiator, videoconference : self.multimediacache});
 	    }
+
+	    var decline = function(message, error) {
+
+	      jsxc.error("Videoconference declined: ", error);
+
+	      jsxc.gui.feedback(message);
+
+	      self._declineVideconference(initiator, participants, invitationId, error);
+
+	      self.multimediacache.occupied = false;
+	    };
 
 	    /**
 	     * Show videoconference dialog confirmation
@@ -3674,16 +3908,14 @@
 
 	              // user cannot access to camera
 	              .fail(function(error) {
-	                jsxc.gui.feedback("Accès à la caméra refusé" + (error ? ": " + error : ""));
-	                self._declineVideconference(initiator, participants, invitationId, error);
+	                decline("Accès à la caméra refusé", error);
 	              });
 
 	        })
 
 	        // video conference is rejected
 	        .fail(function(error) {
-	          jsxc.gui.feedback("Vidéo conférence rejetée" + (error ? ": " + error : ""));
-	          self._declineVideconference(initiator, participants, invitationId, error);
+	          decline("Vidéo conférence rejetée", error);
 	        });
 
 	  },
@@ -3705,8 +3937,8 @@
 	    var error = "";
 
 	    // check if a participant to videoconference
-	    if (self.videoconference.userList.indexOf(fulljid) < 0 &&
-	        self.videoconference.initiator !== fulljid) {
+	    if (self.multimediacache.userList.indexOf(fulljid) < 0 &&
+	        self.multimediacache.initiator !== fulljid) {
 	      error = "'" + node + "' ne participe pas à la vidéo conférence en cours.";
 	    }
 
@@ -3729,8 +3961,8 @@
 	          //TODO dialog
 
 	          // send invitations
-	          var participants = self.videoconference.userList;
-	          var initiator = self.videoconference.initiator;
+	          var participants = self.multimediacache.userList;
+	          var initiator = self.multimediacache.initiator;
 	          var node = Strophe.getNodeFromJid(self.conn.jid);
 
 	          self._sendVideoconferenceInvitations(participants,
@@ -3759,7 +3991,7 @@
 
 	    var self = jsxc.mmstream;
 
-	    jsxc.stats.addEvent("jsxc.mmstream.videoconference.accepted");
+	    jsxc.stats.addEvent("jsxc.mmstream.multimediacache.accepted");
 
 	    // set to true if all users have already accepted videoconference
 	    reaccept = typeof reaccept !== "undefined" ? reaccept : false;
@@ -3769,12 +4001,12 @@
 	    self._purgeVideoconferenceCache(participants.concat([initiator]), "others");
 
 	    // keep informations
-	    self.videoconference.userList = participants;
-	    self.videoconference.initiator = initiator;
+	    self.multimediacache.userList = participants;
+	    self.multimediacache.initiator = initiator;
 
 	    // store buddies was already ready
 	    var alreadyReady = [];
-	    $.each(self.videoconference.users, function(fulljid) {
+	    $.each(self.multimediacache.users, function(fulljid) {
 	      if (self._isBuddyReady(fulljid) === true) {
 	        alreadyReady.push(fulljid);
 	      }
@@ -3797,10 +4029,10 @@
 	    self._setUserType(self.conn.jid, self.USER_TYPE.SELF);
 	    self._setUserStatus(self.conn.jid, self.USER_STATUS.SELF);
 
-	    self.videoconference.lastLaunch = datetime;
+	    self.multimediacache.lastLaunch = datetime;
 
 	    // acceptance flag
-	    self.videoconference.accepted = true;
+	    self.multimediacache.accepted = true;
 
 	    // simulate all users we must call are ready beacuse they have already accepted videoconference
 	    if (reaccept === true) {
@@ -3811,7 +4043,7 @@
 	    }
 
 	    // notify changes
-	    self._notifyVideoconferenceChanged();
+	    self._notifyMultimediacacheChanged();
 
 	    self._sendAcceptVideoconferenceMessage(initiator, invitationId, participants);
 
@@ -3833,7 +4065,7 @@
 
 	    var self = jsxc.mmstream;
 
-	    jsxc.stats.addEvent("jsxc.mmstream.videoconference.decline");
+	    jsxc.stats.addEvent("jsxc.mmstream.multimediacache.decline");
 
 	    self._log("declineVideconference", error);
 
@@ -3859,7 +4091,7 @@
 
 	    // accept people was waiting
 	    // iterate people was waiting
-	    $.each(self.videoconference.users, function(fulljid) {
+	    $.each(self.multimediacache.users, function(fulljid) {
 
 	      if (usersToCall.indexOf(fulljid) !== -1 && self._isBuddyReady(fulljid) === true) {
 
@@ -3903,10 +4135,10 @@
 	    self._setUserStatus(user, self.USER_STATUS.READY);
 
 	    // notify changes
-	    self._notifyVideoconferenceChanged();
+	    self._notifyMultimediacacheChanged();
 
 	    // call users which are ready, be only if conference is accepted
-	    if (self.videoconference.accepted === true) {
+	    if (self.multimediacache.accepted === true) {
 	      self._videoconferenceCallUsersReady(initiator, participants);
 	    }
 	  },
@@ -3936,19 +4168,20 @@
 	    self._setUserStatus(initiator, self.USER_STATUS.HAS_DECLINED_VIDEOCONFERENCE);
 
 	    // notify changes
-	    self._notifyVideoconferenceChanged();
+	    self._notifyMultimediacacheChanged();
 
 	    // terminate all conversations, even if waiting
 	    self._hangUpAll();
-
-	    // dont clear caches here, to show who declined videoconference
-	    // self._clearVideoconferenceCache();
 
 	    // close dialog if needed
 	    jsxc.gui.dialog.close('video_conference_incoming');
 
 	    // show toast
 	    jsxc.gui.feedback("La videoconférence à été annulée par " + Strophe.getNodeFromJid(from));
+
+	    setTimeout(function() {
+	      self._clearMultimediacache();
+	    }, 1000);
 
 	  },
 
@@ -4156,35 +4389,48 @@
 
 	    var self = jsxc.mmstream;
 
+	    jsxc.stats.addEvent("jsxc.mmstream.multimediacache.start");
+
+	    if (self.isVideoCallsDisabled() === true) {
+	      jsxc.gui.feedback('Les appels multimédia sont désactivés.');
+	      self._log('Calls are disabled');
+	      return;
+	    }
+
+	    if (!fulljidArray || fulljidArray.constructor !== Array) {
+	      throw new Error("Illegal argument: " + fulljidArray);
+	    }
+
+	    if (fulljidArray.length > self.VIDEOCONFERENCE_MAX_PARTICIPANTS) {
+	      throw new Error("Too much participants. Number: " + fulljidArray.length + " / Max: " +
+	          self.VIDEOCONFERENCE_MAX_PARTICIPANTS);
+	    }
+
 	    // check if navigator is compatible
 	    self.checkNavigatorCompatibility("videoconference");
-
-	    jsxc.stats.addEvent("jsxc.mmstream.videoconference.start");
 
 	    if (jsxc.mmstream.debug === true) {
 	      self._log("startVideoconference", [fulljidArray, message]);
 	    }
 
 	    // check if another multimedia session is currently running
-	    if (self.videoconference.occupied === true) {
-	      jsxc.gui.feedback(
-	          "Vous ne pouvez pas commencer une vidéoconférence, veuillez d'abord raccrocher tous vos appels multimédia");
+	    if (self._isClientOccupied(null, true) !== false) {
 	      return;
 	    }
-	    self.videoconference.occupied = true;
 
-	    self.videoconference.accepted = false;
+	    // acceptance flag to call participants when videoconference will be accepted
+	    self.multimediacache.accepted = false;
 
 	    // require local stream to prevent errors
 	    self._requireLocalStream()
 	        .then(function() {
 
 	          // clear previous video conference informations
-	          self._clearVideoconferenceCache();
+	          self._clearMultimediacache();
 
-	          self.videoconference.accepted = true;
+	          self.multimediacache.accepted = true;
 
-	          // auto accept all participants streams
+	          // update participants list to accept them when they will call
 	          self._updateAllVideoconferenceUsers(fulljidArray, self.USER_STATUS.NOT_READY);
 
 	          // special status for current user
@@ -4192,17 +4438,17 @@
 	          self._setUserType(self.conn.jid, self.USER_TYPE.SELF);
 
 	          // notify changes
-	          self._notifyVideoconferenceChanged();
+	          self._notifyMultimediacacheChanged();
 
 	          // keep informations
-	          self.videoconference.userList = fulljidArray;
-	          self.videoconference.initiator = self.conn.jid;
+	          self.multimediacache.userList = fulljidArray;
+	          self.multimediacache.initiator = self.conn.jid;
 
 	          try {
 
 	            // send an invitation to each participant
 	            var ret = self._sendVideoconferenceInvitations(fulljidArray, message);
-	            self.videoconference.lastLaunch = ret.datetime;
+	            self.multimediacache.lastLaunch = ret.datetime;
 
 	            jsxc.gui.feedback("La vidéoconférence va bientôt commencer ...");
 
@@ -4210,9 +4456,9 @@
 
 	            self._log("Error while starting videoconference: ", error, "ERROR");
 
-	            jsxc.gui.feedback(
-	                "Erreur lors de l'envoi des invitations. Veuillez rafraichir la page et réessayer.");
+	            jsxc.gui.feedback("Erreur lors de l'envoi des invitations.");
 
+	            self.multimediacache.occupied = false;
 	          }
 	        })
 
@@ -4220,7 +4466,7 @@
 	        .fail(function(error) {
 	          jsxc.gui.feedback("Accès à la caméra refusé" + (error ? ": " + error : ""));
 
-	          self.videoconference.occupied = false;
+	          self.multimediacache.occupied = false;
 	        });
 
 	  },
@@ -4287,40 +4533,172 @@
 
 	    var self = jsxc.mmstream;
 
-	    self.checkNavigatorCompatibility("videoconference");
-
-	    jsxc.stats.addEvent("jsxc.mmstream.screensharing.multipart.start");
-
 	    if (jsxc.mmstream.debug === true) {
 	      self._log("startScreenSharingMultiPart", [fulljidArray, message]);
 	    }
 
-	    // check if another multimedia session is currently running
-	    if (self.videoconference.occupied === true) {
-	      jsxc.gui.feedback(
-	          "Vous ne pouvez pas commencer un partage d'écran, veuillez d'abord raccrocher tous vos appels multimédia");
+	    if (self.isVideoCallsDisabled() === true) {
+	      jsxc.gui.feedback('Les appels multimédia sont désactivés.');
+	      self._log('Calls are disabled');
 	      return;
 	    }
-	    self.videoconference.occupied = true;
 
-	    try {
+	    jsxc.stats.addEvent("jsxc.mmstream.screensharing.multipart.start");
 
-	      jsxc.gui.feedback("Le partage d'écran va bientôt commencer ...");
+	    // check if navigator compatible
+	    self.checkNavigatorCompatibility("videoconference");
 
-	      // call each participant
-	      $.each(fulljidArray, function(index, element) {
-	        self._shareScreen(element);
-	      });
+	    // TODO: check if all participants connected ?
 
-	    } catch (error) {
-
-	      self._log("Error while starting screensharing multipart: ", error, "ERROR");
-
-	      jsxc.gui.feedback(
-	          "Erreur lors de l'envoi des invitations. Veuillez rafraichir la page et réessayer.");
-
-	      self.videoconference.occupied = false;
+	    // check if another multimedia session is currently running
+	    if (self._isClientOccupied(null, true) !== false) {
+	      return;
 	    }
+
+	    jsxc.gui.feedback("Le partage d'écran va bientôt commencer ...");
+
+	    // ice configuration
+	    self.conn.jingle.setICEServers(self.iceServers);
+
+	    // requesting user media
+	    self._getUserScreenStream()
+
+	        .then(function(stream) {
+
+	          self._clearMultimediacache();
+
+	          // auto accept all participants streams
+	          self._updateAllVideoconferenceUsers(fulljidArray, self.USER_STATUS.NOT_READY,
+	              self.USER_TYPE.SCREENSHARING_RECIPIENT);
+
+	          // special status for current user
+	          self._setUserStatus(self.conn.jid, self.USER_STATUS.SELF);
+	          self._setUserType(self.conn.jid, self.USER_TYPE.SELF);
+
+	          self._notifyMultimediacacheChanged();
+
+	          // keep screen stream
+	          self.multimediacache.screenStream = stream;
+
+	          // TODO: save participant list to accept them after
+	          self.multimediacache.userList = fulljidArray;
+
+	          // invite all participants
+	          self._sendScreensharingInvitations(fulljidArray);
+
+	          self.gui.showLocalScreenStream();
+
+	        })
+
+	        .fail(function() {
+
+	          jsxc.gui.feedback(
+	              "Impossible d'accéder à votre écran, veuillez autoriser l'accès, installer l'extension si nécéssaire et réessayer.");
+
+	          self.multimediacache.occupied = false;
+
+	        });
+
+	  },
+
+	  reinviteUserInScreensharing : function(fulljid) {
+
+	    var self = jsxc.mmstream;
+	    if (!fulljid || Strophe.getResourceFromJid(fulljid) === null) {
+	      throw new Error("Invalid argument: " + fulljid);
+	    }
+
+	    var node = Strophe.getNodeFromJid(fulljid);
+
+	    // check if user connected
+	    if (self._isBuddyConnectingOrConnected(fulljid) === true) {
+	      jsxc.gui.feedback(node + " est déjà connecté ou en cours de connexion");
+	    }
+
+	    // ask confirmation
+	    self.gui._showReinviteUserConfirmationDialog(Strophe.getNodeFromJid(fulljid), "emit")
+
+	        .then(function() {
+
+	          jsxc.gui.feedback('Invitation envoyée');
+
+	          // invite all participants
+	          self._sendScreensharingInvitations([fulljid], true);
+
+	        })
+
+	        .fail(function() {
+
+	          jsxc.gui.feedback('Opération annulée');
+
+	        });
+
+	  },
+
+	  /**
+	   * Send invitations to user to invite them to see our screen.
+	   *
+	   * These invitation allow to distinguish calls from screensharing.
+	   * TODO: to improve
+	   *
+	   * @param participants
+	   * @private
+	   */
+	  _sendScreensharingInvitations : function(participants, reinvitation) {
+
+	    var self = jsxc.mmstream;
+
+	    reinvitation = typeof reinvitation !== "undefined" ? reinvitation : false;
+
+	    // check ressources to avoid wrong videoconference starting
+	    $.each(participants, function(index, element) {
+	      var res = Strophe.getResourceFromJid(element);
+	      if (res === null || res === "" || res === "null") {
+	        throw new Error("Only full jid are permitted: " + element);
+	      }
+	    });
+
+	    var datetime = new Date().getTime();
+
+	    // videoconference item
+	    var screen = {};
+	    screen[self.XMPP_SCREENSHARING.DATETIME_ATTR] = datetime;
+
+	    if (reinvitation) {
+	      screen[self.XMPP_SCREENSHARING.STATUS_ATTR] = self.XMPP_SCREENSHARING.STATUS.REINVITE;
+	    }
+
+	    else {
+	      screen[self.XMPP_SCREENSHARING.STATUS_ATTR] = self.XMPP_SCREENSHARING.STATUS.INIT;
+	    }
+
+	    // XMPP message stanza
+	    var msg = $msg({
+	      from : self.conn.jid
+	    }).c(self.XMPP_SCREENSHARING.ELEMENT_NAME, screen);
+
+	    var sent = [];
+
+	    // send one invitation to each participants and eventually to initator if this is a reinvitation
+	    $.each(participants, function(index, fulljid) {
+
+	      jsxc.stats.addEvent("jsxc.mmstream.screenSharing.sendInvitation");
+
+	      if (fulljid !== self.conn.jid) {
+
+	        var adressedMessage = $(msg.toString()).attr("to", fulljid);
+	        self.conn.send(adressedMessage);
+
+	        sent.push(fulljid);
+
+	      }
+
+	    });
+
+	    if (jsxc.mmstream.debug === true) {
+	      self._log("_sendScreensharingInvitations", {to : sent});
+	    }
+
 	  },
 
 	  _isNavigatorFirefox : function() {
@@ -4360,7 +4738,9 @@
 	      if (self._isNavigatorChrome() !== true) {
 	        message = "Le partage d'écran n'est pas disponible avec votre navigateur. Utilisez Chrome.";
 	      }
-	    } else {
+	    }
+
+	    else {
 	      throw new Error("Unknown task: " + task);
 	    }
 
@@ -4380,14 +4760,12 @@
 	   * @returns {*}
 	   * @private
 	   */
-	  _isChromeExtensionInstalled : function() {
+	  isChromeExtensionInstalled : function() {
 
 	    var self = jsxc.mmstream;
 	    var messages = self.chromeExtensionMessages;
 
 	    var defer = $.Deferred();
-
-	    self.screenSharingCapable = false;
 
 	    if (self._isNavigatorChrome() === true) {
 
@@ -4397,11 +4775,16 @@
 	      window.addEventListener("message", function(event) {
 
 	        if (event && event.data && event.data === messages.available) {
-	          self.screenSharingCapable = true;
 	          defer.resolve();
 	        }
 
 	      });
+
+	      // if we have no response, reject promise
+	      // TODO: to improve
+	      setTimeout(function() {
+	        defer.reject("NoResponseFromExtension");
+	      }, 3000);
 
 	      window.postMessage(messages.isAvailable, '*');
 
@@ -4478,7 +4861,7 @@
 
 	              window.removeEventListener("message", this);
 
-	              defer.fail(error);
+	              defer.reject(error);
 
 	            });
 
@@ -4493,57 +4876,6 @@
 	  },
 
 	  /**
-	   * Share screen with one user
-	   *
-	   *
-	   * /!\ Here we don't check if navigator can share screen
-	   * /!\ Here we don't check if navigator can share screen
-	   * /!\ Here we don't check if navigator can share screen
-	   *
-	   * @param fullJid
-	   */
-	  _shareScreen : function(fulljid) {
-
-	    var self = jsxc.mmstream;
-
-	    self.checkNavigatorCompatibility("videoconference");
-
-	    if (jsxc.mmstream.debug === true) {
-	      self._log("Start screen sharing", fulljid);
-	    }
-
-	    if (Strophe.getResourceFromJid(fulljid) === null) {
-	      throw new Error("JID must be full jid");
-	    }
-
-	    // ice configuration
-	    self.conn.jingle.setICEServers(self.iceServers);
-
-	    // requesting user media
-	    // TODO test chrome 'desktop' constraint ?
-	    // TODO test firefox 'window' constraint ?
-
-	    self._getUserScreenStream()
-
-	        .then(function(stream) {
-
-	          // openning jingle session
-	          var session = self.conn.jingle.initiate(fulljid, stream);
-
-	          session.on('change:connectionState', self._onVideoSessionStateChanged);
-
-	        })
-
-	        .fail(function() {
-
-	          jsxc.gui.feedback(
-	              "Impossible d'accéder à votre écran, veuillez autoriser l'accès, installer l'extension si nécéssaire et réessayer.");
-
-	        });
-
-	  },
-
-	  /**
 	   *  Called when receive incoming Jingle media session
 	   *
 	   */
@@ -4553,6 +4885,17 @@
 
 	    if (jsxc.mmstream.debug === true) {
 	      self._log("_onIncomingJingleSession", {session : session});
+	    }
+
+	    if (self.isVideoCallsDisabled() === true) {
+
+	      var node = Strophe.getNodeFromJid(session.peerID);
+	      jsxc.gui.feedback('<b>' + node +
+	          '</b> a éssayé de vous contacter, mais les appels multimédia sont désactivés.');
+
+	      session.end("decline", false);
+
+	      return;
 	    }
 
 	    // session.on('change:sessionState', self._onConnectionStateChanged);
@@ -4590,7 +4933,7 @@
 	    var self = jsxc.mmstream;
 
 	    if (jsxc.mmstream.debug === true) {
-	      self._log("_onIncomingCall", {videoconference : self.videoconference});
+	      self._log("_onIncomingCall", {videoconference : self.multimediacache});
 	    }
 
 	    // send signal to partner
@@ -4598,7 +4941,6 @@
 
 	    var fulljid = session.peerID;
 	    var bid = jsxc.jidToBid(fulljid);
-	    var node = Strophe.getNodeFromJid(bid);
 
 	    // accept video call
 	    var acceptRemoteSession = function(localStream) {
@@ -4621,10 +4963,12 @@
 
 	      session.end("decline", false);
 
-	      self._setUserStatus(fulljid, self.USER_STATUS.REJECTED);
+	      self._setUserStatus(fulljid, self.USER_STATUS.HAS_REJECT_CALL);
 
 	      // notify changes
-	      self._notifyVideoconferenceChanged();
+	      self._notifyMultimediacacheChanged();
+
+	      self.multimediacache.occupied = false;
 	    };
 
 	    var errorWhileAccessingLocalStream = function(error) {
@@ -4661,18 +5005,18 @@
 	    else if (self._isBuddyParticipatingToVideoconference(fulljid) === true) {
 
 	      self._log("Participant accepted", {
-	        session : session, videoconference : self.videoconference
+	        session : session, videoconference : self.multimediacache
 	      });
 
 	      if (jsxc.mmstream.debug === true) {
 	        self._log("Buddy accepted ", {
-	          fulljid : fulljid, videoconference : self.videoconference
+	          fulljid : fulljid, videoconference : self.multimediacache
 	        });
 	      }
 
 	      // User type is not set here
 	      // self._setUserType(self.USER_TYPE.VIDEOCONF_PARTICIPANT);
-	      // self._notifyVideoconferenceChanged();
+	      // self._notifyMultimediacacheChanged();
 
 	      // require permission on devices if needed
 	      self._requireLocalStream()
@@ -4686,7 +5030,22 @@
 
 	    }
 
-	    // show accept/decline confirmation dialog
+	    /**
+	     * Buddy is sharing his screen
+	     */
+
+	    else if (self._isScreensharingInitiator(fulljid)) {
+
+	      // accept remote session with an empty mediastream object
+	      acceptRemoteSession(new MediaStream());
+
+	    }
+
+	    /**
+	     * Incoming call,
+	     * Show accept/decline confirmation dialog
+	     */
+
 	    else {
 
 	      // desktop notification
@@ -4697,15 +5056,13 @@
 	      self._log("Incoming call ", session);
 
 	      // check if another multimedia session is currently running
-	      if (self.videoconference.occupied === true) {
-	        jsxc.gui.feedback("<b>" + node + "</b> vous a contacté, mais vous êtes occupé");
+	      if (self._isClientOccupied(fulljid) !== false) {
 	        declineRemoteSession();
 	        return;
 	      }
-	      self.videoconference.occupied = true;
 
 	      self._setUserType(fulljid, self.USER_TYPE.SIMPLE_VIDEO_CALL);
-	      self._notifyVideoconferenceChanged();
+	      self._notifyMultimediacacheChanged();
 
 	      self.gui._showIncomingCallDialog(bid)
 	          .done(function() {
@@ -4749,8 +5106,8 @@
 	    var defer = $.Deferred();
 
 	    // Stream already stored, show it
-	    if (self.localStream !== null && self.localStream.active) {
-	      defer.resolve(self.localStream);
+	    if (self.multimediacache.localStream !== null && self.multimediacache.localStream.active) {
+	      defer.resolve(self.multimediacache.localStream);
 	      return defer.promise();
 	    }
 
@@ -4795,7 +5152,7 @@
 	    self.conn.jingle.RTC.getUserMedia(constraints,
 
 	        function(localStream) {
-	          self.localStream = localStream;
+	          self.multimediacache.localStream = localStream;
 	          defer.resolve(localStream);
 	        },
 
@@ -4819,7 +5176,12 @@
 	    var self = jsxc.mmstream;
 
 	    if (jsxc.mmstream.debug === true) {
-	      self._log("_onRemoteStreamAdded", [session, stream]);
+	      self._log('_onRemoteStreamAdded', [session, stream]);
+	    }
+
+	    if (self.isVideoCallsDisabled() === true) {
+	      self._log('Calls are disabled');
+	      return;
 	    }
 
 	    // TODO check if video and audio is present
@@ -4837,14 +5199,15 @@
 	    }
 
 	    // save session and stream
-	    if (!self.videoconference.users[fulljid]) {
+	    if (!self.multimediacache.users[fulljid]) {
 	      self._createUserEntry(fulljid);
 	    }
-	    self.videoconference.users[fulljid].session = session;
-	    self.videoconference.users[fulljid].stream = stream;
+	    self.multimediacache.users[fulljid].session = session;
+	    self.multimediacache.users[fulljid].stream = stream;
 
 	    // show local video if needed
-	    if (self.gui.isLocalVideoShown() !== true) {
+	    if (self.gui.isLocalVideoShown() !== true &&
+	        self.getUserType(fulljid) !== self.USER_TYPE.SCREENSHARING_INITITATOR) {
 	      self.gui.showLocalVideo();
 	    }
 
@@ -4857,8 +5220,8 @@
 	   */
 	  getActiveSession : function(fulljid) {
 	    var self = jsxc.mmstream;
-	    return self.videoconference.users[fulljid] && self.videoconference.users[fulljid].session ?
-	        self.videoconference.users[fulljid].session : null;
+	    return self.multimediacache.users[fulljid] && self.multimediacache.users[fulljid].session ?
+	        self.multimediacache.users[fulljid].session : null;
 	  },
 
 	  /**
@@ -4868,8 +5231,8 @@
 	   */
 	  getActiveStream : function(fulljid) {
 	    var self = jsxc.mmstream;
-	    return self.videoconference.users[fulljid] && self.videoconference.users[fulljid].stream ?
-	        self.videoconference.users[fulljid].stream : null;
+	    return self.multimediacache.users[fulljid] && self.multimediacache.users[fulljid].stream ?
+	        self.multimediacache.users[fulljid].stream : null;
 	  },
 
 	  /**
@@ -4891,9 +5254,9 @@
 	    // stop the stream
 	    self._stopStream(stream);
 
-	    if (self.videoconference.users[fulljid]) {
-	      delete self.videoconference.users[fulljid].session;
-	      delete self.videoconference.users[fulljid].stream;
+	    if (self.multimediacache.users[fulljid]) {
+	      delete self.multimediacache.users[fulljid].session;
+	      delete self.multimediacache.users[fulljid].stream;
 	    }
 
 	    else {
@@ -4902,6 +5265,14 @@
 
 	    // Hide stream AFTER removed session
 	    self.gui._hideVideoStream(fulljid);
+
+	    // check if no connection is running
+	    if (self.getCurrentVideoSessions().length < 1) {
+
+	      // turn off occupied flag to let people call
+	      self.multimediacache.occupied = false;
+
+	    }
 
 	    // Do not set status here, it will be set in _onVideoSessionStateChanged
 	    //self._setUserStatus(fulljid, self.USER_STATUS.DISCONNECTED);
@@ -4918,7 +5289,7 @@
 
 	    var res = [];
 
-	    $.each(self.videoconference.users, function(index, item) {
+	    $.each(self.multimediacache.users, function(index, item) {
 	      if (item.session) {
 	        res.push(item.session);
 	      }
@@ -4940,19 +5311,24 @@
 
 	    var node = Strophe.getNodeFromJid(fulljid);
 
+	    if (self.isVideoCallsDisabled() === true) {
+	      jsxc.gui.feedback('Les appels multimédia sont désactivés.');
+	      self._log('Calls are disabled');
+	      return;
+	    }
+
+	    jsxc.stats.addEvent("jsxc.mmstream.videocall.simplecall");
+
 	    // check if user connected
 	    if (self._isBuddyConnectingOrConnected(fulljid) === true) {
-	      jsxc.gui.feedback(node + " est déjà connecté ou en cours de connexion");
+	      jsxc.gui.feedback(node + ' est déjà connecté ou en cours de connexion');
 	      return;
 	    }
 
 	    // check if another multimedia session is currently running
-	    if (self.videoconference.occupied === true) {
-	      jsxc.gui.feedback(
-	          "Vous ne pouvez pas commencer un appel vidéo, veuillez d'abord raccrocher tous vos appels multimédia");
+	    if (self._isClientOccupied(null, true) !== false) {
 	      return;
 	    }
-	    self.videoconference.occupied = true;
 
 	    self.checkNavigatorCompatibility("videoconference");
 
@@ -4988,7 +5364,7 @@
 	    self._setUserType(fulljid, userType);
 
 	    // notify changes
-	    self._notifyVideoconferenceChanged();
+	    self._notifyMultimediacacheChanged();
 
 	    // ice configuration
 	    self.conn.jingle.setICEServers(self.iceServers);
@@ -5082,10 +5458,10 @@
 	    var fulljid = session.peerID;
 
 	    // save jingle state for debug purposes
-	    if (!self.videoconference.users[fulljid]) {
+	    if (!self.multimediacache.users[fulljid]) {
 	      self._createUserEntry(fulljid);
 	    }
-	    self.videoconference.users[fulljid].jingleState = state;
+	    self.multimediacache.users[fulljid].jingleState = state;
 
 	    // mmstream status
 	    var status;
@@ -5126,7 +5502,7 @@
 	        self.stopLocalStream();
 
 	        // turn off occupied flag to let people call
-	        self.videoconference.occupied = false;
+	        self.multimediacache.occupied = false;
 
 	      }
 
@@ -5138,10 +5514,50 @@
 	      self._setUserStatus(fulljid, status);
 
 	      // notify changes
-	      self._notifyVideoconferenceChanged([{fulljid : fulljid, status : status}]);
+	      self._notifyMultimediacacheChanged([{fulljid : fulljid, status : status}]);
 
 	    }
 
+	  },
+
+	  /**
+	   * Check if client is occupied.
+	   *
+	   * If not, after call this function client will be.
+	   *
+	   * If it is, show a feedback to inform user that 'fulljid' tried to contact him
+	   *
+	   * @private
+	   */
+	  _isClientOccupied : function(fulljid, isInitiator) {
+
+	    var self = jsxc.mmstream;
+	    var node = fulljid ? Strophe.getNodeFromJid(fulljid) : '';
+
+	    var message;
+	    if (isInitiator === true) {
+	      message =
+	          "Vous ne pouvez pas effectuer cette action avant d'avoir terminé tous vos appels multimédia";
+	    }
+
+	    else {
+	      message = "<b>" + node + "</b> a éssayé de vous contacter mais vous êtes occupé.";
+	    }
+
+	    // check if another multimedia session is currently running
+	    if (self.multimediacache.occupied !== false) {
+	      jsxc.gui.feedback(message);
+	      return true;
+	    }
+
+	    // otherwise enable session flag
+	    self.multimediacache.occupied = true;
+
+	    if (jsxc.mmstream.debug) {
+	      self._log("Occupied: " + self.multimediacache.occupied, {fulljid : fulljid});
+	    }
+
+	    return false;
 	  },
 
 	  /**
@@ -5174,7 +5590,7 @@
 	      self._log("Hangup all calls");
 	    }
 
-	    $.each(self.videoconference.users, function(fulljid) {
+	    $.each(self.multimediacache.users, function(fulljid) {
 	      self.hangupCall(fulljid);
 	    });
 
@@ -5214,12 +5630,6 @@
 
 	      track.stop();
 
-	      if (typeof track.enabled !== "undefined") {
-	        track.enabled = false;
-	      }
-
-	      stream.removeTrack(track);
-
 	    });
 
 	  },
@@ -5232,16 +5642,13 @@
 	    var self = jsxc.mmstream;
 
 	    if (jsxc.mmstream.debug === true) {
-
-	      // here signaled as error for debug purposes
-
-	      //self._log("Stop local stream", [self.localStream, self.conn.jingle.localStream]);
-	      self._log("Stop local stream", [self.localStream, self.conn.jingle.localStream], 'ERROR');
+	      self._log("Stop local stream",
+	          [self.multimediacache.localStream, self.conn.jingle.localStream]);
 	    }
 
-	    if (self.localStream) {
-	      self._stopStream(self.localStream);
-	      self.localStream = null;
+	    if (self.multimediacache.localStream) {
+	      self._stopStream(self.multimediacache.localStream);
+	      self.multimediacache.localStream = null;
 	    }
 
 	    if (self.conn.jingle.localStream) {
@@ -5254,6 +5661,55 @@
 	    if (localVideo) {
 	      localVideo.pause();
 	    }
+	  },
+
+	  /**
+	   * Attach a video stream with element
+	   *
+	   * Example: attachMediaStream($("<video>"), stream);
+	   *
+	   * Here another solution can be watch element and wait for visibility but for now there is no
+	   * largely compatible solutions
+	   *
+	   * @param stream
+	   * @param element
+	   */
+	  attachMediaStream : function(video, stream) {
+
+	    var self = jsxc.mmstream;
+
+	    var attach = function() {
+
+	      jsxc.debug("Attach media stream to video element", {element : video, stream : stream});
+
+	      self.conn.jingle.RTC.attachMediaStream(video.get(0), stream);
+
+	      //TODO: some browsers (Android Chrome, ...) want a user interaction before trigger play()
+	      try {
+	        video.get(0).play();
+	      } catch (e) {
+	        jsxc.error("Error while attaching video", {error : e});
+	      }
+
+	      jsxc.debug('Stream attached to element', {video : video, stream : stream});
+
+	    };
+
+	    // attach if visible
+	    if (video.is(':visible')) {
+	      attach();
+	    }
+
+	    // or ait until it does
+	    else {
+	      var interv = setInterval(function() {
+	        if (video.is(':visible')) {
+	          clearInterval(interv);
+	          attach();
+	        }
+	      }, 800);
+	    }
+
 	  },
 
 	  /**
@@ -5284,6 +5740,34 @@
 	    });
 
 	    return available;
+	  },
+
+	  _videoCallsDisabled : false,
+
+	  /**
+	   * Disable all video calls
+	   *
+	   */
+	  disableVideoCalls : function() {
+	    // here option is not stored in localstorage
+	    // jsxc.options.set('disableVideoCalls', true);
+
+	    jsxc.mmstream._videoCallsDisabled = true;
+	  },
+
+	  enableVideoCalls : function() {
+	    // here option is not stored in localstorage
+	    // jsxc.options.set('disableVideoCalls', false);
+
+	    jsxc.mmstream._videoCallsDisabled = false;
+	  },
+
+	  /**
+	   * Return true if video calls are disabled
+	   * @returns {boolean}
+	   */
+	  isVideoCallsDisabled : function() {
+	    return jsxc.mmstream._videoCallsDisabled;
 	  },
 
 	  /**
@@ -5318,7 +5802,7 @@
 	    self.stopLocalStream();
 
 	    // reset videoconference cache and indicator
-	    self._clearVideoconferenceCache();
+	    self._clearMultimediacache();
 
 	  }
 
@@ -5370,13 +5854,27 @@
 	    var mmstream = jsxc.mmstream;
 
 	    // update user status on event
-	    $(document).on("videoconference-changed.jsxc", self._videoconferenceChanged);
+	    $(document).on('multimediacache-changed.jsxc', self._multimediacacheChanged);
 
 	    self.mediapanel = $("#jsxc-mediapanel");
 
-	    // init terminate all button
+	    /**
+	     * Init terminate all link. Here it is important that user can clear multimedia cache to
+	     * correct possible errors
+	     */
 	    self.mediapanel.find('.jsxc_mmstreamTerminateAll').click(function() {
+
 	      mmstream._hangUpAll();
+
+	      // clear multimedia cache here and occupied flag
+	      setTimeout(function() {
+
+	        mmstream._clearMultimediacache();
+
+	        jsxc.gui.feedback('Appels terminés, système réinitialisé');
+
+	      }, 800);
+
 	    });
 
 	  },
@@ -5388,13 +5886,13 @@
 	   *
 	   * @private
 	   */
-	  _videoconferenceChanged : function(event, data) {
+	  _multimediacacheChanged : function(event, data) {
 
 	    var self = jsxc.mmstream.gui;
 	    var mmstream = jsxc.mmstream;
 
 	    if (jsxc.mmstream.debug === true) {
-	      self._log("On videoconference changed", {
+	      self._log("On multimedia cache changed", {
 	        event : event, data : data
 	      });
 	    }
@@ -5408,10 +5906,15 @@
 	    if (data && data.users) {
 	      $.each(data.users, function(index, element) {
 
-	        if (element.status === mmstream.USER_STATUS.DISCONNECTED) {
+	        // display message
+	        var node = Strophe.getNodeFromJid(element.fulljid);
+	        // var bid = jsxc.jidToBid(element.fulljid);
 
-	          // display message
-	          var node = Strophe.getNodeFromJid(element.fulljid);
+	        /**
+	         * Buddy is disconnected, show feedback
+	         */
+
+	        if (element.status === mmstream.USER_STATUS.DISCONNECTED) {
 
 	          // hide dialog if necessary
 	          jsxc.gui.dialog.close('incoming_call_dialog');
@@ -5424,9 +5927,36 @@
 
 	        }
 
+
+	        /**
+	         * Buddy is connected, remove wait message
+	         */
+
+	        else if (element.status === mmstream.USER_STATUS.CONNECTED) {
+
+	          // find video element
+	          var mediaress = self.getRemoteVideoContainer(element.fulljid);
+
+	          mediaress.find('.jsxc_connectionInProgress').animate({opacity : 0},
+	              jsxc.newgui.OPACITY_ANIMATION_DURATION);
+
+	        }
+
 	      });
 	    }
 
+	  },
+
+	  /**
+	   * Get remote video container associated with fulljid
+	   */
+	  getRemoteVideoContainer : function(fulljid) {
+
+	    if (Strophe.getResourceFromJid(fulljid) === null) {
+	      throw new Error('Invalid argument: ' + fulljid);
+	    }
+
+	    return $('video[data-fromjid="' + fulljid + '"]').parents('.jsxc-media-ressource');
 	  },
 
 	  /**
@@ -5443,7 +5973,7 @@
 	    // remove all items from list
 	    list.find("li").remove();
 
-	    if (Object.keys(mmstream.videoconference.users) < 1) {
+	    if (Object.keys(mmstream.multimediacache.users) < 1) {
 
 	      var it = $("<li>");
 	      it.text("Aucune connexion en cours");
@@ -5453,7 +5983,7 @@
 	    }
 
 	    // iterate users
-	    $.each(mmstream.videoconference.users, function(fulljid, item) {
+	    $.each(mmstream.multimediacache.users, function(fulljid, item) {
 
 	      var it = $("<li>");
 
@@ -5461,10 +5991,24 @@
 	      it.addClass("jsxcVideoConf_" + item.type);
 	      it.attr("title", item.type + ": " + item.status);
 
+	      var link;
+
+	      // user is participating to a videoconference, add link to reinvite him if needed
 	      if (mmstream._isBuddyParticipatingToVideoconference(fulljid) === true) {
-	        var link = $("<a href='#'>");
-	        link.click(function() {
+	        link = $("<a>").click(function() {
 	          mmstream.reinviteUserInVideoconference(fulljid);
+	        });
+	        link.text(item.node);
+
+	        list.append(it.append(link));
+	      }
+
+	      // user is participating to sreensharing, and we are initator. add link to reinvite
+	      // participants
+	      else if (mmstream._isBuddyScreensharingRecipient(fulljid) === true) {
+
+	        link = $("<a>").click(function() {
+	          mmstream.reinviteUserInScreensharing(fulljid);
 	        });
 	        link.text(item.node);
 
@@ -5477,6 +6021,50 @@
 	      }
 
 	    });
+
+	  },
+
+	  /**
+	   * Show local screen stream in media panel. Do not ask for screen stream, if stream not exist,
+	   * error is raised.
+	   */
+	  showLocalScreenStream : function() {
+
+	    var mmstream = jsxc.mmstream;
+	    var self = mmstream.gui;
+	    var newgui = jsxc.newgui;
+
+	    if (mmstream.isVideoCallsDisabled() === true) {
+	      self._log('Calls are disabled');
+	      return;
+	    }
+
+	    if (mmstream.multimediacache.screenStream === null) {
+	      throw new Error("Screen stream is null");
+	    }
+
+	    // create container for video and title
+	    var videoCtr = $("<div>").addClass('jsxc_screenStreamContainer');
+
+	    // create video element and store jid
+	    var video = $("<video>").addClass("jsxc_mediaPanelLocalScreenStream");
+	    videoCtr.append(video);
+
+	    // create hangup button
+	    var hangup = $("<div>").addClass('jsxc_hangUpControl jsxc_videoControl').click(function() {
+	      mmstream._hangUpAll();
+	      jsxc.newgui.removeMediaRessource($(this).parents(".jsxc-media-ressource"));
+	    });
+
+	    // append video
+	    jsxc.newgui.addMediaRessource(videoCtr, "Votre écran", {titleControls : [hangup]});
+
+	    // attach video after append elements
+	    mmstream.attachMediaStream(video, mmstream.multimediacache.screenStream);
+
+	    if (newgui.isMediapanelShown() !== true) {
+	      newgui.toggleMediapanel();
+	    }
 
 	  },
 
@@ -5523,27 +6111,8 @@
 	   */
 	  _isVideoStreamDisplayed : function(fulljid) {
 
-	    if (Strophe.getResourceFromJid(fulljid) === null) {
-	      throw new Error("JID must be full jid");
-	    }
+	    return jsxc.mmstream.gui.getRemoteVideoContainer(fulljid).length > 0;
 
-	    // var self = jsxc.mmstream.gui;
-	    var newgui = jsxc.newgui;
-
-	    var alreadyHere = false;
-	    newgui.getAllDisplayedMediaRessource().each(function() {
-
-	      var element = $(this);
-	      var video = element.find("video");
-
-	      if (video.length === 1 && video.data("fromjid") === fulljid) {
-	        alreadyHere = true;
-	        return false;
-	      }
-
-	    });
-
-	    return alreadyHere === true;
 	  },
 
 	  /**
@@ -5559,7 +6128,8 @@
 	      throw new Error("JID must be full jid");
 	    }
 
-	    var self = jsxc.mmstream.gui;
+	    var mmstream = jsxc.mmstream;
+	    var self = mmstream.gui;
 	    var node = Strophe.getNodeFromJid(fulljid);
 
 	    // check if video is not already present
@@ -5572,19 +6142,26 @@
 
 	    // create video element and store jid
 	    var video = $("<video>").addClass("jsxc_mediaPanelRemoteVideo");
-	    video.data("fromjid", fulljid);
+
+	    //$('#jsxc_webrtc .bubblingG').hide();
+
+	    video.data('fromjid', fulljid);
+	    video.attr('data-fromjid', fulljid);
 	    videoCtr.append(video);
+
+	    // waiting message
+	    videoCtr.append('<div class="jsxc_connectionInProgress">Connexion en cours ...</div>');
 
 	    // create hangup button
 	    var hangup = $("<div>").addClass('jsxc_hangUpControl jsxc_videoControl').click(function() {
-	      jsxc.mmstream.hangupCall(fulljid);
+	      mmstream.hangupCall(fulljid);
 	      jsxc.newgui.removeMediaRessource($(this).parents(".jsxc-media-ressource"));
 	    });
 
 	    // create fullscreen button
 	    var fullscreen = $("<div>").addClass('jsxc_fullscreenControl jsxc_videoControl').click(
 	        function() {
-	          jsxc.mmstream.gui._showVideoFullscreen(fulljid);
+	          mmstream.gui._showVideoFullscreen(fulljid);
 	        });
 
 	    // append video
@@ -5592,7 +6169,7 @@
 	        {titleControls : [hangup, fullscreen]});
 
 	    // attach video after append elements
-	    jsxc.attachMediaStream(video.get(0), stream);
+	    mmstream.attachMediaStream(video, stream);
 	  },
 
 	  /**
@@ -5609,7 +6186,7 @@
 
 	    // search element to remove
 	    $("video").each(function() {
-	      if ($(this).data("fromjid") === fulljid) {
+	      if ($(this).data('fromjid') === fulljid) {
 	        jsxc.newgui.removeMediaRessource($(this).parents(".jsxc-media-ressource"));
 	      }
 	    });
@@ -5622,13 +6199,19 @@
 	   */
 	  showLocalVideo : function() {
 
+	    var self = jsxc.mmstream.gui;
 	    var mmstream = jsxc.mmstream;
+
+	    self._log("Show local stream");
+
+	    if (mmstream.isVideoCallsDisabled() === true) {
+	      self._log('Calls are disabled');
+	      return;
+	    }
 
 	    mmstream._requireLocalStream()
 	        .done(function(localStream) {
-
-	          jsxc.attachMediaStream("#jsxc-local-video", localStream);
-
+	          mmstream.attachMediaStream($("#jsxc-local-video"), localStream);
 	        })
 	        .fail(function(error) {
 	          jsxc.gui.feedback("Erreur lors de l'accès à la caméra et au micro: " + error);
@@ -5699,10 +6282,55 @@
 
 	    var defer = $.Deferred();
 
-	    bid = Strophe.getBareJidFromJid(bid);
+	    bid = jsxc.jidToBid(bid);
 
 	    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('incomingCall', bid), {
 	      noClose : true, name : 'incoming_call_dialog'
+	    });
+
+	    self._ringOnIncoming();
+
+	    dialog.find('.jsxc_accept').click(function() {
+
+	      self._stopRinging();
+
+	      defer.resolve("ACCEPT");
+
+	      jsxc.gui.dialog.close();
+
+	    });
+
+	    dialog.find('.jsxc_reject').click(function() {
+
+	      self._stopRinging();
+
+	      defer.reject("REJECT");
+
+	      jsxc.gui.dialog.close();
+
+	    });
+
+	    return defer.promise();
+
+	  },
+
+	  /**
+	   * Show an "accept / decline" dialog for an incoming call
+	   */
+	  _showIncomingScreensharingDialog : function(bid) {
+
+	    if (!bid) {
+	      throw new Error("Invalid argument: " + bid);
+	    }
+
+	    var self = jsxc.mmstream.gui;
+
+	    var defer = $.Deferred();
+
+	    bid = jsxc.jidToBid(bid);
+
+	    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('incomingScreensharing', bid), {
+	      noClose : true, name : 'incoming_screensharing'
 	    });
 
 	    self._ringOnIncoming();
@@ -5747,10 +6375,10 @@
 	      throw new Error("Unkown mode: " + mode);
 	    }
 
-	    bid = Strophe.getBareJidFromJid(bid);
+	    bid = jsxc.jidToBid(bid);
 
-	    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('videoReinviteUser_' + mode, bid), {
-	      noClose : true, name : 'video_reinvite_user'
+	    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('reinviteUser_' + mode, bid), {
+	      noClose : true, name : 'reinvite_user'
 	    });
 
 	    dialog.find('.jsxc_accept').click(function() {
@@ -5763,7 +6391,7 @@
 
 	    dialog.find('.jsxc_reject').click(function() {
 
-	      defer.fail("REJECT");
+	      defer.reject("REJECT");
 
 	      jsxc.gui.dialog.close();
 
@@ -5820,7 +6448,8 @@
 	   */
 	  _showVideoFullscreen : function(fulljid) {
 
-	    var self = jsxc.mmstream.gui;
+	    var mmstream = jsxc.mmstream;
+	    var self = mmstream.gui;
 	    var newgui = jsxc.newgui;
 
 	    if (Strophe.getResourceFromJid(fulljid) === null) {
@@ -5859,7 +6488,7 @@
 	    var stream = jsxc.mmstream.getActiveStream(fulljid);
 
 	    if (stream) {
-	      jsxc.attachMediaStream(video.get(0), stream);
+	      mmstream.attachMediaStream(video, stream);
 	    }
 
 	    else {
@@ -5957,15 +6586,39 @@
 	   */
 	  init : function() {
 
-	    // Prevent duplicate windowList
-	    if ($('#jsxc_windowList').length > 0) {
+	    // gui already exist, return
+	    if ($('#jsxc-root').length > 0) {
 	      return;
 	    }
 
+	    // We need these templates often, so we creates some template jquery objects
+	    jsxc.gui.windowTemplate = $(jsxc.gui.template.get('chatWindow'));
+	    jsxc.gui.buddyTemplate = $(jsxc.gui.template.get('rosterBuddy'));
+
+	    // Append GUI on document
+	    jsxc.debug("Adding GUI and roster init");
+
+	    var skeleton = $("<div id='jsxc-root'></div>");
+	    skeleton.append($(jsxc.gui.template.get('newgui_chatsidebar')));
+	    skeleton.append($(jsxc.gui.template.get('newgui_mediapanel')));
+
+	    $(jsxc.options.rosterAppend + ':first').append(skeleton);
+
+	    // window list must stay here, otherwise too mush style problems appear
+	    $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('windowList')));
+
+	    // new gui init
+	    jsxc.newgui.init();
+	    jsxc.gui.interactions.init();
+
+	    // init roster element
+	    jsxc.gui.roster.init();
+
+	    jsxc.gui.tooltip('#jsxc-root');
+	    jsxc.gui.tooltip('#jsxc_windowList');
+
 	    jsxc.gui.regShortNames = new RegExp(emojione.regShortNames.source + '|(' +
 	        Object.keys(jsxc.gui.emoticonList.core).join('|') + ')', 'gi');
-
-	    $('body').append($(jsxc.gui.template.get('windowList')));
 
 	    $(window).resize(jsxc.gui.updateWindowListSB);
 	    $('#jsxc_windowList').resize(jsxc.gui.updateWindowListSB);
@@ -5976,13 +6629,16 @@
 	    $('#jsxc_windowListSB .jsxc_scrollRight').click(function() {
 	      jsxc.gui.scrollWindowListBy(200);
 	    });
+
+	    $('#jsxc_windowListSB .jsxc_closeAllWindows').click(function() {
+	      jsxc.gui.closeAllChatWindows();
+	    });
+
 	    $('#jsxc_windowList').on('wheel', function(ev) {
 	      if ($('#jsxc_windowList').data('isOver')) {
 	        jsxc.gui.scrollWindowListBy((ev.originalEvent.wheelDelta > 0) ? 200 : -200);
 	      }
 	    });
-
-	    jsxc.gui.tooltip('#jsxc_windowList');
 
 	    var fo = jsxc.options.get('favicon');
 	    if (fo && fo.enable) {
@@ -5993,10 +6649,6 @@
 	      jsxc.gui.favicon.badge(jsxc.storage.getUserItem('unreadMsg') || 0);
 	    }
 
-	    if (!jsxc.el_exists('#jsxc_roster')) {
-	      jsxc.gui.roster.init();
-	    }
-
 	    // prepare regexp for emotions
 	    $.each(jsxc.gui.emotions, function(i, val) {
 	      // escape characters
@@ -6005,19 +6657,35 @@
 	      jsxc.gui.emotions[i][2] = new RegExp(reg, 'g');
 	    });
 
-	    // We need this often, so we creates some template jquery objects
-	    jsxc.gui.windowTemplate = $(jsxc.gui.template.get('chatWindow'));
-	    jsxc.gui.buddyTemplate = $(jsxc.gui.template.get('rosterBuddy'));
-
 	    // change own presence informations
 	    var updatePresenceInformations = function(event, pres) {
 	      jsxc.gui.updatePresence('own', pres);
 	    };
+
 	    // add listener for own presences, and remove it on time
 	    $(document).on('ownpresence.jsxc', updatePresenceInformations);
 	    $(document).on('disconnected.jsxc', function() {
 	      $(document).off('ownpresence.jsxc', updatePresenceInformations);
 	    });
+
+	    // remove all window chen disconnected
+	    $(document).on('disconnected.jsxc', function() {
+	      jsxc.gui.closeAllChatWindows();
+	    });
+	  },
+
+	  /**
+	   * Close all chat windows
+	   */
+	  closeAllChatWindows : function() {
+
+	    $("#jsxc_windowList .jsxc_windowItem").each(function() {
+	      jsxc.gui.window.close($(this).data('bid'));
+	    });
+
+	    // replace list after close all, to avoid future window appear out of screen
+	    $('#jsxc_windowList ul').css('right', '0px');
+
 	  },
 
 	  /**
@@ -6119,7 +6787,7 @@
 	      ue.removeClass('jsxc_oneway');
 	    }
 
-	    var info = Strophe.getBareJidFromJid(data.jid) + '\n';
+	    var info = jsxc.jidToBid(data.jid) + '\n';
 	    info += jsxc.t('Subscription') + ': ' + jsxc.t(data.sub) + '\n';
 	    info += jsxc.t('Status') + ': ' + jsxc.t(jsxc.CONST.STATUS[data.status]);
 
@@ -6197,10 +6865,10 @@
 	      };
 
 	      // workaround for https://github.com/strophe/strophejs/issues/172
-	      if (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid)) {
+	      if (jsxc.jidToBid(jid) === jsxc.jidToBid(jsxc.xmpp.conn.jid)) {
 	        jsxc.xmpp.conn.vcard.get(handler_cb, error_cb);
 	      } else {
-	        jsxc.xmpp.conn.vcard.get(handler_cb, Strophe.getBareJidFromJid(jid), error_cb);
+	        jsxc.xmpp.conn.vcard.get(handler_cb, jsxc.jidToBid(jid), error_cb);
 	      }
 	    }
 	  },
@@ -6208,16 +6876,42 @@
 	  /**
 	   * Updates scrollbar handlers.
 	   *
+	   * SB are shown if there are more than 2 windows
+	   *
 	   * @memberOf jsxc.gui
 	   */
 	  updateWindowListSB : function() {
 
-	    if ($('#jsxc_windowList>ul').width() > $('#jsxc_windowList').width()) {
-	      $('#jsxc_windowListSB > div').removeClass('jsxc_disabled');
-	    } else {
-	      $('#jsxc_windowListSB > div').addClass('jsxc_disabled');
-	      $('#jsxc_windowList>ul').css('right', '0px');
+	    var newgui = jsxc.newgui;
+	    var wins = $("#jsxc_windowList .jsxc_window");
+	    var sb = $('#jsxc_windowListSB');
+
+	    if (wins.length > 1) {
+
+	      if (sb.css('display') !== 'block') {
+	        sb.css({
+	          opacity : 0, display : 'block'
+	        }).animate({
+	          opacity : 1
+	        }, newgui.OPACITY_ANIMATION_DURATION);
+	      }
+
 	    }
+
+	    else {
+
+	      if (sb.css('display') === 'block') {
+	        sb.animate({
+	          opacity : 0
+	        }, newgui.OPACITY_ANIMATION_DURATION, function() {
+	          sb.css({
+	            display : 'none'
+	          });
+	        });
+	      }
+
+	    }
+
 	  },
 
 	  /**
@@ -6506,7 +7200,7 @@
 	      'noClose' : true
 	    });
 
-	    $('#jsxc_dialog .jsxc_their_jid').text(Strophe.getBareJidFromJid(from));
+	    $('#jsxc_dialog .jsxc_their_jid').text(jsxc.jidToBid(from));
 
 	    $('#jsxc_dialog .jsxc_deny').click(function(ev) {
 	      ev.stopPropagation();
@@ -6541,7 +7235,7 @@
 	      'noClose' : true
 	    });
 
-	    $('#jsxc_dialog .jsxc_buddyName').text(Strophe.getBareJidFromJid(buddyName));
+	    $('#jsxc_dialog .jsxc_buddyName').text(jsxc.jidToBid(buddyName));
 
 	    $('#jsxc_dialog .jsxc_deny').click(function(ev) {
 	      ev.stopPropagation();
@@ -6675,7 +7369,9 @@
 	  showRemoveManyDialog : function(bidArray) {
 
 	    // show dialog
-	    jsxc.gui.dialog.open(jsxc.gui.template.get('removeManyDialog'));
+	    jsxc.gui.dialog.open(jsxc.gui.template.get('removeManyDialog'), {
+	      'noClose' : true
+	    });
 
 	    var templateList = $('#jsxc_dialog .jsxc_elementsToRemove');
 
@@ -6690,10 +7386,10 @@
 
 	      $.each(bidArray, function(index, element) {
 
-	        var data = jsxc.storage.getUserItem('buddy', element);
-	        var type = data.type;
-
 	        jsxc.xmpp.removeBuddy(element);
+
+	        var data = jsxc.storage.getUserItem('buddy', element);
+	        var type = data ? data.type : null;
 
 	        if (type === "groupchat") {
 	          jsxc.xmpp.bookmarks.delete(element, false);
@@ -6721,8 +7417,6 @@
 	   * @returns {JQuery|jQuery|HTMLElement}
 	   */
 	  feedback : function(message, type, timeout) {
-
-	    jsxc.stats.addEvent("jsxc.feedback.toast");
 
 	    var defaultType = "info";
 
@@ -6756,15 +7450,18 @@
 	  /**
 	   * Show a dialog asking for new etherpad document name, and return a promise
 	   */
-	  showEtherpadCreationDialog : function() {
+	  showEtherpadCreationDialog : function(selectedJids) {
 
 	    var defer = $.Deferred();
 
 	    // show dialog
-	    jsxc.gui.dialog.open(jsxc.gui.template.get('etherpadCreation'));
+	    jsxc.gui.dialog.open(jsxc.gui.template.get('etherpadCreation'), {
+	      'noClose' : true
+	    });
 
 	    // create user list to invite
-	    jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc-etherpad-dialog-buddylist");
+	    var buddyList = jsxc.gui.widgets.createBuddyList(
+	        "#jsxc_dialog #jsxc-etherpad-dialog-buddylist", selectedJids);
 
 	    $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
 	      ev.stopPropagation();
@@ -6796,27 +7493,36 @@
 
 	    });
 
+	    $('#jsxc_dialog .jsxc_refresh').click(function(ev) {
+	      ev.stopPropagation();
+
+	      jsxc.gui.feedback('Mise à jour en cours ...');
+
+	      buddyList.updateBuddyList();
+	    });
+
 	    return defer.promise();
 
-	  }, 
-	  
-	  
+	  },
+
 	  /**
 	   * Show a dialog asking for new etherpad document name, and return a promise
 	   */
-	  showInviteContactsDialog : function() {
+	  showSelectContactsDialog : function() {
 
 	    var defer = $.Deferred();
 
 	    // show dialog
-	    jsxc.gui.dialog.open(jsxc.gui.template.get('inviteContacts'));
+	    jsxc.gui.dialog.open(jsxc.gui.template.get('selectContacts'), {
+	      'noClose' : true
+	    });
 
 	    // create user list to invite
-	    jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc-invite-dialog-buddylist");
+	    var buddyList = jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc-invite-dialog-buddylist");
 
 	    $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
 	      ev.stopPropagation();
-	      
+
 	      // get selected items
 	      var jids = [];
 	      var selectedItems = $("#jsxc_dialog #jsxc-invite-dialog-buddylist .jsxc-checked");
@@ -6837,6 +7543,14 @@
 
 	      defer.reject("user canceled");
 
+	    });
+
+	    $('#jsxc_dialog .jsxc_refresh').click(function(ev) {
+	      ev.stopPropagation();
+
+	      jsxc.gui.feedback('Mise à jour en cours ...');
+
+	      buddyList.updateBuddyList();
 	    });
 
 	    return defer.promise();
@@ -6885,9 +7599,9 @@
 
 	    var defer = $.Deferred();
 
-	    jsxc.gui.dialog.open(jsxc.gui.template.get('conversationSelectionDialog'));
+	    jsxc.gui.dialog.open(jsxc.gui.template.get('selectConversations'));
 
-	    jsxc.gui.widgets.createConversationList("#jsxc_dialogConversationList");
+	    var conversList = jsxc.gui.widgets.createConversationList("#jsxc_dialogConversationList");
 
 	    $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
 	      ev.stopPropagation();
@@ -6911,6 +7625,14 @@
 
 	      defer.reject("user canceled");
 
+	    });
+
+	    $('#jsxc_dialog .jsxc_refresh').click(function(ev) {
+	      ev.stopPropagation();
+
+	      jsxc.gui.feedback('Mise à jour en cours ...');
+
+	      conversList.updateConversationList();
 	    });
 
 	    return defer.promise();
@@ -7345,54 +8067,6 @@
 
 	  },
 
-	  showSelectionDialog : function(header, msg, primary, option, primaryLabel, optionLabel) {
-	    var opt;
-
-	    if (arguments.length === 1 && typeof header === 'object' && header !== null) {
-	      opt = header;
-	    } else {
-	      opt = {
-	        header : header, msg : msg, primary : {
-	          label : primaryLabel, cb : primary
-	        }, option : {
-	          label : optionLabel, cb : option
-	        }
-	      };
-	    }
-
-	    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('selectionDialog'), {
-	      noClose : true
-	    });
-
-	    if (opt.header) {
-	      dialog.find('h3').text(opt.header);
-	    } else {
-	      dialog.find('h3').hide();
-	    }
-
-	    if (opt.msg) {
-	      dialog.find('p').text(opt.msg);
-	    } else {
-	      dialog.find('p').hide();
-	    }
-
-	    if (opt.primary && opt.primary.label) {
-	      dialog.find('.btn-primary').text(opt.primary.label);
-	    }
-
-	    if (opt.primary && opt.option.label) {
-	      dialog.find('.btn-default').text(opt.option.label);
-	    }
-
-	    if (opt.primary && opt.primary.cb) {
-	      dialog.find('.btn-primary').click(opt.primary.cb);
-	    }
-
-	    if (opt.primary && opt.option.cb) {
-	      dialog.find('.btn-primary').click(opt.option.cb);
-	    }
-	  },
-
 	  /**
 	   * Update all presence objects for given user.
 	   *
@@ -7562,7 +8236,7 @@
 	      var spot = $("<span>X</span>").addClass("jsxc_spot");
 	      var href = $(this).attr("href").replace(/^ *(mailto|xmpp):/, "").trim();
 
-	      if (href !== '' && href !== Strophe.getBareJidFromJid(jsxc.storage.getItem("jid"))) {
+	      if (href !== '' && href !== jsxc.jidToBid(jsxc.storage.getItem("jid"))) {
 	        var bid = jsxc.jidToBid(href);
 	        var self = $(this);
 	        var s = self.prev();
@@ -8165,7 +8839,7 @@
 	   */
 	  openChatWindow : function(jid) {
 
-	    if(!jid){
+	    if (!jid) {
 	      jsxc.gui.feedback("Utilisateur invalide: " + jid);
 	    }
 
@@ -8173,7 +8847,7 @@
 	    var bid = jsxc.jidToBid(jid);
 	    var node = Strophe.getNodeFromJid(jid);
 
-	    if(!node){
+	    if (!node) {
 	      jsxc.gui.feedback("Utilisateur invalide: " + jid);
 	    }
 
@@ -8340,13 +9014,24 @@
 	  },
 
 	  /**
-	   * Reconnect user
+	   * Reconnect user. Try to call an registered callback or show the default connexion panel
 	   */
 	  reconnect : function() {
-	    jsxc.gui.feedback("Connexion en cours");
+
+	    var newgui = jsxc.newgui;
+
 	    var called = jsxc.api.callback("onReconnectRequest");
+
 	    if (called < 1) {
-	      jsxc.gui.showLoginBox();
+
+	      if (newgui.isChatSidebarShown() !== true) {
+	        newgui.toggleChatSidebar();
+	      }
+
+	      if (newgui.isConnexionMenuShown() !== true) {
+	        newgui.toggleConnexionMenu();
+	      }
+
 	    }
 	  },
 
@@ -8680,84 +9365,6 @@
 	  },
 
 	  /**
-	   * Get all checked elements from buddylist, conversations AND buddies
-	   * @returns {Array}
-	   * @private
-	   */
-	  _getCheckedElementsOrAskFor : function() {
-
-	    var defer = $.Deferred();
-
-	    var all = $("#jsxc_buddylist li");
-	    var rslt = [];
-
-	    all.each(function() {
-	      var element = $(this);
-	      if (element.find(".jsxc-checked").length > 0) {
-	        rslt.push(element.data('jid'));
-	      }
-	    });
-
-	    // if no elements, show only buddies here
-	    //TODO Present conversations ?
-	    if (rslt.length < 1) {
-
-	      jsxc.gui.showInviteContactsDialog()
-	          .then(function(result) {
-	            defer.resolve(result);
-	          })
-	          .fail(function() {
-	            defer.reject("canceled");
-	          });
-	    }
-
-	    else {
-	      defer.resolve(rslt);
-	    }
-
-	    return defer.promise();
-
-	  },
-
-	  /**
-	   * Get checked elements from buddylist, and only the buddies
-	   * @returns {Array}
-	   * @private
-	   */
-	  _getCheckedBuddiesOrAskFor : function() {
-
-	    var defer = $.Deferred();
-
-	    var all = $("#jsxc_buddylist li");
-	    var rslt = [];
-
-	    all.each(function() {
-	      var element = $(this);
-	      if (element.data('type') === 'chat' && element.find(".jsxc-checked").length > 0) {
-	        rslt.push(element.data('bid'));
-	      }
-	    });
-
-	    if (rslt.length < 1) {
-
-	      jsxc.gui.showInviteContactsDialog()
-	          .then(function(result) {
-	            defer.resolve(result);
-	          })
-	          .fail(function() {
-	            defer.reject("canceled");
-	          });
-	    }
-
-	    else {
-	      defer.resolve(rslt);
-	    }
-
-	    return defer.promise();
-
-	  },
-
-	  /**
 	   * Return checked elements from search user panel
 	   * @returns {JQuery|*|jQuery|HTMLElement}
 	   * @private
@@ -8778,69 +9385,39 @@
 	    var loginBtn = $('#jsxc-status-bar .jsxc-login-button');
 	    var logoutBtn = $('#jsxc-status-bar .jsxc-logout-button');
 
-	    // display own presence information
+	    // listen connection state to display informations and controls
 	    $(document).on('ownpresence.jsxc', function() {
 	      newgui.updateOwnPresenceIndicator();
 	    });
+
 	    $(document).on('attached.jsxc', function() {
 	      newgui.updateOwnPresenceIndicator();
 	    });
+
 	    $(document).on('disconnected.jsxc', function() {
 	      newgui.updateOwnPresenceIndicator(true);
+	      newgui.hideAndShow(loginBtn, logoutBtn);
+	    });
+
+	    $(document).on('connected.jsxc', function() {
+	      newgui.hideAndShow(logoutBtn, loginBtn);
 	    });
 	    newgui.updateOwnPresenceIndicator();
 
-	    /**
-	     * Hide one element and show a second one
-	     * @param toShow
-	     * @param toHide
-	     */
-	    var hideAndShow = function(toShow, toHide) {
-
-	      // hide old element
-	      toHide.animate({
-	        opacity : 0
-	      }, newgui.OPACITY_ANIMATION_DURATION, function() {
-	        toHide.css('display', 'none');
-
-	        // show new one
-	        toShow.css({
-	          'display' : 'inline-block', 'opacity' : 0
-	        });
-	        toShow.animate({
-	          'opacity' : '1'
-	        }, newgui.OPACITY_ANIMATION_DURATION);
-	      });
-
-	    };
-
 	    // log out button
 	    logoutBtn.click(function() {
-
-	      // disconnect
 	      jsxc.api.disconnect();
-	      hideAndShow(loginBtn, logoutBtn);
-
+	      jsxc.newgui.toggleBuddyList();
 	    });
 
 	    // login button
 	    loginBtn.click(function() {
-
 	      jsxc.api.reconnect();
-
-	      $(document).one('connected.jsxc', function() {
-	        hideAndShow(logoutBtn, loginBtn);
-	      });
-
 	    });
 
 	    // show login / logout on connect
 	    if (jsxc.xmpp.conn) {
-	      hideAndShow(logoutBtn, loginBtn);
-	    } else {
-	      $(document).one('attached.jsxc', function() {
-	        hideAndShow(logoutBtn, loginBtn);
-	      });
+	      newgui.hideAndShow(logoutBtn, loginBtn);
 	    }
 
 	    // make status bar selectable
@@ -8861,7 +9438,9 @@
 	   */
 	  _initActionMenu : function() {
 
-	    var self = jsxc.gui.interactions;
+	    // var self = jsxc.gui.interactions;
+	    var mmstream = jsxc.mmstream;
+	    var newgui = jsxc.newgui;
 
 	    /**
 	     * Start a multi user chat
@@ -8871,7 +9450,7 @@
 	    $('#jsxc-chat-sidebar .jsxc-action_new-conversation').click(function() {
 
 	      var selected = [];
-	      self._getCheckedBuddiesOrAskFor()
+	      newgui.getCheckedBuddiesOrAskFor()
 	          .then(function(results) {
 	            $.each(results, function(index, element) {
 	              selected.push(element);
@@ -8892,7 +9471,7 @@
 
 	    $('.jsxc-action_delete-buddies').click(function() {
 
-	      self._getCheckedElementsOrAskFor()
+	      newgui.getCheckedElementsOrAskFor()
 
 	          .then(function(buddies) {
 
@@ -8923,9 +9502,9 @@
 	     * Invite users in conversation
 	     * ============================
 	     */
-	    $('#jsxc-actions-menu .jsxc-action_invite-in-conversation').click(function() {
+	    $('#jsxc-main-menu .jsxc-action_invite-in-conversation').click(function() {
 
-	      self._getCheckedBuddiesOrAskFor()
+	      newgui.getCheckedBuddiesOrAskFor()
 	          .then(function(buddies) {
 
 	            if (buddies.length < 1) {
@@ -8971,10 +9550,13 @@
 	     * Etherpad doc creation
 	     * =====================
 	     */
-	    $("#jsxc-actions-menu .jsxc-action_new-etherpad-document").click(function() {
+	    $("#jsxc-main-menu .jsxc-action_new-etherpad-document").click(function() {
+
+	      // check if some buddies are already selected
+	      var selected = newgui.getCheckedBuddies();
 
 	      // show dialog
-	      jsxc.gui.showEtherpadCreationDialog()
+	      jsxc.gui.showEtherpadCreationDialog(selected)
 
 	          .then(function(res) {
 
@@ -8998,10 +9580,10 @@
 	     * ==========
 	     *
 	     */
-	    $("#jsxc-actions-menu .jsxc-action_video-call").click(function() {
+	    $("#jsxc-main-menu .jsxc-action_video-call").click(function() {
 
 	      // get selected budies
-	      self._getCheckedBuddiesOrAskFor()
+	      newgui.getCheckedBuddiesOrAskFor()
 
 	          .then(function(buddies) {
 
@@ -9017,7 +9599,7 @@
 
 	              var fjid = jsxc.getCurrentActiveJidForBid(element);
 
-	              if (fjid === null || jsxc.isBuddyOnline(element) === true) {
+	              if (fjid === null || jsxc.isBuddyOnline(element) === false) {
 	                unavailables.push(Strophe.getNodeFromJid(element));
 	              } else {
 	                fjidArray.push(jsxc.getCurrentActiveJidForBid(element));
@@ -9038,12 +9620,133 @@
 
 	            // call buddies
 	            $.each(fjidArray, function(index, fjid) {
-	              jsxc.mmstream.startSimpleVideoCall(fjid);
+	              mmstream.startSimpleVideoCall(fjid);
 	            });
 
 	          })
 	          .fail(function() {
 	            jsxc.gui.feedback('Opération annulée');
+	          });
+
+	    });
+
+	    /**
+	     * Video conférence
+	     * ================
+	     *
+	     */
+	    $("#jsxc-main-menu .jsxc-action_videoconference").click(function() {
+
+	      // get selected budies
+	      newgui.getCheckedBuddiesOrAskFor()
+
+	          .then(function(buddies) {
+
+	            if (buddies.length < 1) {
+	              jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+	              return;
+	            }
+
+	            if (buddies.length > mmstream.VIDEOCONFERENCE_MAX_PARTICIPANTS) {
+	              jsxc.gui.feedback("La vidéoconférence est limitée à 6 participants");
+	              return;
+	            }
+
+	            // get full jid of buddies
+	            var fjidArray = [];
+	            var unavailables = [];
+	            $.each(buddies, function(index, element) {
+
+	              var fjid = jsxc.getCurrentActiveJidForBid(element);
+
+	              if (fjid === null || jsxc.isBuddyOnline(element) === false) {
+	                unavailables.push(Strophe.getNodeFromJid(element));
+	              } else {
+	                fjidArray.push(jsxc.getCurrentActiveJidForBid(element));
+	              }
+
+	            });
+
+	            // check how many participants are unavailable
+	            if (unavailables.length === 1) {
+	              jsxc.gui.feedback("<b>" + unavailables[0] + "</b> n'est pas disponible");
+	              return;
+	            }
+
+	            else if (unavailables.length > 1) {
+	              jsxc.gui.feedback("<b>" + unavailables.join(", ") + "</b> ne sont pas disponibles");
+	              return;
+	            }
+
+	            // start videoconference
+	            mmstream.startVideoconference(fjidArray);
+
+	          })
+	          .fail(function() {
+	            jsxc.gui.feedback('Opération annulée');
+	          });
+
+	    });
+
+	    /**
+	     * Screen sharing
+	     * ===============
+	     *
+	     */
+	    $("#jsxc-main-menu .jsxc-action_screensharing").click(function() {
+
+	      // get selected budies
+	      newgui.getCheckedBuddiesOrAskFor()
+
+	          .then(function(buddies) {
+
+	            if (buddies.length < 1) {
+	              jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+	              return;
+	            }
+
+	            mmstream.checkNavigatorCompatibility("screensharing");
+
+	            mmstream.isChromeExtensionInstalled()
+
+	                .fail(function() {
+	                  mmstream.gui.showInstallScreenSharingExtensionDialog();
+	                  return;
+	                })
+
+	                .then(function() {
+
+	                  // get full jid of buddies
+	                  var fjidArray = [];
+	                  var unavailables = [];
+	                  $.each(buddies, function(index, element) {
+
+	                    var fjid = jsxc.getCurrentActiveJidForBid(element);
+
+	                    if (fjid === null || jsxc.isBuddyOnline(element) === false) {
+	                      unavailables.push(Strophe.getNodeFromJid(element));
+	                    } else {
+	                      fjidArray.push(jsxc.getCurrentActiveJidForBid(element));
+	                    }
+
+	                  });
+
+	                  // check how many participants are unavailable
+	                  if (unavailables.length === 1) {
+	                    jsxc.gui.feedback("<b>" + unavailables[0] + "</b> n'est pas disponible");
+	                    return;
+	                  }
+
+	                  else if (unavailables.length > 1) {
+	                    jsxc.gui.feedback(
+	                        "<b>" + unavailables.join(", ") + "</b> ne sont pas disponibles");
+	                    return;
+	                  }
+
+	                  // call buddies
+	                  mmstream.startScreenSharingMultiPart(fjidArray);
+
+	                });
 	          });
 
 	    });
@@ -9058,6 +9761,8 @@
 
 	    // var self = jsxc.gui.interactions;
 	    var newgui = jsxc.newgui;
+	    var mmstream = jsxc.mmstream;
+	    var notification = jsxc.notification;
 
 	    /**
 	     * Open settings menu
@@ -9093,13 +9798,85 @@
 
 	    });
 
+	    /**
+	     * Install screensharing extension
+	     * ===============================
+	     */
 	    $('#jsxc-settings-menu .jsxc-action_installScreenSharingExtension').click(function() {
-	      jsxc.mmstream.gui.showInstallScreenSharingExtensionDialog();
+	      mmstream.gui.showInstallScreenSharingExtensionDialog();
 	    });
 
-	    // about dialog
+	    /**
+	     * About dialog
+	     * ============
+	     */
 	    $('#jsxc-settings-menu .jsxc-show-about-dialog').click(function() {
 	      jsxc.gui.showAboutDialog();
+	    });
+
+	    /**
+	     * Mute sounds
+	     * ===========
+	     */
+	    var muteIndicator = jsxc.newgui.createStateIndicator('.jsxc-action_toggleMuteMode');
+	    muteIndicator.toggleState(!notification.isSoundMuted());
+
+	    $('#jsxc-settings-menu .jsxc-action_toggleMuteMode').click(function() {
+
+	      muteIndicator.toggleState();
+
+	      if (muteIndicator.getState() === false) {
+	        notification.muteSound();
+	      }
+
+	      else {
+	        notification.unmuteSound();
+	      }
+
+	    });
+
+	    /**
+	     * Show / Hide notifications
+	     * =========================
+	     */
+	    var notifIndicator = jsxc.newgui.createStateIndicator('.jsxc-action_toggleNotifications');
+	    notifIndicator.toggleState(notification.isNotificationShowed());
+
+	    $('#jsxc-settings-menu .jsxc-action_toggleNotifications').click(function() {
+
+	      notifIndicator.toggleState();
+
+	      if (notifIndicator.getState() === true) {
+
+	        // request permission if needed
+	        if (notification.hasPermission() !== true) {
+	          jsxc.gui.showRequestNotification();
+	        }
+
+	        notification.showNotifications();
+	      }
+
+	      else {
+	        notification.hideNotifications();
+	      }
+
+	    });
+
+	    var videoIndicator = jsxc.newgui.createStateIndicator('.jsxc-action_disableVideoCalls');
+	    videoIndicator.toggleState(mmstream.isVideoCallsDisabled());
+
+	    $('#jsxc-settings-menu .jsxc-action_disableVideoCalls').click(function() {
+
+	      videoIndicator.toggleState();
+
+	      if (videoIndicator.getState() === true) {
+	        mmstream.disableVideoCalls();
+	      }
+
+	      else {
+	        mmstream.enableVideoCalls();
+	      }
+
 	    });
 
 	  },
@@ -9187,7 +9964,50 @@
 
 	  },
 
+	  /**
+	   * Where user can manage notifications: reject or accept them, remove them....
+	   * @private
+	   */
 	  _initNotificationsMenu : function() {
+
+	    /**
+	     * Reject all notifications
+	     * ========================
+	     *
+	     */
+	    $('#jsxc-manage-notifications .jsxc-action_rejectAllNotifications').click(function() {
+
+	      if ($('#jsxc-notifications ul li[data-nid]').length < 1) {
+	        jsxc.gui.feedback("Aucune notification à rejeter");
+	        return;
+	      }
+
+	      jsxc.gui.showConfirmDialog("Etes vous sur de vouloir rejeter toutes les notifications ?",
+
+	          function() {
+
+	            jsxc.gui.dialog.close();
+
+	            $('#jsxc-notifications ul li[data-nid]').each(function() {
+	              jsxc.notice.remove($(this).data('nid'));
+	            });
+
+	            jsxc.gui.feedback("Notifications rejetées");
+	          },
+
+	          function() {
+	            jsxc.gui.feedback("Opération annulée");
+	          });
+
+	    });
+
+	    /**
+	     * Show notifications parameters
+	     * =============================
+	     */
+	    $('#jsxc-manage-notifications .jsxc-action_notificationsParameters').click(function() {
+	      jsxc.newgui.toggleSettingsMenu();
+	    });
 
 	  }
 
@@ -9227,6 +10047,11 @@
 
 	  OPACITY_ANIMATION_DURATION : '500',
 
+	  /**
+	   * Half of the animation duration
+	   */
+	  STATE_INDICATOR_ANIMATION_DURATION : 100,
+
 	  _log : function(message, data, level) {
 	    jsxc.debug('[NGUI] ' + message, data, level);
 	  },
@@ -9249,11 +10074,6 @@
 	     * Header: Always visible
 	     *
 	     */
-	    // open and close chat sidebar
-	    var togglechat = $("#jsxc-chat-sidebar-header .jsxc-toggle-sidebar");
-	    togglechat.click(function() {
-	      self.toggleChatSidebar();
-	    });
 
 	    // open and close video panel
 	    var togglevideo = $("#jsxc-chat-sidebar-header .jsxc-toggle-mediapanel");
@@ -9271,8 +10091,6 @@
 	      buddyFilter.addClass("jsxc-active-filter");
 	      conversationFilter.removeClass("jsxc-active-filter");
 	    });
-	    self.toggleBuddyFilter('buddies');
-	    buddyFilter.addClass("jsxc-active-filter");
 
 	    conversationFilter.click(function() {
 	      self.toggleBuddyFilter('conversations');
@@ -9280,14 +10098,25 @@
 	      buddyFilter.removeClass("jsxc-active-filter");
 	    });
 
+	    // activate buddy on launch
+	    self.toggleBuddyFilter('buddies');
+	    buddyFilter.addClass("jsxc-active-filter");
+
 	    // selection mode
 	    $("#jsxc-select-buddies").click(function() {
 	      self.toggleSelectionMode();
-	      $(this).toggleClass("jsxc-selection-mode-enabled");
 	    });
 
 	    $("#jsxc-chat-sidebar-header").click(function() {
+
+	      // show buddy list on open
+	      if (self.chatSidebarContent.isMainContentVisible() === false &&
+	          self.isChatSidebarShown() === false) {
+	        self.chatSidebarContent.showMainContent();
+	      }
+
 	      self.toggleChatSidebar();
+
 	    });
 
 	    // close media panel
@@ -9310,6 +10139,9 @@
 
 	    // where user can manage notifications
 	    self._initNotificationsPanel();
+
+	    // (re) connexion panel
+	    self._initConnexionMenu();
 
 	    // optionnal
 	    // self.initMediaPanelMouseNavigation();
@@ -9337,7 +10169,6 @@
 	    // init multimedia stream gui
 	    jsxc.mmstream.gui._initGui();
 	  },
-
 
 	  /**
 	   * Utility to toggle a floating menu visible or hidden
@@ -9399,6 +10230,122 @@
 
 	    }
 
+	  },
+
+	  /**
+	   * Utility to hide one element and show a second one with animations
+	   * @param toShow
+	   * @param toHide
+	   */
+	  hideAndShow : function(toShow, toHide) {
+
+	    var self = jsxc.newgui;
+
+	    // hide old element
+	    toHide.animate({
+	      opacity : 0
+	    }, self.OPACITY_ANIMATION_DURATION, function() {
+	      toHide.css('display', 'none');
+
+	      // show new one
+	      toShow.css({
+	        'display' : 'inline-block', 'opacity' : 0
+	      });
+	      toShow.animate({
+	        'opacity' : '1'
+	      }, self.OPACITY_ANIMATION_DURATION);
+	    });
+
+	  },
+
+	  /**
+	   * Create a state indicator informing user that something is turned on or off
+	   */
+	  createStateIndicator : function(selector) {
+
+	    var self = jsxc.newgui;
+
+	    if (!selector) {
+	      throw new Error("Invalid argument: " + selector);
+	    }
+
+	    // root maybe containing other elements
+	    var root = $(selector);
+
+	    // indicator off / on
+	    var indicator = $(
+	        '<span class="jsxc_stateIndicator">&nbsp;<span class="jsxc_stateIndicator_on">on</span> | ' +
+	        '<span class="jsxc_stateIndicator_off">off</span></span>');
+
+	    root.append(indicator);
+
+	    var on = indicator.find('.jsxc_stateIndicator_on');
+	    var off = indicator.find('.jsxc_stateIndicator_off');
+
+	    var duration = self.STATE_INDICATOR_ANIMATION_DURATION;
+
+	    /**
+	     * State of indicator. True: on, false: off
+	     * @type {boolean}
+	     */
+	    var indicatorState = false;
+
+	    var ret = {
+
+	      /**
+	       * The root of the indicator
+	       */
+	      root : indicator,
+
+	      getState : function() {
+	        return indicatorState;
+	      },
+
+	      /**
+	       * Toggle state on | off
+	       */
+	      toggleState : function(state) {
+
+	        if (typeof state === 'undefined') {
+	          state = !indicatorState;
+	          indicatorState = state;
+	        }
+
+	        if (state === true) {
+
+	          off.animate({
+	                color : 'black', opacity : 0.3
+	              }, duration,
+
+	              function() {
+
+	                on.animate({
+	                  color : 'blue', opacity : 1
+	                }, duration);
+
+	              });
+	        }
+
+	        else {
+
+	          on.animate({
+	                color : 'black', opacity : 0.5
+	              }, duration,
+
+	              function() {
+
+	                off.animate({
+	                  color : 'blue', opacity : 1
+	                }, duration);
+
+	              });
+	        }
+
+	      }
+
+	    };
+
+	    return ret;
 	  }
 
 	};
@@ -9708,7 +10655,7 @@
 	    var self = jsxc.newgui;
 
 	    // add openning action
-	    $("#jsxc-actions-menu .jsxc-action_manage-notifications").click(function() {
+	    $("#jsxc-main-menu .jsxc-action_manage-notifications").click(function() {
 	      self.toggleNotificationsMenu();
 	    });
 
@@ -9754,7 +10701,21 @@
 	    // if not, display online buddies
 	    else {
 	      var online = $('#jsxc_buddylist li[data-status!="offline"][data-type="chat"]').length;
-	      headerContent.append('<span>' + online + ' personne(s) en ligne</span>');
+
+	      var message;
+	      if (online === 0) {
+	        message = "Aucune activité";
+	      }
+
+	      else if (online === 1) {
+	        message = "1 personne en ligne";
+	      }
+
+	      else {
+	        message = online + " personnes en ligne";
+	      }
+
+	      headerContent.append('<span>' + message + '</span>');
 	    }
 
 	    // keep handler if used like this
@@ -9856,7 +10817,7 @@
 	    list.empty();
 
 	    var displayed = 0;
-	    var ownJid = Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid);
+	    var ownJid = jsxc.jidToBid(jsxc.xmpp.conn.jid);
 
 	    $.each(results, function(index, element) {
 
@@ -9875,16 +10836,16 @@
 	      // element to show is a buddy, an special icon is displayed and switched with checked icon on
 	      // selection
 	      if (element._is_buddy === true) {
-	        res.attr('title', element.username + " est dans vos contacts");
-	        res.addClass("jsxc-search-result-buddie");
+	        res.attr('title', element.username + ' est dans vos contacts');
+	        res.addClass('jsxc-search-result-buddie');
 	        res.click(function() {
 
-	          if (res.hasClass("jsxc-search-result-buddie")) {
-	            res.removeClass("jsxc-search-result-buddie");
-	            res.addClass("jsxc-checked");
+	          if (res.hasClass('jsxc-search-result-buddie')) {
+	            res.removeClass('jsxc-search-result-buddie');
+	            res.addClass('jsxc-checked');
 	          } else {
-	            res.removeClass("jsxc-checked");
-	            res.addClass("jsxc-search-result-buddie");
+	            res.removeClass('jsxc-checked');
+	            res.addClass('jsxc-search-result-buddie');
 	          }
 
 	        });
@@ -9892,9 +10853,9 @@
 
 	      // element to show is not a buddy
 	      else {
-	        res.attr('title', element.username + " n'est pas dans vos contacts");
+	        res.attr('title', element.username + ' n\'est pas dans vos contacts');
 	        res.click(function() {
-	          res.toggleClass("jsxc-checked");
+	          res.toggleClass('jsxc-checked');
 	        });
 	      }
 
@@ -9938,10 +10899,204 @@
 	  },
 
 	  /**
+	   * Init the connexion panel
+	   * @private
+	   */
+	  _initConnexionMenu : function() {
+
+	    var self = jsxc.newgui;
+
+	    // display warning if connexion time > 10s
+	    var connexionTimerValueMs = 12000;
+	    var connexionTimerId = -1;
+
+	    /**
+	     * Display a standby message while connecting
+	     * @param visible
+	     */
+	    var showStandBy = function(visible) {
+
+	      var standby = $("#jsxc-connexion-menu #jsxc-login-standby");
+
+	      if (visible === true) {
+	        standby.css({'display' : 'block', 'opacity' : 0})
+	            .animate({opacity : 1}, self.OPACITY_ANIMATION_DURATION);
+	      }
+
+	      else {
+	        standby.css({'display' : 'none', 'opacity' : 0});
+	      }
+	    };
+
+	    /**
+	     * Display a warning message in case of anormal fail of connection
+	     * @param visible
+	     */
+	    var showWarning = function(visible) {
+
+	      var warning = $("#jsxc-connexion-menu #jsxc-login-warning");
+
+	      if (visible === true) {
+	        warning.css({'display' : 'block', 'opacity' : 0})
+	            .animate({opacity : 1}, self.OPACITY_ANIMATION_DURATION);
+	      }
+
+	      else {
+	        warning.css({'display' : 'none', 'opacity' : 0});
+	      }
+	    };
+
+	    /**
+	     * Watch if connexion take too logn time
+	     */
+	    var watchConnexionTimer = function() {
+
+	      // display warning
+	      showStandBy(false);
+	      showWarning(true);
+
+	      jsxc.gui.feedback('Echec de la connexion');
+
+	      // reset jsxc
+	      jsxc.xmpp.logout();
+	      jsxc.xmpp.disconnected();
+
+	    };
+
+	    /**
+	     * Triggered if credentials are invalid
+	     */
+	    var authFail = function() {
+
+	      clearTimeout(connexionTimerId);
+
+	      jsxc.gui.feedback('Identifiants incorrects');
+
+	      showStandBy(false);
+
+	      // reset jsxc
+	      jsxc.xmpp.logout();
+	      jsxc.xmpp.disconnected();
+
+	    };
+
+	    /**
+	     * Triggered if connection fail
+	     */
+	    var connFail = function() {
+
+	      clearTimeout(connexionTimerId);
+
+	      jsxc.gui.feedback('Echec de la connexion');
+
+	      showStandBy(false);
+
+	      // reset jsxc
+	      jsxc.xmpp.logout();
+	      jsxc.xmpp.disconnected();
+
+	    };
+
+	    /**
+	     * Triggered if connexion success
+	     */
+	    var connSuccess = function() {
+
+	      clearTimeout(connexionTimerId);
+
+	      // reset fields
+	      $('#jsxc-connexion-login').val('');
+	      $('#jsxc-connexion-password').val('');
+
+	      // remove uneeded hadndlers
+	      $(document).off('authfail.jsxc', authFail);
+	      $(document).off('disconnected.jsxc', connFail);
+	      $(document).off('connected.jsxc', connSuccess);
+
+	      jsxc.gui.feedback('Connexion réussie');
+
+	      showStandBy(false);
+
+	      self.toggleBuddyList();
+
+	    };
+
+	    /**
+	     * Click on "Connection" button
+	     */
+	    $('#jsxc-connexion-menu #jsxc-connexion-submit').click(function() {
+
+	      if (jsxc.xmpp.conn) {
+	        jsxc.gui.feedback("Vous êtes déjà connecté");
+	        return;
+	      }
+
+	      // check login and password
+	      var login = $('#jsxc-connexion-login').val();
+	      var password = $('#jsxc-connexion-password').val();
+
+	      if (!login) {
+	        jsxc.gui.feedback('Identifiant incorrect');
+	        return;
+	      }
+
+	      if (!password) {
+	        jsxc.gui.feedback('Mot de passe incorrect');
+	        return;
+	      }
+
+	      showWarning(false);
+	      showStandBy(true);
+
+	      // authentication fail
+	      $(document).off('authfail.jsxc', authFail);
+	      $(document).one('authfail.jsxc', authFail);
+
+	      // connexion fail
+	      $(document).off('disconnected.jsxc', connFail);
+	      $(document).one('disconnected.jsxc', connFail);
+
+	      // connexion success
+	      $(document).off('connected.jsxc', connSuccess);
+	      $(document).one('connected.jsxc', connSuccess);
+
+	      // connexion
+	      try {
+
+	        connexionTimerId = setTimeout(watchConnexionTimer, connexionTimerValueMs);
+
+	        jsxc.xmpp.login(login, password);
+
+	      } catch (e) {
+	        console.error(e);
+	        jsxc.gui.feedback('Erreur lors de la connexion: ' + e);
+
+	        showStandBy(false);
+	      }
+
+	    });
+
+	  },
+
+	  /**
+	   * Open or close settings menu
+	   */
+	  toggleConnexionMenu : function() {
+	    jsxc.newgui.chatSidebarContent.toggleContent('jsxc-connexion-menu');
+	  },
+
+	  /**
+	   * Return true if chat sidebar is shown
+	   */
+	  isConnexionMenuShown : function() {
+	    return jsxc.newgui.chatSidebarContent.isContentVisible('jsxc-connexion-menu');
+	  },
+
+	  /**
 	   * Open or close settings menu
 	   */
 	  toggleActionsMenu : function() {
-	    jsxc.newgui.chatSidebarContent.toggleContent('jsxc-actions-menu');
+	    jsxc.newgui.chatSidebarContent.toggleContent('jsxc-main-menu');
 	  },
 
 	  /**
@@ -10018,10 +11173,11 @@
 
 	    self._log("toggleBuddyFilter: " + mode);
 
+	    self.toggleSelectionMode(false);
+
 	    // set filter for future adding
 	    roster.setFilterMode(mode);
 
-	    // TODO check how was selected buddies in original JSXC
 	    var list = self._getBuddyList();
 
 	    // hide all
@@ -10069,17 +11225,54 @@
 
 	  },
 
-	  toggleSelectionMode : function() {
+	  /**
+	   * Unselect all buddies and conversations
+	   */
+	  unselectAllElements : function() {
 
 	    var self = jsxc.newgui;
 
-	    self._log("toggleSelectionMode: " + self._selectionMode);
+	    self._getBuddyList().find('.jsxc-checked').removeClass('jsxc-checked');
+
+	    self._updateSelectedCount();
+
+	  },
+
+	  /**
+	   * Update buddy count next the selection mode button
+	   */
+	  _updateSelectedCount : function() {
+
+	    var self = jsxc.newgui;
+
+	    var count = self._getBuddyList().find('.jsxc-checked').length;
+
+	    var text = count > 0 ? '(' + count + ')' : '';
+
+	    $('#jsxc-select-buddies .jsxc-selected-number').text(text);
+
+	  },
+
+	  /**
+	   * Toggle selection mode in chat sidebar
+	   *
+	   * When enabled selection mode allow user to select multiple users with ticks
+	   *
+	   * @param enabled
+	   */
+	  toggleSelectionMode : function(enabled) {
+
+	    var self = jsxc.newgui;
 
 	    var list = self._getBuddyList();
 
-	    self._selectionMode = !self._selectionMode;
+	    enabled = typeof enabled !== 'undefined' ? enabled : !self._selectionMode;
+	    self._selectionMode = enabled;
 
-	    if (self._selectionMode === false) {
+	    // enable selection mode
+	    if (self._selectionMode === true) {
+
+	      $('#jsxc-select-buddies').addClass("jsxc-checked");
 
 	      // remove all click handler and replace it by selector
 	      list.each(function() {
@@ -10088,14 +11281,25 @@
 	        element.off('click');
 
 	        element.on('click', function() {
+
 	          var toDecorate = $(this).find('div.jsxc_name');
 	          self._toggleBuddySelected(toDecorate);
+
+	          self._updateSelectedCount();
 	        });
 
 	      });
+
+	      self._updateSelectedCount();
+
 	    }
 
+	    // disable selection mode
 	    else {
+
+	      $('#jsxc-select-buddies').removeClass("jsxc-checked");
+
+	      self.unselectAllElements();
 
 	      // remove all click handler and replace it by selector
 	      list.each(function() {
@@ -10110,6 +11314,7 @@
 	        });
 
 	      });
+
 	    }
 
 	  },
@@ -10138,10 +11343,110 @@
 	  },
 
 	  /**
+	   * Get all checked elements from buddylist, conversations AND buddies
+	   *
+	   * If no one is selected, ask user about
+	   *
+	   * @returns {Array}
+	   * @private
+	   */
+	  getCheckedElementsOrAskFor : function(buddiesOnly) {
+
+	    var self = jsxc.newgui;
+	    buddiesOnly = typeof buddiesOnly !== 'undefined' ? buddiesOnly : false;
+
+	    var defer = $.Deferred();
+
+	    var rslt = self.getCheckedElements(buddiesOnly);
+
+	    // some elements are checked, return them
+	    if (rslt.length > 0) {
+
+	      // unselect all, to prevent mistakes
+	      self.unselectAllElements();
+
+	      defer.resolve(rslt);
+	    }
+
+	    // no elements checked, show BUDDY selection dialog only
+	    else {
+	      jsxc.gui.showSelectContactsDialog()
+	          .then(function(result) {
+	            defer.resolve(result);
+	          })
+	          .fail(function() {
+	            defer.reject("canceled");
+	          });
+	    }
+
+	    return defer.promise();
+
+	  },
+
+	  /**
+	   * Get checked elements from buddylist, and only the buddies
+	   *
+	   * If no one is selected, ask user about
+	   *
+	   * @returns {Array}
+	   * @private
+	   */
+	  getCheckedBuddiesOrAskFor : function() {
+	    return jsxc.newgui.getCheckedElementsOrAskFor(true);
+	  },
+
+	  /**
+	   * Return checked elements
+	   */
+	  getCheckedElements : function(buddiesOnly) {
+
+	    var self = jsxc.newgui;
+
+	    buddiesOnly = typeof buddiesOnly !== 'undefined' ? buddiesOnly : false;
+
+	    var all = self._getBuddyList();
+	    var rslt = [];
+
+	    // search for checked elements
+	    all.each(function() {
+
+	      var element = $(this);
+
+	      // continue if we need only buddies
+	      if (buddiesOnly === true && element.data('type') === 'groupchat') {
+	        return true;
+	      }
+
+	      if (element.find(".jsxc-checked").length > 0) {
+	        rslt.push(element.data('jid'));
+	      }
+
+	    });
+
+	    return rslt;
+
+	  },
+
+	  /**
+	   * Return checked buddies
+	   */
+	  getCheckedBuddies : function() {
+	    var self = jsxc.newgui;
+	    return self.getCheckedElements(true);
+	  },
+
+	  /**
 	   * Return true if chat sidebar is shown
 	   */
 	  isChatSidebarShown : function() {
 	    return $("#jsxc-chat-sidebar-content").hasClass("jsxc-deploy");
+	  },
+
+	  /**
+	   * Open or close buddy list
+	   */
+	  toggleBuddyList : function() {
+	    jsxc.newgui.chatSidebarContent.toggleContent('jsxc-buddy-list-container');
 	  },
 
 	  /**
@@ -10263,22 +11568,7 @@
 	   * @returns {undefined}
 	   */
 	  init : function() {
-
-	    jsxc.debug("Roster init");
-
-	    // adding roster skeleton to body, or other choosen element
-	    // $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('roster')));
-
-	    /**
-	     * Chatsidebar and mediapanel are grouped in '#jsxc_roster', for historical reasons
-	     * @type {*|JQuery|jQuery|HTMLElement}
-	     */
-	    var skeleton = $("<div id='jsxc_roster'></div>");
-	    skeleton.append($(jsxc.gui.template.get('newgui_chatsidebar')));
-	    skeleton.append($(jsxc.gui.template.get('newgui_mediapanel')));
-
-	    $(jsxc.options.rosterAppend + ':first').append(skeleton);
-
+	    
 	    // display or hide offline buddies
 	    if (jsxc.options.get('hideOffline')) {
 	      $('#jsxc_buddylist').addClass('jsxc_hideOffline');
@@ -10292,13 +11582,7 @@
 	    var pres = jsxc.storage.getUserItem('presence') || 'online';
 	    jsxc.xmpp.changeOwnPresence(pres);
 
-	    jsxc.gui.tooltip('#jsxc_roster');
-
 	    jsxc.notice.load();
-
-	    // new gui init
-	    jsxc.newgui.init();
-	    jsxc.gui.interactions.init();
 
 	    jsxc.gui.roster.ready = true;
 
@@ -10473,8 +11757,11 @@
 	   * @return {JQueryObject} Roster list element
 	   */
 	  remove : function(bid) {
+
 	    var res = jsxc.gui.roster.getItem(bid).detach();
-	    $(document).trigger('remove.roster.jsxc', [bid]);
+
+	    // It is a bad idea to trigger here. Remove is used in reorder, so events are too many
+	    // $(document).trigger('remove.roster.jsxc', [bid]);
 
 	    return res;
 	  },
@@ -10558,7 +11845,7 @@
 	        }).c('query', {
 	          xmlns : 'jabber:iq:roster'
 	        }).c('item', {
-	          jid : Strophe.getBareJidFromJid(d.jid), name : newname
+	          jid : jsxc.jidToBid(d.jid), name : newname
 	        });
 	        jsxc.xmpp.conn.sendIQ(iq);
 	      } else if (d.type === 'groupchat') {
@@ -10571,38 +11858,9 @@
 	  },
 
 	  /**
-	   * Toogle complete roster
-	   *
-	   * @param {string} state Toggle to state
-	   */
-	  toggle : function(state) {
-
-	    jsxc.debug("Toggle roster is deprecated", null, "ERROR");
-
-	    var duration;
-
-	    var roster = $('#jsxc_roster');
-	    var wl = $('#jsxc_windowList');
-
-	    wl.removeClass('jsxc_roster_hidden jsxc_roster_shown').addClass('jsxc_roster_' + state);
-
-	    duration = parseFloat(roster.css('transitionDuration') || 0) * 1000;
-
-	    setTimeout(function() {
-	      jsxc.gui.updateWindowListSB();
-	    }, duration);
-
-	    $(document).trigger('toggle.roster.jsxc', [state, duration]);
-
-	    return duration;
-	  },
-
-	  /**
 	   * Shows a text with link to a login box that no connection exists.
 	   */
 	  noConnection : function() {
-
-	    $('#jsxc_roster').addClass('jsxc_noConnection');
 
 	    $('#jsxc_buddylist').empty();
 
@@ -10750,7 +12008,7 @@
 	      $.each(conversList, function(index, jid) {
 
 	        // check type of element: buddie / conversation
-	        var infos = jsxc.storage.getUserItem('buddy', Strophe.getBareJidFromJid(jid));
+	        var infos = jsxc.storage.getUserItem('buddy', jsxc.jidToBid(jid));
 
 	        if ((infos.type === 'groupchat') !== true) {
 	          return true;
@@ -10783,11 +12041,6 @@
 
 	    };
 
-	    // update each time buddy list change
-	    $(document).on("add.roster.jsxc", updateConversationList);
-	    $(document).on("remove.roster.jsxc", updateConversationList);
-	    $(document).on("cloaded.roster.jsxc", updateConversationList);
-
 	    // first update
 	    updateConversationList();
 
@@ -10816,7 +12069,9 @@
 	   *
 	   * @param selector
 	   */
-	  createBuddyList : function(selector) {
+	  createBuddyList : function(selector, selectedJids) {
+
+	    selectedJids = selectedJids || [];
 
 	    var root = $(selector);
 	    root.empty();
@@ -10837,12 +12092,12 @@
 	      var buddyNumber = 0;
 	      $.each(buddyList, function(index, jid) {
 
-	        var bid = Strophe.getBareJidFromJid(jid);
+	        var bid = jsxc.jidToBid(jid);
 
 	        // check type of element: buddie / conversation
 	        var infos = jsxc.storage.getUserItem('buddy', bid);
 
-	        if ((infos.type === 'chat') !== true) {
+	        if (infos.type === 'groupchat') {
 	          return true;
 	        }
 
@@ -10855,6 +12110,10 @@
 	            .click(function() {
 	              $(this).toggleClass("jsxc-checked");
 	            });
+
+	        if (selectedJids.indexOf(jid) > -1) {
+	          li.addClass('jsxc-checked');
+	        }
 
 	        list.append(li);
 
@@ -10872,11 +12131,6 @@
 	      }
 
 	    };
-
-	    // update each time buddy list change
-	    $(document).on("add.roster.jsxc", updateBuddyList);
-	    $(document).on("remove.roster.jsxc", updateBuddyList);
-	    $(document).on("cloaded.roster.jsxc", updateBuddyList);
 
 	    // first update
 	    updateBuddyList();
@@ -10919,7 +12173,7 @@
 	   */
 	  showComposingPresence : function(from, type) {
 
-	    var bid = Strophe.getBareJidFromJid(from);
+	    var bid = jsxc.jidToBid(from);
 	    var user = type === "chat" ? Strophe.getNodeFromJid(from) : Strophe.getResourceFromJid(from);
 
 	    // iterate window list
@@ -10934,28 +12188,42 @@
 	      if (winBid === bid) {
 
 	        // add user in array if necessary
-	        var usersComposing = self.data("usersComposing") || [];
+	        var usersComposing = self.data("users-composing") || [];
 	        if (usersComposing.indexOf(user) === -1) {
 	          usersComposing.push(user);
-	          self.data("usersComposing", usersComposing);
+	          self.data("users-composing", usersComposing);
 	        }
 
 	        var textarea = self.find(".jsxc_textarea");
 	        var composingNotif = textarea.find(".jsxc_userComposing");
 
-	        // add notification if necessary
-	        if (composingNotif.length < 1) {
-	          textarea.append("<div class='jsxc_userComposing jsxc_chatmessage jsxc_sys'></div>");
-	          composingNotif = textarea.find(".jsxc_userComposing");
-	        }
+	        // scroll to bottom
+	        jsxc.gui.window.scrollDown(winBid);
 
 	        // change text
 	        var msg = usersComposing.length > 1 ? " sont en train d'écrire ..." :
 	            " est en train d'écrire ...";
-	        composingNotif.html(usersComposing.join(", ") + msg);
 
-	        // scroll to bottom
-	        jsxc.gui.window.scrollDown(winBid);
+	        // notification not present, add it
+	        if (composingNotif.length < 1) {
+
+	          composingNotif = $("<div class='jsxc_userComposing jsxc_chatmessage jsxc_sys'></div>");
+	          composingNotif.css({opacity : 0, display : 'block'});
+	          composingNotif.html(usersComposing.join(", ") + msg);
+
+	          textarea.append(composingNotif);
+
+	          composingNotif.animate({opacity : 1}, 600);
+	        }
+
+	        // notification present, modify it and show it if necessary
+	        else {
+	          composingNotif.html(usersComposing.join(", ") + msg);
+
+	          if (composingNotif.css('opacity') !== '1') {
+	            composingNotif.animate({opacity : 1}, 600);
+	          }
+	        }
 
 	        // hide notification after delay
 	        if ($(this).data("composingTimeout")) {
@@ -10966,7 +12234,13 @@
 
 	            setTimeout(function() {
 
-	              textarea.find(".jsxc_userComposing").remove();
+	              composingNotif.animate({opacity : 0},
+
+	                  600,
+
+	                  function() {
+	                    composingNotif.remove();
+	                  });
 
 	              // empty user list
 	              self.data("usersComposing", []);
@@ -11344,7 +12618,9 @@
 	    }
 
 	    // animate closing
-	    win.find(".jsxc_window").animate({"height" : "0px"}, 500,
+	    win.find(".jsxc_window").animate({
+	          "height" : "0px"
+	        }, 500,
 
 	        function() {
 
@@ -11352,7 +12628,7 @@
 	          jsxc.storage.removeUserItem('window', bid);
 
 	          // delete data from unknown sender
-	          if (jsxc.storage.getUserItem('buddylist').indexOf(bid) < 0) {
+	          if (jsxc.storage.getUserItem('buddylist') && jsxc.storage.getUserItem('buddylist').indexOf(bid) < 0) {
 	            jsxc.storage.removeUserItem('buddy', bid);
 	            jsxc.storage.removeUserItem('chat', bid);
 	          }
@@ -12600,7 +13876,7 @@
 	          " test status = PARTICIPATING 3");
 
 	      // delte user after, to not alter JSXC service
-	      delete self.videoconference.users[user];
+	      delete self.multimediacache.users[user];
 
 	    }
 	  }
@@ -13346,7 +14622,7 @@
 	    var inviteLink = $('<a class="jsxc_inviteUsers"><span>Inviter des utilisateurs</span></a>');
 	    inviteLink.click(function() {
 
-	      jsxc.gui.showInviteContactsDialog()
+	      jsxc.gui.showSelectContactsDialog()
 
 	      // operation was accepted
 	          .then(function(jids) {
@@ -14426,7 +15702,7 @@
 	    // reset list
 	    $('#jsxc-notifications ul li').remove();
 
-	    $('#jsxc_roster .jsxc_menu_notif_number').text('');
+	    $('#jsxc-root .jsxc_menu_notif_number').text('');
 	    jsxc.notice._num = 0;
 
 	    var saved = jsxc.storage.getUserItem('notices') || [];
@@ -14533,7 +15809,7 @@
 	   * Update places where are displayed notification numbers
 	   */
 	  updateNotificationNumbers : function() {
-	    $('#jsxc_roster .jsxc_menu_notif_number').text(jsxc.notice._num);
+	    $('#jsxc-root .jsxc_menu_notif_number').text(jsxc.notice._num);
 	  },
 
 	  /**
@@ -14557,12 +15833,14 @@
 	    var el = $('#jsxc-notifications li[data-nid=' + nid + ']');
 
 	    el.remove();
-	    $('#jsxc_roster .jsxc_menu_notif_number').text(--jsxc.notice._num || '');
+	    $('#jsxc-root .jsxc_menu_notif_number').text(--jsxc.notice._num || '');
 
 	    var s = jsxc.storage.getUserItem('notices');
 	    delete s[nid];
 	    jsxc.storage.setUserItem('notices', s);
 
+	    self.updateNotificationNumbers();
+	    
 	    self._showNoNoticeContent();
 	  },
 
@@ -14605,8 +15883,11 @@
 	   * @memberOf jsxc.notification
 	   */
 	  init : function() {
+
 	    $(document).on('postmessagein.jsxc', function(event, bid, msg) {
+
 	      msg = (msg && msg.match(/^\?OTR/)) ? jsxc.t('Encrypted_message') : msg;
+
 	      var data = jsxc.storage.getUserItem('buddy', bid);
 
 	      jsxc.notification.notify({
@@ -14614,7 +15895,9 @@
 	          name : data.name
 	        }), msg : msg, soundFile : jsxc.CONST.SOUNDS.MSG, source : bid
 	      });
+
 	    });
+
 	  },
 
 	  /**
@@ -14629,8 +15912,10 @@
 	   * @param source Bid which triggered this notification
 	   */
 	  notify : function(title, msg, d, force, soundFile, loop, source) {
+
 	    if (!jsxc.options.notification || !jsxc.notification.hasPermission()) {
-	      return; // notifications disabled
+	      jsxc.debug('Notification triggered, but disabled', {arguments : arguments});
+	      return;
 	    }
 
 	    var o;
@@ -14649,11 +15934,11 @@
 	      };
 	    }
 
-	    if (jsxc.hasFocus() && !o.force) {
+	    if (jsxc.hasFocus() && o.force !== true) {
 	      return; // Tab is visible
 	    }
 
-	    var icon = o.icon || jsxc.options.root + '/img/XMPP_logo.png';
+	    var icon = o.icon || jsxc.options.root + '/img/newgui/desktop-notification.png';
 
 	    if (typeof o.source === 'string') {
 	      var data = jsxc.storage.getUserItem('buddy', o.source);
@@ -14668,6 +15953,11 @@
 
 	      if (typeof o.soundFile === 'string') {
 	        jsxc.notification.playSound(o.soundFile, o.loop, o.force);
+	      }
+
+	      // notifications are hidden
+	      if (jsxc.notification.isNotificationShowed() !== true) {
+	        return;
 	      }
 
 	      var popup = new Notification(jsxc.t(o.title), {
@@ -14788,8 +16078,7 @@
 	      return;
 	    }
 
-	    if (jsxc.options.get('muteNotification') || jsxc.storage.getUserItem('presence') === 'dnd') {
-	      // sound mute or own presence is dnd
+	    if (jsxc.notification.isSoundMuted() === true) {
 	      return;
 	    }
 
@@ -14832,8 +16121,6 @@
 	   *        false.
 	   */
 	  muteSound : function(external) {
-	    $('#jsxc_menu .jsxc_muteNotification').text(jsxc.t('Unmute'));
-
 	    if (external !== true) {
 	      jsxc.options.set('muteNotification', true);
 	    }
@@ -14847,12 +16134,54 @@
 	   *        false.
 	   */
 	  unmuteSound : function(external) {
-	    $('#jsxc_menu .jsxc_muteNotification').text(jsxc.t('Mute'));
-
 	    if (external !== true) {
 	      jsxc.options.set('muteNotification', false);
 	    }
+	  },
+
+	  /**
+	   * Return true if sound is muted
+	   */
+	  isSoundMuted : function() {
+	    return jsxc.options && jsxc.options.get('muteNotification');
+	  },
+
+	  /**
+	   * Return true if notifications are showed
+	   */
+	  isNotificationShowed : function() {
+	    return jsxc.options && jsxc.options.get('hideNotification') !== true &&
+	        jsxc.notification.hasPermission();
+	  },
+
+	  /**
+	   * Hide notifications.
+	   *
+	   * @memberOf jsxc.notification
+	   * @param {boolean} external True if triggered from external tab. Default:
+	   *        false.
+	   */
+	  hideNotifications : function(external) {
+	    if (external !== true) {
+	      jsxc.options.set('hideNotification', true);
+	    }
+	  },
+
+	  /**
+	   * Show notifications. It just set flag.
+	   *
+	   * If desktop notifications are disabled in browser nothing will be done.
+	   *
+	   * @memberOf jsxc.notification
+	   * @param {boolean} external True if triggered from external tab. Default:
+	   *        false.
+	   */
+	  showNotifications : function(external) {
+	    if (external !== true) {
+	      jsxc.options.set('hideNotification', false);
+	    }
 	  }
+
 	};
 
 	/**
@@ -14870,7 +16199,8 @@
 	  },
 
 	  /**
-	   * Stats support. Stats is a small module enabling logs and events transmission to a distant server.
+	   * Stats support. Stats is a small module enabling logs and events transmission to a distant
+	   * server.
 	   *
 	   * ** All datas are strictly anonymous
 	   */
@@ -14899,7 +16229,7 @@
 	    /**
 	     * Interresting log level, beware of not overload browser
 	     */
-	    sentLogLevels: ['WARN', 'ERROR']
+	    sentLogLevels : ['WARN', 'ERROR']
 	  },
 
 	  /** name of container application (e.g. owncloud or SOGo) */
@@ -15071,9 +16401,6 @@
 	  /** Set to true if you want to hide offline buddies. */
 	  hideOffline : false,
 
-	  /** Mute notification sound? */
-	  muteNotification : false,
-
 	  /**
 	   * If no avatar is found, this function is called.
 	   *
@@ -15179,7 +16506,18 @@
 	    }
 	  },
 
-	  maxStorableSize : 1000000
+	  maxStorableSize : 1000000,
+
+	  /**
+	   * If true, notification sounds will be muted
+	   */
+	  muteNotification : false,
+
+	  /**
+	   * If true, desktop notifications will be hidden
+	   */
+	  hideNotification : false
+
 	};
 
 	/**
@@ -16638,7 +17976,7 @@
 	        }
 
 	        // master alive
-	        if (!jsxc.master && (key === 'alive' || key === 'alive_busy') && !jsxc.triggeredFromElement) {
+	        if (!jsxc.master && (key === 'alive' || key === 'alive_busy')) {
 
 	            // reset timeouts
 	            jsxc.to = $.grep(jsxc.to, function (timeout) {
@@ -16834,12 +18172,7 @@
 	        // logout
 	        if (key === 'sid') {
 	            if (!e.newValue) {
-	                // if (jsxc.master && jsxc.xmpp.conn) {
-	                // jsxc.xmpp.conn.disconnect();
-	                // jsxc.triggeredFromElement = true;
-	                // }
 	                jsxc.xmpp.logout();
-
 	            }
 	            return;
 	        }
@@ -17874,34 +19207,38 @@
 	'</form>\n' +
 	'';
 
-	jsxc.gui.template['conversationSelectionDialog'] = '<h3>Sélection de conversation</h3>\n' +
-	'<p class="jsxc_maxWidth">Sélectionner une ou plusieurs conversation(s) ci-dessous:</p>\n' +
-	'\n' +
-	'<div id="jsxc_dialogConversationList"></div>\n' +
-	'\n' +
-	'<button class="btn btn-primary jsxc_confirm pull-right" data-i18n="Confirm"></button>\n' +
-	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right" data-i18n="Cancel"></button>\n' +
-	'';
-
 	jsxc.gui.template['etherpadCreation'] = '<h3>Document Etherpad</h3>\n' +
 	'\n' +
-	'<p>Un document Etherpad, souvent raccourci en "pad", est un document texte éditable <br> par plusieurs\n' +
+	'<p>\n' +
+	'  Un document Etherpad, souvent raccourci en "pad", est un document texte éditable <br> par\n' +
+	'  plusieurs\n' +
 	'  personnes en temps réel sur plusieurs postes de travail distants.\n' +
 	'\n' +
-	'<ul>\n' +
-	'  <li><a href="https://fr.wikipedia.org/wiki/Etherpad" target="_blank">Wikipedia</a></li>\n' +
-	'</ul>\n' +
+	'  <p>\n' +
+	'    <a href="https://fr.wikipedia.org/wiki/Etherpad" target="_blank">Wikipedia</a></li>\n' +
+	'  </p>\n' +
+	'\n' +
 	'</p>\n' +
 	'\n' +
-	'<p><b>Nom du document à ouvrir ou à créer:</b></p>\n' +
-	'<p></p><input type="text" class="jsxc-etherpad-name"/></p>\n' +
+	'<p>\n' +
+	'\n' +
+	'  <b>Nom du document à ouvrir ou à créer:</b>\n' +
+	'\n' +
+	'  <input type="text" class="jsxc-etherpad-name"/>\n' +
+	'\n' +
+	'</p>\n' +
 	'\n' +
 	'\n' +
-	'<p><b>Inviter des utilisateurs (optionnel):</b></p>\n' +
-	'<div id="jsxc-etherpad-dialog-buddylist"></div></p>\n' +
+	'<p>\n' +
+	'  <b>Inviter des utilisateurs (optionnel):</b>\n' +
+	'\n' +
+	'<div id="jsxc-etherpad-dialog-buddylist"></div>\n' +
+	'</p>\n' +
+	'\n' +
 	'\n' +
 	'<button class="btn btn-primary jsxc_confirm pull-right">Confirmer</button>\n' +
-	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right">Annuler</button>';
+	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right">Annuler</button>\n' +
+	'<button class="btn btn-default jsxc_refresh pull-right">Rafraichir</button>';
 
 	jsxc.gui.template['fingerprintsDialog'] = '<div>\n' +
 	'   <p class="jsxc_maxWidth" data-i18n="A_fingerprint_"></p>\n' +
@@ -17930,6 +19267,15 @@
 	'\n' +
 	'<button class="btn btn-primary jsxc_confirm pull-right">Accepter</button>\n' +
 	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right">Refuser</button>\n' +
+	'';
+
+	jsxc.gui.template['incomingScreensharing'] = '<h3>Partage d\'écran</h3>\n' +
+	'<p>\n' +
+	'  Acceptez de visualiser l\'écran de <b>{{bid_name}}</b>?\n' +
+	'</p>\n' +
+	'\n' +
+	'<button class="btn btn-primary jsxc_accept pull-right" data-i18n="Accept"></button>\n' +
+	'<button class="btn btn-default jsxc_reject pull-right" data-i18n="Reject"></button>\n' +
 	'';
 
 	jsxc.gui.template['incomingVideoconference'] = '<h3>Vidéo conférence</h3>\n' +
@@ -17983,14 +19329,6 @@
 	'<button class="btn btn-default pull-right jsxc_reloadInstallChromeExtension">Recharger la page\n' +
 	'</button>\n' +
 	'';
-
-	jsxc.gui.template['inviteContacts'] = '<h3>Sélectionner des contacts</h3>\n' +
-	'\n' +
-	'<p>Sélectionnez des contacts pour les inviter à prendre part à la conversation:\n' +
-	'<div id="jsxc-invite-dialog-buddylist"></div></p>\n' +
-	'\n' +
-	'<button class="btn btn-primary jsxc_confirm pull-right">Inviter</button>\n' +
-	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right">Annuler</button>';
 
 	jsxc.gui.template['joinChat'] = '<h3 data-i18n="Join_chat"></h3>\n' +
 	'<p class=".jsxc_explanation" data-i18n="muc_explanation"></p>\n' +
@@ -18092,185 +19430,14 @@
 	'</form>\n' +
 	'';
 
-	jsxc.gui.template['menuConversations'] = '<div id="jsxc_menuConversation">\n' +
-	'\n' +
-	'  <!-- User selection -->\n' +
-	'\n' +
-	'  <p class="jsxc_menu_subtitle">Liste de contacts</p>\n' +
-	'\n' +
-	'  <div id="jsxc_conversationUserList"></div>\n' +
-	'\n' +
-	'  <div class="jsxc_menuAdvice">Touche \'Control\' pour sélectionner plusieurs utilisateurs</div>\n' +
-	'\n' +
-	'  <div class="jsxc_actionButton jsxc_refreshBuddyList">Rafraichir la liste</div>\n' +
-	'\n' +
-	'\n' +
-	'  <!--\n' +
-	'\n' +
-	'  Chat conversation\n' +
-	'\n' +
-	'  -->\n' +
-	'\n' +
-	'\n' +
-	'\n' +
-	'  <div class="jsxc_actionButton jsxc_createConversation">Nouvelle conversation</div>\n' +
-	'\n' +
-	'  <div class="jsxc_actionButton jsxc_inviteBuddiesOnConversation">\n' +
-	'    Inviter dans une conversation existante\n' +
-	'  </div>\n' +
-	'\n' +
-	'  <!--&lt;!&ndash; Conversation form &ndash;&gt;-->\n' +
-	'  <!--<div class="jsxc_sideMenuCreateRoomForm">-->\n' +
-	'  <!--<input type="text" class="jsxc_inputRoomTitle" placeholder="Titre de la conversation"/>-->\n' +
-	'  <!--<input type="text" class="jsxc_inputRoomSubject" placeholder="Sujet"/>-->\n' +
-	'  <!--</div>-->\n' +
-	'\n' +
-	'  <!--<div class="jsxc_roomDialog jsxc_actionButton" >Boite de dialogue "salons"</div>-->\n' +
-	'\n' +
-	'\n' +
-	'  <!--\n' +
-	'\n' +
-	'  Video calls\n' +
-	'\n' +
-	'\n' +
-	'  -->\n' +
-	'\n' +
-	'\n' +
-	'  <p class="jsxc_menu_subtitle">Appels vidéo</p>\n' +
-	'\n' +
-	'\n' +
-	'  <div class="jsxc_actionButton jsxc_callContacts">Appeler les contacts</div>\n' +
-	'  <div class="jsxc_actionButton jsxc_createConference">Créer une conférence</div>\n' +
-	'\n' +
-	'\n' +
-	'  <!--\n' +
-	'\n' +
-	'  Screen sharing\n' +
-	'\n' +
-	'  -->\n' +
-	'\n' +
-	'  <p class="jsxc_menu_subtitle">Partage d\'écran:</p>\n' +
-	'\n' +
-	'  <div class="jsxc_actionButton jsxc_screenSharing">Partager mon écran</div>\n' +
-	'  <div class="jsxc_actionButton jsxc_screenInstallChromeExtension">Installer l\'extension Chrome</div>\n' +
-	'\n' +
-	'\n' +
-	'  <!--\n' +
-	'\n' +
-	'  Etherpad\n' +
-	'\n' +
-	'  -->\n' +
-	'\n' +
-	'  <p class="jsxc_menu_subtitle">Etherpad</p>\n' +
-	'\n' +
-	'  <div style="margin: 7px">\n' +
-	'    Choisissez un nom pour votre pad, et partagez le !<br/>\n' +
-	'\n' +
-	'    <input id="jsxc_etherpad_name" type="text" placeholder="Nom du pad"/>\n' +
-	'\n' +
-	'    <input type="text" class="jsxc_etherpad_sharetextfield" readonly/>\n' +
-	'    <a href="#" class="jsxc_etherpad_sharelink" target="_blank">&gt;&gt;</a>\n' +
-	'\n' +
-	'  </div>\n' +
-	'\n' +
-	'  <div class="jsxc_actionButton jsxc_openpad">Ouvrir un pad</div>\n' +
-	'  <div class="jsxc_actionButton notImplementedYet">Liste des pads</div>\n' +
-	'\n' +
-	'\n' +
-	'  <div class="jsxc_sideMenuBottom"></div>\n' +
-	'\n' +
-	'</div>\n' +
-	'';
-
-	jsxc.gui.template['menuSettings'] = '<div id="jsxc_menuSettings">\n' +
-	'\n' +
-	'  <div class="jsxc_muteNotification jsxc_actionButton" data-i18n="Mute"></div>\n' +
-	'\n' +
-	'  <div class="jsxc_showNotificationRequestDialog jsxc_actionButton">Activer les notifications de\n' +
-	'    bureau\n' +
-	'  </div>\n' +
-	'\n' +
-	'  <div class="jsxc_actionButton notImplementedYet">Interdire les appels vidéos</div>\n' +
-	'\n' +
-	'  <div class="jsxc_actionButton jsxc_hideOffline" data-i18n="Hide_offline"></div>\n' +
-	'\n' +
-	'  <div class="jsxc_actionButton jsxc_dialog_settings">Boite de dialogue de réglages</div>\n' +
-	'\n' +
-	'  <div class="jsxc_actionButton notImplementedYet">Rétablir les réglages par défaut</div>\n' +
-	'\n' +
-	'  <div class="jsxc_actionButton notImplementedYet">Console XMPP</div>\n' +
-	'\n' +
-	'  <div class="jsxc_actionButton notImplementedYet">Console d\'événements Jquery</div>\n' +
-	'\n' +
-	'  <div class="jsxc_actionButton jsxc_spaceInvasion">Space invasion !</div>\n' +
-	'\n' +
-	'  <div class="jsxc_actionButton jsxc_about">A propos</div>\n' +
-	'\n' +
-	'  <div class="jsxc_sideMenuBottom"></div>\n' +
-	'\n' +
-	'\n' +
-	'</div>\n' +
-	'';
-
-	jsxc.gui.template['menuWelcome'] = '<div id="jsxc_menuWelcome">\n' +
-	'\n' +
-	'  <p>\n' +
-	'    Recherchez une fonctionnalité à l\'aide du champs ci-dessus ou explorez le menu :)\n' +
-	'  </p>\n' +
-	'\n' +
-	'  <div data-pres="offline" class="jsxc_actionButton jsxc_menu_offline">Se déconnecter</div>\n' +
-	'\n' +
-	'  <!-- Display notifications -->\n' +
-	'\n' +
-	'  <p>Notifications: <span class="jsxc_menu_notif_number"></span></p>\n' +
-	'  <div id="jsxc-notifications">\n' +
-	'\n' +
-	'    <!-- Notification inserted here -->\n' +
-	'    <ul>\n' +
-	'\n' +
-	'    </ul>\n' +
-	'\n' +
-	'  </div>\n' +
-	'\n' +
-	'  <!-- Change status -->\n' +
-	'\n' +
-	'  <p>Statut:</p>\n' +
-	'\n' +
-	'  <div class="jsxc_status_buttons">\n' +
-	'\n' +
-	'    <div data-pres="online" class="jsxc_actionButton jsxc_online" data-i18n="Online"></div>\n' +
-	'    <div data-pres="away" class="jsxc_actionButton jsxc_away" data-i18n="Away"></div>\n' +
-	'    <div data-pres="dnd" class="jsxc_actionButton jsxc_dnd" data-i18n="dnd"></div>\n' +
-	'\n' +
-	'  </div>\n' +
-	'\n' +
-	'  <!-- invite users -->\n' +
-	'\n' +
-	'  <p>Inviter des utilisateurs:</p>\n' +
-	'\n' +
-	'  <div id="jsxc_contactsUserList"></div>\n' +
-	'\n' +
-	'  <div class="jsxc_menuAdvice">Touche \'Control\' pour sélectionner plusieurs utilisateurs</div>\n' +
-	'\n' +
-	'  <div class="jsxc_addBuddyFromList jsxc_actionButton">Inviter un/des utilisateur(s)</div>\n' +
-	'\n' +
-	'  <div class="jsxc_removeBuddyFromList jsxc_actionButton">Supprimer un/des contact(s)</div>\n' +
-	'\n' +
-	'  <div class="jsxc_refreshBuddyList jsxc_actionButton">Rafraichir la liste</div>\n' +
-	'\n' +
-	'\n' +
-	'  <div class="jsxc_sideMenuBottom"></div>\n' +
-	'\n' +
-	'\n' +
-	'</div>';
-
 	jsxc.gui.template['newgui_chatsidebar'] = '<div id="jsxc-chat-sidebar">\n' +
 	'\n' +
-	'  <!-- Sidebar header, always visible -->\n' +
-	'  <div id="jsxc-chat-sidebar-header">\n' +
+	'  <!--\n' +
 	'\n' +
-	'    <!-- toggle chat only -->\n' +
-	'    <!--<span class="jsxc-toggle-sidebar"></span>-->\n' +
+	'  Sidebar header, always visible\n' +
+	'\n' +
+	'  -->\n' +
+	'  <div id="jsxc-chat-sidebar-header">\n' +
 	'\n' +
 	'    <!-- toggle video -->\n' +
 	'    <span class="jsxc-toggle-mediapanel"></span>\n' +
@@ -18285,83 +19452,110 @@
 	'\n' +
 	'  </div>\n' +
 	'\n' +
+	'\n' +
 	'  <!-- Chat sidebar content -->\n' +
 	'  <div id="jsxc-chat-sidebar-content">\n' +
 	'\n' +
-	'    <!-- Head of content, static -->\n' +
+	'\n' +
+	'    <!--\n' +
+	'\n' +
+	'    Head of content with filters and menu button, static\n' +
+	'\n' +
+	'    -->\n' +
 	'    <div id="jsxc-action-bar">\n' +
 	'\n' +
 	'      <a id="jsxc-new-gui-filter-users">Utilisateurs</a>\n' +
 	'      <a id="jsxc-new-gui-filter-conversations">Discussions</a>\n' +
 	'\n' +
-	'      <a id="jsxc-select-buddies" class="jsxc-checked">Sélectionner</a>\n' +
+	'      <a id="jsxc-select-buddies">Sélectionner <span class="jsxc-selected-number"></span></a>\n' +
 	'\n' +
 	'      <span id="jsxc-toggle-actions"></span>\n' +
 	'\n' +
 	'    </div>\n' +
 	'\n' +
+	'\n' +
+	'    <!--\n' +
+	'\n' +
+	'      Bottom of content, that can be changed by user\n' +
+	'\n' +
+	'    -->\n' +
 	'    <div id="jsxc-sidebar-content-viewport">\n' +
+	'\n' +
+	'\n' +
+	'      <!--\n' +
+	'\n' +
+	'      Parameters menu\n' +
+	'\n' +
+	'      -->\n' +
 	'\n' +
 	'      <div id="jsxc-settings-menu" class="jsxc-viewport-content">\n' +
 	'\n' +
 	'        <div class="jsxc-title">Paramètres</div>\n' +
 	'\n' +
-	'        <a class="jsxc-action_notImplementedYet">Mode muet: on | off</a>\n' +
-	'        <a class="jsxc-action_notImplementedYet">Interdire les appels vidéo: on | off</a>\n' +
-	'        <a class="jsxc-action_notImplementedYet">Notifications de bureau: on | off</a>\n' +
+	'        <a class="jsxc-action jsxc-action_toggleMuteMode">Jouer les sons</a>\n' +
+	'        <a class="jsxc-action jsxc-action_toggleNotifications">Afficher les notifications</a>\n' +
+	'        <a class="jsxc-action jsxc-action_disableVideoCalls">Interdire les appels vidéo</a>\n' +
 	'\n' +
 	'        <div class="jsxc-content-separator"></div>\n' +
 	'\n' +
-	'        <a class="jsxc-action_clearLocalHistory">Effacer l\'historique local des conversations</a>\n' +
-	'        <a class="jsxc-action_installScreenSharingExtension">Extension de capture d\'écran</a>\n' +
+	'        <a class="jsxc-action jsxc-action_clearLocalHistory">Effacer l\'historique local des\n' +
+	'          conversations</a>\n' +
+	'        <a class="jsxc-action jsxc-action_installScreenSharingExtension">Extension de capture\n' +
+	'          d\'écran</a>\n' +
 	'\n' +
 	'        <div class="jsxc-content-separator"></div>\n' +
 	'\n' +
-	'        <a class="jsxc-action_showCollectedDatas">Données collectées</a>\n' +
+	'        <a class="jsxc-action jsxc-action_showCollectedDatas">Données collectées</a>\n' +
 	'\n' +
-	'        <a class="jsxc-show-about-dialog">A propos</a>\n' +
+	'        <a class="jsxc-action jsxc-show-about-dialog">A propos</a>\n' +
 	'\n' +
 	'      </div>\n' +
 	'\n' +
-	'      <div id="jsxc-actions-menu" class="jsxc-viewport-content">\n' +
+	'\n' +
+	'      <!--\n' +
+	'\n' +
+	'      Main menu\n' +
+	'\n' +
+	'      -->\n' +
+	'\n' +
+	'      <div id="jsxc-main-menu" class="jsxc-viewport-content">\n' +
 	'\n' +
 	'        <div class="jsxc-title">Menu</div>\n' +
 	'\n' +
-	'        <a class="jsxc-action_search-user">Rechercher un utilisateur</a>\n' +
-	'        <a class="jsxc-action_manage-notifications">Notifications\n' +
-	'          <span class="jsxc_menu_notif_number"></span></a>\n' +
+	'        <a class="jsxc-action jsxc-action_search-user">Rechercher un utilisateur</a>\n' +
+	'        <a class="jsxc-action jsxc-action_manage-notifications">Notifications &nbsp;<span class="jsxc_menu_notif_number"></span></a>\n' +
 	'\n' +
 	'        <div class="jsxc-content-separator"></div>\n' +
 	'\n' +
-	'        <a class="jsxc-action_new-conversation">Nouvelle conversation</a>\n' +
-	'        <a class="jsxc-action_invite-in-conversation">Inviter dans une\n' +
-	'          conversation</a>\n' +
-	'\n' +
-	'        <a class="jsxc-action_new-etherpad-document">Ouvrir un document\n' +
-	'          Etherpad</a>\n' +
+	'        <a class="jsxc-action jsxc-action_new-conversation">Nouvelle conversation</a>\n' +
+	'        <a class="jsxc-action jsxc-action_invite-in-conversation">Inviter dans une conversation</a>\n' +
+	'        <a class="jsxc-action jsxc-action_new-etherpad-document">Ouvrir un document Etherpad</a>\n' +
 	'\n' +
 	'        <div class="jsxc-content-separator"></div>\n' +
 	'\n' +
-	'        <a class="jsxc-action_video-call">Appel vidéo</a>\n' +
-	'        <a class="jsxc-action_videoconference jsxc-action_notImplementedYet">Vidéo conférence</a>\n' +
-	'        <a class="jsxc-action_screensharing jsxc-action_notImplementedYet">Partager mon écran</a>\n' +
+	'        <a class="jsxc-action jsxc-action jsxc-action_video-call">Appel vidéo</a>\n' +
+	'        <a class="jsxc-action jsxc-action_videoconference">Vidéo conférence</a>\n' +
+	'        <a class="jsxc-action jsxc-action_screensharing">Partager mon écran</a>\n' +
 	'\n' +
 	'        <div class="jsxc-content-separator"></div>\n' +
 	'\n' +
-	'        <a class="jsxc-action_delete-buddies">Supprimer</a>\n' +
-	'\n' +
-	'        <div>&nbsp;</div>\n' +
+	'        <a class="jsxc-action jsxc-action_delete-buddies">Supprimer</a>\n' +
 	'\n' +
 	'      </div>\n' +
 	'\n' +
-	'      <!-- XEP 0055 user search-->\n' +
+	'      <!--\n' +
+	'\n' +
+	'      Search menu\n' +
+	'\n' +
+	'      -->\n' +
+	'\n' +
 	'      <div id="jsxc-search-users" class="jsxc-viewport-content">\n' +
 	'\n' +
 	'        <div class="jsxc-title">Rechercher</div>\n' +
 	'\n' +
 	'        <input id="jsxc-chat-sidebar-search" placeholder="Rechercher ..." type="text"/>\n' +
-	'        <input id="jsxc-chat-sidebar-search-invite" value="Inviter" type="button"/>\n' +
-	'        <input id="jsxc-chat-sidebar-search-chat" value="Discuter" type="button"/>\n' +
+	'        <input id="jsxc-chat-sidebar-search-invite" class="btn btn-default" value="Inviter" type="button"/>\n' +
+	'        <input id="jsxc-chat-sidebar-search-chat" class="btn btn-primary" value="Discuter" type="button"/>\n' +
 	'\n' +
 	'        <div class="jsxc-search-users-results">\n' +
 	'\n' +
@@ -18369,25 +19563,59 @@
 	'\n' +
 	'      </div>\n' +
 	'\n' +
-	'      <!-- Notifications-->\n' +
+	'      <!--\n' +
+	'\n' +
+	'      Notification menu\n' +
+	'\n' +
+	'      -->\n' +
 	'      <div id="jsxc-manage-notifications" class="jsxc-viewport-content">\n' +
 	'\n' +
 	'        <div class="jsxc-title">Notifications <span class="jsxc_menu_notif_number"></span></div>\n' +
 	'\n' +
+	'        <a class="jsxc-action jsxc-action_rejectAllNotifications">Tout rejeter</a>\n' +
+	'        <a class="jsxc-action jsxc-action_notificationsParameters">Paramètres</a>\n' +
+	'\n' +
 	'        <div id="jsxc-notifications">\n' +
-	'\n' +
-	'          <!-- Notification inserted here -->\n' +
-	'          <ul>\n' +
-	'\n' +
-	'          </ul>\n' +
-	'\n' +
+	'          <ul></ul>\n' +
 	'        </div>\n' +
 	'\n' +
 	'      </div>\n' +
 	'\n' +
-	'      <!-- buddy list, where stored contacts AND buddies -->\n' +
+	'      <!--\n' +
+	'\n' +
+	'      Connexion form\n' +
+	'\n' +
+	'      -->\n' +
+	'      <div id="jsxc-connexion-menu" class="jsxc-viewport-content">\n' +
+	'\n' +
+	'        <div class="jsxc-title">Connexion</div>\n' +
+	'\n' +
+	'        <p>Identifiant: </p>\n' +
+	'        <input type="text" id="jsxc-connexion-login"/>\n' +
+	'\n' +
+	'        <p>Mot de passe: </p>\n' +
+	'        <input type="password" id="jsxc-connexion-password"/>\n' +
+	'\n' +
+	'        <input type="button" id="jsxc-connexion-submit" class="btn btn-primary" value="Connexion"/>\n' +
+	'\n' +
+	'        <div id="jsxc-login-standby">\n' +
+	'          Veuillez patienter ....\n' +
+	'        </div>\n' +
+	'\n' +
+	'        <div id="jsxc-login-warning">\n' +
+	'          Echec de la connexion. Si ce problème persiste, rafraichissez la\n' +
+	'          page et essayez à nouveau.\n' +
+	'        </div>\n' +
+	'\n' +
+	'      </div>\n' +
+	'\n' +
+	'      <!--\n' +
+	'\n' +
+	'      Buddy list, where stored contacts AND buddies\n' +
+	'\n' +
+	'      -->\n' +
 	'      <div id="jsxc-buddy-list-container" class="jsxc-viewport-content">\n' +
-	'        \n' +
+	'\n' +
 	'        <!-- We need to have a block before buddy list -->\n' +
 	'        <div>&nbsp;</div>\n' +
 	'\n' +
@@ -18397,6 +19625,18 @@
 	'\n' +
 	'    </div>\n' +
 	'\n' +
+	'\n' +
+	'\n' +
+	'\n' +
+	'\n' +
+	'\n' +
+	'\n' +
+	'\n' +
+	'    <!--\n' +
+	'\n' +
+	'    Status bar, bottom of content, static\n' +
+	'\n' +
+	'    -->\n' +
 	'\n' +
 	'    <div id="jsxc-status-bar">\n' +
 	'\n' +
@@ -18442,7 +19682,7 @@
 	'    </div>\n' +
 	'\n' +
 	'    <p>\n' +
-	'      <a class="jsxc_mmstreamTerminateAll">Terminer tous les appels</a>\n' +
+	'      <a class="jsxc_mmstreamTerminateAll">Terminer tous les appels et réinitialiser le système multimédia</a>\n' +
 	'    </p>\n' +
 	'\n' +
 	'  </div>\n' +
@@ -18454,6 +19694,24 @@
 	'</div>';
 
 	jsxc.gui.template['pleaseAccept'] = '<p data-i18n="Please_accept_"></p>\n' +
+	'';
+
+	jsxc.gui.template['reinviteUser_emit'] = '<h3>Ré-invitation</h3>\n' +
+	'<p>\n' +
+	'   <span>Voulez-vous ré-inviter {{bid_name}} </span> ?\n' +
+	'</p>\n' +
+	'\n' +
+	'<button class="btn btn-primary jsxc_accept pull-right">Ré-inviter</button>\n' +
+	'<button class="btn btn-default jsxc_reject pull-right">Annuler</button>\n' +
+	'';
+
+	jsxc.gui.template['reinviteUser_received'] = '<h3>Ré-invitation</h3>\n' +
+	'<p>\n' +
+	'   <span><b>{{bid_name}}</b> souhaite vous réinviter.</span>\n' +
+	'</p>\n' +
+	'\n' +
+	'<button class="btn btn-primary jsxc_accept pull-right">Accepter</button>\n' +
+	'<button class="btn btn-default jsxc_reject pull-right">Annuler</button>\n' +
 	'';
 
 	jsxc.gui.template['removeDialog'] = '<h3 data-i18n="Remove_buddy"></h3>\n' +
@@ -18472,66 +19730,6 @@
 	'\n' +
 	'<button class="btn btn-primary jsxc_remove pull-right" data-i18n="Remove"></button>\n' +
 	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right" data-i18n="Cancel"></button>\n' +
-	'';
-
-	jsxc.gui.template['roster'] = '<!-- Side bar with buddy list and menu -->\n' +
-	'<div id="jsxc_roster">\n' +
-	'\n' +
-	'    <!-- Main menu -->\n' +
-	'    <div id="jsxc_side_menu">\n' +
-	'\n' +
-	'        <div id="jsxc_side_menu_search_bar">\n' +
-	'\n' +
-	'            <input type="text" placeholder="Rechercher" id="jsxc_menu_search_text_field"/>\n' +
-	'            <input type="button" id="jsxc_menu_previous_btn" value="<"/>\n' +
-	'            <input type="button" id="jsxc_menu_next_btn" value=">"/>\n' +
-	'\n' +
-	'            <div id="jsxc_menu_feedback">&nbsp;</div>\n' +
-	'\n' +
-	'        </div>\n' +
-	'\n' +
-	'        <div id="jsxc_side_menu_content"></div>\n' +
-	'\n' +
-	'    </div>\n' +
-	'\n' +
-	'    <!-- buddy list -->\n' +
-	'    <ul id="jsxc_buddylist"></ul>\n' +
-	'\n' +
-	'    <!-- Menu bar on bottom of roster -->\n' +
-	'    <div class="jsxc_bottom jsxc_presence jsxc_rosteritem" data-bid="own">\n' +
-	'\n' +
-	'        <!-- Avatar -->\n' +
-	'        <div id="jsxc_avatar" class="jsxc_avatar"/>\n' +
-	'\n' +
-	'        <div id="jsxc_menu">\n' +
-	'\n' +
-	'            <!-- Button for menu openning, image added with scss/_jsxc.scss -->\n' +
-	'            <span></span>\n' +
-	'\n' +
-	'        </div>\n' +
-	'\n' +
-	'        <div class="jsxc_menu_notif_bottom_roster"><span class="jsxc_menu_notif_number"></span></div>\n' +
-	'\n' +
-	'        <div id="jsxc_presence">\n' +
-	'            <span data-i18n="Offline">Offline</span>\n' +
-	'            <div class="jsxc_inner">\n' +
-	'                <ul>\n' +
-	'                    <li data-pres="online" class="jsxc_online" data-i18n="Online"></li>\n' +
-	'                    <li data-pres="chat" class="jsxc_chat" data-i18n="Chatty"></li>\n' +
-	'                    <li data-pres="away" class="jsxc_away" data-i18n="Away"></li>\n' +
-	'                    <li data-pres="xa" class="jsxc_xa" data-i18n="Extended_away"></li>\n' +
-	'                    <li data-pres="dnd" class="jsxc_dnd" data-i18n="dnd"></li>\n' +
-	'                    <li data-pres="offline" class="jsxc_offline" data-i18n="Offline"></li>\n' +
-	'                </ul>\n' +
-	'            </div>\n' +
-	'        </div>\n' +
-	'\n' +
-	'    </div>\n' +
-	'\n' +
-	'    <!-- Barre transparente permettant de replier le menu JSXC -->\n' +
-	'    <div id="jsxc_toggleRoster"></div>\n' +
-	'\n' +
-	'</div>\n' +
 	'';
 
 	jsxc.gui.template['rosterBuddy'] = '<li class="jsxc_rosteritem">\n' +
@@ -18601,12 +19799,22 @@
 	'</div>\n' +
 	'';
 
-	jsxc.gui.template['selectionDialog'] = '<h3></h3>\n' +
-	'<p></p>\n' +
+	jsxc.gui.template['selectContacts'] = '<h3>Sélectionner des contacts</h3>\n' +
 	'\n' +
-	'<button class="btn btn-primary pull-right" data-i18n="Confirm"></button>\n' +
-	'<button class="btn btn-default pull-right" data-i18n="Dismiss"></button>\n' +
-	'';
+	'<div id="jsxc-invite-dialog-buddylist"></div>\n' +
+	'<div id="jsxc-invite-dialog-refresh"></div>\n' +
+	'\n' +
+	'<button class="btn btn-primary jsxc_confirm pull-right">Sélectionner</button>\n' +
+	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right">Annuler</button>\n' +
+	'<button class="btn btn-default jsxc_refresh pull-right">Rafraichir</button>';
+
+	jsxc.gui.template['selectConversations'] = '<h3>Sélection de conversation</h3>\n' +
+	'\n' +
+	'<div id="jsxc_dialogConversationList"></div>\n' +
+	'\n' +
+	'<button class="btn btn-primary jsxc_confirm pull-right" data-i18n="Confirm"></button>\n' +
+	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right" data-i18n="Cancel"></button>\n' +
+	'<button class="btn btn-default jsxc_refresh pull-right">Rafraichir</button>';
 
 	jsxc.gui.template['settings'] = '<form class="form-horizontal col-sm-6">\n' +
 	'   <fieldset class="jsxc_fieldsetXmpp jsxc_fieldset">\n' +
@@ -18738,33 +19946,16 @@
 	'</p>\n' +
 	'';
 
-	jsxc.gui.template['videoReinviteUser_emit'] = '<h3>Ré-invitation</h3>\n' +
-	'<p>\n' +
-	'   <span>Voulez-vous ré-inviter {{bid_name}} dans la vidéoconférence</span> ?\n' +
-	'</p>\n' +
-	'\n' +
-	'<button class="btn btn-primary jsxc_accept pull-right">Ré-inviter</button>\n' +
-	'<button class="btn btn-default jsxc_reject pull-right">Annuler</button>\n' +
-	'';
-
-	jsxc.gui.template['videoReinviteUser_received'] = '<h3>Ré-invitation</h3>\n' +
-	'<p>\n' +
-	'   <span><b>{{bid_name}}</b> souhaite vous réinviter dans la vidéoconférence.</span>\n' +
-	'</p>\n' +
-	'\n' +
-	'<button class="btn btn-primary jsxc_accept pull-right">Accepter</button>\n' +
-	'<button class="btn btn-default jsxc_reject pull-right">Annuler</button>\n' +
-	'';
-
 	jsxc.gui.template['videoStreamDialog'] = '<h3 class="jsxc_from_jid"></h3>\n' +
 	'\n' +
 	'<div>\n' +
 	'  <video class="jsxc_fullscreenVideo"></video>\n' +
 	'</div>\n' +
 	'\n' +
-	'<button class="btn btn-default pull-right jsxc_hangUpCall">Terminer l\'appel</button>\n' +
-	'<button class="btn btn-default pull-right jsxc_closeVideoDialog">Fermer la fenêtre</button>\n' +
-	'';
+	'<div>\n' +
+	'  <button class="btn btn-default pull-right jsxc_hangUpCall">Terminer l\'appel</button>\n' +
+	'  <button class="btn btn-default pull-right jsxc_closeVideoDialog">Fermer la fenêtre</button>\n' +
+	'</div>';
 
 	jsxc.gui.template['videoWindow'] = '<div id="jsxc_webrtc">\n' +
 	'   <div class="jsxc_chatarea">\n' +
@@ -18817,6 +20008,7 @@
 	'<div id="jsxc_windowListSB">\n' +
 	'   <div class="jsxc_scrollLeft jsxc_disabled">&lt;</div>\n' +
 	'   <div class="jsxc_scrollRight jsxc_disabled">&gt;</div>\n' +
+	'   <div class="jsxc_closeAllWindows jsxc_disabled">X</div>\n' +
 	'</div>\n' +
 	'';
 

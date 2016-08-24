@@ -63,84 +63,6 @@ jsxc.gui.interactions = {
   },
 
   /**
-   * Get all checked elements from buddylist, conversations AND buddies
-   * @returns {Array}
-   * @private
-   */
-  _getCheckedElementsOrAskFor : function() {
-
-    var defer = $.Deferred();
-
-    var all = $("#jsxc_buddylist li");
-    var rslt = [];
-
-    all.each(function() {
-      var element = $(this);
-      if (element.find(".jsxc-checked").length > 0) {
-        rslt.push(element.data('jid'));
-      }
-    });
-
-    // if no elements, show only buddies here
-    //TODO Present conversations ?
-    if (rslt.length &lt; 1) {
-
-      jsxc.gui.showInviteContactsDialog()
-          .then(function(result) {
-            defer.resolve(result);
-          })
-          .fail(function() {
-            defer.reject("canceled");
-          });
-    }
-
-    else {
-      defer.resolve(rslt);
-    }
-
-    return defer.promise();
-
-  },
-
-  /**
-   * Get checked elements from buddylist, and only the buddies
-   * @returns {Array}
-   * @private
-   */
-  _getCheckedBuddiesOrAskFor : function() {
-
-    var defer = $.Deferred();
-
-    var all = $("#jsxc_buddylist li");
-    var rslt = [];
-
-    all.each(function() {
-      var element = $(this);
-      if (element.data('type') === 'chat' &amp;&amp; element.find(".jsxc-checked").length > 0) {
-        rslt.push(element.data('bid'));
-      }
-    });
-
-    if (rslt.length &lt; 1) {
-
-      jsxc.gui.showInviteContactsDialog()
-          .then(function(result) {
-            defer.resolve(result);
-          })
-          .fail(function() {
-            defer.reject("canceled");
-          });
-    }
-
-    else {
-      defer.resolve(rslt);
-    }
-
-    return defer.promise();
-
-  },
-
-  /**
    * Return checked elements from search user panel
    * @returns {JQuery|*|jQuery|HTMLElement}
    * @private
@@ -161,69 +83,39 @@ jsxc.gui.interactions = {
     var loginBtn = $('#jsxc-status-bar .jsxc-login-button');
     var logoutBtn = $('#jsxc-status-bar .jsxc-logout-button');
 
-    // display own presence information
+    // listen connection state to display informations and controls
     $(document).on('ownpresence.jsxc', function() {
       newgui.updateOwnPresenceIndicator();
     });
+
     $(document).on('attached.jsxc', function() {
       newgui.updateOwnPresenceIndicator();
     });
+
     $(document).on('disconnected.jsxc', function() {
       newgui.updateOwnPresenceIndicator(true);
+      newgui.hideAndShow(loginBtn, logoutBtn);
+    });
+
+    $(document).on('connected.jsxc', function() {
+      newgui.hideAndShow(logoutBtn, loginBtn);
     });
     newgui.updateOwnPresenceIndicator();
 
-    /**
-     * Hide one element and show a second one
-     * @param toShow
-     * @param toHide
-     */
-    var hideAndShow = function(toShow, toHide) {
-
-      // hide old element
-      toHide.animate({
-        opacity : 0
-      }, newgui.OPACITY_ANIMATION_DURATION, function() {
-        toHide.css('display', 'none');
-
-        // show new one
-        toShow.css({
-          'display' : 'inline-block', 'opacity' : 0
-        });
-        toShow.animate({
-          'opacity' : '1'
-        }, newgui.OPACITY_ANIMATION_DURATION);
-      });
-
-    };
-
     // log out button
     logoutBtn.click(function() {
-
-      // disconnect
       jsxc.api.disconnect();
-      hideAndShow(loginBtn, logoutBtn);
-
+      jsxc.newgui.toggleBuddyList();
     });
 
     // login button
     loginBtn.click(function() {
-
       jsxc.api.reconnect();
-
-      $(document).one('connected.jsxc', function() {
-        hideAndShow(logoutBtn, loginBtn);
-      });
-
     });
 
     // show login / logout on connect
     if (jsxc.xmpp.conn) {
-      hideAndShow(logoutBtn, loginBtn);
-    } else {
-      $(document).one('attached.jsxc', function() {
-        hideAndShow(logoutBtn, loginBtn);
-      });
+      newgui.hideAndShow(logoutBtn, loginBtn);
     }
 
     // make status bar selectable
@@ -244,7 +136,9 @@ jsxc.gui.interactions = {
    */
   _initActionMenu : function() {
 
-    var self = jsxc.gui.interactions;
+    // var self = jsxc.gui.interactions;
+    var mmstream = jsxc.mmstream;
+    var newgui = jsxc.newgui;
 
     /**
      * Start a multi user chat
@@ -254,7 +148,7 @@ jsxc.gui.interactions = {
     $('#jsxc-chat-sidebar .jsxc-action_new-conversation').click(function() {
 
       var selected = [];
-      self._getCheckedBuddiesOrAskFor()
+      newgui.getCheckedBuddiesOrAskFor()
           .then(function(results) {
             $.each(results, function(index, element) {
               selected.push(element);
@@ -275,7 +169,7 @@ jsxc.gui.interactions = {
 
     $('.jsxc-action_delete-buddies').click(function() {
 
-      self._getCheckedElementsOrAskFor()
+      newgui.getCheckedElementsOrAskFor()
 
           .then(function(buddies) {
 
@@ -308,7 +202,7 @@ jsxc.gui.interactions = {
      */
     $('#jsxc-main-menu .jsxc-action_invite-in-conversation').click(function() {
 
-      self._getCheckedBuddiesOrAskFor()
+      newgui.getCheckedBuddiesOrAskFor()
           .then(function(buddies) {
 
             if (buddies.length &lt; 1) {
@@ -356,8 +250,11 @@ jsxc.gui.interactions = {
      */
     $("#jsxc-main-menu .jsxc-action_new-etherpad-document").click(function() {
 
+      // check if some buddies are already selected
+      var selected = newgui.getCheckedBuddies();
+
       // show dialog
-      jsxc.gui.showEtherpadCreationDialog()
+      jsxc.gui.showEtherpadCreationDialog(selected)
 
           .then(function(res) {
 
@@ -384,7 +281,7 @@ jsxc.gui.interactions = {
     $("#jsxc-main-menu .jsxc-action_video-call").click(function() {
 
       // get selected budies
-      self._getCheckedBuddiesOrAskFor()
+      newgui.getCheckedBuddiesOrAskFor()
 
           .then(function(buddies) {
 
@@ -400,7 +297,7 @@ jsxc.gui.interactions = {
 
               var fjid = jsxc.getCurrentActiveJidForBid(element);
 
-              if (fjid === null || jsxc.isBuddyOnline(element) === true) {
+              if (fjid === null || jsxc.isBuddyOnline(element) === false) {
                 unavailables.push(Strophe.getNodeFromJid(element));
               } else {
                 fjidArray.push(jsxc.getCurrentActiveJidForBid(element));
@@ -421,12 +318,133 @@ jsxc.gui.interactions = {
 
             // call buddies
             $.each(fjidArray, function(index, fjid) {
-              jsxc.mmstream.startSimpleVideoCall(fjid);
+              mmstream.startSimpleVideoCall(fjid);
             });
 
           })
           .fail(function() {
             jsxc.gui.feedback('Opération annulée');
+          });
+
+    });
+
+    /**
+     * Video conférence
+     * ================
+     *
+     */
+    $("#jsxc-main-menu .jsxc-action_videoconference").click(function() {
+
+      // get selected budies
+      newgui.getCheckedBuddiesOrAskFor()
+
+          .then(function(buddies) {
+
+            if (buddies.length &lt; 1) {
+              jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+              return;
+            }
+
+            if (buddies.length > mmstream.VIDEOCONFERENCE_MAX_PARTICIPANTS) {
+              jsxc.gui.feedback("La vidéoconférence est limitée à 6 participants");
+              return;
+            }
+
+            // get full jid of buddies
+            var fjidArray = [];
+            var unavailables = [];
+            $.each(buddies, function(index, element) {
+
+              var fjid = jsxc.getCurrentActiveJidForBid(element);
+
+              if (fjid === null || jsxc.isBuddyOnline(element) === false) {
+                unavailables.push(Strophe.getNodeFromJid(element));
+              } else {
+                fjidArray.push(jsxc.getCurrentActiveJidForBid(element));
+              }
+
+            });
+
+            // check how many participants are unavailable
+            if (unavailables.length === 1) {
+              jsxc.gui.feedback("&lt;b>" + unavailables[0] + "&lt;/b> n'est pas disponible");
+              return;
+            }
+
+            else if (unavailables.length > 1) {
+              jsxc.gui.feedback("&lt;b>" + unavailables.join(", ") + "&lt;/b> ne sont pas disponibles");
+              return;
+            }
+
+            // start videoconference
+            mmstream.startVideoconference(fjidArray);
+
+          })
+          .fail(function() {
+            jsxc.gui.feedback('Opération annulée');
+          });
+
+    });
+
+    /**
+     * Screen sharing
+     * ===============
+     *
+     */
+    $("#jsxc-main-menu .jsxc-action_screensharing").click(function() {
+
+      // get selected budies
+      newgui.getCheckedBuddiesOrAskFor()
+
+          .then(function(buddies) {
+
+            if (buddies.length &lt; 1) {
+              jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+              return;
+            }
+
+            mmstream.checkNavigatorCompatibility("screensharing");
+
+            mmstream.isChromeExtensionInstalled()
+
+                .fail(function() {
+                  mmstream.gui.showInstallScreenSharingExtensionDialog();
+                  return;
+                })
+
+                .then(function() {
+
+                  // get full jid of buddies
+                  var fjidArray = [];
+                  var unavailables = [];
+                  $.each(buddies, function(index, element) {
+
+                    var fjid = jsxc.getCurrentActiveJidForBid(element);
+
+                    if (fjid === null || jsxc.isBuddyOnline(element) === false) {
+                      unavailables.push(Strophe.getNodeFromJid(element));
+                    } else {
+                      fjidArray.push(jsxc.getCurrentActiveJidForBid(element));
+                    }
+
+                  });
+
+                  // check how many participants are unavailable
+                  if (unavailables.length === 1) {
+                    jsxc.gui.feedback("&lt;b>" + unavailables[0] + "&lt;/b> n'est pas disponible");
+                    return;
+                  }
+
+                  else if (unavailables.length > 1) {
+                    jsxc.gui.feedback(
+                        "&lt;b>" + unavailables.join(", ") + "&lt;/b> ne sont pas disponibles");
+                    return;
+                  }
+
+                  // call buddies
+                  mmstream.startScreenSharingMultiPart(fjidArray);
+
+                });
           });
 
     });
@@ -441,6 +459,8 @@ jsxc.gui.interactions = {
 
     // var self = jsxc.gui.interactions;
     var newgui = jsxc.newgui;
+    var mmstream = jsxc.mmstream;
+    var notification = jsxc.notification;
 
     /**
      * Open settings menu
@@ -476,13 +496,85 @@ jsxc.gui.interactions = {
 
     });
 
+    /**
+     * Install screensharing extension
+     * ===============================
+     */
     $('#jsxc-settings-menu .jsxc-action_installScreenSharingExtension').click(function() {
-      jsxc.mmstream.gui.showInstallScreenSharingExtensionDialog();
+      mmstream.gui.showInstallScreenSharingExtensionDialog();
     });
 
-    // about dialog
+    /**
+     * About dialog
+     * ============
+     */
     $('#jsxc-settings-menu .jsxc-show-about-dialog').click(function() {
       jsxc.gui.showAboutDialog();
+    });
+
+    /**
+     * Mute sounds
+     * ===========
+     */
+    var muteIndicator = jsxc.newgui.createStateIndicator('.jsxc-action_toggleMuteMode');
+    muteIndicator.toggleState(!notification.isSoundMuted());
+
+    $('#jsxc-settings-menu .jsxc-action_toggleMuteMode').click(function() {
+
+      muteIndicator.toggleState();
+
+      if (muteIndicator.getState() === false) {
+        notification.muteSound();
+      }
+
+      else {
+        notification.unmuteSound();
+      }
+
+    });
+
+    /**
+     * Show / Hide notifications
+     * =========================
+     */
+    var notifIndicator = jsxc.newgui.createStateIndicator('.jsxc-action_toggleNotifications');
+    notifIndicator.toggleState(notification.isNotificationShowed());
+
+    $('#jsxc-settings-menu .jsxc-action_toggleNotifications').click(function() {
+
+      notifIndicator.toggleState();
+
+      if (notifIndicator.getState() === true) {
+
+        // request permission if needed
+        if (notification.hasPermission() !== true) {
+          jsxc.gui.showRequestNotification();
+        }
+
+        notification.showNotifications();
+      }
+
+      else {
+        notification.hideNotifications();
+      }
+
+    });
+
+    var videoIndicator = jsxc.newgui.createStateIndicator('.jsxc-action_disableVideoCalls');
+    videoIndicator.toggleState(mmstream.isVideoCallsDisabled());
+
+    $('#jsxc-settings-menu .jsxc-action_disableVideoCalls').click(function() {
+
+      videoIndicator.toggleState();
+
+      if (videoIndicator.getState() === true) {
+        mmstream.disableVideoCalls();
+      }
+
+      else {
+        mmstream.enableVideoCalls();
+      }
+
     });
 
   },
@@ -570,7 +662,50 @@ jsxc.gui.interactions = {
 
   },
 
+  /**
+   * Where user can manage notifications: reject or accept them, remove them....
+   * @private
+   */
   _initNotificationsMenu : function() {
+
+    /**
+     * Reject all notifications
+     * ========================
+     *
+     */
+    $('#jsxc-manage-notifications .jsxc-action_rejectAllNotifications').click(function() {
+
+      if ($('#jsxc-notifications ul li[data-nid]').length &lt; 1) {
+        jsxc.gui.feedback("Aucune notification à rejeter");
+        return;
+      }
+
+      jsxc.gui.showConfirmDialog("Etes vous sur de vouloir rejeter toutes les notifications ?",
+
+          function() {
+
+            jsxc.gui.dialog.close();
+
+            $('#jsxc-notifications ul li[data-nid]').each(function() {
+              jsxc.notice.remove($(this).data('nid'));
+            });
+
+            jsxc.gui.feedback("Notifications rejetées");
+          },
+
+          function() {
+            jsxc.gui.feedback("Opération annulée");
+          });
+
+    });
+
+    /**
+     * Show notifications parameters
+     * =============================
+     */
+    $('#jsxc-manage-notifications .jsxc-action_notificationsParameters').click(function() {
+      jsxc.newgui.toggleSettingsMenu();
+    });
 
   }
 
@@ -584,13 +719,13 @@ jsxc.gui.interactions = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_updateSelectedCount">_updateSelectedCount</a></li><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#getCheckedBuddies">getCheckedBuddies</a></li><li><a href="global.html#getCheckedElements">getCheckedElements</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isConnexionMenuShown">isConnexionMenuShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleBuddyList">toggleBuddyList</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleConnexionMenu">toggleConnexionMenu</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSelectionMode">toggleSelectionMode</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#unselectAllElements">unselectAllElements</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sat Aug 20 2016 11:51:14 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Aug 24 2016 16:53:03 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

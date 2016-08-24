@@ -1,5 +1,5 @@
 /*!
- * djoe v1.0.0 - 2016-08-20
+ * djoe v1.0.0 - 2016-08-24
  * 
  * Copyright (c) 2016  <br>
  * Released under the GPL-3.0 license
@@ -304,7 +304,7 @@ $(function() {
     };
 
     jsxc.api.registerCustomModule({
-      name : "Silverpeas", module : SilverpeasCustomModule,
+      name : "Silverpeas", module : SilverpeasCustomModule
     });
 
     var SilverpeasCallbackSet = {
@@ -337,7 +337,7 @@ $(function() {
     // credential must be stored on page
     var cred = SilverpeasCustomModule.credentials;
 
-    /** Correction JSXC Options */
+    /** Corrective for JSXC Options */
     options.xmpp.url = cred.httpBindUrl;
     options.xmpp.domain = cred.xmppDomain;
     options.root = cred.silverpeasContext + "/chatclient";
@@ -347,8 +347,6 @@ $(function() {
 
     jsxc.api.Silverpeas.connect();
   }
-
-
-
+  
 });
 

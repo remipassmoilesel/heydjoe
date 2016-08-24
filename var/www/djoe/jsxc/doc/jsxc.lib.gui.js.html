@@ -108,15 +108,39 @@ jsxc.gui = {
    */
   init : function() {
 
-    // Prevent duplicate windowList
-    if ($('#jsxc_windowList').length > 0) {
+    // gui already exist, return
+    if ($('#jsxc-root').length > 0) {
       return;
     }
 
+    // We need these templates often, so we creates some template jquery objects
+    jsxc.gui.windowTemplate = $(jsxc.gui.template.get('chatWindow'));
+    jsxc.gui.buddyTemplate = $(jsxc.gui.template.get('rosterBuddy'));
+
+    // Append GUI on document
+    jsxc.debug("Adding GUI and roster init");
+
+    var skeleton = $("&lt;div id='jsxc-root'>&lt;/div>");
+    skeleton.append($(jsxc.gui.template.get('newgui_chatsidebar')));
+    skeleton.append($(jsxc.gui.template.get('newgui_mediapanel')));
+
+    $(jsxc.options.rosterAppend + ':first').append(skeleton);
+
+    // window list must stay here, otherwise too mush style problems appear
+    $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('windowList')));
+
+    // new gui init
+    jsxc.newgui.init();
+    jsxc.gui.interactions.init();
+
+    // init roster element
+    jsxc.gui.roster.init();
+
+    jsxc.gui.tooltip('#jsxc-root');
+    jsxc.gui.tooltip('#jsxc_windowList');
+
     jsxc.gui.regShortNames = new RegExp(emojione.regShortNames.source + '|(' +
         Object.keys(jsxc.gui.emoticonList.core).join('|') + ')', 'gi');
-
-    $('body').append($(jsxc.gui.template.get('windowList')));
 
     $(window).resize(jsxc.gui.updateWindowListSB);
     $('#jsxc_windowList').resize(jsxc.gui.updateWindowListSB);
@@ -127,13 +151,16 @@ jsxc.gui = {
     $('#jsxc_windowListSB .jsxc_scrollRight').click(function() {
       jsxc.gui.scrollWindowListBy(200);
     });
+
+    $('#jsxc_windowListSB .jsxc_closeAllWindows').click(function() {
+      jsxc.gui.closeAllChatWindows();
+    });
+
     $('#jsxc_windowList').on('wheel', function(ev) {
       if ($('#jsxc_windowList').data('isOver')) {
         jsxc.gui.scrollWindowListBy((ev.originalEvent.wheelDelta > 0) ? 200 : -200);
       }
     });
-
-    jsxc.gui.tooltip('#jsxc_windowList');
 
     var fo = jsxc.options.get('favicon');
     if (fo &amp;&amp; fo.enable) {
@@ -144,10 +171,6 @@ jsxc.gui = {
       jsxc.gui.favicon.badge(jsxc.storage.getUserItem('unreadMsg') || 0);
     }
 
-    if (!jsxc.el_exists('#jsxc_roster')) {
-      jsxc.gui.roster.init();
-    }
-
     // prepare regexp for emotions
     $.each(jsxc.gui.emotions, function(i, val) {
       // escape characters
@@ -156,19 +179,35 @@ jsxc.gui = {
       jsxc.gui.emotions[i][2] = new RegExp(reg, 'g');
     });
 
-    // We need this often, so we creates some template jquery objects
-    jsxc.gui.windowTemplate = $(jsxc.gui.template.get('chatWindow'));
-    jsxc.gui.buddyTemplate = $(jsxc.gui.template.get('rosterBuddy'));
-
     // change own presence informations
     var updatePresenceInformations = function(event, pres) {
       jsxc.gui.updatePresence('own', pres);
     };
+
     // add listener for own presences, and remove it on time
     $(document).on('ownpresence.jsxc', updatePresenceInformations);
     $(document).on('disconnected.jsxc', function() {
       $(document).off('ownpresence.jsxc', updatePresenceInformations);
     });
+
+    // remove all window chen disconnected
+    $(document).on('disconnected.jsxc', function() {
+      jsxc.gui.closeAllChatWindows();
+    });
+  },
+
+  /**
+   * Close all chat windows
+   */
+  closeAllChatWindows : function() {
+
+    $("#jsxc_windowList .jsxc_windowItem").each(function() {
+      jsxc.gui.window.close($(this).data('bid'));
+    });
+
+    // replace list after close all, to avoid future window appear out of screen
+    $('#jsxc_windowList ul').css('right', '0px');
+
   },
 
   /**
@@ -270,7 +309,7 @@ jsxc.gui = {
       ue.removeClass('jsxc_oneway');
     }
 
-    var info = Strophe.getBareJidFromJid(data.jid) + '\n';
+    var info = jsxc.jidToBid(data.jid) + '\n';
     info += jsxc.t('Subscription') + ': ' + jsxc.t(data.sub) + '\n';
     info += jsxc.t('Status') + ': ' + jsxc.t(jsxc.CONST.STATUS[data.status]);
 
@@ -348,10 +387,10 @@ jsxc.gui = {
       };
 
       // workaround for https://github.com/strophe/strophejs/issues/172
-      if (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(jsxc.xmpp.conn.jid)) {
+      if (jsxc.jidToBid(jid) === jsxc.jidToBid(jsxc.xmpp.conn.jid)) {
         jsxc.xmpp.conn.vcard.get(handler_cb, error_cb);
       } else {
-        jsxc.xmpp.conn.vcard.get(handler_cb, Strophe.getBareJidFromJid(jid), error_cb);
+        jsxc.xmpp.conn.vcard.get(handler_cb, jsxc.jidToBid(jid), error_cb);
       }
     }
   },
@@ -359,16 +398,42 @@ jsxc.gui = {
   /**
    * Updates scrollbar handlers.
    *
+   * SB are shown if there are more than 2 windows
+   *
    * @memberOf jsxc.gui
    */
   updateWindowListSB : function() {
 
-    if ($('#jsxc_windowList>ul').width() > $('#jsxc_windowList').width()) {
-      $('#jsxc_windowListSB > div').removeClass('jsxc_disabled');
-    } else {
-      $('#jsxc_windowListSB > div').addClass('jsxc_disabled');
-      $('#jsxc_windowList>ul').css('right', '0px');
+    var newgui = jsxc.newgui;
+    var wins = $("#jsxc_windowList .jsxc_window");
+    var sb = $('#jsxc_windowListSB');
+
+    if (wins.length > 1) {
+
+      if (sb.css('display') !== 'block') {
+        sb.css({
+          opacity : 0, display : 'block'
+        }).animate({
+          opacity : 1
+        }, newgui.OPACITY_ANIMATION_DURATION);
+      }
+
     }
+
+    else {
+
+      if (sb.css('display') === 'block') {
+        sb.animate({
+          opacity : 0
+        }, newgui.OPACITY_ANIMATION_DURATION, function() {
+          sb.css({
+            display : 'none'
+          });
+        });
+      }
+
+    }
+
   },
 
   /**
@@ -657,7 +722,7 @@ jsxc.gui = {
       'noClose' : true
     });
 
-    $('#jsxc_dialog .jsxc_their_jid').text(Strophe.getBareJidFromJid(from));
+    $('#jsxc_dialog .jsxc_their_jid').text(jsxc.jidToBid(from));
 
     $('#jsxc_dialog .jsxc_deny').click(function(ev) {
       ev.stopPropagation();
@@ -692,7 +757,7 @@ jsxc.gui = {
       'noClose' : true
     });
 
-    $('#jsxc_dialog .jsxc_buddyName').text(Strophe.getBareJidFromJid(buddyName));
+    $('#jsxc_dialog .jsxc_buddyName').text(jsxc.jidToBid(buddyName));
 
     $('#jsxc_dialog .jsxc_deny').click(function(ev) {
       ev.stopPropagation();
@@ -826,7 +891,9 @@ jsxc.gui = {
   showRemoveManyDialog : function(bidArray) {
 
     // show dialog
-    jsxc.gui.dialog.open(jsxc.gui.template.get('removeManyDialog'));
+    jsxc.gui.dialog.open(jsxc.gui.template.get('removeManyDialog'), {
+      'noClose' : true
+    });
 
     var templateList = $('#jsxc_dialog .jsxc_elementsToRemove');
 
@@ -841,10 +908,10 @@ jsxc.gui = {
 
       $.each(bidArray, function(index, element) {
 
-        var data = jsxc.storage.getUserItem('buddy', element);
-        var type = data.type;
-
         jsxc.xmpp.removeBuddy(element);
+
+        var data = jsxc.storage.getUserItem('buddy', element);
+        var type = data ? data.type : null;
 
         if (type === "groupchat") {
           jsxc.xmpp.bookmarks.delete(element, false);
@@ -872,8 +939,6 @@ jsxc.gui = {
    * @returns {JQuery|jQuery|HTMLElement}
    */
   feedback : function(message, type, timeout) {
-
-    jsxc.stats.addEvent("jsxc.feedback.toast");
 
     var defaultType = "info";
 
@@ -907,15 +972,18 @@ jsxc.gui = {
   /**
    * Show a dialog asking for new etherpad document name, and return a promise
    */
-  showEtherpadCreationDialog : function() {
+  showEtherpadCreationDialog : function(selectedJids) {
 
     var defer = $.Deferred();
 
     // show dialog
-    jsxc.gui.dialog.open(jsxc.gui.template.get('etherpadCreation'));
+    jsxc.gui.dialog.open(jsxc.gui.template.get('etherpadCreation'), {
+      'noClose' : true
+    });
 
     // create user list to invite
-    jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc-etherpad-dialog-buddylist");
+    var buddyList = jsxc.gui.widgets.createBuddyList(
+        "#jsxc_dialog #jsxc-etherpad-dialog-buddylist", selectedJids);
 
     $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
       ev.stopPropagation();
@@ -947,27 +1015,36 @@ jsxc.gui = {
 
     });
 
+    $('#jsxc_dialog .jsxc_refresh').click(function(ev) {
+      ev.stopPropagation();
+
+      jsxc.gui.feedback('Mise à jour en cours ...');
+
+      buddyList.updateBuddyList();
+    });
+
     return defer.promise();
 
-  }, 
-  
-  
+  },
+
   /**
    * Show a dialog asking for new etherpad document name, and return a promise
    */
-  showInviteContactsDialog : function() {
+  showSelectContactsDialog : function() {
 
     var defer = $.Deferred();
 
     // show dialog
-    jsxc.gui.dialog.open(jsxc.gui.template.get('inviteContacts'));
+    jsxc.gui.dialog.open(jsxc.gui.template.get('selectContacts'), {
+      'noClose' : true
+    });
 
     // create user list to invite
-    jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc-invite-dialog-buddylist");
+    var buddyList = jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc-invite-dialog-buddylist");
 
     $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
       ev.stopPropagation();
-      
+
       // get selected items
       var jids = [];
       var selectedItems = $("#jsxc_dialog #jsxc-invite-dialog-buddylist .jsxc-checked");
@@ -988,6 +1065,14 @@ jsxc.gui = {
 
       defer.reject("user canceled");
 
+    });
+
+    $('#jsxc_dialog .jsxc_refresh').click(function(ev) {
+      ev.stopPropagation();
+
+      jsxc.gui.feedback('Mise à jour en cours ...');
+
+      buddyList.updateBuddyList();
     });
 
     return defer.promise();
@@ -1036,9 +1121,9 @@ jsxc.gui = {
 
     var defer = $.Deferred();
 
-    jsxc.gui.dialog.open(jsxc.gui.template.get('conversationSelectionDialog'));
+    jsxc.gui.dialog.open(jsxc.gui.template.get('selectConversations'));
 
-    jsxc.gui.widgets.createConversationList("#jsxc_dialogConversationList");
+    var conversList = jsxc.gui.widgets.createConversationList("#jsxc_dialogConversationList");
 
     $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
       ev.stopPropagation();
@@ -1062,6 +1147,14 @@ jsxc.gui = {
 
       defer.reject("user canceled");
 
+    });
+
+    $('#jsxc_dialog .jsxc_refresh').click(function(ev) {
+      ev.stopPropagation();
+
+      jsxc.gui.feedback('Mise à jour en cours ...');
+
+      conversList.updateConversationList();
     });
 
     return defer.promise();
@@ -1496,54 +1589,6 @@ jsxc.gui = {
 
   },
 
-  showSelectionDialog : function(header, msg, primary, option, primaryLabel, optionLabel) {
-    var opt;
-
-    if (arguments.length === 1 &amp;&amp; typeof header === 'object' &amp;&amp; header !== null) {
-      opt = header;
-    } else {
-      opt = {
-        header : header, msg : msg, primary : {
-          label : primaryLabel, cb : primary
-        }, option : {
-          label : optionLabel, cb : option
-        }
-      };
-    }
-
-    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('selectionDialog'), {
-      noClose : true
-    });
-
-    if (opt.header) {
-      dialog.find('h3').text(opt.header);
-    } else {
-      dialog.find('h3').hide();
-    }
-
-    if (opt.msg) {
-      dialog.find('p').text(opt.msg);
-    } else {
-      dialog.find('p').hide();
-    }
-
-    if (opt.primary &amp;&amp; opt.primary.label) {
-      dialog.find('.btn-primary').text(opt.primary.label);
-    }
-
-    if (opt.primary &amp;&amp; opt.option.label) {
-      dialog.find('.btn-default').text(opt.option.label);
-    }
-
-    if (opt.primary &amp;&amp; opt.primary.cb) {
-      dialog.find('.btn-primary').click(opt.primary.cb);
-    }
-
-    if (opt.primary &amp;&amp; opt.option.cb) {
-      dialog.find('.btn-primary').click(opt.option.cb);
-    }
-  },
-
   /**
    * Update all presence objects for given user.
    *
@@ -1713,7 +1758,7 @@ jsxc.gui = {
       var spot = $("&lt;span>X&lt;/span>").addClass("jsxc_spot");
       var href = $(this).attr("href").replace(/^ *(mailto|xmpp):/, "").trim();
 
-      if (href !== '' &amp;&amp; href !== Strophe.getBareJidFromJid(jsxc.storage.getItem("jid"))) {
+      if (href !== '' &amp;&amp; href !== jsxc.jidToBid(jsxc.storage.getItem("jid"))) {
         var bid = jsxc.jidToBid(href);
         var self = $(this);
         var s = self.prev();
@@ -1918,13 +1963,13 @@ jsxc.gui.dialog = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_updateSelectedCount">_updateSelectedCount</a></li><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#getCheckedBuddies">getCheckedBuddies</a></li><li><a href="global.html#getCheckedElements">getCheckedElements</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isConnexionMenuShown">isConnexionMenuShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleBuddyList">toggleBuddyList</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleConnexionMenu">toggleConnexionMenu</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSelectionMode">toggleSelectionMode</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#unselectAllElements">unselectAllElements</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sat Aug 20 2016 11:51:14 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Aug 24 2016 16:53:03 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

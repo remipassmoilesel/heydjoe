@@ -87,14 +87,14 @@ jsxc.mmstream.gui = {
 
         // display message
         var node = Strophe.getNodeFromJid(element.fulljid);
-        var bid = jsxc.jidToBid(element.fulljid);
+        // var bid = jsxc.jidToBid(element.fulljid);
 
         /**
          * Buddy is disconnected, show feedback
          */
 
         if (element.status === mmstream.USER_STATUS.DISCONNECTED) {
-          
+
           // hide dialog if necessary
           jsxc.gui.dialog.close('incoming_call_dialog');
           jsxc.gui.dialog.close('video_conference_incoming');
@@ -329,7 +329,7 @@ jsxc.mmstream.gui = {
     videoCtr.append(video);
 
     // waiting message
-    videoCtr.append('<div class="jsxc_connectionInProgress">Connexion en cours ...</div>')
+    videoCtr.append('<div class="jsxc_connectionInProgress">Connexion en cours ...</div>');
 
     // create hangup button
     var hangup = $("<div>").addClass('jsxc_hangUpControl jsxc_videoControl').click(function() {

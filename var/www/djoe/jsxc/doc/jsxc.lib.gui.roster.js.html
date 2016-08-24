@@ -46,22 +46,7 @@ jsxc.gui.roster = {
    * @returns {undefined}
    */
   init : function() {
-
-    jsxc.debug("Roster init");
-
-    // adding roster skeleton to body, or other choosen element
-    // $(jsxc.options.rosterAppend + ':first').append($(jsxc.gui.template.get('roster')));
-
-    /**
-     * Chatsidebar and mediapanel are grouped in '#jsxc_roster', for historical reasons
-     * @type {*|JQuery|jQuery|HTMLElement}
-     */
-    var skeleton = $("&lt;div id='jsxc_roster'>&lt;/div>");
-    skeleton.append($(jsxc.gui.template.get('newgui_chatsidebar')));
-    skeleton.append($(jsxc.gui.template.get('newgui_mediapanel')));
-
-    $(jsxc.options.rosterAppend + ':first').append(skeleton);
-
+    
     // display or hide offline buddies
     if (jsxc.options.get('hideOffline')) {
       $('#jsxc_buddylist').addClass('jsxc_hideOffline');
@@ -75,13 +60,7 @@ jsxc.gui.roster = {
     var pres = jsxc.storage.getUserItem('presence') || 'online';
     jsxc.xmpp.changeOwnPresence(pres);
 
-    jsxc.gui.tooltip('#jsxc_roster');
-
     jsxc.notice.load();
-
-    // new gui init
-    jsxc.newgui.init();
-    jsxc.gui.interactions.init();
 
     jsxc.gui.roster.ready = true;
 
@@ -256,8 +235,11 @@ jsxc.gui.roster = {
    * @return {JQueryObject} Roster list element
    */
   remove : function(bid) {
+
     var res = jsxc.gui.roster.getItem(bid).detach();
-    $(document).trigger('remove.roster.jsxc', [bid]);
+
+    // It is a bad idea to trigger here. Remove is used in reorder, so events are too many
+    // $(document).trigger('remove.roster.jsxc', [bid]);
 
     return res;
   },
@@ -341,7 +323,7 @@ jsxc.gui.roster = {
         }).c('query', {
           xmlns : 'jabber:iq:roster'
         }).c('item', {
-          jid : Strophe.getBareJidFromJid(d.jid), name : newname
+          jid : jsxc.jidToBid(d.jid), name : newname
         });
         jsxc.xmpp.conn.sendIQ(iq);
       } else if (d.type === 'groupchat') {
@@ -354,38 +336,9 @@ jsxc.gui.roster = {
   },
 
   /**
-   * Toogle complete roster
-   *
-   * @param {string} state Toggle to state
-   */
-  toggle : function(state) {
-
-    jsxc.debug("Toggle roster is deprecated", null, "ERROR");
-
-    var duration;
-
-    var roster = $('#jsxc_roster');
-    var wl = $('#jsxc_windowList');
-
-    wl.removeClass('jsxc_roster_hidden jsxc_roster_shown').addClass('jsxc_roster_' + state);
-
-    duration = parseFloat(roster.css('transitionDuration') || 0) * 1000;
-
-    setTimeout(function() {
-      jsxc.gui.updateWindowListSB();
-    }, duration);
-
-    $(document).trigger('toggle.roster.jsxc', [state, duration]);
-
-    return duration;
-  },
-
-  /**
    * Shows a text with link to a login box that no connection exists.
    */
   noConnection : function() {
-
-    $('#jsxc_roster').addClass('jsxc_noConnection');
 
     $('#jsxc_buddylist').empty();
 
@@ -439,13 +392,13 @@ jsxc.gui.roster = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_updateSelectedCount">_updateSelectedCount</a></li><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#getCheckedBuddies">getCheckedBuddies</a></li><li><a href="global.html#getCheckedElements">getCheckedElements</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isConnexionMenuShown">isConnexionMenuShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleBuddyList">toggleBuddyList</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleConnexionMenu">toggleConnexionMenu</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSelectionMode">toggleSelectionMode</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#unselectAllElements">unselectAllElements</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sat Aug 20 2016 11:51:14 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Aug 24 2016 16:53:03 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

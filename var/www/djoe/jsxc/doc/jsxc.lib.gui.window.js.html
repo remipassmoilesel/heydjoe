@@ -49,7 +49,7 @@ jsxc.gui.window = {
    */
   showComposingPresence : function(from, type) {
 
-    var bid = Strophe.getBareJidFromJid(from);
+    var bid = jsxc.jidToBid(from);
     var user = type === "chat" ? Strophe.getNodeFromJid(from) : Strophe.getResourceFromJid(from);
 
     // iterate window list
@@ -64,28 +64,42 @@ jsxc.gui.window = {
       if (winBid === bid) {
 
         // add user in array if necessary
-        var usersComposing = self.data("usersComposing") || [];
+        var usersComposing = self.data("users-composing") || [];
         if (usersComposing.indexOf(user) === -1) {
           usersComposing.push(user);
-          self.data("usersComposing", usersComposing);
+          self.data("users-composing", usersComposing);
         }
 
         var textarea = self.find(".jsxc_textarea");
         var composingNotif = textarea.find(".jsxc_userComposing");
 
-        // add notification if necessary
-        if (composingNotif.length &lt; 1) {
-          textarea.append("&lt;div class='jsxc_userComposing jsxc_chatmessage jsxc_sys'>&lt;/div>");
-          composingNotif = textarea.find(".jsxc_userComposing");
-        }
+        // scroll to bottom
+        jsxc.gui.window.scrollDown(winBid);
 
         // change text
         var msg = usersComposing.length > 1 ? " sont en train d'écrire ..." :
             " est en train d'écrire ...";
-        composingNotif.html(usersComposing.join(", ") + msg);
 
-        // scroll to bottom
-        jsxc.gui.window.scrollDown(winBid);
+        // notification not present, add it
+        if (composingNotif.length &lt; 1) {
+
+          composingNotif = $("&lt;div class='jsxc_userComposing jsxc_chatmessage jsxc_sys'>&lt;/div>");
+          composingNotif.css({opacity : 0, display : 'block'});
+          composingNotif.html(usersComposing.join(", ") + msg);
+
+          textarea.append(composingNotif);
+
+          composingNotif.animate({opacity : 1}, 600);
+        }
+
+        // notification present, modify it and show it if necessary
+        else {
+          composingNotif.html(usersComposing.join(", ") + msg);
+
+          if (composingNotif.css('opacity') !== '1') {
+            composingNotif.animate({opacity : 1}, 600);
+          }
+        }
 
         // hide notification after delay
         if ($(this).data("composingTimeout")) {
@@ -96,7 +110,13 @@ jsxc.gui.window = {
 
             setTimeout(function() {
 
-              textarea.find(".jsxc_userComposing").remove();
+              composingNotif.animate({opacity : 0},
+
+                  600,
+
+                  function() {
+                    composingNotif.remove();
+                  });
 
               // empty user list
               self.data("usersComposing", []);
@@ -474,7 +494,9 @@ jsxc.gui.window = {
     }
 
     // animate closing
-    win.find(".jsxc_window").animate({"height" : "0px"}, 500,
+    win.find(".jsxc_window").animate({
+          "height" : "0px"
+        }, 500,
 
         function() {
 
@@ -482,7 +504,7 @@ jsxc.gui.window = {
           jsxc.storage.removeUserItem('window', bid);
 
           // delete data from unknown sender
-          if (jsxc.storage.getUserItem('buddylist').indexOf(bid) &lt; 0) {
+          if (jsxc.storage.getUserItem('buddylist') &amp;&amp; jsxc.storage.getUserItem('buddylist').indexOf(bid) &lt; 0) {
             jsxc.storage.removeUserItem('buddy', bid);
             jsxc.storage.removeUserItem('chat', bid);
           }
@@ -1224,13 +1246,13 @@ jsxc.gui.window = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_updateSelectedCount">_updateSelectedCount</a></li><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#getCheckedBuddies">getCheckedBuddies</a></li><li><a href="global.html#getCheckedElements">getCheckedElements</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isConnexionMenuShown">isConnexionMenuShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleBuddyList">toggleBuddyList</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleConnexionMenu">toggleConnexionMenu</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSelectionMode">toggleSelectionMode</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#unselectAllElements">unselectAllElements</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sat Aug 20 2016 11:51:14 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Aug 24 2016 16:53:03 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>
