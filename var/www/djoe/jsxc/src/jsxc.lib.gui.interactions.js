@@ -223,7 +223,7 @@ jsxc.gui.interactions = {
 
       // check if some buddies are already selected
       var selected = newgui.getCheckedBuddies();
-      
+
       // show dialog
       jsxc.gui.showEtherpadCreationDialog(selected)
 
@@ -431,6 +431,7 @@ jsxc.gui.interactions = {
     // var self = jsxc.gui.interactions;
     var newgui = jsxc.newgui;
     var mmstream = jsxc.mmstream;
+    var notification = jsxc.notification;
 
     /**
      * Open settings menu
@@ -473,6 +474,24 @@ jsxc.gui.interactions = {
     // about dialog
     $('#jsxc-settings-menu .jsxc-show-about-dialog').click(function() {
       jsxc.gui.showAboutDialog();
+    });
+
+    // mute mode
+    var muteIndicator = jsxc.newgui.createStateIndicator('.jsxc-action_toggleMuteMode');
+    muteIndicator.toggleState(notification.isSoundMuted());
+
+    $('#jsxc-settings-menu .jsxc-action_toggleMuteMode').click(function() {
+
+      muteIndicator.toggleState();
+
+      if (muteIndicator.getState() === true) {
+        notification.muteSound();
+      }
+
+      else {
+        notification.unmuteSound();
+      }
+
     });
 
   },

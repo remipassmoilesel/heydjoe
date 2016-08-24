@@ -234,6 +234,101 @@ jsxc.newgui = {
       }, self.OPACITY_ANIMATION_DURATION);
     });
 
+  },
+
+  /**
+   * Half of the animation duration
+   */
+  STATE_INDICATOR_ANIMATION_DURATION : 100,
+
+  /**
+   * Create a state indicator informing user that something is turned on or off
+   */
+  createStateIndicator : function(selector) {
+
+    var self = jsxc.newgui;
+
+    if (!selector) {
+      throw new Error("Invalid argument: " + selector);
+    }
+
+    // root maybe containing other elements
+    var root = $(selector);
+
+    // indicator off / on
+    var indicator = $(
+        '<span class="jsxc_stateIndicator">&nbsp;<span class="jsxc_stateIndicator_on">on</span> | ' +
+        '<span class="jsxc_stateIndicator_off">off</span></span>');
+
+    root.append(indicator);
+
+    var on = indicator.find('.jsxc_stateIndicator_on');
+    var off = indicator.find('.jsxc_stateIndicator_off');
+
+    var duration = self.STATE_INDICATOR_ANIMATION_DURATION;
+
+    /**
+     * State of indicator. True: on, false: off
+     * @type {boolean}
+     */
+    var indicatorState = false;
+
+    var ret = {
+
+      /**
+       * The root of the indicator
+       */
+      root : indicator,
+
+      getState : function() {
+        return indicatorState;
+      },
+
+      /**
+       * Toggle state on | off
+       */
+      toggleState : function(state) {
+
+        if (typeof state === 'undefined') {
+          state = !indicatorState;
+          indicatorState = state;
+        }
+
+        if (state === true) {
+
+          off.animate({
+                color : 'black', opacity : 0.3
+              }, duration,
+
+              function() {
+
+                on.animate({
+                  color : 'blue', opacity : 1
+                }, duration);
+
+              });
+        }
+
+        else {
+
+          on.animate({
+                color : 'black', opacity : 0.5
+              }, duration,
+
+              function() {
+
+                off.animate({
+                  color : 'blue', opacity : 1
+                }, duration);
+
+              });
+        }
+
+      }
+
+    };
+    
+    return ret;
   }
 
 };

@@ -14,8 +14,11 @@ jsxc.notification = {
    * @memberOf jsxc.notification
    */
   init : function() {
+
     $(document).on('postmessagein.jsxc', function(event, bid, msg) {
+
       msg = (msg && msg.match(/^\?OTR/)) ? jsxc.t('Encrypted_message') : msg;
+
       var data = jsxc.storage.getUserItem('buddy', bid);
 
       jsxc.notification.notify({
@@ -23,7 +26,9 @@ jsxc.notification = {
           name : data.name
         }), msg : msg, soundFile : jsxc.CONST.SOUNDS.MSG, source : bid
       });
+
     });
+
   },
 
   /**
@@ -38,8 +43,10 @@ jsxc.notification = {
    * @param source Bid which triggered this notification
    */
   notify : function(title, msg, d, force, soundFile, loop, source) {
+
     if (!jsxc.options.notification || !jsxc.notification.hasPermission()) {
-      return; // notifications disabled
+      jsxc.debug('Notification triggered, but disabled', {arguments : arguments});
+      return;
     }
 
     var o;
@@ -62,7 +69,7 @@ jsxc.notification = {
       return; // Tab is visible
     }
 
-    var icon = o.icon || jsxc.options.root + '/img/XMPP_logo.png';
+    var icon = o.icon || jsxc.options.root + '/img/newgui/desktop-notification.png';
 
     if (typeof o.source === 'string') {
       var data = jsxc.storage.getUserItem('buddy', o.source);
@@ -197,7 +204,7 @@ jsxc.notification = {
       return;
     }
 
-    if (jsxc.options.get('muteNotification') || jsxc.storage.getUserItem('presence') === 'dnd') {
+    if (jsxc.options.get('muteNotification')) {
       // sound mute or own presence is dnd
       return;
     }
@@ -241,8 +248,6 @@ jsxc.notification = {
    *        false.
    */
   muteSound : function(external) {
-    $('#jsxc_menu .jsxc_muteNotification').text(jsxc.t('Unmute'));
-
     if (external !== true) {
       jsxc.options.set('muteNotification', true);
     }
@@ -256,10 +261,16 @@ jsxc.notification = {
    *        false.
    */
   unmuteSound : function(external) {
-    $('#jsxc_menu .jsxc_muteNotification').text(jsxc.t('Mute'));
-
     if (external !== true) {
       jsxc.options.set('muteNotification', false);
     }
+  },
+
+  /**
+   * Return true if sound is muted
+   */
+  isSoundMuted : function() {
+    return jsxc.options && jsxc.options.get('muteNotification');
   }
+  
 };

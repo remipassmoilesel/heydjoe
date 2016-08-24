@@ -151,12 +151,11 @@ TODO: Set up variables:
 
     margin: 0.5em;
 
-
     &:hover {
       opacity: 1;
     }
 
-    &.jsxc-checked{
+    &.jsxc-checked {
       text-decoration: underline !important;
     }
 
@@ -572,14 +571,18 @@ TODO: Set up variables:
       padding-left: 0.7em;
       text-decoration: none;
       cursor: pointer;
+
+      color: #3F3F3F;
     }
 
     a:hover {
-      text-decoration: underline;
+      text-decoration: none;
+      color: black;
     }
 
     .jsxc-title {
-      margin: 0.7em;
+      margin: 0.5em;
+      margin-top: 0.7em;
       font-size: 1.1em;
       font-weight: bolder;
       color: darkgray;
@@ -634,7 +637,7 @@ TODO: Set up variables:
       display: none;
     }
 
-    #jsxc-login-standby{
+    #jsxc-login-standby {
       font-style: italic;
       margin-top: 0.6em;
       margin-left: 1em;
