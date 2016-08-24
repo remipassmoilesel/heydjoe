@@ -1,6 +1,10 @@
 <div id="jsxc-chat-sidebar">
 
-  <!-- Sidebar header, always visible -->
+  <!--
+
+  Sidebar header, always visible
+
+  -->
   <div id="jsxc-chat-sidebar-header">
 
     <!-- toggle chat only -->
@@ -19,10 +23,16 @@
 
   </div>
 
+
   <!-- Chat sidebar content -->
   <div id="jsxc-chat-sidebar-content">
 
-    <!-- Head of content, static -->
+
+    <!--
+
+    Head of content with filters and menu button, static
+
+    -->
     <div id="jsxc-action-bar">
 
       <a id="jsxc-new-gui-filter-users">Utilisateurs</a>
@@ -34,62 +44,82 @@
 
     </div>
 
+
+    <!--
+
+      Bottom of content, that can be changed by user
+
+    -->
     <div id="jsxc-sidebar-content-viewport">
+
+
+      <!--
+
+      Parameters menu
+
+      -->
 
       <div id="jsxc-settings-menu" class="jsxc-viewport-content">
 
         <div class="jsxc-title">Paramètres</div>
 
-        <a class="jsxc-action_toggleMuteMode">Jouer les sons:</a>
-        <a class="jsxc-action_toggleNotifications">Afficher les notifications:</a>
-        <a class="jsxc-action_notImplementedYet">Interdire les appels vidéo: on | off</a>
-        <a class="jsxc-action_notImplementedYet">Notifications de bureau: on | off</a>
+        <a class="jsxc-action jsxc-action_toggleMuteMode">Jouer les sons</a>
+        <a class="jsxc-action jsxc-action_toggleNotifications">Afficher les notifications</a>
+        <a class="jsxc-action jsxc-action_disableVideoCalls">Interdire les appels vidéo</a>
 
         <div class="jsxc-content-separator"></div>
 
-        <a class="jsxc-action_clearLocalHistory">Effacer l'historique local des conversations</a>
-        <a class="jsxc-action_installScreenSharingExtension">Extension de capture d'écran</a>
+        <a class="jsxc-action jsxc-action_clearLocalHistory">Effacer l'historique local des
+          conversations</a>
+        <a class="jsxc-action jsxc-action_installScreenSharingExtension">Extension de capture
+          d'écran</a>
 
         <div class="jsxc-content-separator"></div>
 
-        <a class="jsxc-action_showCollectedDatas">Données collectées</a>
+        <a class="jsxc-action jsxc-action_showCollectedDatas">Données collectées</a>
 
-        <a class="jsxc-show-about-dialog">A propos</a>
+        <a class="jsxc-action jsxc-show-about-dialog">A propos</a>
 
       </div>
 
-      <div id="jsxc-actions-menu" class="jsxc-viewport-content">
+
+      <!--
+
+      Main menu
+
+      -->
+
+      <div id="jsxc-main-menu" class="jsxc-viewport-content">
 
         <div class="jsxc-title">Menu</div>
 
-        <a class="jsxc-action_search-user">Rechercher un utilisateur</a>
-        <a class="jsxc-action_manage-notifications">Notifications
-          <span class="jsxc_menu_notif_number"></span></a>
+        <a class="jsxc-action jsxc-action_search-user">Rechercher un utilisateur</a>
+        <a class="jsxc-action jsxc-action_manage-notifications">Notifications<span class="jsxc_menu_notif_number"></span></a>
 
         <div class="jsxc-content-separator"></div>
 
-        <a class="jsxc-action_new-conversation">Nouvelle conversation</a>
-        <a class="jsxc-action_invite-in-conversation">Inviter dans une
-          conversation</a>
-
-        <a class="jsxc-action_new-etherpad-document">Ouvrir un document
-          Etherpad</a>
+        <a class="jsxc-action jsxc-action_new-conversation">Nouvelle conversation</a>
+        <a class="jsxc-action jsxc-action_invite-in-conversation">Inviter dans une conversation</a>
+        <a class="jsxc-action jsxc-action_new-etherpad-document">Ouvrir un document Etherpad</a>
 
         <div class="jsxc-content-separator"></div>
 
-        <a class="jsxc-action_video-call">Appel vidéo</a>
-        <a class="jsxc-action_videoconference">Vidéo conférence</a>
-        <a class="jsxc-action_screensharing">Partager mon écran</a>
+        <a class="jsxc-action jsxc-action jsxc-action_video-call">Appel vidéo</a>
+        <a class="jsxc-action jsxc-action_videoconference">Vidéo conférence</a>
+        <a class="jsxc-action jsxc-action_screensharing">Partager mon écran</a>
 
         <div class="jsxc-content-separator"></div>
 
-        <a class="jsxc-action_delete-buddies">Supprimer</a>
-
-        <div>&nbsp;</div>
+        <a class="jsxc-action jsxc-action_delete-buddies">Supprimer</a>
 
       </div>
 
-      <!-- XEP 0055 user search-->
+      <!--
+
+      Search menu
+
+      -->
+
       <div id="jsxc-search-users" class="jsxc-viewport-content">
 
         <div class="jsxc-title">Rechercher</div>
@@ -104,26 +134,29 @@
 
       </div>
 
-      <!-- Notifications-->
+      <!--
+
+      Notification menu
+
+      -->
       <div id="jsxc-manage-notifications" class="jsxc-viewport-content">
 
         <div class="jsxc-title">Notifications <span class="jsxc_menu_notif_number"></span></div>
 
-        <a class="jsxc-action_rejectAllNotifications">Tout rejeter</a>
-        <a class="jsxc-action_notificationsParameters">Paramètres</a>
+        <a class="jsxc-action jsxc-action_rejectAllNotifications">Tout rejeter</a>
+        <a class="jsxc-action jsxc-action_notificationsParameters">Paramètres</a>
 
         <div id="jsxc-notifications">
-
-          <!-- Notification inserted here -->
-          <ul>
-
-          </ul>
-
+          <ul></ul>
         </div>
 
       </div>
 
-      <!-- Connexion form -->
+      <!--
+
+      Connexion form
+
+      -->
       <div id="jsxc-connexion-menu" class="jsxc-viewport-content">
 
         <div class="jsxc-title">Connexion</div>
@@ -147,7 +180,11 @@
 
       </div>
 
-      <!-- buddy list, where stored contacts AND buddies -->
+      <!--
+
+      Buddy list, where stored contacts AND buddies
+
+      -->
       <div id="jsxc-buddy-list-container" class="jsxc-viewport-content">
 
         <!-- We need to have a block before buddy list -->
@@ -159,6 +196,18 @@
 
     </div>
 
+
+
+
+
+
+    
+
+    <!--
+
+    Status bar, bottom of content, static
+
+    -->
 
     <div id="jsxc-status-bar">
 

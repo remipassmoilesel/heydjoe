@@ -115,7 +115,7 @@ $.extend(jsxc.newgui, {
     var self = jsxc.newgui;
 
     // add openning action
-    $("#jsxc-actions-menu .jsxc-action_manage-notifications").click(function() {
+    $("#jsxc-main-menu .jsxc-action_manage-notifications").click(function() {
       self.toggleNotificationsMenu();
     });
 
@@ -556,7 +556,7 @@ $.extend(jsxc.newgui, {
    * Open or close settings menu
    */
   toggleActionsMenu : function() {
-    jsxc.newgui.chatSidebarContent.toggleContent('jsxc-actions-menu');
+    jsxc.newgui.chatSidebarContent.toggleContent('jsxc-main-menu');
   },
 
   /**

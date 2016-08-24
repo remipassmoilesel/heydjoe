@@ -172,7 +172,7 @@ jsxc.gui.interactions = {
      * Invite users in conversation
      * ============================
      */
-    $('#jsxc-actions-menu .jsxc-action_invite-in-conversation').click(function() {
+    $('#jsxc-main-menu .jsxc-action_invite-in-conversation').click(function() {
 
       newgui.getCheckedBuddiesOrAskFor()
           .then(function(buddies) {
@@ -220,7 +220,7 @@ jsxc.gui.interactions = {
      * Etherpad doc creation
      * =====================
      */
-    $("#jsxc-actions-menu .jsxc-action_new-etherpad-document").click(function() {
+    $("#jsxc-main-menu .jsxc-action_new-etherpad-document").click(function() {
 
       // check if some buddies are already selected
       var selected = newgui.getCheckedBuddies();
@@ -250,7 +250,7 @@ jsxc.gui.interactions = {
      * ==========
      *
      */
-    $("#jsxc-actions-menu .jsxc-action_video-call").click(function() {
+    $("#jsxc-main-menu .jsxc-action_video-call").click(function() {
 
       // get selected budies
       newgui.getCheckedBuddiesOrAskFor()
@@ -305,7 +305,7 @@ jsxc.gui.interactions = {
      * ================
      *
      */
-    $("#jsxc-actions-menu .jsxc-action_videoconference").click(function() {
+    $("#jsxc-main-menu .jsxc-action_videoconference").click(function() {
 
       // get selected budies
       newgui.getCheckedBuddiesOrAskFor()
@@ -363,7 +363,7 @@ jsxc.gui.interactions = {
      * ===============
      *
      */
-    $("#jsxc-actions-menu .jsxc-action_screensharing").click(function() {
+    $("#jsxc-main-menu .jsxc-action_screensharing").click(function() {
 
       // get selected budies
       newgui.getCheckedBuddiesOrAskFor()
@@ -489,7 +489,7 @@ jsxc.gui.interactions = {
      * ===========
      */
     var muteIndicator = jsxc.newgui.createStateIndicator('.jsxc-action_toggleMuteMode');
-    muteIndicator.toggleState(notification.isSoundMuted());
+    muteIndicator.toggleState(!notification.isSoundMuted());
 
     $('#jsxc-settings-menu .jsxc-action_toggleMuteMode').click(function() {
 
@@ -518,6 +518,7 @@ jsxc.gui.interactions = {
 
       if (notifIndicator.getState() === true) {
 
+        // request permission if needed
         if (notification.hasPermission() !== true) {
           jsxc.gui.showRequestNotification();
         }
@@ -528,6 +529,13 @@ jsxc.gui.interactions = {
       else {
         notification.hideNotifications();
       }
+
+    });
+
+    var videoIndicator = jsxc.newgui.createStateIndicator('.jsxc-action_disableVideoCalls');
+    $('#jsxc-settings-menu .jsxc-action_disableVideoCalls').click(function() {
+
+      videoIndicator.toggleState();
 
     });
 
@@ -657,10 +665,10 @@ jsxc.gui.interactions = {
      * Show notifications parameters
      * =============================
      */
-
     $('#jsxc-manage-notifications .jsxc-action_notificationsParameters').click(function() {
       jsxc.newgui.toggleSettingsMenu();
     });
+
   }
 
 };

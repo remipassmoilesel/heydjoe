@@ -312,165 +312,160 @@ TODO: Set up variables:
   }
 
   /**
-    Separator used in menu
+  A panel that can be displayed in #...content-viewport
+*/
+  .jsxc-viewport-content {
 
-  */
-  .jsxc-content-separator {
-    content: ' ';
-    height: 0.9em;
-    width: 70%;
+    display: none;
+    width: 100%;
+    background: white;
+    margin-bottom: 2em;
 
-    border-bottom: solid 1px silver;
-    margin-bottom: 10px;
-    margin-left: 5px;
-  }
+    .jsxc-action {
+      display: block;
+      padding: 0.5em;
+      padding-left: 0.3em;
+      text-decoration: none;
+      cursor: pointer;
+      color: #3F3F3F;
 
-  .jsxc-action_manage-notifications:before {
+      clear: both;
+    }
 
-    content: " ";
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    margin: 0 6px 0 6px;
+    .jsxc-action:hover {
+      text-decoration: none;
+      color: black;
+    }
 
-    background-image: image-url('newgui/action-manage-notifications.svg');
+    .jsxc-action:before {
+      content: " ";
+      width: 1em;
+      display: inline-block;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      margin: 0 6px 0 6px;
+      display: block;
+      float: left;
+      height: 2em;
+    }
 
-  }
+    .jsxc-title {
+      margin: 0.5em;
+      margin-top: 0.7em;
+      font-size: 1.1em;
+      font-weight: bolder;
+      color: darkgray;
+    }
 
-  .jsxc-action_video-call:before {
+    /**
+      Used to separate link groups
+    */
+    .jsxc-content-separator {
+      content: ' ';
+      height: 0.9em;
+      width: 70%;
 
-    content: " ";
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    margin: 0 6px 0 6px;
+      border-bottom: solid 1px silver;
+      margin-bottom: 10px;
+      margin-left: 5px;
+    }
 
-    background-image: image-url('newgui/action-video-call.svg');
+    /**
+      Main menu
+    */
 
-  }
+    .jsxc-action_search-user:before {
+      background-image: image-url('newgui/action-search-users.svg');
+    }
 
-  .jsxc-action_videoconference:before {
+    .jsxc-action_manage-notifications:before {
+      background-image: image-url('newgui/action-manage-notifications.svg');
+    }
 
-    content: " ";
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    margin: 0 6px 0 6px;
+    .jsxc-action_new-conversation:before {
+      background-image: image-url('newgui/action-new-conversation.svg');
+    }
 
-    background-image: image-url('newgui/action-videoconference.svg');
+    .jsxc-action_invite-in-conversation:before {
+      background-image: image-url('newgui/action-invite-in-conversation.svg');
+    }
 
-  }
+    .jsxc-action_new-etherpad-document:before {
+      background-image: image-url('newgui/action-new-etherpad-document.svg');
+    }
 
-  .jsxc-action_screensharing:before {
+    .jsxc-action_video-call:before {
+      background-image: image-url('newgui/action-video-call.svg');
+    }
 
-    content: " ";
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    margin: 0 6px 0 6px;
+    .jsxc-action_videoconference:before {
+      background-image: image-url('newgui/action-videoconference.svg');
+    }
 
-    background-image: image-url('newgui/action-screensharing.svg');
+    .jsxc-action_screensharing:before {
+      background-image: image-url('newgui/action-screensharing.svg');
+    }
 
-  }
+    .jsxc-action_delete-buddies:before {
+      background-image: image-url('newgui/action-delete-buddies.svg');
+    }
 
-  .jsxc-action_search-user:before {
 
-    content: " ";
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    margin: 0 6px 0 6px;
+    /**
 
-    background-image: image-url('newgui/action-search-users.svg');
+    Settings menu
 
-  }
+    */
 
-  .jsxc-action_new-conversation:before {
+    .jsxc-action_toggleMuteMode:before {
+      background-image: image-url('newgui/action-mute-sounds.svg');
+    }
 
-    content: " ";
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    margin: 0 6px 0 6px;
+    .jsxc-action_toggleNotifications:before {
+      background-image: image-url('newgui/action-hide-notifications.svg');
+    }
 
-    background-image: image-url('newgui/action-new-conversation.svg');
+    .jsxc-action_disableVideoCalls:before {
+      background-image: image-url('newgui/action-disable-video-calls.svg');
+    }
 
-  }
+    .jsxc-action_clearLocalHistory:before {
+      background-image: image-url('newgui/action-clear-history.svg');
+    }
 
-  .jsxc-action_invite-in-conversation:before {
+    .jsxc-action_installScreenSharingExtension:before {
+      background-image: image-url('newgui/action-screensharing.svg');
+    }
 
-    content: " ";
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    margin: 0 6px 0 6px;
+    .jsxc-action_showCollectedDatas:before {
+      background-image: image-url('newgui/action-show-collected-datas.svg');
+    }
 
-    background-image: image-url('newgui/action-invite-in-conversation.svg');
+    .jsxc-show-about-dialog:before {
+      background-image: image-url('newgui/action-about-dialog.svg');
+    }
 
-  }
+    .jsxc-action_notImplementedYet {
+      cursor: not-allowed !important;
+    }
 
-  .jsxc-action_new-etherpad-document:before {
+    /**
+      Notifications panel
+    */
 
-    content: " ";
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    margin: 0 6px 0 6px;
+    .jsxc-action_rejectAllNotifications:before {
+      background-image: image-url('newgui/action-reject-all-notifications.svg');
+    }
 
-    background-image: image-url('newgui/action-new-etherpad-document.svg');
+    .jsxc-action_notificationsParameters:before {
+      background-image: image-url('newgui/toggle-settings-menu_black.svg');
+    }
 
-  }
-
-  .jsxc-action_delete-buddies:before {
-
-    content: " ";
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    margin: 0 6px 0 6px;
-
-    background-image: image-url('newgui/action-delete-buddies.svg');
-
-  }
-
-  .jsxc-action_logout:before {
-    content: " ";
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    margin: 0 6px 0 6px;
-
-    background-image: image-url('newgui/action-logout.svg');
-
-  }
-
-  .jsxc-action_notImplementedYet {
-    cursor: not-allowed !important;
   }
 
   /**
-    Possible viewport of chat sidebar, to allow user to search other users to invite them or to chat with
-  */
+   Possible viewport of chat sidebar, to allow user to search other users to invite them or to chat with
+ */
   #jsxc-search-users {
 
     display: none;
@@ -553,71 +548,6 @@ TODO: Set up variables:
     .jsxc-search-user-entry {
       padding: 15px;
     }
-
-  }
-
-  /**
-    A panel that can be displayed in #...content-viewport
-  */
-  .jsxc-viewport-content {
-
-    display: none;
-    width: 100%;
-    background: white;
-
-    a {
-      display: block;
-      padding: 0.5em;
-      padding-left: 0.7em;
-      text-decoration: none;
-      cursor: pointer;
-
-      color: #3F3F3F;
-    }
-
-    a:hover {
-      text-decoration: none;
-      color: black;
-    }
-
-    .jsxc-title {
-      margin: 0.5em;
-      margin-top: 0.7em;
-      font-size: 1.1em;
-      font-weight: bolder;
-      color: darkgray;
-    }
-
-  }
-
-  /**
-    Link in notifications panel that allow user to remove all notifications on one click
-  */
-  .jsxc-action_rejectAllNotifications:before {
-
-    content: " ";
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    margin: 0 6px 0 6px;
-
-    background-image: image-url('newgui/action-reject-all-notifications.svg');
-
-  }
-
-  .jsxc-action_notificationsParameters:before {
-
-    content: " ";
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    margin: 0 6px 0 6px;
-
-    background-image: image-url('newgui/toggle-settings-menu_black.svg');
 
   }
 

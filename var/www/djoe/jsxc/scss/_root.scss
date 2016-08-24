@@ -795,6 +795,9 @@ img.jsxc_vCard {
 .jsxc_stateIndicator {
 
   text-decoration: none;
+  display: block;
+  margin-right: 1em;
+  text-align: right;
 
   &:hover {
     text-decoration: none;

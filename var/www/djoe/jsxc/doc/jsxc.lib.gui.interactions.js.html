@@ -306,7 +306,7 @@ jsxc.gui.interactions = {
      * Invite users in conversation
      * ============================
      */
-    $('#jsxc-actions-menu .jsxc-action_invite-in-conversation').click(function() {
+    $('#jsxc-main-menu .jsxc-action_invite-in-conversation').click(function() {
 
       self._getCheckedBuddiesOrAskFor()
           .then(function(buddies) {
@@ -354,7 +354,7 @@ jsxc.gui.interactions = {
      * Etherpad doc creation
      * =====================
      */
-    $("#jsxc-actions-menu .jsxc-action_new-etherpad-document").click(function() {
+    $("#jsxc-main-menu .jsxc-action_new-etherpad-document").click(function() {
 
       // show dialog
       jsxc.gui.showEtherpadCreationDialog()
@@ -381,7 +381,7 @@ jsxc.gui.interactions = {
      * ==========
      *
      */
-    $("#jsxc-actions-menu .jsxc-action_video-call").click(function() {
+    $("#jsxc-main-menu .jsxc-action_video-call").click(function() {
 
       // get selected budies
       self._getCheckedBuddiesOrAskFor()
