@@ -167,7 +167,16 @@
   }
 
   .jsxc_videoCallContainer {
+
     margin: 1em;
+
+    .jsxc_connectionInProgress {
+      color: white;
+      font-weight: bolder;
+      margin: 1em;
+      font-style: italic;
+    }
+
   }
 
   .jsxc_videoconferenceUsers {
@@ -287,7 +296,7 @@
   /**
     Local screen stream
   */
-  .jsxc_mediaPanelLocalScreenStream{
+  .jsxc_mediaPanelLocalScreenStream {
     min-width: 200px;
     min-height: 200px;
 

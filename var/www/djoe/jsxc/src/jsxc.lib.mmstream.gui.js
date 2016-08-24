@@ -85,11 +85,16 @@ jsxc.mmstream.gui = {
     if (data && data.users) {
       $.each(data.users, function(index, element) {
 
+        // display message
+        var node = Strophe.getNodeFromJid(element.fulljid);
+        var bid = jsxc.jidToBid(element.fulljid);
+
+        /**
+         * Buddy is disconnected, show feedback
+         */
+
         if (element.status === mmstream.USER_STATUS.DISCONNECTED) {
-
-          // display message
-          var node = Strophe.getNodeFromJid(element.fulljid);
-
+          
           // hide dialog if necessary
           jsxc.gui.dialog.close('incoming_call_dialog');
           jsxc.gui.dialog.close('video_conference_incoming');
@@ -101,9 +106,36 @@ jsxc.mmstream.gui = {
 
         }
 
+
+        /**
+         * Buddy is connected, remove wait message
+         */
+
+        else if (element.status === mmstream.USER_STATUS.CONNECTED) {
+
+          // find video element
+          var mediaress = self.getRemoteVideoContainer(element.fulljid);
+
+          mediaress.find('.jsxc_connectionInProgress').animate({opacity : 0},
+              jsxc.newgui.OPACITY_ANIMATION_DURATION);
+
+        }
+
       });
     }
 
+  },
+
+  /**
+   * Get remote video container associated with fulljid
+   */
+  getRemoteVideoContainer : function(fulljid) {
+
+    if (Strophe.getResourceFromJid(fulljid) === null) {
+      throw new Error('Invalid argument: ' + fulljid);
+    }
+
+    return $('video[data-fromjid="' + fulljid + '"]').parents('.jsxc-media-ressource');
   },
 
   /**
@@ -176,7 +208,7 @@ jsxc.mmstream.gui = {
    * error is raised.
    */
   showLocalScreenStream : function() {
-    
+
     var mmstream = jsxc.mmstream;
     var self = mmstream.gui;
     var newgui = jsxc.newgui;
@@ -258,27 +290,8 @@ jsxc.mmstream.gui = {
    */
   _isVideoStreamDisplayed : function(fulljid) {
 
-    if (Strophe.getResourceFromJid(fulljid) === null) {
-      throw new Error("JID must be full jid");
-    }
+    return jsxc.mmstream.gui.getRemoteVideoContainer(fulljid).length > 0;
 
-    // var self = jsxc.mmstream.gui;
-    var newgui = jsxc.newgui;
-
-    var alreadyHere = false;
-    newgui.getAllDisplayedMediaRessource().each(function() {
-
-      var element = $(this);
-      var video = element.find("video");
-
-      if (video.length === 1 && video.data("fromjid") === fulljid) {
-        alreadyHere = true;
-        return false;
-      }
-
-    });
-
-    return alreadyHere === true;
   },
 
   /**
@@ -308,8 +321,15 @@ jsxc.mmstream.gui = {
 
     // create video element and store jid
     var video = $("<video>").addClass("jsxc_mediaPanelRemoteVideo");
-    video.data("fromjid", fulljid);
+
+    //$('#jsxc_webrtc .bubblingG').hide();
+
+    video.data('fromjid', fulljid);
+    video.attr('data-fromjid', fulljid);
     videoCtr.append(video);
+
+    // waiting message
+    videoCtr.append('<div class="jsxc_connectionInProgress">Connexion en cours ...</div>')
 
     // create hangup button
     var hangup = $("<div>").addClass('jsxc_hangUpControl jsxc_videoControl').click(function() {
@@ -345,7 +365,7 @@ jsxc.mmstream.gui = {
 
     // search element to remove
     $("video").each(function() {
-      if ($(this).data("fromjid") === fulljid) {
+      if ($(this).data('fromjid') === fulljid) {
         jsxc.newgui.removeMediaRessource($(this).parents(".jsxc-media-ressource"));
       }
     });
