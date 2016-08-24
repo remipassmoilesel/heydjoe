@@ -468,16 +468,26 @@ jsxc.gui.interactions = {
 
     });
 
+    /**
+     * Install screensharing extension
+     * ===============================
+     */
     $('#jsxc-settings-menu .jsxc-action_installScreenSharingExtension').click(function() {
       mmstream.gui.showInstallScreenSharingExtensionDialog();
     });
 
-    // about dialog
+    /**
+     * About dialog
+     * ============
+     */
     $('#jsxc-settings-menu .jsxc-show-about-dialog').click(function() {
       jsxc.gui.showAboutDialog();
     });
 
-    // mute mode
+    /**
+     * Mute sounds
+     * ===========
+     */
     var muteIndicator = jsxc.newgui.createStateIndicator('.jsxc-action_toggleMuteMode');
     muteIndicator.toggleState(notification.isSoundMuted());
 
@@ -485,12 +495,38 @@ jsxc.gui.interactions = {
 
       muteIndicator.toggleState();
 
-      if (muteIndicator.getState() === true) {
+      if (muteIndicator.getState() === false) {
         notification.muteSound();
       }
 
       else {
         notification.unmuteSound();
+      }
+
+    });
+
+    /**
+     * Show / Hide notifications
+     * =========================
+     */
+    var notifIndicator = jsxc.newgui.createStateIndicator('.jsxc-action_toggleNotifications');
+    notifIndicator.toggleState(notification.isNotificationShowed());
+
+    $('#jsxc-settings-menu .jsxc-action_toggleNotifications').click(function() {
+
+      notifIndicator.toggleState();
+
+      if (notifIndicator.getState() === true) {
+
+        if (notification.hasPermission() !== true) {
+          jsxc.gui.showRequestNotification();
+        }
+
+        notification.showNotifications();
+      }
+
+      else {
+        notification.hideNotifications();
       }
 
     });
@@ -617,6 +653,14 @@ jsxc.gui.interactions = {
 
     });
 
+    /**
+     * Show notifications parameters
+     * =============================
+     */
+
+    $('#jsxc-manage-notifications .jsxc-action_notificationsParameters').click(function() {
+      jsxc.newgui.toggleSettingsMenu();
+    });
   }
 
 };

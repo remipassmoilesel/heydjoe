@@ -86,6 +86,11 @@ jsxc.notification = {
         jsxc.notification.playSound(o.soundFile, o.loop, o.force);
       }
 
+      // notifications are hidden
+      if (jsxc.notification.isNotificationShowed() !== true) {
+        return;
+      }
+
       var popup = new Notification(jsxc.t(o.title), {
         body : jsxc.t(o.msg), icon : icon
       });
@@ -204,8 +209,7 @@ jsxc.notification = {
       return;
     }
 
-    if (jsxc.options.get('muteNotification')) {
-      // sound mute or own presence is dnd
+    if (jsxc.notification.isSoundMuted() === true) {
       return;
     }
 
@@ -271,6 +275,42 @@ jsxc.notification = {
    */
   isSoundMuted : function() {
     return jsxc.options && jsxc.options.get('muteNotification');
+  },
+
+  /**
+   * Return true if notifications are showed
+   */
+  isNotificationShowed : function() {
+    return jsxc.options && jsxc.options.get('hideNotification') &&
+        jsxc.notification.hasPermission();
+  },
+
+  /**
+   * Hide notifications.
+   *
+   * @memberOf jsxc.notification
+   * @param {boolean} external True if triggered from external tab. Default:
+   *        false.
+   */
+  hideNotifications : function(external) {
+    if (external !== true) {
+      jsxc.options.set('hideNotification', false);
+    }
+  },
+
+  /**
+   * Show notifications. It just set flag.
+   *
+   * If desktop notifications are disabled in browser nothing will be done.
+   *
+   * @memberOf jsxc.notification
+   * @param {boolean} external True if triggered from external tab. Default:
+   *        false.
+   */
+  showNotifications : function(external) {
+    if (external !== true) {
+      jsxc.options.set('hideNotification', true);
+    }
   }
-  
+
 };

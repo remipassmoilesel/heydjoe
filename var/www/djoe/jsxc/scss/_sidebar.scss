@@ -231,7 +231,7 @@ TODO: Set up variables:
 
     cursor: pointer;
 
-    background: image-url('newgui/toggle-settings-menu.svg');
+    background: image-url('newgui/toggle-settings-menu_white.svg');
     background-size: 90%;
     background-repeat: no-repeat;
     content: ' ';
@@ -604,6 +604,20 @@ TODO: Set up variables:
     margin: 0 6px 0 6px;
 
     background-image: image-url('newgui/action-reject-all-notifications.svg');
+
+  }
+
+  .jsxc-action_notificationsParameters:before {
+
+    content: " ";
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 0 6px 0 6px;
+
+    background-image: image-url('newgui/toggle-settings-menu_black.svg');
 
   }
 
