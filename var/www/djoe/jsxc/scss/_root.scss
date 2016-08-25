@@ -441,16 +441,6 @@ img.jsxc_vCard {
   }
 }
 
-.jsxc_demotour_item {
-
-  z-index: 9999;
-
-  //.shepherd-element-attached-right .shepherd-content:before{
-  //  border-left-color: darkGray !important;
-  //}
-
-}
-
 // illustration of Chrome extension installation
 #jsxc_installationIllustration {
   width: 70%;
@@ -804,7 +794,26 @@ img.jsxc_vCard {
   }
 }
 
+.jsxc-help-tutorial-message {
 
+  z-index: 9999;
+
+  b {
+    color: #2a2a50;
+  }
+
+  .shepherd-button{
+    background: #0081ff !important;
+    opacity: 0.2 !important;
+    color: white !important;
+    font-weight: bolder;
+
+    &:hover{
+      opacity: 1 !important;
+    }
+  }
+
+}
 
 
 
