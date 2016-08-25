@@ -4,6 +4,7 @@ body {
   font-size: 13px;
 }
 
+
 .header {
   clear: both;
   margin-bottom: 2em;
@@ -20,6 +21,14 @@ body {
   color: #434a4c;
   border: solid 1px #d9d9d9;
 
+}
+
+#content a{
+  text-decoration: none;
+}
+
+#content a:hover{
+  text-decoration: underline;
 }
 
 #content h2 {
