@@ -2399,9 +2399,7 @@ jsxc.mmstream = {
     self.gui._showVideoStream(stream, fulljid);
 
     // show media panel if needed
-    if (jsxc.newgui.isMediapanelShown() !== true) {
-      jsxc.newgui.toggleMediapanel();
-    }
+    jsxc.newgui.toggleMediapanel(true);
 
     // save session and stream
     if (!self.multimediacache.users[fulljid]) {

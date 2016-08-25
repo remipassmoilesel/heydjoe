@@ -147,9 +147,8 @@ $.extend(jsxc.newgui, {
       headerContent.click(function(event) {
         event.stopPropagation();
 
-        if (self.isChatSidebarShown() !== true) {
-          self.toggleChatSidebar();
-        }
+        self.toggleChatSidebar(true);
+
         self.toggleNotificationsMenu();
 
       });
@@ -917,6 +916,13 @@ $.extend(jsxc.newgui, {
   },
 
   /**
+   * Open or close settings menu
+   */
+  toggleHelpMenu : function() {
+    jsxc.newgui.chatSidebarContent.toggleContent('jsxc-help-menu');
+  },
+
+  /**
    * Show / hide the panel where we can search users
    */
   toggleSearchPanel : function() {
@@ -934,15 +940,30 @@ $.extend(jsxc.newgui, {
   /**
    * Show / hide the chat sidebar
    */
-  toggleChatSidebar : function(callbackWhenFinished) {
+  toggleChatSidebar : function(state, callbackWhenFinished) {
 
     var self = jsxc.newgui;
 
+    // if state not specified, invert it
+    if(typeof state === 'undefined' || state === null){
+      state = !self.isChatSidebarShown();
+    }
+
+    // nothing to do, return
+    if(state === self.isChatSidebarShown()){
+      if (callbackWhenFinished) {
+        callbackWhenFinished();
+      }
+      return;
+    }
+
     var content = $("#jsxc-chat-sidebar-content");
     var settings = $("#jsxc-chat-sidebar .jsxc-toggle-settings");
+    var help = $("#jsxc-chat-sidebar .jsxc-toggle-help");
     var closeCross = $('#jsxc-chat-sidebar .jsxc-close-chatsidebar');
 
-    if (self.isChatSidebarShown() === false) {
+    // deploy chat side bar
+    if (state === true) {
 
       // show close button
       closeCross.css({
@@ -957,6 +978,14 @@ $.extend(jsxc.newgui, {
         opacity : '0', display : 'inline-block'
       });
       settings.animate({
+        opacity : 1
+      });
+
+      // show help button
+      help.css({
+        opacity : '0', display : 'inline-block'
+      });
+      help.animate({
         opacity : 1
       });
 
@@ -984,6 +1013,11 @@ $.extend(jsxc.newgui, {
 
       // hide settings button
       settings.animate({
+        opacity : 0
+      });
+
+      // hide help button
+      help.animate({
         opacity : 0
       });
 

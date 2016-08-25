@@ -241,10 +241,8 @@ jsxc.mmstream.gui = {
     // attach video after append elements
     mmstream.attachMediaStream(video, mmstream.multimediacache.screenStream);
 
-    if (newgui.isMediapanelShown() !== true) {
-      newgui.toggleMediapanel();
-    }
-
+    // toggle media panel if necessary
+    newgui.toggleMediapanel(true);
   },
 
   /**
@@ -635,14 +633,9 @@ jsxc.mmstream.gui = {
       throw new Error("JID must be full jid");
     }
 
-    // hide video panel
-    if (newgui.isChatSidebarShown() === true) {
-      newgui.toggleChatSidebar();
-    }
-
-    if (newgui.isMediapanelShown() === true) {
-      newgui.toggleMediapanel();
-    }
+    // hide chat sidebar and video panel
+    newgui.toggleChatSidebar(false);
+    newgui.toggleMediapanel(false);
 
     // show video pop up
     jsxc.gui.dialog.open(jsxc.gui.template.get('videoStreamDialog'), {
@@ -659,7 +652,7 @@ jsxc.mmstream.gui = {
     $("#jsxc_dialog .jsxc_closeVideoDialog").click(function() {
       jsxc.gui.dialog.close();
 
-      jsxc.newgui.toggleMediapanel();
+      jsxc.newgui.toggleMediapanel(true);
     });
 
     // attach video stream

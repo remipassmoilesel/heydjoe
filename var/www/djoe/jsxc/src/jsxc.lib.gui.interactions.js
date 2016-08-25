@@ -12,6 +12,8 @@ jsxc.gui.interactions = {
 
     self._initSettingsMenu();
 
+    self._initHelpMenu();
+
     self._initActionMenu();
 
     self._initSearchMenu();
@@ -427,6 +429,34 @@ jsxc.gui.interactions = {
    * Setting menu, where user can mute notifications, see 'About dialog', ...
    * @private
    */
+  _initHelpMenu : function() {
+
+    // var self = jsxc.gui.interactions;
+    // var newgui = jsxc.newgui;
+    // var mmstream = jsxc.mmstream;
+    // var notification = jsxc.notification;
+
+    var tutorials = jsxc.help.getAllTutorials();
+
+    var list = $('#jsxc-help-tutorial-list');
+
+    // list all tutorials
+    $.each(tutorials, function(id, element) {
+
+      var li = $('<li>').text(element.description).click(function() {
+        jsxc.help.launchTutorial(id);
+      });
+
+      list.append(li);
+
+    });
+
+  },
+
+  /**
+   * Setting menu, where user can mute notifications, see 'About dialog', ...
+   * @private
+   */
   _initSettingsMenu : function() {
 
     // var self = jsxc.gui.interactions;
@@ -440,6 +470,15 @@ jsxc.gui.interactions = {
      */
     $('#jsxc-chat-sidebar .jsxc-toggle-settings').click(function(event) {
       newgui.toggleSettingsMenu();
+      event.stopPropagation();
+    });
+
+    /**
+     * Open help menu
+     * ==================
+     */
+    $('#jsxc-chat-sidebar .jsxc-toggle-help').click(function(event) {
+      newgui.toggleHelpMenu();
       event.stopPropagation();
     });
 

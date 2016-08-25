@@ -90,10 +90,9 @@ jsxc.etherpad = {
     var embedded = self._getEmbeddedCode(padId);
     newgui.addMediaRessource(embedded, 'Etherpad: ' + padId);
 
-    if (newgui.isMediapanelShown() !== true) {
-      newgui.toggleMediapanel();
-    }
-
+    // toggle media panel if necessary
+    newgui.toggleMediapanel(true);
+    
   },
 
   /**

@@ -56,7 +56,7 @@ TODO: Set up variables:
     background-size: 100%;
     background-repeat: no-repeat;
     margin-right: 0.7em;
-    margin-left: 0.7em;
+    margin-left: 0.3em;
 
     background-image: image-url('newgui/close.svg');
 
@@ -227,11 +227,41 @@ TODO: Set up variables:
     /** not visible first time */
     opacity: 0;
 
+    &:hover {
+      opacity: 1;
+    }
+
   }
 
-  #jsxc-toggle-settings:hover {
-    opacity: 1;
+  .jsxc-toggle-help {
+
+    cursor: pointer;
+
+    background: image-url('newgui/toggle-help-menu.svg');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    content: ' ';
+
+    display: inline-block;
+
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+
+    margin-left: 0.3em;
+
+    float: right;
+
+    /** not visible first time */
+    opacity: 0;
+
+    &:hover {
+      opacity: 1;
+    }
+
   }
+
+
 
   /**
   Video icon to toggle chat mediapanel
@@ -287,6 +317,7 @@ TODO: Set up variables:
   */
   .jsxc-header-content {
     cursor: pointer;
+    font-size: 0.9em;
   }
 
   /**
@@ -387,7 +418,6 @@ TODO: Set up variables:
     .jsxc-action_delete-buddies:before {
       background-image: image-url('newgui/action-delete-buddies.svg');
     }
-
 
     /**
 
@@ -571,5 +601,35 @@ TODO: Set up variables:
     }
 
   }
+
+  /**
+    List of ynamic tutorials
+  */
+  #jsxc-help-tutorial-list{
+
+    li{
+      cursor: pointer;
+    }
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

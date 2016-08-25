@@ -328,9 +328,7 @@ jsxc.api = {
 
     if (called < 1) {
 
-      if (newgui.isChatSidebarShown() !== true) {
-        newgui.toggleChatSidebar();
-      }
+      newgui.toggleChatSidebar(true);
 
       if (newgui.isConnexionMenuShown() !== true) {
         newgui.toggleConnexionMenu();

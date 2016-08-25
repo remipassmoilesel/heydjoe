@@ -18,13 +18,27 @@ $.extend(jsxc.newgui, {
    *
    * @param callbackWhenFinished
    */
-  toggleMediapanel : function(callbackWhenFinished) {
+  toggleMediapanel : function(state, callbackWhenFinished) {
 
     var self = jsxc.newgui;
 
+    // if state not specified, invert it
+    if (typeof state === 'undefined' || state === null) {
+      state = !self.isMediapanelShown();
+    }
+
+    // nothing to do, return
+    if (state === self.isMediapanelShown()) {
+      if (callbackWhenFinished) {
+        callbackWhenFinished();
+      }
+      return;
+    }
+
     var mediapanel = $("#jsxc-mediapanel");
 
-    if (self.isMediapanelShown() === false) {
+    // deploy media panel
+    if (state === true) {
 
       mediapanel.find(".jsxc-close-mediapanel").css({
         display : 'block'
@@ -87,9 +101,8 @@ $.extend(jsxc.newgui, {
     var self = jsxc.newgui;
     var ress = jsxc.ressources;
 
-    if (self.isMediapanelShown() === false) {
-      self.toggleMediapanel();
-    }
+    // show media panel if necessary
+    self.toggleMediapanel(true);
 
     //retrieve prefix of ressource
     var prefix = ressource.substring(0, ressource.indexOf(":"));
