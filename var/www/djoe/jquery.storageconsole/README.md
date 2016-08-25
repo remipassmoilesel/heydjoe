@@ -8,3 +8,7 @@ Usage:
     $("#someEmptyElement").storageConsole();
 
 ```
+
+##Screenshot
+
+![Screenshot](screenshot.png)

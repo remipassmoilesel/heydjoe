@@ -285,8 +285,7 @@ jsxc.xmpp = {
       self._lastAutoPresenceSent = now;
 
       // send presence
-      // TODO: remove disco stuff to light presences ?
-      self.sendPres();
+      self.sendPres(true);
 
       i = i + 1;
 
@@ -341,7 +340,7 @@ jsxc.xmpp = {
     var self = jsxc.xmpp;
 
     self._lowPresenceTimer = setInterval(function() {
-      jsxc.xmpp.sendPres();
+      jsxc.xmpp.sendPres(true);
     }, self.LOW_PRESENCE_SENDING_INTERVAL);
 
   },
@@ -584,7 +583,7 @@ jsxc.xmpp = {
   /**
    * Sends presence stanza to server.
    */
-  sendPres : function() {
+  sendPres : function(lightPresence) {
 
     var self = jsxc.xmpp;
 
@@ -592,8 +591,8 @@ jsxc.xmpp = {
     self._sentPresences += 1;
 
     // disco stuff
-    if (jsxc.xmpp.conn.disco) {
-      jsxc.xmpp.conn.disco.addIdentity('client', 'web', 'JSXC');
+    if (jsxc.xmpp.conn.disco && !lightPresence) {
+      jsxc.xmpp.conn.disco.addIdentity('client', 'web', 'heyDjoe');
       jsxc.xmpp.conn.disco.addFeature(Strophe.NS.DISCO_INFO);
       jsxc.xmpp.conn.disco.addFeature(Strophe.NS.RECEIPTS);
     }
@@ -601,7 +600,7 @@ jsxc.xmpp = {
     // create presence stanza
     var pres = $pres();
 
-    if (jsxc.xmpp.conn.caps) {
+    if (jsxc.xmpp.conn.caps && !lightPresence) {
       // attach caps
       pres.c('c', jsxc.xmpp.conn.caps.generateCapsAttrs()).up();
     }
@@ -654,7 +653,6 @@ jsxc.xmpp = {
     jsxc.master = false;
     jsxc.storage.removeItem('alive');
 
-    
     jsxc.error("Disconnected from JSXC");
 
   },
@@ -1012,7 +1010,7 @@ jsxc.xmpp = {
     // notify is buddy has come online, and only buddies
     if (data.status === 0 && maxStatus > 0 && data.type !== 'groupchat') {
       jsxc.notification.notify({
-        title : data.name, msg : 'Est connecté', source : bid, force: true
+        title : data.name, msg : 'Est connecté', source : bid, force : true
       });
     }
 

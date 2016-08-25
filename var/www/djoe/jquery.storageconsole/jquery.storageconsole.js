@@ -124,13 +124,33 @@
          */
         var appendElement = function(key, val) {
 
-          var elmt = $("<div>ID: <b>" + key + "</b> <br/>Data: " + val + "</br></div>")
+          // display element
+          var elmt = $(
+              "<div><div>ID: <b style='color: yellow'>" + key + "</b></div><div>Data: " + val +
+              "</div></div>")
               .css({
                 'border' : 'solid 1px gray',
                 'padding' : '5px',
                 'margin' : '10px',
                 'word-break' : 'break-all'
               });
+          
+          $('<a>').text('Log in console').css({
+            display : 'block', 'text-align' : 'right', cursor : 'pointer'
+          }).click(function() {
+
+            var obj = {};
+            try {
+              obj[key] = JSON.parse(val);
+            } catch (error) {
+              obj[key] = val;
+              obj['error while parsing'] = error;
+            }
+
+            console.info('Storage console');
+            console.info('Storage element: ' + key);
+            console.info(obj);
+          }).appendTo(elmt);
 
           logSpace.append(elmt);
         };
