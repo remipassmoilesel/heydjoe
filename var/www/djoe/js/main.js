@@ -57,34 +57,47 @@ $(function() {
    */
 
   // create and show random login
+  var randomLoginTxt = $("#randomLogin");
   function showRandomName() {
-    $("#randomLogin").val((chance.first() + "_" + chance.last()).toLowerCase());
+    randomLoginTxt.val((chance.first() + "-" + chance.last()).toLowerCase());
   }
+
+  var randomLoginsInt = setInterval(function(){
+    showRandomName();
+  }, 2000);
+
+  var clearRandomLoginsInt = function(){
+    clearInterval(randomLoginsInt);
+  };
+
+  randomLoginTxt.keyup(function() {
+    $("#connexionForm input[value='random']").trigger("click");
+    clearRandomLoginsInt();
+  });
+
+  randomLoginTxt.click(function() {
+    $("#connexionForm input[value='random']").trigger("click");
+    clearRandomLoginsInt();
+  });
 
   $("#refreshRandomLogin").click(function() {
     showRandomName();
-    $(".connexionForm input[value='random']").trigger("click");
+    $("#connexionForm input[value='random']").trigger("click");
+    clearRandomLoginsInt();
   });
   showRandomName();
 
-  $("#refreshRandomLogin").click(function() {
-    showRandomName();
-    $(".connexionForm input[value='random']").trigger("click");
-  });
-
   $("#predefinedJidList").click(function() {
-    $(".connexionForm input[value='predefined']").trigger("click");
+    $("#connexionForm input[value='predefined']").trigger("click");
   });
 
-  $("#randomLogin").keyup(function() {
-    $(".connexionForm input[value='random']").trigger("click");
-  });
+
 
   $('#connectButton').click(function() {
 
     var userNode;
 
-    if ($(".connexionForm input[value='random']:checked").length === 1) {
+    if ($("#connexionForm input[value='random']:checked").length === 1) {
       userNode = $("#randomLogin").val();
     }
 
@@ -169,14 +182,22 @@ $(function() {
   });
 
   // utils and informations
-  var appendToLinks = function(name, target) {
+  var appendToLinks = function(name, target, nolink) {
 
     var element = $('<div>');
     element.append($('<span class="name">').text(name + ": "));
 
     var targetTxt = target.length < 50 ? target : target.substr(0, 47) + "...";
-    element.append(
-        $('<a class="target">').text(targetTxt).attr('href', target).attr('target', '_blank'));
+
+    if(nolink){
+      element.append(
+          $('<span class="target">').text(targetTxt));
+    }
+
+    else {
+      element.append(
+          $('<a class="target">').text(targetTxt).attr('href', target).attr('target', '_blank'));
+    }
 
     $("#links").append(element);
   };
@@ -188,15 +209,16 @@ $(function() {
     }
   });
 
-  appendToLinks('Domaine', pageDomain);
-  appendToLinks('Domaine XMPP', xmppDomain);
+  appendToLinks('Domaine', pageDomain, true);
+  appendToLinks('Domaine XMPP', xmppDomain, true);
   appendToLinks('Feuille de route', 'https://' + pageDomain + '/etherpad/p/feuille-de-route');
+  appendToLinks('Dépôt Github', 'https://github.com/remipassmoilesel/djoe');
   appendToLinks('Statistiques recueillies', 'https://' + pageDomain + '/stats/visualization/');
   appendToLinks('Activité du serveur', 'http://' + pageDomain +
-      '/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1day&color=black');
+      ':8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1day&color=black');
   appendToLinks('Console XMPP', consoleUrl);
   appendToLinks('Découverte de services XMPP', discoUrl);
-  appendToLinks('API REST Openfire', 'https://' + pageDomain + '/openfire-rest');
+  appendToLinks('API REST Openfire', 'https://' + pageDomain + '/openfire-rest-example');
   appendToLinks('Administration web Openfire', webAdminUrl);
   appendToLinks('Etherpad', etherpadUrl);
   appendToLinks('Wiki JSXC', 'https://github.com/jsxc/jsxc/wiki');

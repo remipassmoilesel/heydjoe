@@ -8,22 +8,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- XMPP client dependencies -->
-  <link href="css/jquery-ui.silverpeas/jquery-ui.css" media="all" rel="stylesheet" type="text/css"/>
+
+  <link href="bower_components/jquery-ui/themes/base/jquery-ui.css" media="all" rel="stylesheet" type="text/css"/>
   <script src="bower_components/jquery/dist/jquery.js"></script>
   <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+
   <!-- end XMPP client dependencies -->
 
   <!-- XMPP client -->
+
   <link href="jsxc/dev/css/jsxc.css" media="all" rel="stylesheet" type="text/css"/>
   <script src="jsxc/dev/lib/jsxc.dep.js"></script>
   <script src="jsxc/dev/jsxc.js"></script>
   <script src="jsxc/dev/jsxc_init.js"></script>
+
   <!-- end XMPP client -->
 
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-
-  <link href="css/main.css" media="all" rel="stylesheet" type="text/css"/>
   <link href="jquery.xmppinspector/jquery.xmppinspector.css" media="all" rel="stylesheet" type="text/css"/>
+  <link href="css/main.css" media="all" rel="stylesheet" type="text/css"/>
 
   <script src="bower_components/chance/chance.js"></script>
   <script src="jquery.eventconsole/jquery.eventconsole.js"></script>
@@ -66,11 +69,12 @@
 
   <div class="header">
 
-    <img src="images/logo.jpg" class="mainLogo"/>
+    <div class="mainLogo">&nbsp;</div>
 
     <h1>Hey Djoe !</h1>
 
-    Messagerie instantanée multimédia destinée à l'intégration
+    Messagerie instantanée multimédia destinée à être
+    intégrée au portail collaboratif <a href="http://www.silverpeas.com/" target="_blank">Silverpeas</a>
 
   </div>
 
@@ -79,8 +83,9 @@
 
   <h2>Bienvenue !</h2>
 
-  <p>Cette espace est dédié à l'essai et au développement de Djoe, une messagerie instantanée
-    multimédia destinée à l'intégration. Cette messagerie est disponible sous licence GPLv3: vous
+  <p>Cette espace est dédié à l'essai et au développement de Djoe, un système complet de messagerie
+    instantanée
+    multimédia destiné à l'intégration. Ce système est disponible sous licence GPLv3: vous
     pouvez copier, modifier et distribuer
     ce matériel librement !</p>
 
@@ -119,7 +124,7 @@
         </button>
       </li>
       <li>
-          <div id="feedbackArea">&nbsp;</div>
+        <div id="feedbackArea">&nbsp;</div>
       </li>
     </ul>
   </div>
@@ -127,19 +132,29 @@
 
   <!-- Warning about use -->
 
-  <div>
-    <p class="usageWarning">Attention: </p>
+  <p class="usageWarning">Attention: </p>
 
-    <ul>
-      <li>Les outils utilisés sont modernes, votre navigateur doit absolument être à jour
-        pour utiliser ce système
-      </li>
-      <li>Le travail mis à disposition est en constante évolution,
-        par conséquent les serveurs peuvent être momentanément indisponibles
-      </li>
-      <li>N'utilisez pas cette plateforme pour des communications confidentielles</li>
-    </ul>
-  </div>
+  <ul>
+    <li>Les outils utilisés sont modernes, votre navigateur doit absolument être à jour
+      pour utiliser ce système
+    </li>
+    <li>Le travail mis à disposition est en constante évolution,
+      par conséquent les serveurs peuvent être momentanément indisponibles
+    </li>
+    <li>N'utilisez pas cette plateforme pour des communications confidentielles</li>
+  </ul>
+
+
+  <!-- Functionnalities -->
+
+  <h2>Fonctionnalités</h2>
+
+  <ul>
+    <li>Messagerie instantanée textuelle un pour un, un pour plusieurs</li>
+    <li>Edition collaborative de documents texte en temps réel</li>
+    <li>Appels vidéo et vidéoconférence jusqu'à six participants</li>
+    <li>Partage d'écran un pour un, un pour plusieurs</li>
+  </ul>
 
 
   <!-- Some flowers -->
@@ -170,13 +185,43 @@
     <button disabled id="startDemoTour">Commencer la visite guidée</button>
   </div>
 
+  <h2>Intégration</h2>
 
-  <h2>Suggestions / Signalement d'erreurs</h2>
-  <a href="https://im.silverpeas.net/etherpad/p/suggestions" target="_blank">N'hésitez pas !</a>
+  Pour intégrer le client, vous devez tout d'abord installer les logiciels serveur nécéssaires.
+  Puis sur la page web destination:
+
+  <!-- HTML generated using hilite.me -->
+  <div style="margin-top: 1em;background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;">
+
+    <pre style="margin: 0; line-height: 125%">
+
+<span style="color: #888888">&lt;!-- XMPP client dependencies --&gt;</span>
+
+<span style="color: #007700">&lt;link</span> <span style="color: #0000CC">href=</span><span style="background-color: #fff0f0">&quot;bower_components/jquery-ui/themes/base/jquery-ui.css&quot;</span> <span style="color: #0000CC">media=</span><span style="background-color: #fff0f0">&quot;all&quot;</span> <span style="color: #0000CC">rel=</span><span style="background-color: #fff0f0">&quot;stylesheet&quot;</span> <span style="color: #0000CC">type=</span><span style="background-color: #fff0f0">&quot;text/css&quot;</span><span style="color: #007700">/&gt;</span>
+<span style="color: #007700">&lt;script </span><span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot;bower_components/jquery/dist/jquery.js&quot;</span><span style="color: #007700">&gt;&lt;/script&gt;</span>
+<span style="color: #007700">&lt;script </span><span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot;bower_components/jquery-ui/jquery-ui.js&quot;</span><span style="color: #007700">&gt;&lt;/script&gt;</span>
+
+<span style="color: #888888">&lt;!-- end XMPP client dependencies --&gt;</span>
+
+<span style="color: #888888">&lt;!-- XMPP client --&gt;</span>
+
+<span style="color: #007700">&lt;link</span> <span style="color: #0000CC">href=</span><span style="background-color: #fff0f0">&quot;jsxc/dev/css/jsxc.css&quot;</span> <span style="color: #0000CC">media=</span><span style="background-color: #fff0f0">&quot;all&quot;</span> <span style="color: #0000CC">rel=</span><span style="background-color: #fff0f0">&quot;stylesheet&quot;</span> <span style="color: #0000CC">type=</span><span style="background-color: #fff0f0">&quot;text/css&quot;</span><span style="color: #007700">/&gt;</span>
+<span style="color: #007700">&lt;script </span><span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot;jsxc/dev/lib/jsxc.dep.js&quot;</span><span style="color: #007700">&gt;&lt;/script&gt;</span>
+<span style="color: #007700">&lt;script </span><span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot;jsxc/dev/jsxc.js&quot;</span><span style="color: #007700">&gt;&lt;/script&gt;</span>
+<span style="color: #007700">&lt;script </span><span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot;jsxc/dev/jsxc_init.js&quot;</span><span style="color: #007700">&gt;&lt;/script&gt;</span>
+
+<span style="color: #888888">&lt;!-- end XMPP client --&gt;</span>
+
+    </pre>
+  </div>
+
 
   <h2>Nouveautés ?</h2>
   <a href="https://im.silverpeas.net/etherpad/p/feuille-de-route" target="_blank">Consultez la
     feuille de route</a>
+
+  <h2>Suggestions / Signalement d'erreurs</h2>
+  <a href="https://im.silverpeas.net/etherpad/p/suggestions" target="_blank">N'hésitez pas !</a>
 
 
   <h2>Informations de développement</h2>
