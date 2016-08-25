@@ -18,9 +18,9 @@ Nothing would have been possible without these incredible projects !
 
 Thanks to [webrtc-experiment.com](https://www.webrtc-experiment.com/) too.
 
-## Screenshots
+## Screenshot
 
-
+![Screenshot](var/www/djoe/images/screenshot_1.png)
 
 To know more check the `documentation/` folder. Project is in progress, so documentation too.
     
