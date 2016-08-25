@@ -1,0 +1,9 @@
+[submodule "var/www/djoe/jquery.eventconsole"]
+	path = var/www/djoe/jquery.eventconsole
+	url = ./var/www/djoe/jquery.eventconsole
+[submodule "var/www/djoe/jquery.storageconsole"]
+	path = var/www/djoe/jquery.storageconsole
+	url = ./var/www/djoe/jquery.storageconsole
+[submodule "var/www/djoe/jquery.xmppinspector"]
+	path = var/www/djoe/jquery.xmppinspector
+	url = ./var/www/djoe/jquery.xmppinspector
