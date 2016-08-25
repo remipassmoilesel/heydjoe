@@ -44,7 +44,7 @@ TODO: Set up variables:
 
   .jsxc-close-chatsidebar {
 
-    display: inline-block;
+    display: none;
     opacity: 0;
 
     content: ' ';
@@ -214,11 +214,10 @@ TODO: Set up variables:
     background-repeat: no-repeat;
     content: ' ';
 
-    display: inline-block;
+    display: none;
 
     width: 18px;
     height: 18px;
-    vertical-align: middle;
 
     margin-left: 0.7em;
 
@@ -242,11 +241,10 @@ TODO: Set up variables:
     background-repeat: no-repeat;
     content: ' ';
 
-    display: inline-block;
+    display: none;
 
     width: 18px;
     height: 18px;
-    vertical-align: middle;
 
     margin-left: 0.3em;
 

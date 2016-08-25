@@ -1033,6 +1033,14 @@ $.extend(jsxc.newgui, {
           display : 'none'
         });
 
+        help.css({
+          display : 'none'
+        });
+
+        closeCross.css({
+          display : 'none'
+        });
+
         if (callbackWhenFinished) {
           callbackWhenFinished();
         }
