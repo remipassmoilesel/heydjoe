@@ -783,7 +783,7 @@ jsxc.mmstream = {
         self._onScreensharingAcceptReceived(stanza, screen);
       }
 
-      else if (status === self.XMPP_SCREENSHARING.STATUS.DECLINE) {
+      else if (status === self.XMPP_SCREENSHARING.STATUS.DECLINED) {
         self._onScreensharingDeclineReceived(stanza, screen);
       }
 
@@ -826,6 +826,15 @@ jsxc.mmstream = {
       self._sendScreensharingConfirmationMessage(self.XMPP_SCREENSHARING.STATUS.DECLINED, datetime,
           from);
     };
+
+    if (self._isNavigatorChrome() === false) {
+      jsxc.gui.feedback('<b>' + node +
+          '</b> a éssayé de vous inviter à partager son écran, mais cette option n\'est disponible que sur Chromium' +
+          ' ou Chrome.');
+
+      decline();
+      return;
+    }
 
     if (self.isVideoCallsDisabled() === true) {
 
@@ -1927,7 +1936,8 @@ jsxc.mmstream = {
 
     else if (task === "screensharing") {
       if (self._isNavigatorChrome() !== true) {
-        message = "Le partage d'écran n'est pas disponible avec votre navigateur. Utilisez Chrome.";
+        message =
+            "Le partage d'écran n'est pas disponible avec votre navigateur. Utilisez Chromium ou Chrome.";
       }
     }
 
@@ -2000,7 +2010,7 @@ jsxc.mmstream = {
     var defer = $.Deferred();
     var messages = self.chromeExtensionMessages;
 
-    window.addEventListener("message", function(event) {
+    var screenStreamListener = function(event) {
 
       // filter invalid messages
       if (!event || !event.data) {
@@ -2037,7 +2047,7 @@ jsxc.mmstream = {
 
               jsxc.stats.addEvent("jsxc.mmstream.screensharing.streamAcquired");
 
-              window.removeEventListener("message", this);
+              window.removeEventListener("message", screenStreamListener);
 
               defer.resolve(stream);
 
@@ -2046,18 +2056,22 @@ jsxc.mmstream = {
             // error
             function(error) {
 
+              jsxc.error('Screen stream refused', {error : error});
+
               self._log("Screen capture declined");
 
               jsxc.stats.addEvent("jsxc.mmstream.screensharing.streamRefused");
 
-              window.removeEventListener("message", this);
+              window.removeEventListener("message", screenStreamListener);
 
               defer.reject(error);
 
             });
 
       }
-    });
+    };
+
+    window.addEventListener("message", screenStreamListener);
 
     // ask for source id
     window.postMessage(messages.getScreenSourceId, '*');
