@@ -728,6 +728,11 @@ $.extend(jsxc.newgui, {
     enabled = typeof enabled !== 'undefined' ? enabled : !self._selectionMode;
     self._selectionMode = enabled;
 
+    // show main content if necessary
+    if(self.chatSidebarContent.isMainContentVisible() !== true){
+      self.chatSidebarContent.showMainContent();
+    }
+
     // enable selection mode
     if (self._selectionMode === true) {
 
