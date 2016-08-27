@@ -268,13 +268,12 @@ jsxc.help = {
 
             beforeShowPromise : self._setAllGuiVisible.bind(self, true),
 
-            when: {
-              'show': function(){
+            when : {
+              'show' : function() {
                 self._highlightElement('#jsxc-status-bar');
               }
             }
-            
-            
+
           },
 
           {
@@ -327,6 +326,26 @@ jsxc.help = {
   },
 
   /**
+   * Set side bar visible or not and return a promise which will be resolved when
+   * it is done
+   * @private
+   */
+  _clearAllWindows : function() {
+
+    var p = new Promise(function(resolve, reject) {
+      jsxc.gui.closeAllChatWindows().then(function() {
+        resolve();
+      })
+          .fail(function() {
+            reject();
+          });
+    });
+
+    return p;
+
+  },
+
+  /**
    * Set all gui visibility and return a promise which will be resolved when finished
    * @param state
    * @returns {*}
@@ -336,7 +355,12 @@ jsxc.help = {
 
     var self = jsxc.help;
 
-    return Promise.all([self._setChatSidebarVisible(state), self._setMediapanelVisible(state)]);
+    var promises = [self._setChatSidebarVisible(state), self._setMediapanelVisible(state)];
+    if (!state) {
+      promises.push(self._clearAllWindows());
+    }
+
+    return Promise.all(promises);
 
   },
 

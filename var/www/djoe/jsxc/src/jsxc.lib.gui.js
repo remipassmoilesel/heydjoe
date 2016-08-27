@@ -173,13 +173,34 @@ jsxc.gui = {
    */
   closeAllChatWindows : function() {
 
-    $("#jsxc_windowList .jsxc_windowItem").each(function() {
-      jsxc.gui.window.close($(this).data('bid'));
-    });
+    var defer = $.Deferred();
 
-    // replace list after close all, to avoid future window appear out of screen
-    $('#jsxc_windowList ul').css('right', '0px');
+    var wins = $("#jsxc_windowList .jsxc_windowItem");
+    var toClose = wins.length;
+    var closed = 0;
 
+    if (wins.length < 1) {
+      defer.resolve();
+    }
+
+    else {
+
+      $("#jsxc_windowList .jsxc_windowItem").each(function() {
+        jsxc.gui.window.close($(this).data('bid'), function() {
+          closed++;
+
+          if (closed >= toClose) {
+            defer.resolve();
+          }
+        });
+      });
+
+      // replace list after close all, to avoid future window appear out of screen
+      $('#jsxc_windowList ul').css('right', '0px');
+
+    }
+
+    return defer.promise();
   },
 
   /**
@@ -954,8 +975,8 @@ jsxc.gui = {
     });
 
     // create user list to invite
-    var buddyList = jsxc.gui.widgets.createBuddyList(
-        "#jsxc_dialog #jsxc-etherpad-dialog-buddylist", selectedJids);
+    var buddyList = jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc-etherpad-dialog-buddylist",
+        selectedJids);
 
     $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
       ev.stopPropagation();

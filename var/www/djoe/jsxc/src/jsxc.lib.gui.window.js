@@ -457,7 +457,7 @@ jsxc.gui.window = {
    *
    * @param {String} bid bar jid
    */
-  close : function(bid) {
+  close : function(bid, callBackWhenFinished) {
 
     var win = jsxc.gui.window.get(bid);
     if (win.length === 0) {
@@ -483,6 +483,9 @@ jsxc.gui.window = {
 
           jsxc.gui.window._close(bid);
 
+          if(callBackWhenFinished){
+            callBackWhenFinished();
+          }
         });
   },
 
