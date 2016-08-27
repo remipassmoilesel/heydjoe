@@ -95,6 +95,8 @@ $(function() {
 
   $('#connectButton').click(function() {
 
+    clearRandomLoginsInt();
+
     var userNode;
 
     if ($("#connexionForm input[value='random']:checked").length === 1) {
