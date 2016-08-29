@@ -1,6 +1,6 @@
 # Hey Djoe !
 
-Instant communication system using XMPP, WebRTC and WebSockets.
+Instant communication system .
 
 ## Functionnalities:
 * Text chat between two or multiple users
