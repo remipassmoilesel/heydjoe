@@ -19,6 +19,7 @@ $(function() {
   var defaultPassword = "azerty";
 
   var boshTest = "https://" + pageDomain + "/bosh-test/";
+  var iceTest = "https://" + pageDomain + "/ice-test/";
   var webAdminUrl = "http://" + pageDomain + ":9090/";
   var etherpadUrl = "https://" + pageDomain + "/etherpad/";
   var consoleUrl = "https://" + pageDomain + "/xmpp-console/";
@@ -222,6 +223,7 @@ $(function() {
   appendToLinks('Console XMPP', consoleUrl);
   appendToLinks('Découverte de services XMPP', discoUrl);
   appendToLinks('Test de connexion BOSH', boshTest);
+  appendToLinks('Test de connexion ICE', iceTest);
   appendToLinks('API REST Openfire', 'https://' + pageDomain + '/openfire-rest-example');
   appendToLinks('Administration web Openfire', webAdminUrl);
   appendToLinks('Etherpad', etherpadUrl);

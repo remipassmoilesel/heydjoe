@@ -6,9 +6,15 @@
  *  tree.
  */
 
+body {
+  margin-top: 30px;
+  font-size: 13px;
+  font-family: Calibri, "PT Sans", "Trebuchet MS", "Helvetica Neue", Arial;
+}
+
 #container{
     width: 80%;
-    margin: auto:
+    margin: auto;
     margin-bottom: 100px;
 }
 
