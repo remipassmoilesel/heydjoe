@@ -9,56 +9,48 @@
 # Short-Description: Firewall 
 ### END INIT INFO
 
-# On bloque tout
+# Block all
 iptables  -P INPUT DROP
 iptables  -P FORWARD DROP
 iptables  -P OUTPUT DROP
-echo "- On bloque tout : [OK]"
 
-# Ne pas casser les connexions établies
+# Do not flush existing connexions
 iptables  -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables  -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 
-# Autorise le loopback (127.0.0.1)
+# Loopback
 iptables  -A INPUT -i lo -j ACCEPT
 iptables  -A OUTPUT -o lo -j ACCEPT
-echo "- Autoriser Loopback : [OK]"
 
-# ICMP (le ping)
+# ICMP (ping)
 iptables  -A INPUT -p icmp -j ACCEPT
 iptables  -A OUTPUT -p icmp -j ACCEPT
-echo "- Autoriser PING : [OK]"
 
 # SSH IN/OUT
 iptables  -A INPUT -p tcp --dport 22 -j ACCEPT
 iptables  -A OUTPUT -p tcp --dport 22 -j ACCEPT
-echo "- Autoriser SSH : [OK]"
 
 # DNS In/Out
 iptables  -A OUTPUT -p tcp --dport 53 -j ACCEPT
 iptables  -A OUTPUT -p udp --dport 53 -j ACCEPT
 iptables  -A INPUT -p tcp --dport 53 -j ACCEPT
 iptables  -A INPUT -p udp --dport 53 -j ACCEPT
-echo "- Autoriser DNS : [OK]"
 
-# HTTP + HTTPS + STUN + TURN out
+# HTTP + HTTPS + STUN + TURN
 iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT
 iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT
 iptables -A OUTPUT -p udp --dport 80 -j ACCEPT
 iptables -A OUTPUT -p udp --dport 443 -j ACCEPT
 
-# HTTP + HTTPS + STUN + TURN in
+# HTTP + HTTPS + STUN + TURN 
 iptables  -A INPUT -p tcp --dport 80 -j ACCEPT
 iptables  -A INPUT -p tcp --dport 443 -j ACCEPT
 iptables  -A INPUT -p udp --dport 80 -j ACCEPT
 iptables  -A INPUT -p udp --dport 443 -j ACCEPT
 
-echo "- Autoriser HTTP(s) : [OK]"
-
 # Silverpeas HTTP
 iptables  -A OUTPUT -p tcp --dport 8000 -j ACCEPT
 iptables  -A INPUT -p tcp --dport 8000 -j ACCEPT
-echo "- Autoriser Silverpeas : [OK]"
 
 # STUN / TURN out
 iptables  -A OUTPUT -p udp --dport 49152:65535 -j ACCEPT
@@ -66,34 +58,18 @@ iptables  -A INPUT  -p udp --dport 49152:65535 -j ACCEPT
 iptables  -A OUTPUT -p tcp --dport 49152:65535 -j ACCEPT
 iptables  -A INPUT  -p tcp --dport 49152:65535 -j ACCEPT
 
-
-echo "- Autoriser STUN / TURN : [OK]"
-
-# BOSH
-iptables  -A INPUT -p tcp --dport 7070 -j ACCEPT
-iptables  -A OUTPUT -p tcp --dport 7070 -j ACCEPT
-
-# BOSH S
-iptables  -A INPUT -p tcp --dport 7443 -j ACCEPT
-iptables  -A OUTPUT -p tcp --dport 7443 -j ACCEPT
-
 # Monitorix
 iptables  -A INPUT -p tcp --dport 8080 -j ACCEPT
 iptables  -A OUTPUT -p tcp --dport 8080 -j ACCEPT
 
-# Etherpad
-iptables  -A INPUT -p tcp --dport 9001 -j ACCEPT
-iptables  -A OUTPUT -p tcp --dport 9001 -j ACCEPT
-
-# Configuration web Openfire
+# Openfire configuration
 iptables  -A INPUT -p tcp --dport 9091 -j ACCEPT
 iptables  -A OUTPUT -p tcp --dport 9091 -j ACCEPT
 
 iptables  -A INPUT -p tcp --dport 9090 -j ACCEPT
 iptables  -A OUTPUT -p tcp --dport 9090 -j ACCEPT
 
-
-# Lister les règles
+# Display rules
 iptables -v -L
 
 

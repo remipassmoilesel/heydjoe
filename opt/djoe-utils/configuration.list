@@ -3,8 +3,8 @@ etc/apache2/sites-available/
 etc/reTurn/reTurnServer.config
 
 etc/init.d/firewall
-etc/init.d/firewall.activate
-etc/init.d/firewall.deactivate
+etc/init.d/firewall.enable
+etc/init.d/firewall.disable
 
 etc/init/djoe.conf
 etc/init/silverpeas.conf

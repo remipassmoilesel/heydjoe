@@ -14,13 +14,13 @@ DAEMON_LOG=/var/log/firewall.log
 case "$1" in
   start)
     echo -n "$0 : "
-		sh /etc/init.d/firewall.deactivate
-		sh /etc/init.d/firewall.activate
+		sh /etc/init.d/firewall.disable
+        sh /etc/init.d/firewall.enable
     echo "[Started]"
     ;;
   stop)
     echo -n "$0 : "
-		sh /etc/init.d/firewall.deactivate
+    sh /etc/init.d/firewall.disable
     echo "[Stopped]"
     ;;
   *)
