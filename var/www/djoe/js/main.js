@@ -18,6 +18,7 @@ $(function() {
     "jules", "jacques", "paul"];
   var defaultPassword = "azerty";
 
+  var boshTest = "https://" + pageDomain + "/bosh-test/";
   var webAdminUrl = "http://" + pageDomain + ":9090/";
   var etherpadUrl = "https://" + pageDomain + "/etherpad/";
   var consoleUrl = "https://" + pageDomain + "/xmpp-console/";
@@ -220,6 +221,7 @@ $(function() {
       ':8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1day&color=black');
   appendToLinks('Console XMPP', consoleUrl);
   appendToLinks('Découverte de services XMPP', discoUrl);
+  appendToLinks('Test de connexion BOSH', boshTest);
   appendToLinks('API REST Openfire', 'https://' + pageDomain + '/openfire-rest-example');
   appendToLinks('Administration web Openfire', webAdminUrl);
   appendToLinks('Etherpad', etherpadUrl);
