@@ -1,0 +1,28 @@
+src
+├── jsxc_init.js
+├── jsxc.intro.js
+├── jsxc.lib.api.js
+├── jsxc.lib.etherpad.js
+├── jsxc.lib.gui.js
+├── jsxc.lib.gui.menu.js
+├── jsxc.lib.gui.widgets.js
+├── jsxc.lib.help.js
+├── jsxc.lib.js
+├── jsxc.lib.localization.js
+├── jsxc.lib.Message.js
+├── jsxc.lib.mmstream.gui.js
+├── jsxc.lib.mmstream.js
+├── jsxc.lib.muc.js
+├── jsxc.lib.notice.js
+├── jsxc.lib.notification.js
+├── jsxc.lib.options.js
+├── jsxc.lib.otr.js
+├── jsxc.lib.rest.js
+├── jsxc.lib.storage.js
+├── jsxc.lib.webrtc.js
+├── jsxc.lib.xmpp.bookmarks.js
+├── jsxc.lib.xmpp.js
+├── jsxc.lib.xmpp.search.js
+└── jsxc.outro.js
+
+0 directories, 25 files

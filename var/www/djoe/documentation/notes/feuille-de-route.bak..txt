@@ -1,0 +1,368 @@
+Messagerie instantanée: feuille de route
+
+Dépôt Github: https://github.com/remipassmoilesel/djoe
+
+Feuille de route mise à jour en temps réel à l'adresse: https://im.silverpeas.net/etherpad/p/feuille-de-route
+
+Avancement
+En cours:
+
+
+Video: image animée d'attente de flux
+Make up sur la page de démonstration (SPA ?)
+
+Serveur de Stats: limiter le nombre d'envois échoués 
+
+Harmoniser les test fulljid dans mmstream
++ generaliser l'utilisation de jsxc.isBuddyConnected
+_requireLocalStream: vérifier que le stream local ne soit bien demandé qu'une seule fois. (apparement pas sous FF)
+Effacer l'historique: effacer aussi l'historique distant
+Inband registration en place du REST Openfire
++ Module de registration à partir de crédences enregistrées sur la page
+
+Etherpad: vérifier partout si l'option Etherpad est activé + ajouter une option onMucOnly
+Séparer les dépendances de dev
+Tests unitaires: onPresence, onMessageReceive, onRosterChanged, + video conference
+Ajouter un bouton mute sous les videos
+Proposer une liste de selection de vidéo utilisateur pour l'affichage plein ecran <select><opt>remi, jean, claude ...
+Remplace slimscroll par perfect scrollbar
+Réinivitation: le client peut il être occupé ? (on reinvitation received)
+Afficher le nom de des conversations proprement
+Mettre un avertissement généralisé sur l'usage d'une connexion HTTP / multimedia ? + vérification du navigateur pour extension Chrome
+Enlever la boite dedialogue de confirmation de contact (celle qui demande le nom du contact)
+Serveur de stats: remplacer à l'entrée et à la sortie tous les JID par abcd@abcd.abc
+Suggérer l'utilisation avec Docker [/CygWin (Windows)]
+Recommencer le diaporama de fonctionnalités. Le diapo doit etre complet
+Reprendre le système CAPS et notamment la chaine 'ver' 
+Transfert de fichier
+Proposer un lancement docker / installation à la  https://raw.github.... | bash
+
+Saisie de message: agrandir la zone de saisie pour améliorer la lisibilité sur le message ?
+
+Plan présentation:
+
+Statistiques et récolte d'erreurs
+Conflit i18n
+
+Limite:
+- Proposer une alternative à BOSH
+- WebRTC jeune est changeant
+- Utilisation serveur MUC
+- Développement en sprint: mérite plus de travail de fiabilisation + reprise 
+
+24/08/2016
+Travail sur le menu de réglages
+Ajout de la possibilité d'empecher les appels vidéo
+Ajout de la possibilité de couper le son et les notifications de bureau
+Fiabilisation des notifications
+Refactoring global pour fiabilisation (Strophe.getBareJidFromJid >> jsxc.jidToBid)
+Changement du logo des notifications de bureau
+
+
+23/08/2016
+Fiabilisation du partage d'écran + distinction partage d'écran / video
+Travail sur la reconnection
+Déselection 
+
+22/08/2016
+Ajout de boites de dialogues lorsqu'une action est déclenchée mais que rien n'est sélectionné
+Suppression du HTML intempestif des messages dans les notifications
+Signalement d'un appel refusé
+
+18/08/2016
+Animation des fenetres de chat
+Fiabilisation du système d'invitation de contacts 
+Invitation d'un utilisateur à partir d'une fenetre MUC
+Filtre de notifications: l'arrivée des conversations n'est plus signalée
+Commande "Rejeter toutes les notifications"
+Affichage de dialogue de sélection d'utilisateur si aucun utilisateur n'est sélectionné dans le menu lors du déclenchement d'une action
+
+15/08/2016
+Ajout de la recherche d'utilisateur
+Refactoring pour integration de la nouvelle interface
+
+11/08/2016
+Travail sur la nouvelle interface
+Envoi de présences automatique lorsque l'utilisateur utilise le GUI
+
+10/08/2016
+Création de la nouvelle interface
+
+09/08/2016
+Fonctionnalité de repeche de participant déconnecté
+Augmentation du niveau des journaux envoyés au serveur (ERROR et WARN uniquement)
+
+08/08/2016
+Restructuration du module de videoconference
+Ajout de messages de confirmation de participation aux videoconferences
+
+03/08/2016
+Essais en groupe
+Palliatif pour affichage de la vidéo sur Firefox
+Ajout des informations de serveur TURN (TURNS n'est pas supporté pas Firefox)
+Documentation
+
+02/08/2016
+Essais en groupe
+Réduction de la résolution des vidéos pour fluidification
+Fix sur un problème de paramétrage de salons de discussion
+
+01/08/2016
+Réunion
+Documentation
+
+29/07/2016
+Création de documentation et restructuration du projet
+
+28/07/2016
+Envoi de journaux d'erreurs vers le serveur pour debuggage
+
+26/07/2016
+Réorganisation du code d'intégration
+Mise en place d'un module d'appel des fonctionnalités du chat
+Branche "chat-integration" poussée vers silverteamwork
+
+25/07/2016
+Résolution du problème d'adresse
+Réunion 
+
+21/07/2016
+Adaptation et amélioration d'une extension Chrome de capture d'écran 
+Premier partage d'écran avec Chrome
+Ajout d'un lien d'appel vidéo à partir des contact (à corriger)
+Ajout de la vidéo en plein écran
+
+19/07/2016
+Mise en place d'un système d'enregistrement et d'appel de callback dans JSXC pour faciliter l'intégration du client
+Création d'une Servlet utilitaire pour le système de chat
+Mise en place d'un système de répercussion des invitations XMPP > Silverpeas
+Premier message à partir de l'annuaire Silverpeas à l'aide de JSXC
+
+18/07/2016
+Mise en place d'un système de répercution des invitations Silverpeas > XMPP
+
+13/07/2016
+Tests de video conference
+Correction de divers problèmes d'affichage
+Réduction des options proposées dans le menu
+
+12/07/2016
+Ajout de la gestion des invitations et de l'attente pour videoconférences (à tester et à fiabiliser)
+
+11/07/2016
+Ajout d'un panneau d'affichage de vidéos
+Premier appel mutliple vidéo possible
+
+08/07/2016
+Création d'un nouveau module de gestion des flux multimedia
+Première phase d'intégration des relations de Silverpeas
+Correction d'un problème sur la gestion des contacts de JSXC
+
+06/07/2016
+Présentation du rapport de stage
+conception de la prochaine phase d'intégration: relations
+
+05/07/2016
+Réinstallation de la plateforme silverpeas de démo avec le nouveau système de messagerie
+Correction de style sur la messagerie
+Travail sur la présentation du rapport de stage
+
+04/07/2016
+Première intégration plus poussée sur la plateforme:
+Transmission des informations de connexion à partir du du plugin JSP d'inclusion Javascript
+Modification de l'initialisation de JSXC en conséquence
+Service de création et de suppression d'utilisateurs utilisant l'API REST d'Openfire
+
+01/07/2016
+Premier travail sur l'API de création / suppression d'utilisateurs  du serveur XMPP pour Silverpeas
+
+30/06/2016
+Correction d'un bug lié au serveur Openfire. Le serveur supporte mal Openjdk 7 apparement. Fonctionne désormais avec Oracle 1.8.
+Correction d'un bug lié à Magnific Popup
+Correction d'un bug lié aux listes filtrables
+
+28/06/2016
+
+Correction du proxy HTTPS Silverpeas
+Ajout d'un proxy HTTPS pour le service monitorix
+Modification de la procédure de login auto pour SIlverpeas
+Fix sur l'affichage de la liste de connaissances
+Fix sur le lien de reconnexion à la messagerie
+
+27/06/2016
+Création d'une liste permettant de sélectionner des élements et de les filtrer selon des termes textuels
+Mise en place de cette liste pour recherche d'utilisateurs
+Travail sur le proxy HTTPS Silverpeas
+Travail sur rapport de stage 
+
+23/06/2016
+Création d'un proxy HTTPS Apache / Openfire afin de contourner les problèmes de CROSS origin
+Installation de SIlverpeas sur le serveur im.silverpeas.net après rallonge de mémoire vive
+Amélioration du packaging de JSXC pour intégration (Webpack / Grunt)
+Isolation du système I18n pour cohabitation temporaire avec l'installation existante
+Réorganisation du dossier de travail et des scripts de publication
+Première intégration de la messagerie dans Silverpeas à l'adresse: http://im.silverpeas.net:8000/silverpeas/admin/jsp/MainFrameSilverpeasV5.jsp
+Amélioration du proxy Apache / Silverpeas pour passge en https en parrallèle de la démo classique
+Création d'utilisateurs dans la base de donnée du serveur XMPP
+Début d'implémentation de l'API Openfire dans JSXC pour création d'utilisateurs
+Mise en place d'un Proxy HTTP / REST Openfire pour Cross domain policy (https://im.silverpeas.net/openfire-rest)
+Mise en place d'une identification automatique pour Silverpeas avec création de compte automatique
+Nouveau formulaire de connexion sur démo avec proposition de noms aléatoires
+
+20/06/2016
+Correction du problème d'affichage de la présence de composition de message
+Correction du problème d'entrée en conversation au démarrage de l'application
+Amélioration du packagement (Gruntfile)
+Tests de messagerie:
+Inviter des utilisateurs: 
+vérifier la réception des notifications
+trier la liste d'utilisateurs à inviter par ordre alphabétique
+Conversation à plusieurs
+Trouver un meilleur évenement pour actualiser la liste de contacts confirmés
+Confirmation d'acceptation des notifications de bureau à corriger
+Demander l'historique d'une conversation au démarrage
+
+17/06/2016
+Premières invitation à une conversation
+Gestion des notifications d'invitation à une conversation
+Boite de dialogue d'acceptation d'invitation à une conversation
+Premières notifications d'écriture, support multi utilisateur 
+Configuration du proxy TLS Apache 2 / Etherpad
+Première intégration d'Etherpad dans une conversation de groupe: ouvrir une conversation, menu haut droit, "Ouvrir un pad"
+
+16/06/2016
+Gestion du problème des bookmark (temporaire mais fonctionnelle, issue en cours)
+Première installation de SP 6
+
+15/06/2016
+Suppression de salons par REST (aide au développement)
+Ajout d'un utilitaire d'inspection du traffic XMPP
+Première configuration automatique des salons
+Ajout d'un dialogue de sélection de conversation pour invitation
+Premières invitations pour rejoindre un salon
+
+14/06/2016
+Ecriture de cas d'utilisation textuels
+Premier examen de de la XEP 0085 permettant la mise en place d'un indicateur de frappe
+Simplification du menu
+Ajout d'un widget de sélection d'amis
+Première ouverture de salons à partir d'une sélection
+Tri des utilisateurs dans le widget d'affichage des amis
+
+13/06/2016
+Amélioration de la recherche d'utilisateurs
+Découverte d'un problème: si le localStorage est vidé, le GUI ne s'initialise pas: obligatoirement initialiser l'adresse du seveur MUC pour éviter ces problèmes
+Amélioration de la journalisation de JSXC / Strophe
+Changement de logo, améliorations de style
+Amélioration des consoles de stockage et events Jquery pour debuggage
+Point sur l'avancement de début de semaine. CR simplifié:
+Mettre des use case d'utilisation de salons par écrit
+Explorer la possibilité de faire abstraction de la notion de salon, pour simplifier l'expérience utilisateur
+Avancer dès que possible sur l'indicateur de frappe 
+Etudier la possibilité d'utiliser les avatars Silverpeas 
+Etudier la possibilité d'utiliser des pads liés à une conversation (nom du pad <> room jid)
+
+10/06/2016
+Création d'un widget "liste d'utilisateurs" empaquetée dans un utilitaire
+Modification du système de feedback, ajout de toasts
+Suppression de contacts à partir du nouveau menu
+Création d'un element d'affichage des salons
+Possibilité de rejoindre un salon à partir du nouveau menu
+Création de salons à partir du nouveau menu
+
+09/06/2016
+Déplacement des notifications d'ajout
+Possibilité d'afficher une stack trace en cas d'erreur
+Module de recherche d'utilisateur operationnel
+Méthode getter pour la liste des JID enregistrés en local
+Première demande d'ajout à partir d'une liste !!!
+Mise en cache des résultats de recherche d'utilisateurs (uniquement pour les demandes de tous les utilisateurs)
+Création d'un utilitaire de création de zone de feedback
+
+08/06/2016
+Mise en place du nouveau menu
+Association des actions aux elements du menu
+Etude de la découverte de services XMPP
+Ajout d'une console de découverte de services XMPP (/xmpp-disco)
+Etude du fonctionnement des salons
+Ajout du logo CLPS
+Mise à jour de jsdoc
+Installation du thème graphique Jquery Silverpeas (merci Aurore !)
+Première requête de recheche d'utilisateurs
+
+07/06/2016
+Première mise en place du nouveau menu
+Mise à jour de Jquery et Jquery UI
+Correction du Gruntfile
+
+06/06/2016
+Première ébauche d'un nouveau menu: https://im.silverpeas.net/playground/menu-accordion.html
+Mise en ordre des notes (djoe/notes)
+Début de test de la messagerie et des appels WebRTC dans des conditions de pare feu restrictif. A l'aide d'un script établissant des régles IPTABLES, la messagerie à été testée avec ces ports ouverts seulement:
+80 tcp / udp (HTTP)
+443 tcp / udp (HTTPS)
+7443 tcp / udp (BOSH S)
+(plus le service DNS)
+Remarque: Le passage du serveur XMPP sur 443 permettra à terme de se passer du dernier port, ce qui permettra normalement l'utilisation de la messagerie dans des 
+conditions très strictes.
+Mise en ligne de la feuille de route sur l'Intranoo
+
+03/06/2016
+Installation de Monitorix pour surveiller l'activité du serveur: http://im.silverpeas.net:8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1day&color=black
+Problèmes de certificats TLS Android / IOS résolu
+Installation et test du serveur Coturn (rfc-5766-turn-server)
+Correction du firewall pour autoriser le trafic UDP TURN
+Vidéo disponible sur Android avec la dernière version de Chrome !
+
+02/06/2016
+Correction des erreurs 404 concernant le chargement des images de JSXC
+Notes complétées
+Création d'un script de synchronisation SSH / RSYNC pour envoyer les fichiers modifiés vers le serveur
+Création d'un script de récupération des fichiers de configuration du serveur distant
+Reconfiguration d'Apache et du serveur reTurn
+Modification du firewall du serveur (règles iptables) pour autorisation du trafic UDP sur les ports WebRTC
+Configuration de la chaine de certificats pour Firefox et Chrome Android 
+
+01/06/2016
+Ajout d'une liste de sélection de compte et d'un bouton de déconnexion
+Création d'une branche pour le nouveau menu d'interface et début de conception
+Activation possible du log JSXC
+Réinstallation complète du système avec les nouveaux certificat + base de données MariaDB pour Openfire
+Création d'un premier fichier de notes sur l'installation: voir notes/installation.txt
+Essais supplémentaires avec reTurn
+
+31/05/2016
+Prise en main de l'environnement de développement de JSXC et premiers builds: Node 4, Bower, Grunt, ... 
+Création d'une console de suivi des évenements JQuery pour debuggage (onglet 'Informations utiles')
+Console localStorage et dataStorage (Pour apprentissage)
+Début d'étude de l'interface
+
+30/05/2016
+Essai du plugin Openfire DBAccess pour debuggage
+Premiers essais de l'API REST d'Openfire pour gestion des utilisateurs (voir http://..../openfire-rest/)
+Identification du problème de connexion Firefox: malgré l'utilisation du même certificat par Apache et Openfire, sur Firefox l'utilisateur doit ajouter explicitement une exception de sécurité pour Openfire (https://test-messagerie.ddns.net:7443)
+Demande d'interfaces réseau supplémentaire + domaines + certificats signés
+Premiers essais avec Prosody
+
+27/05/2016
+Plusieurs test audio/vidéo. La communication utilisée semble de bonne qualité mais le service TURN ne fonctionne pas
+Installation et essai du serveur TURN reTurn. Le protocole Jingle essai de se connecter mais une erreur survient (TLS ?)
+Configuration TLS des serveurs Apache  et Openfire pour permettre l'utilisation de WebRTC
+Installation du plugin "populate users" Openfire permettant de créer des contacts factices
+Installation du plugin "import export" pour importer des utilisateurs au format XML - marche pas :(
+
+26/05/2015
+Mise en place du serveur
+Installation de JSXC
+Installation de Kaiwa
+Désactivation de la fonctionnalité OTR de JSXC
+Ajout de plugins à Etherpad (titres, ...)
+
+25/05/2016
+Adaptation d'une console d'observation du trafic XMPP pour debuggage: http://test-messagerie.ddns.net/console/
+
+24/05/2016 
+Création des images Docker de JSXC et Kaiwa, et de l'environnement de travail
+
+
+
