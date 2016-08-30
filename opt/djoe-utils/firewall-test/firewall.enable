@@ -1,0 +1,47 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          Firewall
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:
+# Default-Stop:
+# X-Interactive:     false
+# Short-Description: Firewall 
+### END INIT INFO
+
+# Block all
+iptables  -P INPUT DROP
+iptables  -P FORWARD DROP
+iptables  -P OUTPUT DROP
+
+# Do not flush existing connexions
+iptables  -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables  -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+# Loopback
+iptables  -A INPUT -i lo -j ACCEPT
+iptables  -A OUTPUT -o lo -j ACCEPT
+
+# ICMP (ping)
+iptables  -A INPUT -p icmp -j ACCEPT
+iptables  -A OUTPUT -p icmp -j ACCEPT
+
+# DNS In/Out
+iptables  -A OUTPUT -p tcp --dport 53 -j ACCEPT
+iptables  -A OUTPUT -p udp --dport 53 -j ACCEPT
+iptables  -A INPUT -p tcp --dport 53 -j ACCEPT
+iptables  -A INPUT -p udp --dport 53 -j ACCEPT
+
+# HTTP + HTTPS
+iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT
+
+# HTTP + HTTPS + STUN + TURN 
+iptables  -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables  -A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Display rules
+iptables -v -L
+
+
+

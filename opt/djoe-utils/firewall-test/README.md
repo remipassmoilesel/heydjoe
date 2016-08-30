@@ -1,10 +1,9 @@
-# Misc utils for test in restrictive environment
+# Misc utils for testing the JSXC client in a restrictive environment
 
 _/!\ Be careful, these scripts modify IPTables configuration !
 
-## firewall.activate
+## firewall.enable
 Restrict traffic to these ports:
-* 80 tcp / udp (HTTP)
-* 443 tcp / udp (HTTPS)
-* 7443 tcp / udp (BOSH S)
-* (plus DNS service)
+* 80 tcp (HTTP)
+* 443 tcp (HTTPS)
+
