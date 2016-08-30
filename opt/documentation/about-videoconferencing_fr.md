@@ -1,6 +1,6 @@
 # A propos de la vidéoconférence
 
-Le fonctionnement de la vidéo conférence peut paraitre trivial mais permet un fonctionnement simple sans infrastructure supplémentaire autre que celle nécéssaire aux communications multimédia WebRTC en paire à paire. 
+Le fonctionnement de la vidéo conférence peut paraître trivial mais permet un fonctionnement simple sans infrastructure supplémentaire autre que celle nécessaire aux communications multimédia WebRTC en paire à paire. 
 
 Le système de vidéoconférence utilise l'extension Jingle (XEP 0166) pour établir des sessions multimédia mais ne respecte pas de XEP particulière pour ce qui est des invitations.
 
@@ -13,12 +13,12 @@ Un client qui contacte un autre client initie une session Jingle avec lui, dans 
 
 **Choix des clients à appeler:**
 
-Exemple de l'utilisateur b@domain/res, qui initie une vidéoconférence avec a@domain/res, c@domain/res et d@domain/res. Chaque utilisateur reçoit une invitation contenant ces informations:
+Exemple de l'utilisateur b@domain/res, qui initie une vidéoconférence avec a@domain/res, c@domain/res et d@domain/res. Chaque participant reçoit une invitation contenant ces informations:
 
 * b@domain/res: Initiateur 
-* a@domain/res: Participant 1 
-* c@domain/res: Participant 2
-* d@domain/res: Participant 3
+* a@domain/res: Participant
+* c@domain/res: Participant
+* d@domain/res: Participant
 
 Chaque client doit ensuite:
 
@@ -40,7 +40,7 @@ Ce qui donne dans notre exemple:
         ]
          
 
-A partir de cette liste chaque client peut déterminer quels clients il doit contacter. L'initiateur contacte tous les clients, et chaque client doit contacter tous les clients de cette liste situés entre la première occurence du client appelant et la prochaine occurence de l'initateur.
+A partir de cette liste chaque client peut déterminer quels clients il doit contacter. L'initiateur contacte tous les participants, et chaque client doit contacter tous les clients de cette liste situés entre la première occurrence du client appelant et la prochaine occurence de l'initiateur.
 
 La liste des sessions Jingle à initier par un client est appelée `liste de sessions`.
 
@@ -55,7 +55,7 @@ Ce qui donne pour notre exemple la séquence suivante:
 
 ## Messages
 
-Les messages utilisés sont dérivés de la stanza XMPP `message` permettant d'envoyer à n'importe quel utilisateur un message texte ou plus de données si nécéssaire.
+Les messages utilisés sont dérivés de la stanza XMPP `message` permettant d'envoyer à n'importe quel utilisateur un message texte ou plus de données si nécessaire.
 
 Les messages utilisés ci-dessous ont toujours ces caractéristiques:
 * Les clients y sont représentés par leurs fulljid (identifiant Jabber complet, avec ressource)
