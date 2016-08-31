@@ -182,7 +182,7 @@ jsxc.mmstream.gui = {
         list.append(it.append(link));
       }
 
-      // user is participating to sreensharing, and we are initator. add link to reinvite
+      // user is participating to sreensharing, and we are initiator. add link to reinvite
       // participants
       else if (mmstream._isBuddyScreensharingRecipient(fulljid) === true) {
 

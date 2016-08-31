@@ -807,7 +807,7 @@ jsxc.mmstream = {
   /**
    * Triggered when screen sharing invitation received
    *
-   * If user accept, a confirmation is sent to initator
+   * If user accept, a confirmation is sent to initiator
    *
    * @param stanza
    * @param screen
@@ -1549,7 +1549,7 @@ jsxc.mmstream = {
 
     var sent = [];
 
-    // send one invitation to each participants and eventually to initator if this is a reinvitation
+    // send one invitation to each participants and eventually to initiator if this is a reinvitation
     $.each(participants.concat(initiator), function(index, fulljid) {
 
       jsxc.stats.addEvent("jsxc.mmstream.videoconference.sendInvitation");
@@ -1581,7 +1581,7 @@ jsxc.mmstream = {
   /**
    * Start a videoconference with specified full jids
    *
-   * fulljidArray MUST NOT contain initator jid
+   * fulljidArray MUST NOT contain initiator jid
    *
    * @param fulljidArray
    */
@@ -1879,7 +1879,7 @@ jsxc.mmstream = {
 
     var sent = [];
 
-    // send one invitation to each participants and eventually to initator if this is a reinvitation
+    // send one invitation to each participants and eventually to initiator if this is a reinvitation
     $.each(participants, function(index, fulljid) {
 
       jsxc.stats.addEvent("jsxc.mmstream.screenSharing.sendInvitation");

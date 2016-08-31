@@ -94,7 +94,7 @@ _Exemple de message_:
                      status='initiate'
                      
                      id='579f7d5a-a70d-4ed8-a660-7f2f3d2e2696'
-                     initator='remi@domain.xmpp/res'
+                     initiator='remi@domain.xmpp/res'
                      datetime='2012-06-22 05:40:06'
                      message='Remi vous invite à une vidéoconférence avec ...'/>
     </message>
@@ -141,7 +141,7 @@ _Exemple de message_:
                      status='abort'
                      
                      id='579f7d5a-a70d-4ed8-a660-7f2f3d2e2696'
-                     initator='remi@domain.xmpp/res'
+                     initiator='remi@domain.xmpp/res'
                      datetime='2012-06-22 05:40:06'
                      message='David refuse la vidéo conférence'/>
     </message>
@@ -164,7 +164,7 @@ Pour cela un client souhaitant inviter un utilisateur doit envoyer une notificat
                      reinvite='yohann@domain.xmpp/res'
                      
                      id='579f7d5a-a70d-4ed8-a660-7f2f3d2e2696'
-                     initator='remi@domain.xmpp/res'
+                     initiator='remi@domain.xmpp/res'
                      datetime='2012-06-22 05:40:06'
                      message=''/>
     </message>
@@ -187,7 +187,7 @@ Si un client est indisponible pour une session multimédia il doit envoyer une n
                      status='occupied'
                      
                      id='579f7d5a-a70d-4ed8-a660-7f2f3d2e2696'
-                     initator='remi@domain.xmpp/res'
+                     initiator='remi@domain.xmpp/res'
                      datetime='2012-06-22 05:40:06'
                      message=''/>
     </message>
