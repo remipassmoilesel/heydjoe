@@ -87,12 +87,18 @@ jsxc.etherpad = {
 
     jsxc.debug("Openning new pad", padId);
 
+    // get etherpad iframe
     var embedded = self._getEmbeddedCode(padId);
-    newgui.addMediaRessource(embedded, 'Etherpad: ' + padId);
+
+    // add link below
+    var link = '<a href="' + self.getEtherpadLinkFor(padId) + '" target="_blank"' +
+        ' class="jsxc-etherpad-new-window-link">Ouvrir dans une nouvelle fenêtre...</a>';
+
+    newgui.addMediaRessource(embedded + link, 'Etherpad: ' + padId);
 
     // toggle media panel if necessary
     newgui.toggleMediapanel(true);
-    
+
   },
 
   /**

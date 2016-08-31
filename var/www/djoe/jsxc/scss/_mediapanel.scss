@@ -310,4 +310,20 @@
     border: solid 1px gray;
   }
 
+  .jsxc-etherpad-new-window-link{
+    display: block;
+    text-align: center;
+    padding: 5px;
+    opacity: 0.5;
+    color: white;
+    text-decoration: none;
+
+    &:hover{
+      opacity: 1;
+      text-decoration: underline;
+    }
+  }
+
+
+
 }
