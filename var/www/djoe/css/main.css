@@ -47,10 +47,17 @@ body {
   background-image: url('../images/cosse-chantier.png');
 }
 
-.usageWarning {
+.usageWarning{
+  border: dashed 2px rgb(255, 199, 35);
+  padding: 1em;
+}
+
+.usageWarning p{
   color: #5b1c5d;
   font-weight: bolder;
 }
+
+
 
 #links {
   margin: 15px;

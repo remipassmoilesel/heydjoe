@@ -10,7 +10,7 @@
 
 var config = {
   debug : false, messagePrefix : "djoe.screencapture-extension."
-}
+};
 
 /**
  * Different messages can be sent or received

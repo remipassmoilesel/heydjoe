@@ -99,21 +99,23 @@
   <div id="connexionForm">
 
     <ul>
+
+
       <li>
         <div class="fieldDescription">
-          <input type="radio" name="loginMode" value="predefined" checked/>
-          Choisissez un compte prédéfini:
+          <input type="radio" name="loginMode" value="random" checked/>
+          Saisissez l'identifiant que vous souhaitez:
         </div>
-        <select id="predefinedJidList"></select>
+        <input type="text" id="randomLogin"/>
+        <input type="button" id="refreshRandomLogin" value="*"/>
       </li>
 
       <li>
         <div class="fieldDescription">
-          <input type="radio" name="loginMode" value="random"/>
-          Ou saisissez l'identifiant que vous souhaitez:
+          <input type="radio" name="loginMode" value="predefined"/>
+          Où choisissez un compte prédéfini:
         </div>
-        <input type="text" id="randomLogin"/>
-        <input type="button" id="refreshRandomLogin" value="*"/>
+        <select id="predefinedJidList"></select>
       </li>
 
       <li>
@@ -134,20 +136,27 @@
 
   <!-- Warning about use -->
 
-  <p class="usageWarning">Attention: </p>
+  <div class="usageWarning">
 
-  <ul>
-    <li>Les outils utilisés sont modernes, votre navigateur doit absolument être à jour
-      pour utiliser ce système
-    </li>
-    <li>Le travail mis à disposition est en constante évolution,
-      par conséquent les serveurs peuvent être momentanément indisponibles
-    </li>
-    <li>Cette plateforme est en accès public: ne l'utilisez pas pour des communications
-      confidentielles
-    </li>
-  </ul>
+    <p>Attention:</p>
 
+    <ul>
+      <li>
+        <b>Préférez l'utillisation d'un compte aléatoire</b>: si vous utilisez un des premiers comptes disponibles,
+        il est possible que quelqu'un d'autre l'utilise simultanément
+      </li>
+      <li>Les outils utilisés sont modernes, votre navigateur doit absolument être à jour
+        pour utiliser ce système
+      </li>
+      <li>Le travail mis à disposition est en constante évolution,
+        par conséquent <b>les serveurs peuvent être momentanément indisponibles</b>
+      </li>
+      <li>Cette plateforme est en accès public: ne l'utilisez pas pour des communications
+        confidentielles
+      </li>
+    </ul>
+
+  </div>
 
   <!-- Functionnalities -->
 
@@ -166,7 +175,7 @@
 
   <!-- Some flowers -->
 
-    <p>Ce système à été développé grâce à de formidables projets libres:
+  <div>Ce système à été développé grâce à de formidables projets libres:
 
     <ul>
       <li>JSXC: un client web XMPP modifié permettant la messagerie instantanée texte et multimédia
@@ -176,8 +185,7 @@
       <li>rfc5766-turn-server: un serveur relai multimédia</li>
     </ul>
 
-    </p>
-
+  </div>
 
 
   <h2>Visites guidées</h2>
