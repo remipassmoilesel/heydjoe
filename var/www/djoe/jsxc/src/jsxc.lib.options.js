@@ -286,24 +286,28 @@ jsxc.options = {
     textColor : '#fff'
   },
 
-  /** @deprecated since v2.1.0. Use now RTCPeerConfig.url. */
-  turnCredentialsPath : null,
-
   /** RTCPeerConfiguration used for audio/video calls. */
   RTCPeerConfig : {
-    /** Time-to-live for config from url */
-    ttl : 3600,
 
     /** [optional] If set, jsxc requests and uses RTCPeerConfig from this url */
     url : null,
 
-    /** If true, jsxc send cookies when requesting RTCPeerConfig from the url above */
-    withCredentials : false,
-
     /** ICE servers like defined in http://www.w3.org/TR/webrtc/#idl-def-RTCIceServer */
-    iceServers : [{
-      urls : 'stun:stun.stunprotocol.org'
-    }]
+    iceServers : [
+
+      // Examples
+      // {
+      //   urls : "stun:turn1.turnserver.net:80"
+      // },
+      //
+      // {
+      //   urls : "turns:turn1.turnserver.net:443",
+      //   credential : "passwordTooLongToBeRead",
+      //   credentialType : "password",
+      //   username : "djoe"
+      // }
+
+    ]
   },
 
   /** Link to an online user manual */

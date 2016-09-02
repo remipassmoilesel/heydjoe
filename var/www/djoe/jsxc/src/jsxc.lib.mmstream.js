@@ -294,8 +294,10 @@ jsxc.mmstream = {
 
     var self = jsxc.mmstream;
 
-    // create strophe connexion
+    // shortcut for strophe connexion
     self.conn = jsxc.xmpp.conn;
+
+    self.updateTurnCredentials();
 
     // check if jingle strophe plugin exist
     if (!self.conn.jingle) {
@@ -1549,7 +1551,8 @@ jsxc.mmstream = {
 
     var sent = [];
 
-    // send one invitation to each participants and eventually to initiator if this is a reinvitation
+    // send one invitation to each participants and eventually to initiator if this is a
+    // reinvitation
     $.each(participants.concat(initiator), function(index, fulljid) {
 
       jsxc.stats.addEvent("jsxc.mmstream.videoconference.sendInvitation");
@@ -1879,7 +1882,8 @@ jsxc.mmstream = {
 
     var sent = [];
 
-    // send one invitation to each participants and eventually to initiator if this is a reinvitation
+    // send one invitation to each participants and eventually to initiator if this is a
+    // reinvitation
     $.each(participants, function(index, fulljid) {
 
       jsxc.stats.addEvent("jsxc.mmstream.screenSharing.sendInvitation");
@@ -2971,6 +2975,51 @@ jsxc.mmstream = {
    */
   isVideoCallsDisabled : function() {
     return jsxc.mmstream._videoCallsDisabled;
+  },
+
+  /**
+   * Checks if cached configuration is valid and if necessary update it.
+   *
+   * @memberOf jsxc.webrtc
+   * @param {string} [url]
+   */
+  updateTurnCredentials : function(url) {
+
+    // var self = jsxc.mmstream;
+
+    var peerConfig = jsxc.options.get('RTCPeerConfig');
+    url = url || peerConfig.url;
+
+    if (typeof url !== "string") {
+      throw new Error("Invalid URL for retrieve turn credentials");
+    }
+
+    var req = $.ajax(url, {
+
+      async : true,
+
+      dataType : 'json',
+
+      /**
+       * Request success
+       * @param data
+       */
+      success : function(data) {
+        // save configuration
+        peerConfig.iceServers = data;
+        jsxc.options.set('RTCPeerConfig', peerConfig);
+      },
+
+      /**
+       * Error while requesting
+       */
+      error : function() {
+        jsxc.error("Unable to find TURN credentials", {arguments : arguments});
+      }
+
+    });
+
+    return req;
   },
 
   /**
