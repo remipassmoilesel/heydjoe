@@ -1,5 +1,7 @@
 etc/apache2/sites-available/
 
+etc/postgresql/9.3/main/postgresql.conf
+
 etc/reTurn/reTurnServer.config
 
 etc/init.d/firewall
