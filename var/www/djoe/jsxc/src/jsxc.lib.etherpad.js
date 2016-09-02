@@ -217,20 +217,12 @@ jsxc.etherpad = {
       // we have been just invited
       if (self.XMPP_INVITATIONS.STATUS_INVITATION === status) {
 
-        jsxc.gui.showIncomingEtherpadDialog(node)
-            .then(function() {
-              jsxc.gui.feedback("Le document va être ouvert");
-              self.openpad(padId);
-            })
-
-            .fail(function() {
-              jsxc.gui.feedback("Document refusé");
-              self._sendEtherpadRefusedMessage(from, padId, invitationId);
-            });
+        jsxc.notice.add(node + " vous invite à partager un document Etherpad", "",
+            'gui.showIncomingEtherpadDialog', [from, padId, invitationId]);
 
       }
 
-      // someone refused a pas
+      // someone refused a pad
       else if (self.XMPP_INVITATIONS.STATUS_REFUSED === status) {
         jsxc.gui.feedback("<b>" + node + "</b> a refusé le document");
       }

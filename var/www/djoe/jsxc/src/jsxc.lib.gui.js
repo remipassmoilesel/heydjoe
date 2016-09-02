@@ -1074,18 +1074,28 @@ jsxc.gui = {
 
   /**
    * Show a dialog asking for new etherpad document name, and return a promise
+   *
+   *
+   * @param from : jid of sender
+   * @param padId
+   * @param invitationId
+   * @returns {*}
    */
-  showIncomingEtherpadDialog : function(from) {
+  showIncomingEtherpadDialog : function(from, padId, invitationId) {
 
     var defer = $.Deferred();
 
     // show dialog
-    jsxc.gui.dialog.open(jsxc.gui.template.get('incomingEtherpad', from));
+    jsxc.gui.dialog.open(
+        jsxc.gui.template.get('incomingEtherpad', Strophe.getNodeFromJid(from)));
 
     $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
       ev.stopPropagation();
 
       jsxc.gui.dialog.close();
+
+      jsxc.gui.feedback("Le document va être ouvert");
+      jsxc.etherpad.openpad(padId);
 
       defer.resolve("accepted");
 
@@ -1096,7 +1106,9 @@ jsxc.gui = {
 
       jsxc.gui.dialog.close();
 
-      defer.reject("user canceled");
+      jsxc.etherpad._sendEtherpadRefusedMessage(from, padId, invitationId);
+
+      jsxc.gui.feedback("Le document a été refusé");
 
     });
 
