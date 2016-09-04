@@ -3,6 +3,8 @@ node_modules
 bower_components
 memos
 
+.~lock*
+
 etc/ssl/*
 opt/openfire/resources/security/*
 *.pem
