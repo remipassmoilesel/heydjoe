@@ -1,9 +1,10 @@
 /* global module:false */
 module.exports = function(grunt) {
 
-  // full without jquery and jquery ui
+  // list of Javascript dependencies
   var dep = grunt.file.readJSON('jsdep-full.json');
 
+  // list of CSSdependencies
   var depcss = grunt.file.readJSON('cssdep.json');
 
   // adapt target path
@@ -13,16 +14,28 @@ module.exports = function(grunt) {
 
   var git_cached = [];
 
-  // Project configuration.
   grunt.initConfig({
+
     app : grunt.file.readJSON('package.json'), meta : {
       banner : grunt.file.read('banner.js')
-    }, target : 'dev', jshint : {
+    },
+
+    target : 'dev',
+
+    /**
+     * Javascript code analysis
+     */
+    jshint : {
+
       options : {
         jshintrc : '.jshintrc'
-      }, gruntfile : {
+      },
+
+      gruntfile : {
         src : 'Gruntfile.js'
-      }, files : ['src/jsxc.lib.*.js']
+      },
+
+      files : ['src/jsxc.lib.*.js']
     },
 
     copy : {
@@ -46,7 +59,17 @@ module.exports = function(grunt) {
           dest : '<%= target %>/'
         }]
       }
-    }, clean : ['<%= target %>/'], usebanner : {
+    },
+
+    /**
+     * Clean target directories
+     */
+    clean : ['<%= target %>/'],
+
+    /**
+     * Apply banner to all source files
+     */
+    usebanner : {
       dist : {
         options : {
           position : 'top', banner : '<%= meta.banner %>'
@@ -54,12 +77,20 @@ module.exports = function(grunt) {
           src : ['<%= target %>/*.js']
         }
       }
-    }, replace : {
+    },
+
+    /**
+     * Replace in source code, Sass image-url() for exemple
+     */
+    replace : {
+
       version : {
         src : ['<%= target %>/jsxc.js'], overwrite : true, replacements : [{
           from : '< $ app.version $ >', to : "<%= app.version %>"
         }]
-      }, libraries : {
+      },
+
+      libraries : {
         src : ['<%= target %>/jsxc.js'], overwrite : true, replacements : [{
           from : '<$ dep.libraries $>', to : function() {
             var i, d, libraries = '';
@@ -74,31 +105,50 @@ module.exports = function(grunt) {
             return libraries.replace(/, $/, '');
           }
         }]
-      }, locales : {
+      },
+
+      locales : {
         src : ['<%= target %>/lib/translation.js'], overwrite : true, replacements : [{
           from : /^{/g, to : 'var chatclient_I18next_ressource_store = {'
         }, {
           from : /}$/g, to : '};'
         }]
-      }, template : {
+      },
+
+      template : {
         src : ['tmp/template.js'], overwrite : true, replacements : [{
           from : 'var jsxc.gui.template = {};', to : ''
         }]
-      }, imageUrl : {
+      },
+
+      imageUrl : {
         src : ['tmp/*.css'], overwrite : true, replacements : [{
           from : /image-url\(["'](.+)["']\)/g, to : 'url(\'../img/$1\')'
         }]
       }, // IE 10 does not like comments starting with @
+
       todo : {
         src : ['build/jsxc.js'], overwrite : true, replacements : [{
           from : /\/\/@(.*)/g, to : '//$1'
         }]
       }
-    }, merge_data : {
+
+    },
+
+    /**
+     * Setup locales
+     */
+    merge_data : {
       target : {
         src : ['locales/*.{json,y{,a}ml}'], dest : '<%= target %>/lib/translation.js'
       }
-    }, concat : {
+    },
+
+    /**
+     * Build JSXC main script and dependencies
+     */
+    concat : {
+
       dep : {
         options : {
           banner : '/*!\n' +
@@ -121,7 +171,9 @@ module.exports = function(grunt) {
             }
           }
         }, src : dep_files, dest : '<%= target %>/lib/jsxc.dep.js'
-      }, jsxc : {
+      },
+
+      jsxc : {
         options : {
           banner : '/*! This file is concatenated for the browser. */\n\n'
         },
@@ -131,7 +183,9 @@ module.exports = function(grunt) {
 
         dest : 'tmp/jsxc.js'
       }
-    }, uglify : {
+    },
+
+    uglify : {
       jsxc : {
         options : {
           mangle : false, sourceMap : true, preserveComments : 'some'
@@ -140,50 +194,50 @@ module.exports = function(grunt) {
           '<%= target %>/jsxc.min.js' : ['<%= target %>/jsxc.js']
         }
       }
-    }, search : {
+    },
 
-      // Stop build if console.log is found
+    /**
+     * Stop build if console.log found. No used for now
+     */
+    search : {
       console : {
         files : {
           src : ['src/*.js']
         }, options : {
           searchString : /console\.log\((?!'[<>]|msg)/g, logFormat : 'console', failOnMatch : true
         }
-      },
-
-      // Stop build if no entry is found in CHANGELOG.md
-      changelog : {
-        files : {
-          src : ['CHANGELOG.md']
-        }, options : {
-          searchString : "<%= app.version %>", logFormat : 'console', onComplete : function(m) {
-            if (m.numMatches === 0) {
-              grunt.fail.fatal("No entry in CHANGELOG.md for current version found.");
-            }
-          }
-        }
       }
-    }, jsdoc : {
+    },
+
+    jsdoc : {
       dist : {
         src : ['src/jsxc.lib.*'], dest : 'doc'
       }
-    }, autoprefixer : {
+    },
+
+    autoprefixer : {
       no_dest : {
         src : 'tmp/*.css'
       }
-    }, csslint : {
+    },
+
+    csslint : {
       strict : {
         options : {
           import : 2
         }, src : ['tmp/*.css']
       }
-    }, sass : {
+    },
+
+    sass : {
       dist : {
         files : {
           'tmp/jsxc.css' : 'scss/jsxc.scss'
         }
       }
-    }, watch : {
+    },
+
+    watch : {
       locales : {
         files : ['locales/*'], tasks : ['merge_data', 'replace:locales', 'concat:dep']
       }, css : {
@@ -197,12 +251,16 @@ module.exports = function(grunt) {
       }, webpack : {
         files : ['tmp/*.js'], tasks : ['webpack']
       }
-    }, jsbeautifier : {
+    },
+
+    jsbeautifier : {
       files : ['Gruntfile.js', 'src/jsxc.lib.*', 'template/*.html', 'example/*.html',
         'example/js/dev.js', 'example/js/example.js', 'example/css/example.css'], options : {
         config : '.jsbeautifyrc'
       }
-    }, prettysass : {
+    },
+
+    prettysass : {
       options : {
         alphabetize : false, indent : 4
       }, jsxc : {
@@ -274,7 +332,9 @@ module.exports = function(grunt) {
             cb();
           }
         }
-      }, 'precommit-after' : {
+      },
+
+      'precommit-after' : {
         command : 'git diff --name-only', options : {
           callback : function(err, stdout, stderr, cb) {
             var git_diff = stdout.trim().split(/\n/);
@@ -344,8 +404,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build:release', 'Build a new release', function() {
     grunt.config.set('target', 'build');
-
-    //grunt.task.run(['search:changelog', 'build:prerelease', 'jsdoc']);
     grunt.task.run(['build:prerelease', 'jsdoc']);
   });
 

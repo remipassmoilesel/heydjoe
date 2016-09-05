@@ -20,7 +20,7 @@ gulp.task('jsxc-grunt-jsdoc',
     shell.task(['export PATH=$PATH:/opt/nodejs4/bin && cd var/www/djoe/jsxc/ && grunt jsdoc']));
 
 gulp.task('jsxc-grunt-build',
-    shell.task(['export PATH=$PATH:/opt/nodejs4/bin && cd var/www/djoe/jsxc/ && grunt build']));
+    shell.task(['export PATH=$PATH:/opt/nodejs4/bin && cd var/www/djoe/jsxc/ && grunt build:release']));
 
 gulp.task('jsxc-grunt',
     shell.task(['export PATH=$PATH:/opt/nodejs4/bin && cd var/www/djoe/jsxc/ && grunt']));
