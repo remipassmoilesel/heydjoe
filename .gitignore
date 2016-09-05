@@ -5,6 +5,8 @@ memos
 
 .~lock*
 
+opt/docker-djoe/djoe-dependencies/djoe-project
+
 etc/ssl/*
 opt/openfire/resources/security/*
 *.pem
