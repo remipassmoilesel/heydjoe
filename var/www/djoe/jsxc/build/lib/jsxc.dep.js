@@ -1,5 +1,5 @@
 /*!
- * djoe v1.0.0 - 2016-08-24
+ * djoe v1.0.0 - 2016-09-05
  * 
  * This file concatenates all dependencies of djoe.
  * 

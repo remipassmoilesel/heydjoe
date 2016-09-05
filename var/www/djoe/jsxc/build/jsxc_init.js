@@ -1,5 +1,5 @@
 /*!
- * djoe v1.0.0 - 2016-08-24
+ * djoe v1.0.0 - 2016-09-05
  * 
  * Copyright (c) 2016  <br>
  * Released under the GPL-3.0 license
@@ -78,7 +78,7 @@ $(function() {
     },
 
     // if lot of 404 errors precise jsxc root
-    root : 'jsxc/',
+    root : 'jsxc/dev',
 
     // stat module. save and monitor events
     stats : {
@@ -91,34 +91,27 @@ $(function() {
     // RTCPeerConfiguration used for audio/video calls.
     RTCPeerConfig : {
 
-      /** Time-to-live for config from url */
-      ttl : 3600,
-
-      /** [optional] If set, jsxc requests and uses RTCPeerConfig from this url */
-      url : null,
-
-      /** If true, jsxc send cookies when requesting RTCPeerConfig from the url above */
-      withCredentials : false,
-
-      /** ICE servers like defined in http://www.w3.org/TR/webrtc/#idl-def-RTCIceServer */
-      iceServers : [
-
-        {urls : "stun:turn1.silverpeas.net:80"},
-
-        {
-          urls : "turns:turn1.silverpeas.net:443",
-          credential : "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
-          credentialType : "password",
-          username : "djoe"
-        },
-
-        {
-          urls : "turn:turn1.silverpeas.net:80",
-          credential : "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
-          credentialType : "password",
-          username : "djoe"
-        }]
-    },
+      url: 'turnCredentials.json'
+      
+      // /** ICE servers like defined in http://www.w3.org/TR/webrtc/#idl-def-RTCIceServer */
+      // iceServers : [
+      //
+      //   {urls : "stun:turn1.silverpeas.net:80"},
+      //
+      //   {
+      //     urls : "turns:turn1.silverpeas.net:443",
+      //     credential : "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
+      //     credentialType : "password",
+      //     username : "djoe"
+      //   },
+      //
+      //   {
+      //     urls : "turn:turn1.silverpeas.net:80",
+      //     credential : "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
+      //     credentialType : "password",
+      //     username : "djoe"
+      //   }]
+    }
 
   };
 

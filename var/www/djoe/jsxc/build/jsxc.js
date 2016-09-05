@@ -1,5 +1,5 @@
 /*!
- * djoe v1.0.0 - 2016-08-24
+ * djoe v1.0.0 - 2016-09-05
  * 
  * Copyright (c) 2016  <br>
  * Released under the GPL-3.0 license
@@ -1494,8 +1494,7 @@
 	      self._lastAutoPresenceSent = now;
 
 	      // send presence
-	      // TODO: remove disco stuff to light presences ?
-	      self.sendPres();
+	      self.sendPres(true);
 
 	      i = i + 1;
 
@@ -1550,7 +1549,7 @@
 	    var self = jsxc.xmpp;
 
 	    self._lowPresenceTimer = setInterval(function() {
-	      jsxc.xmpp.sendPres();
+	      jsxc.xmpp.sendPres(true);
 	    }, self.LOW_PRESENCE_SENDING_INTERVAL);
 
 	  },
@@ -1793,7 +1792,7 @@
 	  /**
 	   * Sends presence stanza to server.
 	   */
-	  sendPres : function() {
+	  sendPres : function(lightPresence) {
 
 	    var self = jsxc.xmpp;
 
@@ -1801,8 +1800,8 @@
 	    self._sentPresences += 1;
 
 	    // disco stuff
-	    if (jsxc.xmpp.conn.disco) {
-	      jsxc.xmpp.conn.disco.addIdentity('client', 'web', 'JSXC');
+	    if (jsxc.xmpp.conn.disco && !lightPresence) {
+	      jsxc.xmpp.conn.disco.addIdentity('client', 'web', 'heyDjoe');
 	      jsxc.xmpp.conn.disco.addFeature(Strophe.NS.DISCO_INFO);
 	      jsxc.xmpp.conn.disco.addFeature(Strophe.NS.RECEIPTS);
 	    }
@@ -1810,7 +1809,7 @@
 	    // create presence stanza
 	    var pres = $pres();
 
-	    if (jsxc.xmpp.conn.caps) {
+	    if (jsxc.xmpp.conn.caps && !lightPresence) {
 	      // attach caps
 	      pres.c('c', jsxc.xmpp.conn.caps.generateCapsAttrs()).up();
 	    }
@@ -1863,7 +1862,6 @@
 	    jsxc.master = false;
 	    jsxc.storage.removeItem('alive');
 
-	    
 	    jsxc.error("Disconnected from JSXC");
 
 	  },
@@ -2221,7 +2219,7 @@
 	    // notify is buddy has come online, and only buddies
 	    if (data.status === 0 && maxStatus > 0 && data.type !== 'groupchat') {
 	      jsxc.notification.notify({
-	        title : data.name, msg : 'Est connecté', source : bid, force: true
+	        title : data.name, msg : 'Est connecté', source : bid, force : true
 	      });
 	    }
 
@@ -3103,8 +3101,10 @@
 
 	    var self = jsxc.mmstream;
 
-	    // create strophe connexion
+	    // shortcut for strophe connexion
 	    self.conn = jsxc.xmpp.conn;
+
+	    self.updateTurnCredentials();
 
 	    // check if jingle strophe plugin exist
 	    if (!self.conn.jingle) {
@@ -3592,7 +3592,7 @@
 	        self._onScreensharingAcceptReceived(stanza, screen);
 	      }
 
-	      else if (status === self.XMPP_SCREENSHARING.STATUS.DECLINE) {
+	      else if (status === self.XMPP_SCREENSHARING.STATUS.DECLINED) {
 	        self._onScreensharingDeclineReceived(stanza, screen);
 	      }
 
@@ -3616,7 +3616,7 @@
 	  /**
 	   * Triggered when screen sharing invitation received
 	   *
-	   * If user accept, a confirmation is sent to initator
+	   * If user accept, a confirmation is sent to initiator
 	   *
 	   * @param stanza
 	   * @param screen
@@ -3635,6 +3635,15 @@
 	      self._sendScreensharingConfirmationMessage(self.XMPP_SCREENSHARING.STATUS.DECLINED, datetime,
 	          from);
 	    };
+
+	    if (self._isNavigatorChrome() === false) {
+	      jsxc.gui.feedback('<b>' + node +
+	          '</b> a éssayé de vous inviter à partager son écran, mais cette option n\'est disponible que sur Chromium' +
+	          ' ou Chrome.');
+
+	      decline();
+	      return;
+	    }
 
 	    if (self.isVideoCallsDisabled() === true) {
 
@@ -4349,7 +4358,8 @@
 
 	    var sent = [];
 
-	    // send one invitation to each participants and eventually to initator if this is a reinvitation
+	    // send one invitation to each participants and eventually to initiator if this is a
+	    // reinvitation
 	    $.each(participants.concat(initiator), function(index, fulljid) {
 
 	      jsxc.stats.addEvent("jsxc.mmstream.videoconference.sendInvitation");
@@ -4381,7 +4391,7 @@
 	  /**
 	   * Start a videoconference with specified full jids
 	   *
-	   * fulljidArray MUST NOT contain initator jid
+	   * fulljidArray MUST NOT contain initiator jid
 	   *
 	   * @param fulljidArray
 	   */
@@ -4679,7 +4689,8 @@
 
 	    var sent = [];
 
-	    // send one invitation to each participants and eventually to initator if this is a reinvitation
+	    // send one invitation to each participants and eventually to initiator if this is a
+	    // reinvitation
 	    $.each(participants, function(index, fulljid) {
 
 	      jsxc.stats.addEvent("jsxc.mmstream.screenSharing.sendInvitation");
@@ -4736,7 +4747,8 @@
 
 	    else if (task === "screensharing") {
 	      if (self._isNavigatorChrome() !== true) {
-	        message = "Le partage d'écran n'est pas disponible avec votre navigateur. Utilisez Chrome.";
+	        message =
+	            "Le partage d'écran n'est pas disponible avec votre navigateur. Utilisez Chromium ou Chrome.";
 	      }
 	    }
 
@@ -4809,7 +4821,7 @@
 	    var defer = $.Deferred();
 	    var messages = self.chromeExtensionMessages;
 
-	    window.addEventListener("message", function(event) {
+	    var screenStreamListener = function(event) {
 
 	      // filter invalid messages
 	      if (!event || !event.data) {
@@ -4846,7 +4858,7 @@
 
 	              jsxc.stats.addEvent("jsxc.mmstream.screensharing.streamAcquired");
 
-	              window.removeEventListener("message", this);
+	              window.removeEventListener("message", screenStreamListener);
 
 	              defer.resolve(stream);
 
@@ -4855,18 +4867,22 @@
 	            // error
 	            function(error) {
 
+	              jsxc.error('Screen stream refused', {error : error});
+
 	              self._log("Screen capture declined");
 
 	              jsxc.stats.addEvent("jsxc.mmstream.screensharing.streamRefused");
 
-	              window.removeEventListener("message", this);
+	              window.removeEventListener("message", screenStreamListener);
 
 	              defer.reject(error);
 
 	            });
 
 	      }
-	    });
+	    };
+
+	    window.addEventListener("message", screenStreamListener);
 
 	    // ask for source id
 	    window.postMessage(messages.getScreenSourceId, '*');
@@ -5194,9 +5210,7 @@
 	    self.gui._showVideoStream(stream, fulljid);
 
 	    // show media panel if needed
-	    if (jsxc.newgui.isMediapanelShown() !== true) {
-	      jsxc.newgui.toggleMediapanel();
-	    }
+	    jsxc.newgui.toggleMediapanel(true);
 
 	    // save session and stream
 	    if (!self.multimediacache.users[fulljid]) {
@@ -5771,6 +5785,51 @@
 	  },
 
 	  /**
+	   * Checks if cached configuration is valid and if necessary update it.
+	   *
+	   * @memberOf jsxc.webrtc
+	   * @param {string} [url]
+	   */
+	  updateTurnCredentials : function(url) {
+
+	    // var self = jsxc.mmstream;
+
+	    var peerConfig = jsxc.options.get('RTCPeerConfig');
+	    url = url || peerConfig.url;
+
+	    if (typeof url !== "string") {
+	      throw new Error("Invalid URL for retrieve turn credentials");
+	    }
+
+	    var req = $.ajax(url, {
+
+	      async : true,
+
+	      dataType : 'json',
+
+	      /**
+	       * Request success
+	       * @param data
+	       */
+	      success : function(data) {
+	        // save configuration
+	        peerConfig.iceServers = data;
+	        jsxc.options.set('RTCPeerConfig', peerConfig);
+	      },
+
+	      /**
+	       * Error while requesting
+	       */
+	      error : function() {
+	        jsxc.error("Unable to find TURN credentials", {arguments : arguments});
+	      }
+
+	    });
+
+	    return req;
+	  },
+
+	  /**
 	   * Attach listeners on connect
 	   * @private
 	   */
@@ -6003,7 +6062,7 @@
 	        list.append(it.append(link));
 	      }
 
-	      // user is participating to sreensharing, and we are initator. add link to reinvite
+	      // user is participating to sreensharing, and we are initiator. add link to reinvite
 	      // participants
 	      else if (mmstream._isBuddyScreensharingRecipient(fulljid) === true) {
 
@@ -6062,10 +6121,8 @@
 	    // attach video after append elements
 	    mmstream.attachMediaStream(video, mmstream.multimediacache.screenStream);
 
-	    if (newgui.isMediapanelShown() !== true) {
-	      newgui.toggleMediapanel();
-	    }
-
+	    // toggle media panel if necessary
+	    newgui.toggleMediapanel(true);
 	  },
 
 	  /**
@@ -6456,14 +6513,9 @@
 	      throw new Error("JID must be full jid");
 	    }
 
-	    // hide video panel
-	    if (newgui.isChatSidebarShown() === true) {
-	      newgui.toggleChatSidebar();
-	    }
-
-	    if (newgui.isMediapanelShown() === true) {
-	      newgui.toggleMediapanel();
-	    }
+	    // hide chat sidebar and video panel
+	    newgui.toggleChatSidebar(false);
+	    newgui.toggleMediapanel(false);
 
 	    // show video pop up
 	    jsxc.gui.dialog.open(jsxc.gui.template.get('videoStreamDialog'), {
@@ -6480,7 +6532,7 @@
 	    $("#jsxc_dialog .jsxc_closeVideoDialog").click(function() {
 	      jsxc.gui.dialog.close();
 
-	      jsxc.newgui.toggleMediapanel();
+	      jsxc.newgui.toggleMediapanel(true);
 	    });
 
 	    // attach video stream
@@ -6679,13 +6731,34 @@
 	   */
 	  closeAllChatWindows : function() {
 
-	    $("#jsxc_windowList .jsxc_windowItem").each(function() {
-	      jsxc.gui.window.close($(this).data('bid'));
-	    });
+	    var defer = $.Deferred();
 
-	    // replace list after close all, to avoid future window appear out of screen
-	    $('#jsxc_windowList ul').css('right', '0px');
+	    var wins = $("#jsxc_windowList .jsxc_windowItem");
+	    var toClose = wins.length;
+	    var closed = 0;
 
+	    if (wins.length < 1) {
+	      defer.resolve();
+	    }
+
+	    else {
+
+	      $("#jsxc_windowList .jsxc_windowItem").each(function() {
+	        jsxc.gui.window.close($(this).data('bid'), function() {
+	          closed++;
+
+	          if (closed >= toClose) {
+	            defer.resolve();
+	          }
+	        });
+	      });
+
+	      // replace list after close all, to avoid future window appear out of screen
+	      $('#jsxc_windowList ul').css('right', '0px');
+
+	    }
+
+	    return defer.promise();
 	  },
 
 	  /**
@@ -7460,8 +7533,8 @@
 	    });
 
 	    // create user list to invite
-	    var buddyList = jsxc.gui.widgets.createBuddyList(
-	        "#jsxc_dialog #jsxc-etherpad-dialog-buddylist", selectedJids);
+	    var buddyList = jsxc.gui.widgets.createBuddyList("#jsxc_dialog #jsxc-etherpad-dialog-buddylist",
+	        selectedJids);
 
 	    $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
 	      ev.stopPropagation();
@@ -7559,18 +7632,28 @@
 
 	  /**
 	   * Show a dialog asking for new etherpad document name, and return a promise
+	   *
+	   *
+	   * @param from : jid of sender
+	   * @param padId
+	   * @param invitationId
+	   * @returns {*}
 	   */
-	  showIncomingEtherpadDialog : function(from) {
+	  showIncomingEtherpadDialog : function(from, padId, invitationId) {
 
 	    var defer = $.Deferred();
 
 	    // show dialog
-	    jsxc.gui.dialog.open(jsxc.gui.template.get('incomingEtherpad', from));
+	    jsxc.gui.dialog.open(
+	        jsxc.gui.template.get('incomingEtherpad', Strophe.getNodeFromJid(from)));
 
 	    $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
 	      ev.stopPropagation();
 
 	      jsxc.gui.dialog.close();
+
+	      jsxc.gui.feedback("Le document va être ouvert");
+	      jsxc.etherpad.openpad(padId);
 
 	      defer.resolve("accepted");
 
@@ -7581,7 +7664,9 @@
 
 	      jsxc.gui.dialog.close();
 
-	      defer.reject("user canceled");
+	      jsxc.etherpad._sendEtherpadRefusedMessage(from, padId, invitationId);
+
+	      jsxc.gui.feedback("Le document a été refusé");
 
 	    });
 
@@ -9024,9 +9109,7 @@
 
 	    if (called < 1) {
 
-	      if (newgui.isChatSidebarShown() !== true) {
-	        newgui.toggleChatSidebar();
-	      }
+	      newgui.toggleChatSidebar(true);
 
 	      if (newgui.isConnexionMenuShown() !== true) {
 	        newgui.toggleConnexionMenu();
@@ -9152,12 +9235,17 @@
 
 	    jsxc.debug("Openning new pad", padId);
 
+	    // get etherpad iframe
 	    var embedded = self._getEmbeddedCode(padId);
-	    newgui.addMediaRessource(embedded, 'Etherpad: ' + padId);
 
-	    if (newgui.isMediapanelShown() !== true) {
-	      newgui.toggleMediapanel();
-	    }
+	    // add link below
+	    var link = '<a href="' + self.getEtherpadLinkFor(padId) + '" target="_blank"' +
+	        ' class="jsxc-etherpad-new-window-link">Ouvrir dans une nouvelle fenêtre...</a>';
+
+	    newgui.addMediaRessource(embedded + link, 'Etherpad: ' + padId);
+
+	    // toggle media panel if necessary
+	    newgui.toggleMediapanel(true);
 
 	  },
 
@@ -9277,20 +9365,12 @@
 	      // we have been just invited
 	      if (self.XMPP_INVITATIONS.STATUS_INVITATION === status) {
 
-	        jsxc.gui.showIncomingEtherpadDialog(node)
-	            .then(function() {
-	              jsxc.gui.feedback("Le document va être ouvert");
-	              self.openpad(padId);
-	            })
-
-	            .fail(function() {
-	              jsxc.gui.feedback("Document refusé");
-	              self._sendEtherpadRefusedMessage(from, padId, invitationId);
-	            });
+	        jsxc.notice.add(node + " vous invite à partager un document Etherpad", "",
+	            'gui.showIncomingEtherpadDialog', [from, padId, invitationId]);
 
 	      }
 
-	      // someone refused a pas
+	      // someone refused a pad
 	      else if (self.XMPP_INVITATIONS.STATUS_REFUSED === status) {
 	        jsxc.gui.feedback("<b>" + node + "</b> a refusé le document");
 	      }
@@ -9341,6 +9421,8 @@
 	    var self = jsxc.gui.interactions;
 
 	    self._initSettingsMenu();
+
+	    self._initHelpMenu();
 
 	    self._initActionMenu();
 
@@ -9757,6 +9839,34 @@
 	   * Setting menu, where user can mute notifications, see 'About dialog', ...
 	   * @private
 	   */
+	  _initHelpMenu : function() {
+
+	    // var self = jsxc.gui.interactions;
+	    // var newgui = jsxc.newgui;
+	    // var mmstream = jsxc.mmstream;
+	    // var notification = jsxc.notification;
+
+	    var tutorials = jsxc.help.getAllTutorials();
+
+	    var list = $('#jsxc-help-tutorial-list');
+
+	    // list all tutorials
+	    $.each(tutorials, function(id, element) {
+
+	      var li = $('<li>').text(element.description).click(function() {
+	        jsxc.help.launchTutorial(id);
+	      });
+
+	      list.append(li);
+
+	    });
+
+	  },
+
+	  /**
+	   * Setting menu, where user can mute notifications, see 'About dialog', ...
+	   * @private
+	   */
 	  _initSettingsMenu : function() {
 
 	    // var self = jsxc.gui.interactions;
@@ -9770,6 +9880,15 @@
 	     */
 	    $('#jsxc-chat-sidebar .jsxc-toggle-settings').click(function(event) {
 	      newgui.toggleSettingsMenu();
+	      event.stopPropagation();
+	    });
+
+	    /**
+	     * Open help menu
+	     * ==================
+	     */
+	    $('#jsxc-chat-sidebar .jsxc-toggle-help').click(function(event) {
+	      newgui.toggleHelpMenu();
 	      event.stopPropagation();
 	    });
 
@@ -10369,13 +10488,27 @@
 	   *
 	   * @param callbackWhenFinished
 	   */
-	  toggleMediapanel : function(callbackWhenFinished) {
+	  toggleMediapanel : function(state, callbackWhenFinished) {
 
 	    var self = jsxc.newgui;
 
+	    // if state not specified, invert it
+	    if (typeof state === 'undefined' || state === null) {
+	      state = !self.isMediapanelShown();
+	    }
+
+	    // nothing to do, return
+	    if (state === self.isMediapanelShown()) {
+	      if (callbackWhenFinished) {
+	        callbackWhenFinished();
+	      }
+	      return;
+	    }
+
 	    var mediapanel = $("#jsxc-mediapanel");
 
-	    if (self.isMediapanelShown() === false) {
+	    // deploy media panel
+	    if (state === true) {
 
 	      mediapanel.find(".jsxc-close-mediapanel").css({
 	        display : 'block'
@@ -10438,9 +10571,8 @@
 	    var self = jsxc.newgui;
 	    var ress = jsxc.ressources;
 
-	    if (self.isMediapanelShown() === false) {
-	      self.toggleMediapanel();
-	    }
+	    // show media panel if necessary
+	    self.toggleMediapanel(true);
 
 	    //retrieve prefix of ressource
 	    var prefix = ressource.substring(0, ressource.indexOf(":"));
@@ -10687,9 +10819,8 @@
 	      headerContent.click(function(event) {
 	        event.stopPropagation();
 
-	        if (self.isChatSidebarShown() !== true) {
-	          self.toggleChatSidebar();
-	        }
+	        self.toggleChatSidebar(true);
+
 	        self.toggleNotificationsMenu();
 
 	      });
@@ -11269,6 +11400,11 @@
 	    enabled = typeof enabled !== 'undefined' ? enabled : !self._selectionMode;
 	    self._selectionMode = enabled;
 
+	    // show main content if necessary
+	    if(self.chatSidebarContent.isMainContentVisible() !== true){
+	      self.chatSidebarContent.showMainContent();
+	    }
+
 	    // enable selection mode
 	    if (self._selectionMode === true) {
 
@@ -11457,6 +11593,13 @@
 	  },
 
 	  /**
+	   * Open or close settings menu
+	   */
+	  toggleHelpMenu : function() {
+	    jsxc.newgui.chatSidebarContent.toggleContent('jsxc-help-menu');
+	  },
+
+	  /**
 	   * Show / hide the panel where we can search users
 	   */
 	  toggleSearchPanel : function() {
@@ -11474,15 +11617,30 @@
 	  /**
 	   * Show / hide the chat sidebar
 	   */
-	  toggleChatSidebar : function(callbackWhenFinished) {
+	  toggleChatSidebar : function(state, callbackWhenFinished) {
 
 	    var self = jsxc.newgui;
 
+	    // if state not specified, invert it
+	    if(typeof state === 'undefined' || state === null){
+	      state = !self.isChatSidebarShown();
+	    }
+
+	    // nothing to do, return
+	    if(state === self.isChatSidebarShown()){
+	      if (callbackWhenFinished) {
+	        callbackWhenFinished();
+	      }
+	      return;
+	    }
+
 	    var content = $("#jsxc-chat-sidebar-content");
 	    var settings = $("#jsxc-chat-sidebar .jsxc-toggle-settings");
+	    var help = $("#jsxc-chat-sidebar .jsxc-toggle-help");
 	    var closeCross = $('#jsxc-chat-sidebar .jsxc-close-chatsidebar');
 
-	    if (self.isChatSidebarShown() === false) {
+	    // deploy chat side bar
+	    if (state === true) {
 
 	      // show close button
 	      closeCross.css({
@@ -11497,6 +11655,14 @@
 	        opacity : '0', display : 'inline-block'
 	      });
 	      settings.animate({
+	        opacity : 1
+	      });
+
+	      // show help button
+	      help.css({
+	        opacity : '0', display : 'inline-block'
+	      });
+	      help.animate({
 	        opacity : 1
 	      });
 
@@ -11527,6 +11693,11 @@
 	        opacity : 0
 	      });
 
+	      // hide help button
+	      help.animate({
+	        opacity : 0
+	      });
+
 	      // drop down sidebar
 	      content.animate({
 	        height : '0px'
@@ -11536,6 +11707,14 @@
 	        content.removeClass("jsxc-deploy");
 
 	        settings.css({
+	          display : 'none'
+	        });
+
+	        help.css({
+	          display : 'none'
+	        });
+
+	        closeCross.css({
 	          display : 'none'
 	        });
 
@@ -12609,7 +12788,7 @@
 	   *
 	   * @param {String} bid bar jid
 	   */
-	  close : function(bid) {
+	  close : function(bid, callBackWhenFinished) {
 
 	    var win = jsxc.gui.window.get(bid);
 	    if (win.length === 0) {
@@ -12635,6 +12814,9 @@
 
 	          jsxc.gui.window._close(bid);
 
+	          if(callBackWhenFinished){
+	            callBackWhenFinished();
+	          }
 	        });
 	  },
 
@@ -13362,7 +13544,7 @@
 	};
 
 	/**
-	 * API for manipulating JSXC
+	 * Help module of chat client
 	 *
 	 */
 
@@ -13406,43 +13588,44 @@
 	      throw new Error("Invalid tutorial name: " + name);
 	    }
 
+	    // make tutorial, AFTER document is ready and chat client is initiate
 	    var tutorial = self.tutorials[name]();
 
+	    // configure tour
 	    var tour = new Shepherd.Tour({
 
 	      defaults : {
-	        classes : 'shepherd-theme-default jsxc_demotour_item',
+	        classes : 'shepherd-theme-default jsxc-help-tutorial-message',
 	        scrollTo : true,
 	        showCancelLink : true,
-	        buttons : [
-
-	          {
-	            text : '<',
-
-	            action : function() {
-	              Shepherd.activeTour.back();
-	            }
-
-	          },
-
-	          {
-	            text : '>',
-
-	            action : function() {
-	              Shepherd.activeTour.next();
-	            }
-
-	          },
-
-	        ]
-
+	        buttons : [{
+	          text : 'x', action : function() {
+	            Shepherd.activeTour.cancel();
+	          }
+	        }, {
+	          text : '<', action : function() {
+	            Shepherd.activeTour.back();
+	          }
+	        }, {
+	          text : '>', action : function() {
+	            Shepherd.activeTour.next();
+	          }
+	        }]
 	      }
 	    });
 
-	    $.each(tutorial.steps, function(index, element) {
-	      tour.addStep(element);
+	    // add steps
+	    $.each(tutorial.steps, function(index, step) {
+
+	      // add title if not present
+	      if (typeof step.title === 'undefined') {
+	        step.title = tutorial.description;
+	      }
+
+	      tour.addStep(step);
 	    });
 
+	    // launch tutorial
 	    tour.start();
 
 	  },
@@ -13454,6 +13637,25 @@
 
 	    var self = jsxc.help;
 
+	    /**
+	     * Options:
+	     * --------
+	     *
+	     * beforeShowPromise: func.bind(this, arg1,...) // A function that returns a promise. When the
+	     * promise resolves, the rest of
+	     *                                              // the show code for the step will execute.
+	     *
+	     * tetherOptions: {
+	     *
+	     *    targetOffset: '0 200px' // move pop 200px to the right
+	     *    targetOffset: '200px 0'  // move pop 200px to the bottom
+	     *
+	     * }
+	     *
+	     *
+	     *
+	     */
+
 	    self.tutorials["interface"] = function() {
 
 	      return {
@@ -13463,64 +13665,168 @@
 	        steps : [
 
 	          {
-	            title : "Interface",
-	            text : "<p>Vous allez découvrir les fonctionnalités offerte par la" +
-	            " plateforme en 5 étapes.</p>",
-	            attachTo : {element : 'body', on : 'top'},
+	            text : "<p>Vous allez découvrir les principaux élements de l'interface de la messagerie.</p>",
+	            beforeShowPromise : self._setAllGuiVisible.bind(self, false)
+	          },
+
+	          {
+	            attachTo : {element : '#jsxc-chat-sidebar-content', on : 'left'},
+
+	            text : ["<p>Le <b>panneau de conversation</b> est disponible en bas de l'écran. Cliquez sur le bandeau bleu ou sur la croix pour le masquer.</p>",
+	              "<p>A partir de cet élément, vous pouvez voir vos contacts, commencer une discussion ou une vidéoconférence.</p>"],
+
+	            beforeShowPromise : self._setAllGuiVisible.bind(self, true)
+
+	          },
+
+	          {
+	            attachTo : {element : '.jsxc-toggle-mediapanel', on : 'top'},
+
+	            text : ["<p>Le <b>panneau multimédia</b> est disponible en haut de l'écran. Cliquez sur son icone pour le faire apparaitre " +
+	            "ou le masquer.</p>",
+	              "<p>Sur ce panneau vous pouvez visualiser les flux vidéos de vos contacts ainsi que d'autres médias.</p>"],
+
+	            beforeShowPromise : self._setAllGuiVisible.bind(self, true),
+
+	            when : {
+	              'show' : function() {
+	                self._highlightElement('.jsxc-toggle-mediapanel');
+	              }
+	            }
+
+	          },
+
+	          {
+	            attachTo : {element : '#jsxc-new-gui-filter-conversations', on : 'left'},
+
+	            text : ["<p>Les <b>filtres</b> permettent d'afficher ou de masquer les utilisateurs et les discussions</p>"],
+
+	            beforeShowPromise : self._setAllGuiVisible.bind(self, true),
+
+	            when : {
+	              'show' : function() {
+	                self._highlightElement('#jsxc-new-gui-filter-conversations');
+	                self._highlightElement('#jsxc-new-gui-filter-users');
+	              }
+	            }
+	          },
+
+	          {
+	            attachTo : {element : '#jsxc-sidebar-content-viewport', on : 'left'},
+
+	            text : ["<p>La <b>liste de contact</b> vous montre quels utilisateurs sont liés à vous.</p>",
+	              "<p>Ces utilisateurs sont informés de votre présence, et sont notifiés lorsque vous leur envoyez un message.</p>"],
+
+	            when : {
+
+	              'before-show' : function() {
+	                $('#jsxc-new-gui-filter-users').trigger('click');
+	              },
+
+	              'show' : function() {
+	                self._highlightElement('#jsxc_buddylist');
+	              }
+
+	            },
+
+	            beforeShowPromise : self._setAllGuiVisible.bind(self, true)
+
+	          },
+
+	          {
+	            attachTo : {element : '#jsxc-toggle-actions', on : 'top'},
+
+	            text : ["<p>Le <b>menu principal</b> vous permet d'intéragir avec vos contacts.</p>",
+	              "<p>Vous pouvez créer des conversations, appeler vos contacts ou visualiser vos notifications.</p>"],
+
 	            when : {
 	              'before-show' : function() {
-	                // jsxc.gui.roster.toggle("hidden");
-	                // jsxc.mmstream.gui.toggleVideoPanel(false);
+	                $('#jsxc-toggle-actions').trigger('click');
+	              },
+
+	              'show' : function() {
+	                self._highlightElement('#jsxc-toggle-actions');
 	              }
+	            },
+
+	            beforeShowPromise : self._setAllGuiVisible.bind(self, true),
+
+	            tetherOptions : {
+
+	              targetOffset : '-20px 0'
+
 	            }
+
 	          },
 
 	          {
-	            title : "Interface",
-	            text : "<p>L'interface principale est disponible à droite. Cliquez sur la barre " +
-	            "transparente pour l'afficher.</p>",
-	            attachTo : {element : '#jsxc_toggleRoster', on : 'left'},
-	            advanceOn : "#jsxc_toggleRoster click",
-	            when : {
-	              'before-hide' : function() {
-	                // jsxc.gui.roster.toggle("shown");
-	              }
-	            }
-	          },
+	            attachTo : {element : '#jsxc-select-buddies', on : 'left'},
 
-	          {
-	            title : "Interface",
-	            text : "<p>Les appels vidéos sont affichés à gauche.</p>",
-	            attachTo : {element : '#jsxc_toggleVideoPanel', on : 'left'},
-	            advanceOn : "#jsxc_toggleVideoPanel click",
-	            when : {
-	              'before-hide' : function() {
-	                jsxc.mmstream.gui.toggleVideoPanel(true);
-	              }
-	            }
-	          },
+	            text : ["<p>Le <b>bouton de sélection</b> vous permet de sélectionner des contacts avec lesquels intéragir.</p>",
+	              "<p>Le mode sélection vous permet de sélectionner plusieurs contacts.</p>"],
 
-	          {
-	            title : "Interface",
-	            text : "<p>Le menu permet d'accéder à toutes les fonctionnalités.</p>",
-	            attachTo : {element : '#jsxc_menu', on : 'left'},
-	            advanceOn : "#jsxc_menu click",
-	            when : {
-	              'before-hide' : function() {
-	                $("#jsxc_menu").trigger("click");
-	              }
-	            }
-	          },
-
-	          {
-	            title : "Travail en cours",
-	            text : "<p>Travail en cours, cet assistant sera bientôt terminé.</p>",
-	            attachTo : {element : '#jsxc_toggleRoster', on : 'right'},
 	            when : {
 	              'before-show' : function() {
 
+	                jsxc.newgui.chatSidebarContent.showMainContent();
+
+	                setTimeout(function() {
+	                  $('#jsxc-select-buddies').trigger('click');
+	                }, 700);
+	              },
+
+	              'show' : function() {
+	                self._highlightElement('#jsxc-select-buddies');
+	              }
+	            },
+
+	            beforeShowPromise : self._setAllGuiVisible.bind(self, true)
+
+	          },
+
+	          {
+	            attachTo : {element : '#jsxc-chat-sidebar .jsxc-toggle-settings', on : 'top'},
+
+	            text : ["<p>Le <b>menu de réglages</b> vous permet de modifier le comportement de la messagerie.</p>",
+	              "<p>Vous pouvez couper le son de la messagerie, masquer les notifications ou bloquer les appels vidéo.</p>"],
+
+	            when : {
+	              'before-show' : function() {
+	                $('#jsxc-chat-sidebar .jsxc-toggle-settings').trigger('click');
+	              },
+
+	              'show' : function() {
+	                self._highlightElement('.jsxc-toggle-settings');
+	              }
+
+	            },
+
+	            beforeShowPromise : self._setAllGuiVisible.bind(self, true)
+
+	          },
+
+	          {
+	            attachTo : {element : '#jsxc-status-bar', on : 'left'},
+
+	            text : ["<p>Le <b>panneau de statut</b> vous permet de modifier la manière dont les autres utilisateurs vous perçoivent.</p>",
+	              "<p>A partir de ce panneau vous pouvez également vous déconnecter.</p>"],
+
+	            beforeShowPromise : self._setAllGuiVisible.bind(self, true),
+
+	            when : {
+	              'show' : function() {
+	                self._highlightElement('#jsxc-status-bar');
 	              }
 	            }
+
+	          },
+
+	          {
+
+	            text : ["<p>C'est la fin de cette visite !</p>"],
+
+	            beforeShowPromise : self._setAllGuiVisible.bind(self, true)
+
 	          }
 
 	        ]
@@ -13528,25 +13834,114 @@
 
 	    };
 
-	    self.tutorials["demotour"] = function() {
+	  },
 
-	      return {
+	  /**
+	   * Set side bar visible or not and return a promise which will be resolved when
+	   * it is done
+	   * @private
+	   */
+	  _setChatSidebarVisible : function(state) {
 
-	        description : "Démonstration",
+	    var p = new Promise(function(resolve) {
+	      jsxc.newgui.toggleChatSidebar(state, function() {
+	        resolve();
+	      });
+	    });
 
-	        steps : [{
-	          title : "Travail en cours",
-	          text : "<p>Travail en cours, cet assistant sera bientôt terminé.</p>",
-	          attachTo : {element : '#jsxc_toggleRoster', on : 'right'},
-	          when : {
-	            'before-show' : function() {
+	    return p;
 
-	            }
-	          }
-	        }]
+	  },
 
-	      };
-	    };
+	  /**
+	   * Set side bar visible or not and return a promise which will be resolved when
+	   * it is done
+	   * @private
+	   */
+	  _setMediapanelVisible : function(state) {
+
+	    var p = new Promise(function(resolve) {
+	      jsxc.newgui.toggleMediapanel(state, function() {
+	        resolve();
+	      });
+	    });
+
+	    return p;
+
+	  },
+
+	  /**
+	   * Set side bar visible or not and return a promise which will be resolved when
+	   * it is done
+	   * @private
+	   */
+	  _clearAllWindows : function() {
+
+	    var p = new Promise(function(resolve, reject) {
+	      jsxc.gui.closeAllChatWindows().then(function() {
+	        resolve();
+	      })
+	          .fail(function() {
+	            reject();
+	          });
+	    });
+
+	    return p;
+
+	  },
+
+	  /**
+	   * Set all gui visibility and return a promise which will be resolved when finished
+	   * @param state
+	   * @returns {*}
+	   * @private
+	   */
+	  _setAllGuiVisible : function(state) {
+
+	    var self = jsxc.help;
+
+	    var promises = [self._setChatSidebarVisible(state), self._setMediapanelVisible(state)];
+	    if (!state) {
+	      promises.push(self._clearAllWindows());
+	    }
+
+	    return Promise.all(promises);
+
+	  },
+
+	  _highlightElement : function(selector) {
+
+	    var jq = $(selector);
+
+	    if (jq.length < 1) {
+	      throw new Error("Invalid selector: " + selector);
+	    }
+
+	    var previous = jq.css('opacity');
+
+	    var howManyTimes = 6;
+
+	    var i = 0;
+
+	    var interval = setInterval(function() {
+
+	      if (i > howManyTimes) {
+	        clearInterval(interval);
+
+	        jq.css({
+	          'opacity' : previous || ''
+	        });
+
+	        return;
+	      }
+
+	      jq.animate({
+	        'opacity' : i % 2 === 0 ? 0.1 : 1
+	      }, 400);
+
+	      i++;
+
+	    }, 500);
 
 	  }
 
@@ -16472,24 +16867,28 @@
 	    textColor : '#fff'
 	  },
 
-	  /** @deprecated since v2.1.0. Use now RTCPeerConfig.url. */
-	  turnCredentialsPath : null,
-
 	  /** RTCPeerConfiguration used for audio/video calls. */
 	  RTCPeerConfig : {
-	    /** Time-to-live for config from url */
-	    ttl : 3600,
 
 	    /** [optional] If set, jsxc requests and uses RTCPeerConfig from this url */
 	    url : null,
 
-	    /** If true, jsxc send cookies when requesting RTCPeerConfig from the url above */
-	    withCredentials : false,
-
 	    /** ICE servers like defined in http://www.w3.org/TR/webrtc/#idl-def-RTCIceServer */
-	    iceServers : [{
-	      urls : 'stun:stun.stunprotocol.org'
-	    }]
+	    iceServers : [
+
+	      // Examples
+	      // {
+	      //   urls : "stun:turn1.turnserver.net:80"
+	      // },
+	      //
+	      // {
+	      //   urls : "turns:turn1.turnserver.net:443",
+	      //   credential : "passwordTooLongToBeRead",
+	      //   credentialType : "password",
+	      //   username : "djoe"
+	      // }
+
+	    ]
 	  },
 
 	  /** Link to an online user manual */
@@ -17527,7 +17926,7 @@
 
 	            return $.ajax(req);
 
-	        },
+	        }
 
 	    }
 
@@ -19447,6 +19846,9 @@
 	'    <!-- close chatsidebar -->\n' +
 	'    <span class="jsxc-close-chatsidebar"></span>\n' +
 	'\n' +
+	'    <!-- Open help menu -->\n' +
+	'    <span class="jsxc-toggle-help"></span>\n' +
+	'\n' +
 	'    <!-- open settings menu -->\n' +
 	'    <span class="jsxc-toggle-settings"></span>\n' +
 	'\n' +
@@ -19514,6 +19916,21 @@
 	'\n' +
 	'      <!--\n' +
 	'\n' +
+	'      Help menu\n' +
+	'\n' +
+	'      -->\n' +
+	'\n' +
+	'      <div id="jsxc-help-menu" class="jsxc-viewport-content">\n' +
+	'\n' +
+	'        <div class="jsxc-title">Aide</div>\n' +
+	'\n' +
+	'        <ul id="jsxc-help-tutorial-list"></ul>\n' +
+	'\n' +
+	'      </div>\n' +
+	'\n' +
+	'\n' +
+	'      <!--\n' +
+	'\n' +
 	'      Main menu\n' +
 	'\n' +
 	'      -->\n' +
@@ -19523,7 +19940,8 @@
 	'        <div class="jsxc-title">Menu</div>\n' +
 	'\n' +
 	'        <a class="jsxc-action jsxc-action_search-user">Rechercher un utilisateur</a>\n' +
-	'        <a class="jsxc-action jsxc-action_manage-notifications">Notifications &nbsp;<span class="jsxc_menu_notif_number"></span></a>\n' +
+	'        <a class="jsxc-action jsxc-action_manage-notifications">Notifications\n' +
+	'          &nbsp;<span class="jsxc_menu_notif_number"></span></a>\n' +
 	'\n' +
 	'        <div class="jsxc-content-separator"></div>\n' +
 	'\n' +
@@ -19534,7 +19952,7 @@
 	'        <div class="jsxc-content-separator"></div>\n' +
 	'\n' +
 	'        <a class="jsxc-action jsxc-action jsxc-action_video-call">Appel vidéo</a>\n' +
-	'        <a class="jsxc-action jsxc-action_videoconference">Vidéo conférence</a>\n' +
+	'        <a class="jsxc-action jsxc-action_videoconference">Vidéoconférence</a>\n' +
 	'        <a class="jsxc-action jsxc-action_screensharing">Partager mon écran</a>\n' +
 	'\n' +
 	'        <div class="jsxc-content-separator"></div>\n' +
@@ -19624,12 +20042,6 @@
 	'      </div>\n' +
 	'\n' +
 	'    </div>\n' +
-	'\n' +
-	'\n' +
-	'\n' +
-	'\n' +
-	'\n' +
-	'\n' +
 	'\n' +
 	'\n' +
 	'    <!--\n' +

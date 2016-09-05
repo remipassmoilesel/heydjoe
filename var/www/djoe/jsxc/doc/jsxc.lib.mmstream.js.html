@@ -322,8 +322,10 @@ jsxc.mmstream = {
 
     var self = jsxc.mmstream;
 
-    // create strophe connexion
+    // shortcut for strophe connexion
     self.conn = jsxc.xmpp.conn;
+
+    self.updateTurnCredentials();
 
     // check if jingle strophe plugin exist
     if (!self.conn.jingle) {
@@ -811,7 +813,7 @@ jsxc.mmstream = {
         self._onScreensharingAcceptReceived(stanza, screen);
       }
 
-      else if (status === self.XMPP_SCREENSHARING.STATUS.DECLINE) {
+      else if (status === self.XMPP_SCREENSHARING.STATUS.DECLINED) {
         self._onScreensharingDeclineReceived(stanza, screen);
       }
 
@@ -854,6 +856,15 @@ jsxc.mmstream = {
       self._sendScreensharingConfirmationMessage(self.XMPP_SCREENSHARING.STATUS.DECLINED, datetime,
           from);
     };
+
+    if (self._isNavigatorChrome() === false) {
+      jsxc.gui.feedback('&lt;b>' + node +
+          '&lt;/b> a éssayé de vous inviter à partager son écran, mais cette option n\'est disponible que sur Chromium' +
+          ' ou Chrome.');
+
+      decline();
+      return;
+    }
 
     if (self.isVideoCallsDisabled() === true) {
 
@@ -1568,7 +1579,8 @@ jsxc.mmstream = {
 
     var sent = [];
 
-    // send one invitation to each participants and eventually to initator if this is a reinvitation
+    // send one invitation to each participants and eventually to initiator if this is a
+    // reinvitation
     $.each(participants.concat(initiator), function(index, fulljid) {
 
       jsxc.stats.addEvent("jsxc.mmstream.videoconference.sendInvitation");
@@ -1600,7 +1612,7 @@ jsxc.mmstream = {
   /**
    * Start a videoconference with specified full jids
    *
-   * fulljidArray MUST NOT contain initator jid
+   * fulljidArray MUST NOT contain initiator jid
    *
    * @param fulljidArray
    */
@@ -1898,7 +1910,8 @@ jsxc.mmstream = {
 
     var sent = [];
 
-    // send one invitation to each participants and eventually to initator if this is a reinvitation
+    // send one invitation to each participants and eventually to initiator if this is a
+    // reinvitation
     $.each(participants, function(index, fulljid) {
 
       jsxc.stats.addEvent("jsxc.mmstream.screenSharing.sendInvitation");
@@ -1955,7 +1968,8 @@ jsxc.mmstream = {
 
     else if (task === "screensharing") {
       if (self._isNavigatorChrome() !== true) {
-        message = "Le partage d'écran n'est pas disponible avec votre navigateur. Utilisez Chrome.";
+        message =
+            "Le partage d'écran n'est pas disponible avec votre navigateur. Utilisez Chromium ou Chrome.";
       }
     }
 
@@ -2028,7 +2042,7 @@ jsxc.mmstream = {
     var defer = $.Deferred();
     var messages = self.chromeExtensionMessages;
 
-    window.addEventListener("message", function(event) {
+    var screenStreamListener = function(event) {
 
       // filter invalid messages
       if (!event || !event.data) {
@@ -2065,7 +2079,7 @@ jsxc.mmstream = {
 
               jsxc.stats.addEvent("jsxc.mmstream.screensharing.streamAcquired");
 
-              window.removeEventListener("message", this);
+              window.removeEventListener("message", screenStreamListener);
 
               defer.resolve(stream);
 
@@ -2074,18 +2088,22 @@ jsxc.mmstream = {
             // error
             function(error) {
 
+              jsxc.error('Screen stream refused', {error : error});
+
               self._log("Screen capture declined");
 
               jsxc.stats.addEvent("jsxc.mmstream.screensharing.streamRefused");
 
-              window.removeEventListener("message", this);
+              window.removeEventListener("message", screenStreamListener);
 
               defer.reject(error);
 
             });
 
       }
-    });
+    };
+
+    window.addEventListener("message", screenStreamListener);
 
     // ask for source id
     window.postMessage(messages.getScreenSourceId, '*');
@@ -2413,9 +2431,7 @@ jsxc.mmstream = {
     self.gui._showVideoStream(stream, fulljid);
 
     // show media panel if needed
-    if (jsxc.newgui.isMediapanelShown() !== true) {
-      jsxc.newgui.toggleMediapanel();
-    }
+    jsxc.newgui.toggleMediapanel(true);
 
     // save session and stream
     if (!self.multimediacache.users[fulljid]) {
@@ -2990,6 +3006,51 @@ jsxc.mmstream = {
   },
 
   /**
+   * Checks if cached configuration is valid and if necessary update it.
+   *
+   * @memberOf jsxc.webrtc
+   * @param {string} [url]
+   */
+  updateTurnCredentials : function(url) {
+
+    // var self = jsxc.mmstream;
+
+    var peerConfig = jsxc.options.get('RTCPeerConfig');
+    url = url || peerConfig.url;
+
+    if (typeof url !== "string") {
+      throw new Error("Invalid URL for retrieve turn credentials");
+    }
+
+    var req = $.ajax(url, {
+
+      async : true,
+
+      dataType : 'json',
+
+      /**
+       * Request success
+       * @param data
+       */
+      success : function(data) {
+        // save configuration
+        peerConfig.iceServers = data;
+        jsxc.options.set('RTCPeerConfig', peerConfig);
+      },
+
+      /**
+       * Error while requesting
+       */
+      error : function() {
+        jsxc.error("Unable to find TURN credentials", {arguments : arguments});
+      }
+
+    });
+
+    return req;
+  },
+
+  /**
    * Attach listeners on connect
    * @private
    */
@@ -3047,13 +3108,13 @@ $(function() {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_updateSelectedCount">_updateSelectedCount</a></li><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#getCheckedBuddies">getCheckedBuddies</a></li><li><a href="global.html#getCheckedElements">getCheckedElements</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isConnexionMenuShown">isConnexionMenuShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleBuddyList">toggleBuddyList</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleConnexionMenu">toggleConnexionMenu</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSelectionMode">toggleSelectionMode</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#unselectAllElements">unselectAllElements</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_updateSelectedCount">_updateSelectedCount</a></li><li><a href="global.html#error">error</a></li><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#getCheckedBuddies">getCheckedBuddies</a></li><li><a href="global.html#getCheckedElements">getCheckedElements</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isConnexionMenuShown">isConnexionMenuShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#success">success</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleBuddyList">toggleBuddyList</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleConnexionMenu">toggleConnexionMenu</a></li><li><a href="global.html#toggleHelpMenu">toggleHelpMenu</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSelectionMode">toggleSelectionMode</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#unselectAllElements">unselectAllElements</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Aug 24 2016 16:53:03 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Sep 05 2016 10:24:09 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

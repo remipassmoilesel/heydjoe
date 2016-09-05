@@ -3649,9 +3649,6 @@ img.jsxc_vCard {
     .jsxc_more {
       width: 25px; } }
 
-.jsxc_demotour_item {
-  z-index: 9999; }
-
 #jsxc_installationIllustration {
   width: 70%;
   margin-left: 10%; }
@@ -3906,6 +3903,18 @@ img.jsxc_vCard {
   text-align: right; }
   .jsxc_stateIndicator:hover {
     text-decoration: none; }
+
+.jsxc-help-tutorial-message {
+  z-index: 9999; }
+  .jsxc-help-tutorial-message b {
+    color: #2a2a50; }
+  .jsxc-help-tutorial-message .shepherd-button {
+    background: #0081ff !important;
+    opacity: 0.6 !important;
+    color: white !important;
+    font-weight: bolder; }
+    .jsxc-help-tutorial-message .shepherd-button:hover {
+      opacity: 1 !important; }
 
 @-webkit-keyframes bounce {
   0% {
@@ -4893,6 +4902,9 @@ TODO: Set up variables:
  */
   /**
     Connexion panel in chat sidebar, which allow user to reconnect
+  */
+  /**
+    List of ynamic tutorials
   */ }
   #jsxc-chat-sidebar #jsxc-chat-sidebar-header {
     padding-top: 1.2em;
@@ -4901,7 +4913,7 @@ TODO: Set up variables:
     color: white;
     font-weight: bolder; }
   #jsxc-chat-sidebar .jsxc-close-chatsidebar {
-    display: inline-block;
+    display: none;
     opacity: 0;
     content: ' ';
     width: 1em;
@@ -4910,7 +4922,7 @@ TODO: Set up variables:
     background-size: 100%;
     background-repeat: no-repeat;
     margin-right: 0.7em;
-    margin-left: 0.7em;
+    margin-left: 0.3em;
     background-image: url('../img/newgui/close.svg');
     cursor: pointer; }
   #jsxc-chat-sidebar #jsxc-new-gui-filter-users {
@@ -5003,16 +5015,30 @@ TODO: Set up variables:
     background-size: 90%;
     background-repeat: no-repeat;
     content: ' ';
-    display: inline-block;
+    display: none;
     width: 18px;
     height: 18px;
-    vertical-align: middle;
     margin-left: 0.7em;
     float: right;
     /** not visible first time */
     opacity: 0; }
-  #jsxc-chat-sidebar #jsxc-toggle-settings:hover {
-    opacity: 1; }
+    #jsxc-chat-sidebar .jsxc-toggle-settings:hover {
+      opacity: 1; }
+  #jsxc-chat-sidebar .jsxc-toggle-help {
+    cursor: pointer;
+    background: url('../img/newgui/toggle-help-menu.svg');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    content: ' ';
+    display: none;
+    width: 18px;
+    height: 18px;
+    margin-left: 0.3em;
+    float: right;
+    /** not visible first time */
+    opacity: 0; }
+    #jsxc-chat-sidebar .jsxc-toggle-help:hover {
+      opacity: 1; }
   #jsxc-chat-sidebar .jsxc-toggle-mediapanel {
     cursor: pointer;
     background: url('../img/newgui/toggle-mediapanel.svg');
@@ -5044,7 +5070,8 @@ TODO: Set up variables:
   #jsxc-chat-sidebar #jsxc-toggle-actions:hover {
     opacity: 1; }
   #jsxc-chat-sidebar .jsxc-header-content {
-    cursor: pointer; }
+    cursor: pointer;
+    font-size: 0.9em; }
   #jsxc-chat-sidebar .jsxc-viewport-content {
     display: none;
     width: 100%;
@@ -5214,6 +5241,8 @@ TODO: Set up variables:
     color: darkblue;
     text-align: justify;
     display: none; }
+  #jsxc-chat-sidebar #jsxc-help-tutorial-list li {
+    cursor: pointer; }
 
 #jsxc-mediapanel {
   /** Just under chat sidebar */
@@ -5305,6 +5334,7 @@ TODO: Set up variables:
   #jsxc-mediapanel .jsxc-media-ressource {
     display: inline-block;
     height: 80%;
+    min-width: 50%;
     margin-top: 20px;
     margin-left: 20px;
     margin-right: 20px; }
@@ -5417,6 +5447,16 @@ TODO: Set up variables:
     width: 100%;
     margin: 10px;
     border: solid 1px gray; }
+  #jsxc-mediapanel .jsxc-etherpad-new-window-link {
+    display: block;
+    text-align: center;
+    padding: 5px;
+    opacity: 0.5;
+    color: white;
+    text-decoration: none; }
+    #jsxc-mediapanel .jsxc-etherpad-new-window-link:hover {
+      opacity: 1;
+      text-decoration: underline; }
 
 #jsxc-root, #jsxc_windowList {
   font-family: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
