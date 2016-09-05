@@ -1,11 +1,9 @@
 [submodule "var/www/djoe/jquery.storageconsole"]
 	path = var/www/djoe/jquery.storageconsole
 	url = https://github.com/remipassmoilesel/jquery.storageconsole
-
 [submodule "var/www/djoe/jquery.eventconsole"]
 	path = var/www/djoe/jquery.eventconsole
 	url = https://github.com/remipassmoilesel/jquery.eventconsole
-
 [submodule "var/www/djoe/jquery.xmppinspector"]
 	path = var/www/djoe/jquery.xmppinspector
 	url = https://github.com/remipassmoilesel/jquery.xmppinspector
