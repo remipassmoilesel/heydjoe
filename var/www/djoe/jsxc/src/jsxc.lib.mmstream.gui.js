@@ -265,7 +265,7 @@ jsxc.mmstream.gui = {
 
     // add animated gif
     $('#jsxc_installationIllustration').show().attr('src',
-        jsxc.options.root + 'img/install-chrome-extension.gif');
+        jsxc.options.root + '/img/install-chrome-extension.gif');
 
   },
 

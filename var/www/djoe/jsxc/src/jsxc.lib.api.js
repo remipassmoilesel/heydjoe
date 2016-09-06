@@ -251,7 +251,7 @@ jsxc.api = {
 
     var self = jsxc.help;
 
-    var root = jsxc.options.root + "lib/AlienInvasion/";
+    var root = jsxc.options.root + "/lib/AlienInvasion/";
 
     // close all dialogs if necessary
     jsxc.gui.dialog.close();
