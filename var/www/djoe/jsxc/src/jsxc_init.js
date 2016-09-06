@@ -11,7 +11,7 @@ $(function() {
   var xmppResource = "heyDjoe";
 
   // jsxc debug mode
-  // becareful, before init local storage use may throw exceptions
+  // be careful, before init local storage use may throw exceptions
   if(jsxc.isLocalStorageAvailable() === true){
     jsxc.storage.setItem('debug', false);
   }
