@@ -73,6 +73,4 @@ And of course so many more: GNU/Linux Ubuntu, Apache HTTP, Postgres, ...
 ![Screenshot](var/www/djoe/images/screenshot_1.png)
 
 To know more check the `documentation/` folder. Project is in progress, so documentation too.
-    
-Docker file will be updated ASAP :)
 
