@@ -1,5 +1,5 @@
 /*!
- * djoe v1.0.0 - 2016-09-05
+ * djoe v1.0.0 - 2016-09-06
  * 
  * Copyright (c) 2016  <br>
  * Released under the GPL-3.0 license
@@ -24,7 +24,7 @@ $(function() {
   var xmppResource = "heyDjoe";
 
   // jsxc debug mode
-  // becareful, before init local storage use may throw exceptions
+  // be careful, before init local storage use may throw exceptions
   if(jsxc.isLocalStorageAvailable() === true){
     jsxc.storage.setItem('debug', false);
   }

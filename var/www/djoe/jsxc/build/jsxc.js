@@ -1,5 +1,5 @@
 /*!
- * djoe v1.0.0 - 2016-09-05
+ * djoe v1.0.0 - 2016-09-06
  * 
  * Copyright (c) 2016  <br>
  * Released under the GPL-3.0 license
@@ -6145,7 +6145,7 @@
 
 	    // add animated gif
 	    $('#jsxc_installationIllustration').show().attr('src',
-	        jsxc.options.root + 'img/install-chrome-extension.gif');
+	        jsxc.options.root + '/img/install-chrome-extension.gif');
 
 	  },
 
@@ -9032,7 +9032,7 @@
 
 	    var self = jsxc.help;
 
-	    var root = jsxc.options.root + "lib/AlienInvasion/";
+	    var root = jsxc.options.root + "/lib/AlienInvasion/";
 
 	    // close all dialogs if necessary
 	    jsxc.gui.dialog.close();
