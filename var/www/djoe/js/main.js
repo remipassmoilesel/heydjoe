@@ -139,7 +139,7 @@ $(function() {
             console.error(response);
             $("#feedbackArea").html(
                 "<i>Erreur lors de la creation de l'utilisateur. Veuillez rafraichir la page et réessayer ! (code: " +
-                (response.status || "indéfini") + "</i>");
+                (response.status || "indéfini") + ")</i>");
           }
 
         });
