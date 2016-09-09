@@ -34,9 +34,9 @@ You can integrate it in your own web page by adding:
   <script src="jsxc/build/jsxc_init.js"></script>
 
   <!-- end XMPP client -->
-  
+
 ```
- 
+
 ## Lot of servers to install but ... 
 
 You can launch (almost)all with a few commands thanks to GNU/Linux and Docker:
@@ -76,5 +76,9 @@ And of course so many more: GNU/Linux Ubuntu, Apache HTTP, Postgres, ...
 
 ![Screenshot](var/www/djoe/images/screenshot_1.png)
 
-To know more check the `documentation/` folder. Project is in progress, so documentation too.
+## Documentation
+
+Djoe is an internship project, the final report is available here: https://github.com/remipassmoilesel/djoe/raw/master/var/www/djoe/documentation/internship-report_final.pdf
+
+To know more check the `var/www/documentation/` folder. Project is in progress, so documentation too.
 
