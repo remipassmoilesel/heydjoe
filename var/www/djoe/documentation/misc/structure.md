@@ -21,7 +21,7 @@ Structure of the project:
         │   └── ...             -> Contains configuration files for installation on a Linux Ubuntu Server 14.04
         ├── opt
         │   
-        │   ├── djoe-utils      -> Contains utils for project like `configuration.list`, a list of files that can be copied from a remote server
+        │   ├── djoe            -> Contains utils for project like `configuration.list`, a list of files that can be copied from a remote server
         |   └── ...             -> Contains configuration files for installation on a Linux Ubuntu Server 14.04
         |
         └── var

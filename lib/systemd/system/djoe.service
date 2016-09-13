@@ -1,0 +1,10 @@
+[Unit]
+Description=Djoe
+
+[Service]
+ExecStart=/opt/djoe/djoe-ctl start
+ExecStop=/opt/djoe/djoe-ctl stop
+ExecReload=/opt/djoe/djoe-ctl reload
+
+[Install]
+WantedBy=multi-user.target

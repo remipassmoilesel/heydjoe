@@ -11,7 +11,7 @@ var shell = require('gulp-shell');
 var server = "im.silverpeas.net";
 
 gulp.task('get-configuration',
-    shell.task(['rsync -av --files-from=opt/djoe-utils/configuration.list ' + server + ':/ .']));
+    shell.task(['rsync -av --files-from=opt/djoe/configuration.list ' + server + ':/ .']));
 
 gulp.task('get-statsmodule',
     shell.task(['rsync -avz "var/www/djoe/stats-module/public/dist/" "var/www/djoe/jsxc/lib/stats-module/"']));

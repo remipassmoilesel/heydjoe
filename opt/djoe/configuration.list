@@ -8,15 +8,16 @@ etc/init.d/firewall
 etc/init.d/firewall.enable
 etc/init.d/firewall.disable
 
-etc/init/djoe.conf
-etc/init/silverpeas.conf
-
 etc/turnserver.conf
+
+lib/systemd/system/djoe.service
 
 etc/ssl/
 
 etc/monitorix/monitorix.conf
 etc/default/sslh
+
+opt/djoe
 
 opt/openfire/conf/openfire.xml
 opt/openfire/resources/security/

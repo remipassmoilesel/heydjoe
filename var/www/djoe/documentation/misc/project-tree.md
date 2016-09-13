@@ -35,7 +35,7 @@
 │   ├── gulp-ssh
 │   └── gulp-uglify
 ├── opt
-│   ├── djoe-utils
+│   ├── djoe
 │   ├── docker-entrypoint.sh
 │   ├── etherpad-lite
 │   ├── openfire

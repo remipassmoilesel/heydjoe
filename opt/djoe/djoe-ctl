@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# Author: Rémi Passmoilesel <remi.passmoilesel@gmail.com>
+
+# Get function from functions library
+# . /etc/init.d/functions
+
+PATH="$PATH:/opt/nodejs4/bin/"
+
+do_start() {
+
+  echo "Starting Djoe ..."
+
+
+
+
+  echo "Starting Openfire server ..."
+  /opt/openfire/bin/openfire start &
+
+  OPENF_PID=$(pgrep -f 'openfire')
+  echo "Openfire process ID: $OPENF_PID"
+
+
+
+
+  echo "Starting Etherpad-lite ..."
+  cd /opt/etherpad-lite/
+  node node_modules/ep_etherpad-lite/node/server.js --root &
+
+  ETHER_PID=$(pgrep -f 'etherpad-lite')
+  echo "Etherpad process ID: $ETHER_PID"
+
+
+
+
+  echo "Starting Stats server ..."
+  cd /opt/stats-module/server/
+  node server.js
+
+  STATS_PID=$(pgrep -f 'node server.js')
+  echo "Stats process ID: $STATS_PID"
+
+}
+
+do_stop() {
+
+  echo "Stopping Djoe ..."
+
+  echo "Stopping Openfire server ..."
+  pkill -f 'openfire'
+
+  echo "Stopping Etherpad-lite ..."
+  pkill -f 'etherpad-lite'
+
+  echo "Stopping Stats server ..."
+  pkill -f 'node server.js'
+
+}
+
+case "$1" in
+  start)
+    do_start
+    ;;
+  stop)
+    do_stop
+    ;;
+  restart|reload|condrestart)
+    do_stop
+    do_start
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|reload|status}"
+    exit 1
+esac
+
+exit 0
