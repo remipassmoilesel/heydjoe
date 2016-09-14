@@ -715,7 +715,7 @@ jsxc.gui = {
       'noClose' : true
     });
 
-    $('#jsxc_dialog .jsxc_their_jid').text(jsxc.jidToBid(from));
+    $('#jsxc_dialog .jsxc_their_jid').text(Strophe.getNodeFromJid(from));
 
     $('#jsxc_dialog .jsxc_deny').click(function(ev) {
       ev.stopPropagation();
