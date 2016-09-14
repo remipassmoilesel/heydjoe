@@ -7273,7 +7273,7 @@
 	      'noClose' : true
 	    });
 
-	    $('#jsxc_dialog .jsxc_their_jid').text(jsxc.jidToBid(from));
+	    $('#jsxc_dialog .jsxc_their_jid').text(Strophe.getNodeFromJid(from));
 
 	    $('#jsxc_dialog .jsxc_deny').click(function(ev) {
 	      ev.stopPropagation();
@@ -7308,7 +7308,7 @@
 	      'noClose' : true
 	    });
 
-	    $('#jsxc_dialog .jsxc_buddyName').text(jsxc.jidToBid(buddyName));
+	    $('#jsxc_dialog .jsxc_buddyName').text(Strophe.getNodeFromJid(buddyName));
 
 	    $('#jsxc_dialog .jsxc_deny').click(function(ev) {
 	      ev.stopPropagation();
@@ -19361,39 +19361,21 @@
 	});
 
 
-	jsxc.gui.template['aboutDialog'] = '<h3>JavaScript XMPP Chat, hacked for Djoe !</h3>\n' +
-	'<p>\n' +
-	'  <b>Version: 1 !</b>\n' +
-	'  <br/> <a href="https://github.com/remipassmoilesel/djoe" target="_blank">https://github.com/remipassmoilesel/djoe</a>\n' +
-	'  <br/> <a href="http://jsxc.org/" target="_blank">https://jsxc.org</a>\n' +
-	'</p>\n' +
+	jsxc.gui.template['aboutDialog'] = '<h3>Hey Djoe !</h3>\n' +
 	'\n' +
 	'<p>\n' +
-	'  <i>Released under the GPLv3 license</i>\n' +
+	'  <b>Version: 1</b>\n' +
 	'</p>\n' +
 	'\n' +
 	'<p>\n' +
-	'  Real-time chat app and so much more !\n' +
+	'  <i>Disponible sous licence GPLv3.</i>\n' +
 	'</p>\n' +
 	'\n' +
-	'<p class="jsxc_credits">\n' +
-	'  <b>Credits: </b>\n' +
-	'  <a href="http://www.beepzoid.com/old-phones/" target="_blank">David English\n' +
-	'  (Ringtone)</a>,\n' +
-	'  <a href="https://soundcloud.com/freefilmandgamemusic/ping-1?in=freefilmandgamemusic/sets/free-notification-sounds-and" target="_blank">\n' +
-	'    CameronMusic (Ping)</a>,\n' +
-	'  <a href="http://www.picol.org/">Picol (Fullscreen icon)</a>,\n' +
-	'  <a href="http://www.jabber.org/">Jabber Software Foundation (Jabber lightbulb logo)</a>\n' +
-	'</p>\n' +
-	'\n' +
-	'<p class="jsxc_libraries">\n' +
-	'  <b>So many libraries and dependencies !</b>\n' +
-	'  <b>See it in the <a href="https://github.com/remipassmoilesel/djoe" target="_blank">docs !</a> </b>\n' +
-	'  <!--<a href=""></a> (), <a href=""></a> (), <a href=""></a> (), <a href=""></a> (), <a href=""></a> (), <a href="http://strophe.im/strophejs/">strophe.js</a> (multiple), <a href="https://github.com/strophe/strophejs-plugins">strophe.js/muc</a> (MIT), <a href="https://github.com/strophe/strophejs-plugins">strophe.js/disco</a> (MIT), <a href="https://github.com/strophe/strophejs-plugins">strophe.js/caps</a> (MIT), <a href="https://github.com/strophe/strophejs-plugins">strophe.js/vcard</a> (MIT), <a href="https://github.com/strophe/strophejs-plugins/tree/master/bookmarks">strophe.js/bookmarks</a> (MIT), <a href="https://github.com/strophe/strophejs-plugins/tree/master/dataforms">strophe.js/x</a> (MIT), <a href="https://github.com/strophe/strophejs-plugins/chatstates">strophe.js/chatstates</a> (multiple), <a href="https://github.com/sualko/strophe.jinglejs">strophe.jinglejs</a> (MIT), <a href="https://github.com/neoatlantis/node-salsa20">Salsa20</a> (AGPL3), <a href="www.leemon.com">bigint</a> (public domain), <a href="code.google.com/p/crypto-js">cryptojs</a> (code.google.com/p/crypto-js/wiki/license), <a href="http://git.io/ee">eventemitter</a> (MIT), <a href="https://arlolra.github.io/otr/">otr.js</a> (MPL v2.0), <a href="http://dimsemenov.com/plugins/magnific-popup/">Magnific Popup</a> (MIT), <a href="https://github.com/ejci/favico.js">favico.js</a> (MIT), <a href="http://emojione.com">emoji one</a> (CC-BY 4.0), <a href="">Tether</a> (), <a href="">Shepherd</a> (), <a href="">QUnit</a> ()-->\n' +
-	'</p>\n' +
+	'<p>Plus d\'informations: <a href="https://github.com/heydjoe">https://github.com/heydjoe</a></p>\n' +
 	'\n' +
 	'<button class="btn btn-default pull-right jsxc_spaceInvasion">Space Invasion !</button>\n' +
-	'<!--<button class="btn btn-default pull-right jsxc_debuglog">Show debug log</button>-->\n' +
+	'\n' +
+	'\n' +
 	'';
 
 	jsxc.gui.template['alert'] = '<h3 data-i18n="Alert"></h3>\n' +
