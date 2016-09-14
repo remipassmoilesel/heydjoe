@@ -750,7 +750,7 @@ jsxc.gui = {
       'noClose' : true
     });
 
-    $('#jsxc_dialog .jsxc_buddyName').text(jsxc.jidToBid(buddyName));
+    $('#jsxc_dialog .jsxc_buddyName').text(Strophe.getNodeFromJid(buddyName));
 
     $('#jsxc_dialog .jsxc_deny').click(function(ev) {
       ev.stopPropagation();
