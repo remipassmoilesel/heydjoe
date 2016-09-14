@@ -1,5 +1,5 @@
 /*!
- * djoe v1.0.0 - 2016-09-06
+ * djoe v1.0.0 - 2016-09-14
  * 
  * Copyright (c) 2016  <br>
  * Released under the GPL-3.0 license

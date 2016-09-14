@@ -1,5 +1,5 @@
 /*!
- * djoe v1.0.0 - 2016-09-06
+ * djoe v1.0.0 - 2016-09-14
  * 
  * Copyright (c) 2016  <br>
  * Released under the GPL-3.0 license
@@ -93,24 +93,6 @@ $(function() {
 
       url: 'turnCredentials.json'
       
-      // /** ICE servers like defined in http://www.w3.org/TR/webrtc/#idl-def-RTCIceServer */
-      // iceServers : [
-      //
-      //   {urls : "stun:turn1.silverpeas.net:80"},
-      //
-      //   {
-      //     urls : "turns:turn1.silverpeas.net:443",
-      //     credential : "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
-      //     credentialType : "password",
-      //     username : "djoe"
-      //   },
-      //
-      //   {
-      //     urls : "turn:turn1.silverpeas.net:80",
-      //     credential : "orv227EAdGEZ_ldSMadxhmbSxtnmvnMx",
-      //     credentialType : "password",
-      //     username : "djoe"
-      //   }]
     }
 
   };

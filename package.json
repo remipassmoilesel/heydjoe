@@ -1,7 +1,7 @@
 {
-  "name": "djoe",
+  "name": "heydjoe",
   "version": "1.0.0",
-  "description": "Instant communication system using XMPP, WebRTC and WebSockets.",
+  "description": "Instant communication system",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,7 +11,7 @@
     "url": "ssh://git@services-libreinfo.ddns.net:443/git-rep/djoe"
   },
   "author": "",
-  "license": "ISC",
+  "license": "GPLv3",
   "devDependencies": {
     "browser-sync": "^2.13.0",
     "gulp": "^3.9.1",

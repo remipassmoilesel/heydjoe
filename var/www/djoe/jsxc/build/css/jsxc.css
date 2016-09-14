@@ -4986,7 +4986,7 @@ TODO: Set up variables:
       color: gray;
       font-style: italic; }
     #jsxc-chat-sidebar #jsxc-status-bar .jsxc-select-status {
-      margin: 0.7em; }
+      margin: 0.3em 0 0.7em 0.7em; }
     #jsxc-chat-sidebar #jsxc-status-bar .jsxc-logout-button {
       content: ' ';
       background-image: url('../img/newgui/action-logout.svg');
