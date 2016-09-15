@@ -8,8 +8,6 @@ Documentation available:
 
 * structure-jsxc.md: About JSXC sources and modifications
  
-* silverpeas.md: About integration in Silverpeas patform 
-
 * diapo-functionnailities.odp: a rapid slideshare about functionalities
  
 * internship-report.pdf: report on the project

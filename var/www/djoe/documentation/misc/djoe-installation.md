@@ -65,8 +65,7 @@ sur la clef privée):
 
 
     $ sudo apt-get install apache2
-    $ cp config/etc.apache2.sites-available.im.silverpeas.net.conf /etc/apache2/sites-available/im.silverpeas.net.conf
-    $ sudo a2ensite im.silverpeas.net.conf
+    $ sudo a2ensite domain.net.conf
     $ sudo apache2 restart
 
 * _TODO: Ajouter des notes sur l'installation des certificats intermédiaires_

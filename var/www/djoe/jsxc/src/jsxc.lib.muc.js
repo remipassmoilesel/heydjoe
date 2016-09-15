@@ -1441,9 +1441,6 @@ jsxc.muc = {
       });
     }
 
-    //20160802131112895_margaret_ellis@conference.im.silverpeas.net/margaret_ellis
-    //20160802131112895_margaret_ellis@conference.im.silverpeas.net/margaret_ellis
-
     jsxc.debug('[muc] error message for ' + room, $(message).find('error')[0]);
 
     return true;

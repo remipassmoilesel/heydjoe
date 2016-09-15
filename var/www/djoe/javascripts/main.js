@@ -1,20 +1,10 @@
 
 $(function() {
 
-  // page domain
-  var serverDomain = "im.silverpeas.net";
-
   // xmpp domain
-  var xmppDomain = "im.silverpeas.net";
+  var xmppDomain = "heydjoe.xmpp";
 
   var defaultPassword = "azerty";
-
-  var boshTest = "https://" + serverDomain + "/bosh-test/";
-  var iceTest = "https://" + serverDomain + "/ice-test/";
-  var webAdminUrl = "http://" + serverDomain + ":9090/";
-  var etherpadUrl = "https://" + serverDomain + "/etherpad/";
-  var consoleUrl = "https://" + serverDomain + "/xmpp-console/";
-  var discoUrl = "https://" + serverDomain + "/xmpp-disco/";
 
   /**
    * Connection feedbacks

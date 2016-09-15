@@ -21,9 +21,9 @@ jsxc.mmstream.testCases = [
        *
        */
 
-      var remi = "remi@im.silverpeas.net/eeee";
-      var david = "david@im.silverpeas.net/eeee";
-      var yohann = "yohann@im.silverpeas.net/eeee";
+      var remi = "remi@heydjoe.xmpp/eeee";
+      var david = "david@heydjoe.xmpp/eeee";
+      var yohann = "yohann@heydjoe.xmpp/eeee";
 
       var participants = [david, yohann];
 
@@ -37,11 +37,11 @@ jsxc.mmstream.testCases = [
       };
 
       var result1 = {
-        "remi" : ["yohann@im.silverpeas.net/eeee", "david@im.silverpeas.net/eeee"],
+        "remi" : ["yohann@heydjoe.xmpp/eeee", "david@heydjoe.xmpp/eeee"],
 
         "david" : [],
 
-        "yohann" : ["david@im.silverpeas.net/eeee"]
+        "yohann" : ["david@heydjoe.xmpp/eeee"]
       };
 
       //console.log(expected1);
@@ -54,7 +54,7 @@ jsxc.mmstream.testCases = [
        *
        */
 
-      var domain = "@domain.net";
+      var domain = "@domain.xmpp";
 
       var nodes = ['a', 'b', 'c', 'd', 'f', 'g', 'h', 'i'];
 
@@ -74,19 +74,19 @@ jsxc.mmstream.testCases = [
       });
 
       var expected2 = {
-        "a@domain.net" : ["b@domain.net", "c@domain.net", "d@domain.net"],
-        "b@domain.net" : ["c@domain.net", "d@domain.net"],
-        "c@domain.net" : ["d@domain.net"],
-        "d@domain.net" : [],
-        "f@domain.net" : ["g@domain.net", "h@domain.net", "i@domain.net", "a@domain.net",
-          "b@domain.net", "c@domain.net", "d@domain.net"],
-        "g@domain.net" : ["h@domain.net", "i@domain.net", "a@domain.net", "b@domain.net",
-          "c@domain.net", "d@domain.net"],
-        "h@domain.net" : ["i@domain.net", "a@domain.net", "b@domain.net", "c@domain.net",
-          "d@domain.net"],
-        "i@domain.net" : ["a@domain.net", "b@domain.net", "c@domain.net", "d@domain.net"],
-        "e@domain.net" : ["f@domain.net", "g@domain.net", "h@domain.net", "i@domain.net",
-          "a@domain.net", "b@domain.net", "c@domain.net", "d@domain.net"]
+        "a@domain.xmpp" : ["b@domain.xmpp", "c@domain.xmpp", "d@domain.xmpp"],
+        "b@domain.xmpp" : ["c@domain.xmpp", "d@domain.xmpp"],
+        "c@domain.xmpp" : ["d@domain.xmpp"],
+        "d@domain.xmpp" : [],
+        "f@domain.xmpp" : ["g@domain.xmpp", "h@domain.xmpp", "i@domain.xmpp", "a@domain.xmpp",
+          "b@domain.xmpp", "c@domain.xmpp", "d@domain.xmpp"],
+        "g@domain.xmpp" : ["h@domain.xmpp", "i@domain.xmpp", "a@domain.xmpp", "b@domain.xmpp",
+          "c@domain.xmpp", "d@domain.xmpp"],
+        "h@domain.xmpp" : ["i@domain.xmpp", "a@domain.xmpp", "b@domain.xmpp", "c@domain.xmpp",
+          "d@domain.xmpp"],
+        "i@domain.xmpp" : ["a@domain.xmpp", "b@domain.xmpp", "c@domain.xmpp", "d@domain.xmpp"],
+        "e@domain.xmpp" : ["f@domain.xmpp", "g@domain.xmpp", "h@domain.xmpp", "i@domain.xmpp",
+          "a@domain.xmpp", "b@domain.xmpp", "c@domain.xmpp", "d@domain.xmpp"]
       };
 
       assert.ok(JSON.stringify(computed2) === JSON.stringify(expected2),
@@ -102,7 +102,7 @@ jsxc.mmstream.testCases = [
 
       var self = jsxc.mmstream;
 
-      var user = "a@domain.net/heyhey";
+      var user = "a@domain.xmpp/heyhey";
 
       self._setUserStatus(user, self.USER_STATUS.READY);
       assert.ok(self._isBuddyReady(user) === true, "test status = READY");

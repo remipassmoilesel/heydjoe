@@ -41,7 +41,7 @@ var orest = {
   /**
    * URL for accessing REST API
    */
-  apiBaseUrl : "https://im.silverpeas.net:9091/plugins/restapi/v1",
+  apiBaseUrl : "https://heydjoe.ddns.net:9091/plugins/restapi/v1",
 
   /**
    * Auth key

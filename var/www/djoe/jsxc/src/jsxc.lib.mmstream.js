@@ -1683,11 +1683,6 @@ jsxc.mmstream = {
    */
   _whichUsersMustWeCall : function(initiator, participants, ownJid) {
 
-    // debug utility:
-    // jsxc.mmstream._whichUsersMustWeCall('yohann@im.silverpeas.net/2sip93169u',
-    //     ['david@im.silverpeas.net/3stb6wxfaw', 'remi@im.silverpeas.net/aeevsvdon6'],
-    // jsxc.xmpp.conn.jid);
-
     var self = jsxc.mmstream;
 
     ownJid = ownJid || self.conn.jid;

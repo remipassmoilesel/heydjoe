@@ -1,31 +1,18 @@
-etc/apache2/sites-available/
+
+etc/apache2/sites-available/proxy-djoe-docker.conf
 
 etc/postgresql/9.3/main/postgresql.conf
 
-etc/reTurn/reTurnServer.config
-
-etc/init.d/firewall
-etc/init.d/firewall.enable
-etc/init.d/firewall.disable
-
 etc/turnserver.conf
+etc/default/coturn
 
 lib/systemd/system/djoe.service
-
-etc/ssl/
 
 etc/monitorix/monitorix.conf
 etc/default/sslh
 
-opt/djoe
+opt/djoe/
 
-opt/openfire/conf/openfire.xml
-opt/openfire/resources/security/
-
-opt/silverpeas-6.0-SNAPSHOT-wildfly10/export-vars.sh
-opt/silverpeas-6.0-SNAPSHOT-wildfly10/bin/settings.gradle
-opt/silverpeas-6.0-SNAPSHOT-wildfly10/configuration/config.properties
-opt/silverpeas-6.0-SNAPSHOT-wildfly10/configuration/silverpeas/CustomerSettings.xml
-opt/silverpeas-6.0-SNAPSHOT-wildfly10/properties/org/silverpeas/authentication/settings/authenticationSettings.properties
+opt/openfire/conf/
 
 opt/etherpad-lite/settings.json
