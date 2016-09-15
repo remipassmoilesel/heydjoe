@@ -1,5 +1,5 @@
 /**
- * Statsistic module. Create a Stats object, add pairs {id, value},
+ * Statistics module. Create a Stats object, add pairs {id, value},
  * send data to store it or let Stats do it every XX minutes.
  *
  * @param options
@@ -30,7 +30,7 @@ var WebStats = function(options) {
      * Interval between auto sent
      *
      */
-    interval : 3000, //interval: Math.floor((Math.random() * 14 * 60 * 100) + 8 * 60 * 100),
+    interval : 5000, //interval: Math.floor((Math.random() * 14 * 60 * 100) + 8 * 60 * 100),
 
     /**
      * Authorization header
@@ -40,20 +40,17 @@ var WebStats = function(options) {
     /**
      * Watch uncaught errors
      */
-    watchErrors: false, 
-    
-    
-    sendSessionOnStart: true
-    
+    watchErrors : false,
+
+    sendSessionOnStart : true
+
   };
+
+  this._failedAttempt = 0;
 
   this.options = $.extend(defaultOptions, options);
 
-  if (this.options.debug === true) {
-    console.log("options");
-    console.log(this.options);
-    console.log("");
-  }
+  this._log("Options:", this.options);
 
   this.options.persistEventUrl = options.destinationUrl + "/persist/event";
   this.options.persistLogUrl = options.destinationUrl + "/persist/log";
@@ -71,21 +68,34 @@ var WebStats = function(options) {
   // send buffer automatically
   if (this.options.autosend === true) {
 
-    setInterval(function() {
+    this._sendInterval = setInterval(function() {
       self.sendDataBuffer();
     }, this.options.interval);
 
   }
 
   // watch uncaught errors
-  if(this.options.watchErrors === true){
+  if (this.options.watchErrors === true) {
     self._watchWindowErrors();
   }
 
-  if(this.options.sendSessionOnStart === true){
-    this.sendSession();  
+  if (this.options.sendSessionOnStart === true) {
+    this.sendSession();
   }
-  
+
+};
+
+WebStats.prototype.stopAutoSendingInterval = function(){
+  clearInterval(this._sendInterval);
+};
+
+WebStats.prototype._log = function(message, datas, level) {
+
+  level = (level || 'INFO').toLocaleUpperCase();
+
+  if (this.options.debug === true) {
+    console.log("[WebStats] [" + level + "] " + message, datas);
+  }
 
 };
 
@@ -96,11 +106,7 @@ var WebStats = function(options) {
  */
 WebStats.prototype.addEvent = function(event, data) {
 
-  if (this.options.debug === true) {
-    console.log("addEvent");
-    console.log(arguments);
-    console.log("");
-  }
+  this._log("addEvent:", {arguments : arguments});
 
   this.eventBuffer.push({event : event, data : data});
 };
@@ -151,11 +157,7 @@ WebStats.prototype.sendSession = function() {
 
   var self = this;
 
-  if (this.options.debug === true) {
-    console.log("sendSession");
-    console.log(arguments);
-    console.log("");
-  }
+  this._log("sendSession:", {arguments : arguments});
 
   // create the session id
   self._createSessionId();
@@ -177,23 +179,17 @@ WebStats.prototype.sendSession = function() {
  * Watch uncaught errors and log them to distant server
  * @private
  */
-WebStats.prototype._watchWindowErrors = function(){
+WebStats.prototype._watchWindowErrors = function() {
 
-  if (this.options.debug === true) {
-    console.log("Watching errors");
-    console.log("");
-  }
+  this._log("Watching errors");
 
   var self = this;
 
   // Listen uncaught errors
-  window.onerror = function (errorMsg, url, lineNumber, columnNumber, error) {
+  window.onerror = function(errorMsg, url, lineNumber, columnNumber, error) {
 
     self.addLogEntry(errorMsg, "ERROR", {
-      url: url,
-      lineNumber: lineNumber,
-      columnNumber: columnNumber,
-      error: error
+      url : url, lineNumber : lineNumber, columnNumber : columnNumber, error : error
     });
 
   };
@@ -208,18 +204,19 @@ WebStats.prototype.sendDataBuffer = function() {
 
   var self = this;
 
-  if (self.options.debug === true) {
-    console.log("sendDataBuffer");
-    console.trace();
+  this._log("sendDataBuffer");
+
+  if(this._failedAttempt > 20){
+    this._log("Max failed limit reach: " + this._failedAttempt);
+    this.stopAutoSendingInterval();
+    return;
   }
 
   if (self.eventBuffer.length < 1 && self.logBuffer.length < 1) {
 
-    if (self.options.debug === true) {
-      console.log("__ Empty buffer");
-    }
-
+    this._log("Buffer is empty");
     return;
+
   }
 
   /**
@@ -227,9 +224,7 @@ WebStats.prototype.sendDataBuffer = function() {
    */
   if (self._sendingInProgress === true) {
 
-    if (self.options.debug === true) {
-      console.log("__ already sending, stop");
-    }
+    this._log("Already sending buffer, stop");
 
     return;
   }
@@ -264,8 +259,10 @@ WebStats.prototype.sendDataBuffer = function() {
           })
 
           .fail(function() {
-            console.log("Stats: fail sending event buffer");
-            console.log(arguments);
+            self._log("Fail sending events: ", {arguments : arguments});
+
+            // count fails to stop if necessary
+            self._failedAttempt ++;
           });
 
     }
@@ -286,19 +283,20 @@ WebStats.prototype.sendDataBuffer = function() {
           })
 
           .fail(function() {
-            console.log("WebStats: fail sending log buffer");
-            console.log(arguments);
+            self._log("Fail sending logs: ", {arguments : arguments});
+
+            // count fails to stop if necessary
+            self._failedAttempt ++;
           });
     }
 
   } catch (e) {
     _sendIsDone();
-    console.error(e);
+    this._failedAttempt ++;
+    self.log("Error while sending buffer: ", {error: e}, 'ERROR');
   }
 
-  if (this.options.debug === true) {
-    console.log("");
-  }
+  this._log(" ");
 
   return $.when(p1, p2).then(_sendIsDone).fail(_sendIsDone);
 };
@@ -321,7 +319,7 @@ WebStats.prototype.addLogEntry = function(text, level, datas) {
   }
 
   this.logBuffer.push({
-    text : text, level: level, datas : dataStr
+    text : text, level : level, datas : dataStr
   });
 
 };
