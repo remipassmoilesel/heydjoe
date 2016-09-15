@@ -13,6 +13,11 @@ jsxc.options = {
   },
 
   /**
+   * URL of the Chromium/Chrome extension
+   */
+  chromeExtensionURL: "screen-capture/chrome-extension.crx",
+
+  /**
    * Stats support. Stats is a small module enabling logs and events transmission to a distant
    * server.
    *

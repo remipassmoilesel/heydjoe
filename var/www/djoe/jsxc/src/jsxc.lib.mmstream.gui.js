@@ -255,6 +255,10 @@ jsxc.mmstream.gui = {
       'noClose' : true
     });
 
+    $("#jsxc-chrome-extension-url").click(function(){
+      window.open(jsxc.options.get('chromeExtensionURL'));
+    });
+    
     $("#jsxc_dialog .jsxc_closeInstallChromeExtension").click(function() {
       jsxc.gui.dialog.close();
     });
