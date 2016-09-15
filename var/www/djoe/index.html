@@ -1,11 +1,41 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 
 <head>
+
   <title>Hey Djoe !</title>
 
-  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <meta name="description" content="Hey Djoe ! All you need for instant messaging."/>
+
+  <!-- Schema.org markup for Google+ -->
+  <meta itemprop="name" content="Hey Djoe !">
+  <meta itemprop="description" content="Hey Djoe ! All you need for instant messaging.">
+  <meta itemprop="image" content="https://remipassmoilesel.github.io/heydjoe-demo/images/logo.svg">
+
+  <!-- Twitter Card data -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@publisher_handle">
+  <meta name="twitter:title" content="Hey Djoe !">
+  <meta name="twitter:description" content="Hey Djoe ! All you need for instant messaging.">
+  <meta name="twitter:creator" content="@remipassmoilesel">
+  <!-- Twitter summary card with large image must be at least 280x150px -->
+  <meta name="twitter:image:src" content="https://remipassmoilesel.github.io/heydjoe-demo/images/logo.svg">
+
+  <!-- Open Graph data -->
+  <meta property="og:title" content="Hey Djoe !"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:url" content="https://remipassmoilesel.github.io/heydjoe-demo"/>
+  <meta property="og:image" content="https://remipassmoilesel.github.io/heydjoe-demo/images/logo.svg"/>
+  <meta property="og:description" content="Hey Djoe ! All you need for instant messaging."/>
+  <meta property="og:site_name" content="Hey Djoe"/>
+
+  <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+  <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/github-light.css">
+  <link rel="stylesheet" href="stylesheets/override.css">
 
   <!-- XMPP client dependencies -->
 
@@ -25,254 +55,102 @@
   <!-- end XMPP client -->
 
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-  <link href="jquery.xmppinspector/jquery.xmppinspector.css" media="all" rel="stylesheet" type="text/css"/>
-  <link href="css/main.css" media="all" rel="stylesheet" type="text/css"/>
 
-  <script src="bower_components/chance/chance.js"></script>
-  <script src="jquery.eventconsole/jquery.eventconsole.js"></script>
-  <script src="jquery.xmppinspector/jquery.xmppinspector.js"></script>
-  <script src="jquery.storageconsole/jquery.storageconsole.js"></script>
-
-  <script src="js/main.js"></script>
+  <script type="text/javascript" src="bower_components/chance/chance.js"></script>
+  <script type="text/javascript" src="javascripts/main.js"></script>
 
 </head>
 
 <body>
 
-<!-- Warning for non javascript users -->
+<!-- HEADER -->
+<div id="header_wrap" class="outer">
+  <header class="inner">
+    <a id="forkme_banner" href="https://github.com/remipassmoilesel/heydjoe">View on GitHub</a>
 
-<noscript>
-  <div id="jsxc_noscript_warning">Vous devez activer Javascript pour utiliser cette messagerie</div>
-</noscript>
+    <h1 id="project_title">Hey Djoe !</h1>
+    <h2 id="project_tagline">All you need for instant collaboration</h2>
 
-<!-- Misc headers: Github / Brave -->
-
-<div style="position: absolute; top: 0; left: 0; border: 0; width: 100%; text-align: right;">
-  <a href="https://brave.com" target="_blank">
-    Essayez le nouveau navigateur Brave !
-    <img src="images/brave.svg" style="height: 20px; vertical-align: middle; margin: 7px; border: 0px">
-  </a>
+    <section id="downloads">
+      <a class="zip_download_link" href="https://github.com/remipassmoilesel/heydjoe/zipball/master">Download
+        this project as a .zip file</a>
+      <a class="tar_download_link" href="https://github.com/remipassmoilesel/heydjoe/tarball/master">Download
+        this project as a tar.gz file</a>
+    </section>
+  </header>
 </div>
 
-<a href="https://github.com/remipassmoilesel/djoe" target="_blank">
-  <img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/8b6b8ccc6da3aa5722903da7b58eb5ab1081adee/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6f72616e67655f6666373630302e706e67"
-       alt="Fork me on GitHub">
-</a>
+<!-- MAIN CONTENT -->
+<div id="main_content_wrap" class="outer">
+  <section id="main_content" class="inner">
+
+    <h3>
+      <a id="tryit" class="anchor" href="#tryit" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>
+      Try it !</h3>
+
+    <div id="connexionForm">
+      <input type="text" id="randomLogin"/>
+      <input type="button" id="refreshRandomLogin" value="*"/>
 
 
-<!-- Main content -->
+      <button id="connectButton">
+        Connect
+      </button>
+      <button id="disconnectButton">
+        Disconnect
+      </button>
 
-<div id="content">
+    </div>
+    <div>
+      <div id="feedbackArea">&nbsp;</div>
+    </div>
 
 
-  <!-- Main content header -->
+    <h3>
+      <a id="presentation" class="anchor" href="#presentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>
+      Presentation</h3>
 
-  <div class="header">
+    <iframe width="600" height="300" style="margin: auto"
+            src="https://www.youtube.com/embed/dMTQm9NEYTs" frameborder="0" allowfullscreen></iframe>
 
-    <div class="mainLogo">&nbsp;</div>
-
-    <h1>Hey Djoe !</h1>
+    <h3>
+      <a id="install" class="anchor" href="#install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>
+      Install your own server in 3 minutes</h3>
 
     <div>
-      Messagerie instantanée multimédia destinée au portail collaboratif Silverpeas <br/>
-      La messagerie est aussi disponible intégrée au portail
-      <a href="silverpeas-intro.html" target="_blank">Silverpeas 6</a>
+      Example on Ubuntu 16.04:
     </div>
 
-  </div>
+    <pre>
 
+  # /!\ Need Docker, see https://docs.docker.com/engine/installation/
 
-  <!-- Présentation -->
-
-  <h2>Bienvenue !</h2>
-
-  <p>Cette espace est dédié à l'essai et au développement de Djoe, un système complet de messagerie
-    instantanée multimédia destiné à l'intégration. Ce système est disponible sous licence GPLv3: vous
-    pouvez copier, modifier et distribuer ce matériel librement !</p>
-
-  <!-- Connexion form -->
-
-  <p>Pour vous connecter: </p>
-
-  <div id="connexionForm">
-
-    <ul>
-
-      <li>
-        <div class="fieldDescription">
-          <input type="radio" name="loginMode" value="random" checked/>
-          Saisissez l'identifiant que vous souhaitez:
-        </div>
-        <input type="text" id="randomLogin"/>
-        <input type="button" id="refreshRandomLogin" value="*"/>
-      </li>
-
-      <li>
-        <div class="fieldDescription">
-          <input type="radio" name="loginMode" value="predefined"/>
-          Ou choisissez un compte prédéfini:
-        </div>
-        <select id="predefinedJidList"></select>
-      </li>
-
-      <li>
-        <div class="fieldDescription">&nbsp;</div>
-        <button id="connectButton">
-          Connexion
-        </button>
-        <button id="disconnectButton">
-          Déconnexion
-        </button>
-      </li>
-      <li>
-        <div id="feedbackArea">&nbsp;</div>
-      </li>
-    </ul>
-  </div>
-
-
-  <!-- Warning about use -->
-
-  <div class="usageWarning">
-
-    <p>Attention:</p>
-
-    <ul>
-      <li>
-        <b>Préférez l'utillisation d'un compte aléatoire</b>: si vous utilisez un des premiers comptes prédéfinis disponibles,
-        il est possible que quelqu'un d'autre l'utilise simultanément
-      </li>
-      <li>Les outils utilisés sont modernes, votre navigateur doit absolument être à jour
-        pour utiliser ce système
-      </li>
-      <li>Le travail mis à disposition est en constante évolution,
-        par conséquent <b>les serveurs peuvent être momentanément indisponibles</b>
-      </li>
-      <li>Cette plateforme est en accès public: ne l'utilisez pas pour des communications
-        confidentielles
-      </li>
-    </ul>
-
-  </div>
-
-  <!-- Functionnalities -->
-
-  <h2>Fonctionnalités</h2>
-
-  <ul>
-    <li>Messagerie instantanée textuelle un pour un, un pour plusieurs</li>
-    <li>Edition collaborative de documents texte en temps réel</li>
-    <li>Appels vidéo et vidéoconférence jusqu'à six participants</li>
-    <li>Partage d'écran un pour un, un pour plusieurs</li>
-  </ul>
-
-  <!-- Some flowers -->
-
-  <div>Ce système à été développé grâce à de formidables projets libres:
-
-    <ul>
-      <li>JSXC: un client web XMPP modifié permettant la messagerie instantanée texte et multimédia
-      </li>
-      <li>Etherpad: une solution d'édition en ligne collaborative</li>
-      <li>Openfire: un serveur XMPP libre</li>
-      <li>rfc5766-turn-server: un serveur relai multimédia</li>
-    </ul>
-
-  </div>
-
-  <p><a href="documentation/diapo-interface.odp" target="_blank">Un diaporama disponible en
-    ligne </a>explique les principales fonctionnalités de cette messagerie.</p>
-
-  <p><a href="documentation/internship-report_final.pdf" target="_blank">Le rapport de stage final</a>
-    explique ce projet plus en détail.</p>
-
-
-  <h2>Visites guidées</h2>
-  <p>Une fois connecté au client essayez une des <i>visites guidées</i> pour découvrir les
-    fonctionnalités offertes:</p>
-
-  <div>
-    <select id="tutorials" disabled>
-      <option>Veuillez vous connecter</option>
-    </select>
-    <button disabled id="startDemoTour">Commencer la visite guidée</button>
-  </div>
-
-  <h2>Intégration</h2>
-
-  <h3>Coté client</h3>
-
-  Pour intégrer le client, vous devez tout d'abord installer les logiciels serveur nécessaires.
-  Puis sur la page web destination:
-
-  <!-- HTML generated using hilite.me -->
-  <div style="margin-top: 1em;background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;">
-
-    <pre style="margin: 0; line-height: 125%">
-
-<span style="color: #888888">&lt;!-- XMPP client dependencies --&gt;</span>
-
-<span style="color: #007700">&lt;link</span> <span style="color: #0000CC">href=</span><span style="background-color: #fff0f0">&quot;bower_components/jquery-ui/themes/base/jquery-ui.css&quot;</span> <span style="color: #0000CC">media=</span><span style="background-color: #fff0f0">&quot;all&quot;</span> <span style="color: #0000CC">rel=</span><span style="background-color: #fff0f0">&quot;stylesheet&quot;</span> <span style="color: #0000CC">type=</span><span style="background-color: #fff0f0">&quot;text/css&quot;</span><span style="color: #007700">/&gt;</span>
-<span style="color: #007700">&lt;script </span><span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot;bower_components/jquery/dist/jquery.js&quot;</span><span style="color: #007700">&gt;&lt;/script&gt;</span>
-<span style="color: #007700">&lt;script </span><span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot;bower_components/jquery-ui/jquery-ui.js&quot;</span><span style="color: #007700">&gt;&lt;/script&gt;</span>
-
-<span style="color: #888888">&lt;!-- end XMPP client dependencies --&gt;</span>
-
-<span style="color: #888888">&lt;!-- XMPP client --&gt;</span>
-
-<span style="color: #007700">&lt;link</span> <span style="color: #0000CC">href=</span><span style="background-color: #fff0f0">&quot;jsxc/build/css/jsxc.css&quot;</span> <span style="color: #0000CC">media=</span><span style="background-color: #fff0f0">&quot;all&quot;</span> <span style="color: #0000CC">rel=</span><span style="background-color: #fff0f0">&quot;stylesheet&quot;</span> <span style="color: #0000CC">type=</span><span style="background-color: #fff0f0">&quot;text/css&quot;</span><span style="color: #007700">/&gt;</span>
-<span style="color: #007700">&lt;script </span><span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot;jsxc/build/lib/jsxc.dep.js&quot;</span><span style="color: #007700">&gt;&lt;/script&gt;</span>
-<span style="color: #007700">&lt;script </span><span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot;jsxc/build/jsxc.js&quot;</span><span style="color: #007700">&gt;&lt;/script&gt;</span>
-<span style="color: #007700">&lt;script </span><span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot;jsxc/build/jsxc_init.js&quot;</span><span style="color: #007700">&gt;&lt;/script&gt;</span>
-
-<span style="color: #888888">&lt;!-- end XMPP client --&gt;</span>
+  $ git clone https://github.com/remipassmoilesel/heydjoe-docker
+  $ cd djoe-docker
+  $ ./build-and-launch.sh
 
     </pre>
-  </div>
 
-  <h3>Coté serveur</h3>
+    <h3>
+      <a id="onlyfrench" class="anchor" href="#install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>
+      Only in French ?
+    </h3>
 
-  Ce système nécessite plusieurs logiciels serveur. Une installation test est disponible sous la forme d'une image Docker:
-
-  <pre>
-
-  # /!\ Nécéssite Docker: <a href="https://docs.docker.com/engine/installation/">https://docs.docker.com/engine/installation/</a>
-
-  $ git clone https://github.com/remipassmoilesel/djoe-docker && cd djoe-docker && ./build-and-launch.sh
-
-  </pre>
-
-  <h2>Nouveautés ?</h2>
-  <a href="https://im.silverpeas.net/etherpad/p/feuille-de-route" target="_blank">Consultez la
-    feuille de route</a>
-
-  <h2>Suggestions / Signalement d'erreurs</h2>
-  <a href="https://im.silverpeas.net/etherpad/p/suggestions" target="_blank">N'hésitez pas !</a>
+    Unfortunately Djoe is only available in French for now.
+    Djoe is an internship project and will require time to be improved.
 
 
-  <h2>Informations de développement</h2>
-
-  <div>
-    <button id="deployDevInf">Afficher les informations</button>
-
-    <div id="developperInformations">
-
-      <div id="links"></div>
-
-      <!-- XMPP Inspector -->
-      <div id="xmppInspector"></div>
-
-      <!-- Jquery event console -->
-      <div id="eventsConsole"></div>
-
-      <!-- Storage console-->
-      <div id="storageConsole"></div>
-
-    </div>
-
-  </div>
+  </section>
 </div>
 
-</body>
+<!-- FOOTER  -->
+<div id="footer_wrap" class="outer">
+  <footer class="inner">
+    <p class="copyright">Hey Djoe ! maintained by <a href="https://github.com/remipassmoilesel">remipassmoilesel</a>
+    </p>
+  </footer>
+</div>
 
+
+</body>
 </html>
