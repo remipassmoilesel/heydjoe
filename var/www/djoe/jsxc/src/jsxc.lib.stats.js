@@ -3,7 +3,7 @@
  * Statistic module. Can log events or more complex datas to a distant server
  *
  * ** All datas are strictly anonymous
- * 
+ *
  * @type {{_statsManager: null, _init: jsxc.stats._init, addEvent: jsxc.stats.addEvent,
  *     addLogEntry: jsxc.stats.addLogEntry}}
  */
@@ -21,17 +21,17 @@ jsxc.stats = {
    * @param level
    * @private
    */
-  _log: function(message, data, level){
+  _log : function(message, data, level) {
 
     level = (level || 'ERROR').toUpperCase().trim();
 
     var prefix = level + " [JSXC/Stats] ";
 
-    if(level === 'ERROR'){
+    if (level === 'ERROR') {
       console.error(prefix + message, data);
     }
 
-    else{
+    else {
       console.log(prefix + message, data);
     }
 
@@ -56,7 +56,7 @@ jsxc.stats = {
 
         authorization : self._statsOptions.authorization,
 
-        interval : 3000,
+        interval : 5000,
 
         autosend : true
 
@@ -65,7 +65,12 @@ jsxc.stats = {
       console.info("Some anonymous data are collected to improve user experience.");
       console.info("Data availables at: " + self._statsOptions.destinationUrl + "/visualization/");
       console.info("Anonymous session id: " + self._statsManager.sessionId);
-      
+
+      // test destination once
+      $.get(jsxc.options.get("stats").destinationUrl).fail(function() {
+        jsxc.error('Stats destination URL is unreachable');
+      });
+
     }
 
   },
@@ -91,7 +96,7 @@ jsxc.stats = {
 
     var self = jsxc.stats;
 
-    level = (level || 'INFO').trim().toUpperCase();
+    level = (level || 'INFO').trim().toUpperCase();
 
     if (self._statsManager === null) {
       // self._log("Try to add datas while not initailized: ", {_statManager: self._statsManager});
@@ -103,10 +108,9 @@ jsxc.stats = {
     }
 
     // add only interresting level to Stats
-    if(self._statsOptions.sentLogLevels.indexOf(level) !== -1){
+    if (self._statsOptions.sentLogLevels.indexOf(level) !== -1) {
       self._statsManager.addLogEntry(text, level, data);
     }
-
 
   }
 
