@@ -5,12 +5,7 @@
 jsxc.mmstream.gui = {
 
   mediapanel : null,
-
-  /**
-   * Currents video dialogs
-   */
-  videoDialogs : [],
-
+  
   /**
    * Special logging with prefix
    * @param message
