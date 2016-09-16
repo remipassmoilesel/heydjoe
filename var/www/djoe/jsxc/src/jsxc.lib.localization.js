@@ -12,6 +12,8 @@ jsxc.localization = {
             lang = jsxc.options.defaultLang;
         }
 
+        jsxc.stats.addEvent('jsxc.lang.' + lang);
+
         /**
          *
          *

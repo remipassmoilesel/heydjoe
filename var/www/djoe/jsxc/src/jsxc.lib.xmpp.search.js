@@ -139,6 +139,8 @@ jsxc.xmpp.search = {
 
     var self = jsxc.xmpp.search;
 
+    jsxc.stats.addEvent('jsxc.search.users');
+
     if (!self.conn || self.conn.connected !== true) {
       jsxc.warn("Search not available: not connected");
       return $.Deferred().promise().fail("Not connected");

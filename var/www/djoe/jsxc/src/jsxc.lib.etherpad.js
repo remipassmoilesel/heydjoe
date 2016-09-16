@@ -77,7 +77,7 @@ jsxc.etherpad = {
     var self = jsxc.etherpad;
     var newgui = jsxc.newgui;
 
-    jsxc.stats.addEvent('jsxc.etherpad.opened');
+    jsxc.stats.addEvent('jsxc.etherpad.openpad');
 
     if (self.isEtherpadEnabled() === false) {
       jsxc.warn('Etherpad not enabled');
@@ -148,6 +148,8 @@ jsxc.etherpad = {
       }
 
     });
+
+    jsxc.stats.addEvent('jsxc.etherpad.invitationsSent');
 
   },
 
