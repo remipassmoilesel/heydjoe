@@ -1,0 +1,18 @@
+<div class="lastErrorsContainer">
+
+  <h2>Last logs</h2>
+
+  <div>Filter by session id / level: <input type="text" ng-model="$ctrl.textFilterValue" ng-keyup="$ctrl.filter($event)" /></div>
+
+  <div style="overflow: auto; max-height: 300px">
+
+    <div ng-repeat="(i, val) in $ctrl.displayLogs">
+      <span><b>{{val.id}}. [{{val.level}}] id {{val.request_from}}</b></span>
+      <span>{{val.text}}</span>
+      <div style="margin-left: 25px"><i>{{(val.data).toString().substring(0,50)}}...</i>
+        <a ng-click="$ctrl.log(val.data)"> ->log()</a></div>
+      <div style="margin-left: 25px"><i>{{val.datetime}}</i></div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,14 @@
+<div class="lastEventsContainer">
+
+  <h2>Last events</h2>
+
+  <div style="overflow: auto; height: 200px">
+    <div ng-repeat="(i, val) in $ctrl.lastEvents">
+      <div style="width: 7%; display: inline-block">{{val.id}}</div>
+      <div style="width: 17%; display: inline-block">{{val.prettyDate}}</div>
+      <div style="width: 40%; display: inline-block">{{val.event_name}}</div>
+      <div style="display: inline-block">{{val.event_data}}</div>
+    </div>
+  </div>
+
+</div>

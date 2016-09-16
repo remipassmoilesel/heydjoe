@@ -1,5 +1,5 @@
 /*!
- * djoe v1.0.0 - 2016-09-14
+ * djoe v1.0.0 - 2016-09-16
  * 
  * Copyright (c) 2016  <br>
  * Released under the GPL-3.0 license
@@ -4490,11 +4490,6 @@
 	   */
 	  _whichUsersMustWeCall : function(initiator, participants, ownJid) {
 
-	    // debug utility:
-	    // jsxc.mmstream._whichUsersMustWeCall('yohann@im.silverpeas.net/2sip93169u',
-	    //     ['david@im.silverpeas.net/3stb6wxfaw', 'remi@im.silverpeas.net/aeevsvdon6'],
-	    // jsxc.xmpp.conn.jid);
-
 	    var self = jsxc.mmstream;
 
 	    ownJid = ownJid || self.conn.jid;
@@ -5885,12 +5880,7 @@
 	jsxc.mmstream.gui = {
 
 	  mediapanel : null,
-
-	  /**
-	   * Currents video dialogs
-	   */
-	  videoDialogs : [],
-
+	  
 	  /**
 	   * Special logging with prefix
 	   * @param message
@@ -6135,6 +6125,10 @@
 	      'noClose' : true
 	    });
 
+	    $("#jsxc-chrome-extension-url").click(function(){
+	      window.open(jsxc.options.get('chromeExtensionURL'));
+	    });
+	    
 	    $("#jsxc_dialog .jsxc_closeInstallChromeExtension").click(function() {
 	      jsxc.gui.dialog.close();
 	    });
@@ -9225,7 +9219,7 @@
 	    var self = jsxc.etherpad;
 	    var newgui = jsxc.newgui;
 
-	    jsxc.stats.addEvent('jsxc.etherpad.opened');
+	    jsxc.stats.addEvent('jsxc.etherpad.openpad');
 
 	    if (self.isEtherpadEnabled() === false) {
 	      jsxc.warn('Etherpad not enabled');
@@ -9296,6 +9290,8 @@
 	      }
 
 	    });
+
+	    jsxc.stats.addEvent('jsxc.etherpad.invitationsSent');
 
 	  },
 
@@ -13960,6 +13956,8 @@
 	            lang = jsxc.options.defaultLang;
 	        }
 
+	        jsxc.stats.addEvent('jsxc.lang.' + lang);
+
 	        /**
 	         *
 	         *
@@ -14172,9 +14170,9 @@
 	       *
 	       */
 
-	      var remi = "remi@im.silverpeas.net/eeee";
-	      var david = "david@im.silverpeas.net/eeee";
-	      var yohann = "yohann@im.silverpeas.net/eeee";
+	      var remi = "remi@heydjoe.xmpp/eeee";
+	      var david = "david@heydjoe.xmpp/eeee";
+	      var yohann = "yohann@heydjoe.xmpp/eeee";
 
 	      var participants = [david, yohann];
 
@@ -14188,11 +14186,11 @@
 	      };
 
 	      var result1 = {
-	        "remi" : ["yohann@im.silverpeas.net/eeee", "david@im.silverpeas.net/eeee"],
+	        "remi" : ["yohann@heydjoe.xmpp/eeee", "david@heydjoe.xmpp/eeee"],
 
 	        "david" : [],
 
-	        "yohann" : ["david@im.silverpeas.net/eeee"]
+	        "yohann" : ["david@heydjoe.xmpp/eeee"]
 	      };
 
 	      //console.log(expected1);
@@ -14205,7 +14203,7 @@
 	       *
 	       */
 
-	      var domain = "@domain.net";
+	      var domain = "@domain.xmpp";
 
 	      var nodes = ['a', 'b', 'c', 'd', 'f', 'g', 'h', 'i'];
 
@@ -14225,19 +14223,19 @@
 	      });
 
 	      var expected2 = {
-	        "a@domain.net" : ["b@domain.net", "c@domain.net", "d@domain.net"],
-	        "b@domain.net" : ["c@domain.net", "d@domain.net"],
-	        "c@domain.net" : ["d@domain.net"],
-	        "d@domain.net" : [],
-	        "f@domain.net" : ["g@domain.net", "h@domain.net", "i@domain.net", "a@domain.net",
-	          "b@domain.net", "c@domain.net", "d@domain.net"],
-	        "g@domain.net" : ["h@domain.net", "i@domain.net", "a@domain.net", "b@domain.net",
-	          "c@domain.net", "d@domain.net"],
-	        "h@domain.net" : ["i@domain.net", "a@domain.net", "b@domain.net", "c@domain.net",
-	          "d@domain.net"],
-	        "i@domain.net" : ["a@domain.net", "b@domain.net", "c@domain.net", "d@domain.net"],
-	        "e@domain.net" : ["f@domain.net", "g@domain.net", "h@domain.net", "i@domain.net",
-	          "a@domain.net", "b@domain.net", "c@domain.net", "d@domain.net"]
+	        "a@domain.xmpp" : ["b@domain.xmpp", "c@domain.xmpp", "d@domain.xmpp"],
+	        "b@domain.xmpp" : ["c@domain.xmpp", "d@domain.xmpp"],
+	        "c@domain.xmpp" : ["d@domain.xmpp"],
+	        "d@domain.xmpp" : [],
+	        "f@domain.xmpp" : ["g@domain.xmpp", "h@domain.xmpp", "i@domain.xmpp", "a@domain.xmpp",
+	          "b@domain.xmpp", "c@domain.xmpp", "d@domain.xmpp"],
+	        "g@domain.xmpp" : ["h@domain.xmpp", "i@domain.xmpp", "a@domain.xmpp", "b@domain.xmpp",
+	          "c@domain.xmpp", "d@domain.xmpp"],
+	        "h@domain.xmpp" : ["i@domain.xmpp", "a@domain.xmpp", "b@domain.xmpp", "c@domain.xmpp",
+	          "d@domain.xmpp"],
+	        "i@domain.xmpp" : ["a@domain.xmpp", "b@domain.xmpp", "c@domain.xmpp", "d@domain.xmpp"],
+	        "e@domain.xmpp" : ["f@domain.xmpp", "g@domain.xmpp", "h@domain.xmpp", "i@domain.xmpp",
+	          "a@domain.xmpp", "b@domain.xmpp", "c@domain.xmpp", "d@domain.xmpp"]
 	      };
 
 	      assert.ok(JSON.stringify(computed2) === JSON.stringify(expected2),
@@ -14253,7 +14251,7 @@
 
 	      var self = jsxc.mmstream;
 
-	      var user = "a@domain.net/heyhey";
+	      var user = "a@domain.xmpp/heyhey";
 
 	      self._setUserStatus(user, self.USER_STATUS.READY);
 	      assert.ok(self._isBuddyReady(user) === true, "test status = READY");
@@ -15762,9 +15760,6 @@
 	      });
 	    }
 
-	    //20160802131112895_margaret_ellis@conference.im.silverpeas.net/margaret_ellis
-	    //20160802131112895_margaret_ellis@conference.im.silverpeas.net/margaret_ellis
-
 	    jsxc.debug('[muc] error message for ' + room, $(message).find('error')[0]);
 
 	    return true;
@@ -16592,6 +16587,11 @@
 	  rest : {
 	    apiName : "", apiBaseUrl : "", apiKey : ""
 	  },
+
+	  /**
+	   * URL of the Chromium/Chrome extension
+	   */
+	  chromeExtensionURL: "screen-capture/chrome-extension.crx",
 
 	  /**
 	   * Stats support. Stats is a small module enabling logs and events transmission to a distant
@@ -17937,7 +17937,7 @@
 	 * Statistic module. Can log events or more complex datas to a distant server
 	 *
 	 * ** All datas are strictly anonymous
-	 * 
+	 *
 	 * @type {{_statsManager: null, _init: jsxc.stats._init, addEvent: jsxc.stats.addEvent,
 	 *     addLogEntry: jsxc.stats.addLogEntry}}
 	 */
@@ -17955,17 +17955,17 @@
 	   * @param level
 	   * @private
 	   */
-	  _log: function(message, data, level){
+	  _log : function(message, data, level) {
 
 	    level = (level || 'ERROR').toUpperCase().trim();
 
 	    var prefix = level + " [JSXC/Stats] ";
 
-	    if(level === 'ERROR'){
+	    if (level === 'ERROR') {
 	      console.error(prefix + message, data);
 	    }
 
-	    else{
+	    else {
 	      console.log(prefix + message, data);
 	    }
 
@@ -17990,7 +17990,7 @@
 
 	        authorization : self._statsOptions.authorization,
 
-	        interval : 3000,
+	        interval : 5000,
 
 	        autosend : true
 
@@ -17999,7 +17999,12 @@
 	      console.info("Some anonymous data are collected to improve user experience.");
 	      console.info("Data availables at: " + self._statsOptions.destinationUrl + "/visualization/");
 	      console.info("Anonymous session id: " + self._statsManager.sessionId);
-	      
+
+	      // test destination once
+	      $.get(jsxc.options.get("stats").destinationUrl).fail(function() {
+	        jsxc.error('Stats destination URL is unreachable');
+	      });
+
 	    }
 
 	  },
@@ -18025,7 +18030,7 @@
 
 	    var self = jsxc.stats;
 
-	    level = (level || 'INFO').trim().toUpperCase();
+	    level = (level || 'INFO').trim().toUpperCase();
 
 	    if (self._statsManager === null) {
 	      // self._log("Try to add datas while not initailized: ", {_statManager: self._statsManager});
@@ -18037,10 +18042,9 @@
 	    }
 
 	    // add only interresting level to Stats
-	    if(self._statsOptions.sentLogLevels.indexOf(level) !== -1){
+	    if (self._statsOptions.sentLogLevels.indexOf(level) !== -1) {
 	      self._statsManager.addLogEntry(text, level, data);
 	    }
-
 
 	  }
 
@@ -19226,6 +19230,8 @@
 
 	    var self = jsxc.xmpp.search;
 
+	    jsxc.stats.addEvent('jsxc.search.users');
+
 	    if (!self.conn || self.conn.connected !== true) {
 	      jsxc.warn("Search not available: not connected");
 	      return $.Deferred().promise().fail("Not connected");
@@ -19680,7 +19686,7 @@
 	'    Ouvrez cette boite de dialogue dans le navigateur Chrome\n' +
 	'  </li>\n' +
 	'  <li>\n' +
-	'    <a href="https://im.silverpeas.net/screen-capture/chrome-extension.crx">\n' +
+	'    <a id="jsxc-chrome-extension-url">\n' +
 	'      Cliquez ici pour télécharger l\'extension\n' +
 	'    </a>\n' +
 	'    puis enregistrez là dans le dossier "Téléchargement" de votre système\n' +
@@ -22690,7 +22696,7 @@
 /***/ function(module, exports) {
 
 	/**
-	 * Statsistic module. Create a Stats object, add pairs {id, value},
+	 * Statistics module. Create a Stats object, add pairs {id, value},
 	 * send data to store it or let Stats do it every XX minutes.
 	 *
 	 * @param options
@@ -22721,7 +22727,7 @@
 	     * Interval between auto sent
 	     *
 	     */
-	    interval : 3000, //interval: Math.floor((Math.random() * 14 * 60 * 100) + 8 * 60 * 100),
+	    interval : 5000, //interval: Math.floor((Math.random() * 14 * 60 * 100) + 8 * 60 * 100),
 
 	    /**
 	     * Authorization header
@@ -22731,20 +22737,17 @@
 	    /**
 	     * Watch uncaught errors
 	     */
-	    watchErrors: false, 
-	    
-	    
-	    sendSessionOnStart: true
-	    
+	    watchErrors : false,
+
+	    sendSessionOnStart : true
+
 	  };
+
+	  this._failedAttempt = 0;
 
 	  this.options = $.extend(defaultOptions, options);
 
-	  if (this.options.debug === true) {
-	    console.log("options");
-	    console.log(this.options);
-	    console.log("");
-	  }
+	  this._log("Options:", this.options);
 
 	  this.options.persistEventUrl = options.destinationUrl + "/persist/event";
 	  this.options.persistLogUrl = options.destinationUrl + "/persist/log";
@@ -22762,21 +22765,34 @@
 	  // send buffer automatically
 	  if (this.options.autosend === true) {
 
-	    setInterval(function() {
+	    this._sendInterval = setInterval(function() {
 	      self.sendDataBuffer();
 	    }, this.options.interval);
 
 	  }
 
 	  // watch uncaught errors
-	  if(this.options.watchErrors === true){
+	  if (this.options.watchErrors === true) {
 	    self._watchWindowErrors();
 	  }
 
-	  if(this.options.sendSessionOnStart === true){
-	    this.sendSession();  
+	  if (this.options.sendSessionOnStart === true) {
+	    this.sendSession();
 	  }
-	  
+
+	};
+
+	WebStats.prototype.stopAutoSendingInterval = function(){
+	  clearInterval(this._sendInterval);
+	};
+
+	WebStats.prototype._log = function(message, datas, level) {
+
+	  level = (level || 'INFO').toLocaleUpperCase();
+
+	  if (this.options.debug === true) {
+	    console.log("[WebStats] [" + level + "] " + message, datas);
+	  }
 
 	};
 
@@ -22787,11 +22803,7 @@
 	 */
 	WebStats.prototype.addEvent = function(event, data) {
 
-	  if (this.options.debug === true) {
-	    console.log("addEvent");
-	    console.log(arguments);
-	    console.log("");
-	  }
+	  this._log("addEvent:", {arguments : arguments});
 
 	  this.eventBuffer.push({event : event, data : data});
 	};
@@ -22842,11 +22854,7 @@
 
 	  var self = this;
 
-	  if (this.options.debug === true) {
-	    console.log("sendSession");
-	    console.log(arguments);
-	    console.log("");
-	  }
+	  this._log("sendSession:", {arguments : arguments});
 
 	  // create the session id
 	  self._createSessionId();
@@ -22868,23 +22876,17 @@
 	 * Watch uncaught errors and log them to distant server
 	 * @private
 	 */
-	WebStats.prototype._watchWindowErrors = function(){
+	WebStats.prototype._watchWindowErrors = function() {
 
-	  if (this.options.debug === true) {
-	    console.log("Watching errors");
-	    console.log("");
-	  }
+	  this._log("Watching errors");
 
 	  var self = this;
 
 	  // Listen uncaught errors
-	  window.onerror = function (errorMsg, url, lineNumber, columnNumber, error) {
+	  window.onerror = function(errorMsg, url, lineNumber, columnNumber, error) {
 
 	    self.addLogEntry(errorMsg, "ERROR", {
-	      url: url,
-	      lineNumber: lineNumber,
-	      columnNumber: columnNumber,
-	      error: error
+	      url : url, lineNumber : lineNumber, columnNumber : columnNumber, error : error
 	    });
 
 	  };
@@ -22899,18 +22901,19 @@
 
 	  var self = this;
 
-	  if (self.options.debug === true) {
-	    console.log("sendDataBuffer");
-	    console.trace();
+	  this._log("sendDataBuffer");
+
+	  if(this._failedAttempt > 20){
+	    this._log("Max failed limit reach: " + this._failedAttempt);
+	    this.stopAutoSendingInterval();
+	    return;
 	  }
 
 	  if (self.eventBuffer.length < 1 && self.logBuffer.length < 1) {
 
-	    if (self.options.debug === true) {
-	      console.log("__ Empty buffer");
-	    }
-
+	    this._log("Buffer is empty");
 	    return;
+
 	  }
 
 	  /**
@@ -22918,9 +22921,7 @@
 	   */
 	  if (self._sendingInProgress === true) {
 
-	    if (self.options.debug === true) {
-	      console.log("__ already sending, stop");
-	    }
+	    this._log("Already sending buffer, stop");
 
 	    return;
 	  }
@@ -22955,8 +22956,10 @@
 	          })
 
 	          .fail(function() {
-	            console.log("Stats: fail sending event buffer");
-	            console.log(arguments);
+	            self._log("Fail sending events: ", {arguments : arguments});
+
+	            // count fails to stop if necessary
+	            self._failedAttempt ++;
 	          });
 
 	    }
@@ -22977,19 +22980,20 @@
 	          })
 
 	          .fail(function() {
-	            console.log("WebStats: fail sending log buffer");
-	            console.log(arguments);
+	            self._log("Fail sending logs: ", {arguments : arguments});
+
+	            // count fails to stop if necessary
+	            self._failedAttempt ++;
 	          });
 	    }
 
 	  } catch (e) {
 	    _sendIsDone();
-	    console.error(e);
+	    this._failedAttempt ++;
+	    self.log("Error while sending buffer: ", {error: e}, 'ERROR');
 	  }
 
-	  if (this.options.debug === true) {
-	    console.log("");
-	  }
+	  this._log(" ");
 
 	  return $.when(p1, p2).then(_sendIsDone).fail(_sendIsDone);
 	};
@@ -23012,7 +23016,7 @@
 	  }
 
 	  this.logBuffer.push({
-	    text : text, level: level, datas : dataStr
+	    text : text, level : level, datas : dataStr
 	  });
 
 	};

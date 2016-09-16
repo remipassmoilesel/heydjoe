@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: jsxc.lib.gui.widgets.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: jsxc.lib.gui.widgets.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>jsxc.gui.widgets = {
+
+  /**
+   * Create a selectable conversation list
+   *
+   *
+   * &lt;p>Each item contains data:
+   *
+   * &lt;p>'data-conversjid'
+   *
+   *
+   * @param selector
+   */
+  createConversationList : function(selector) {
+
+    var root = $(selector);
+    root.empty();
+
+    root.addClass("jsxc_conversation-list-container");
+
+    // add list
+    var list = $("&lt;ul class='jsxc-conversation-list'>&lt;/ul>");
+    root.append(list);
+
+    // update lists
+    var updateConversationList = function() {
+
+      list.empty();
+
+      // iterate buddies
+      var conversList = jsxc.storage.getLocaleBuddyListBJID();
+      var conversNumber = 0;
+      $.each(conversList, function(index, jid) {
+
+        // check type of element: buddie / conversation
+        var infos = jsxc.storage.getUserItem('buddy', jsxc.jidToBid(jid));
+
+        if ((infos.type === 'groupchat') !== true) {
+          return true;
+        }
+
+        var conversName = Strophe.getNodeFromJid(jid);
+
+        // create list element
+        var li = $("&lt;li>&lt;/li>")
+            .text(conversName)
+            .data('conversjid', jid)
+            .click(function() {
+              $(this).toggleClass("jsxc-checked");
+            });
+
+        list.append(li);
+
+        conversNumber++;
+
+      });
+
+      if (conversNumber &lt; 1) {
+        // create list element
+        var li = $("&lt;li>&lt;/li>")
+            .text("Aucune conversation")
+            .data('conversjid', null);
+
+        list.append(li);
+      }
+
+    };
+
+    // first update
+    updateConversationList();
+
+    return {
+      /**
+       * Jquery object on root
+       */
+      "root" : root,
+
+      /**
+       * Update list
+       */
+      "updateConversationList" : updateConversationList
+    };
+
+  },
+
+  /**
+   * Create a buddy list. To retrieve selected elements select $("#listId .ui-selected");
+   *
+   *
+   * &lt;p>Each item contains data:
+   *
+   * &lt;p>'data-conversjid'
+   *
+   *
+   * @param selector
+   */
+  createBuddyList : function(selector, selectedJids) {
+
+    selectedJids = selectedJids || [];
+
+    var root = $(selector);
+    root.empty();
+
+    root.addClass("jsxc_buddy-list-container");
+
+    // add list
+    var list = $("&lt;ul class='jsxc-selectable-buddy-list'>&lt;/ul>");
+    root.append(list);
+
+    // update lists
+    var updateBuddyList = function() {
+
+      list.empty();
+
+      // iterate buddies
+      var buddyList = jsxc.storage.getLocaleBuddyListBJID();
+      var buddyNumber = 0;
+      $.each(buddyList, function(index, jid) {
+
+        var bid = jsxc.jidToBid(jid);
+
+        // check type of element: buddie / conversation
+        var infos = jsxc.storage.getUserItem('buddy', bid);
+
+        if (infos.type === 'groupchat') {
+          return true;
+        }
+
+        var buddyName = Strophe.getNodeFromJid(jid);
+
+        // create list element
+        var li = $("&lt;li>&lt;/li>")
+            .text(buddyName)
+            .data('bid', bid)
+            .click(function() {
+              $(this).toggleClass("jsxc-checked");
+            });
+
+        if (selectedJids.indexOf(jid) > -1) {
+          li.addClass('jsxc-checked');
+        }
+
+        list.append(li);
+
+        buddyNumber++;
+
+      });
+
+      if (buddyNumber &lt; 1) {
+        // create list element
+        var li = $("&lt;li>&lt;/li>")
+            .text("Aucun contact")
+            .data('bid', null);
+
+        list.append(li);
+      }
+
+    };
+
+    // first update
+    updateBuddyList();
+
+    return {
+      /**
+       * Jquery object on root
+       */
+      "root" : root,
+
+      /**
+       * Update list
+       */
+      "updateBuddyList" : updateBuddyList
+    };
+
+  }
+
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_updateSelectedCount">_updateSelectedCount</a></li><li><a href="global.html#error">error</a></li><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#getCheckedBuddies">getCheckedBuddies</a></li><li><a href="global.html#getCheckedElements">getCheckedElements</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isConnexionMenuShown">isConnexionMenuShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#success">success</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleBuddyList">toggleBuddyList</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleConnexionMenu">toggleConnexionMenu</a></li><li><a href="global.html#toggleHelpMenu">toggleHelpMenu</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSelectionMode">toggleSelectionMode</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#unselectAllElements">unselectAllElements</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Fri Sep 16 2016 15:22:58 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

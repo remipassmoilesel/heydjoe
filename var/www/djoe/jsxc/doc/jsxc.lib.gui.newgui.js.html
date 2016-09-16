@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: jsxc.lib.gui.newgui.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: jsxc.lib.gui.newgui.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ *
+ * New GUI added on original JSXC GUI
+ *
+ * Gui is divided in two parts: mediapanel on the top of sreen and chat sidebar on right.
+ * Here all stuff to initiate this GUI go here (openning, closing, ...) except "functionnnalities"
+ * that have to be in 'gui.interactions'
+ *
+ *
+ * @memberOf jsxc
+ */
+jsxc.newgui = {
+
+  // TODO: onSlave
+  // TODO: onHTTP/HTTPS
+  // TODO: onLocalStorageUnavailable...
+
+  /**
+   * Sidebar of deployed chat sidebar
+   */
+  SIDEBAR_CONTENT_HEIGHT : '480px',
+
+  MEDIAPANEL_HEIGHT : '550px',
+
+  /**
+   * Animation of toggling chat side bar, in ms
+   */
+  SIDEBAR_ANIMATION_DURATION : '1500',
+
+  SCROLL_ANIMATION_DURATION : '500',
+
+  FLOATING_MENU_ANIMATION_DURATION : '800',
+
+  OPACITY_ANIMATION_DURATION : '500',
+
+  /**
+   * Half of the animation duration
+   */
+  STATE_INDICATOR_ANIMATION_DURATION : 100,
+
+  _log : function(message, data, level) {
+    jsxc.debug('[NGUI] ' + message, data, level);
+  },
+
+  /**
+   * If true, buddies displayed in buddy list are selectionnable
+   */
+  _selectionMode : true,
+
+  _searchTimer : 0,
+
+  /**
+   * Init gui
+   */
+  init : function() {
+
+    var self = jsxc.newgui;
+
+    /**
+     * Header: Always visible
+     *
+     */
+
+    // open and close video panel
+    var togglevideo = $("#jsxc-chat-sidebar-header .jsxc-toggle-mediapanel");
+    togglevideo.click(function(event) {
+      self.toggleMediapanel();
+      event.stopPropagation();
+    });
+
+    // filter users and conversations
+    var buddyFilter = $("#jsxc-new-gui-filter-users");
+    var conversationFilter = $("#jsxc-new-gui-filter-conversations");
+
+    buddyFilter.click(function() {
+      self.toggleBuddyFilter('buddies');
+      buddyFilter.addClass("jsxc-active-filter");
+      conversationFilter.removeClass("jsxc-active-filter");
+    });
+
+    conversationFilter.click(function() {
+      self.toggleBuddyFilter('conversations');
+      conversationFilter.addClass("jsxc-active-filter");
+      buddyFilter.removeClass("jsxc-active-filter");
+    });
+
+    // activate buddy on launch
+    self.toggleBuddyFilter('buddies');
+    buddyFilter.addClass("jsxc-active-filter");
+
+    // selection mode
+    $("#jsxc-select-buddies").click(function() {
+      self.toggleSelectionMode();
+    });
+
+    $("#jsxc-chat-sidebar-header").click(function() {
+
+      // show buddy list on open
+      if (self.chatSidebarContent.isMainContentVisible() === false &amp;&amp;
+          self.isChatSidebarShown() === false) {
+        self.chatSidebarContent.showMainContent();
+      }
+
+      self.toggleChatSidebar();
+
+    });
+
+    // close media panel
+    $("#jsxc-mediapanel .jsxc-close-mediapanel").click(function() {
+      self.toggleMediapanel();
+    });
+
+    // close chat sidebar
+    $("#jsxc-chat-sidebar .jsxc-close-chatsidebar").click(function() {
+      self.toggleChatSidebar();
+    });
+
+    // add openning action
+    $("#jsxc-toggle-actions").click(function() {
+      self.toggleActionsMenu();
+    });
+
+    // XEP 0055 User search panel
+    self._initSearchPanel();
+
+    // where user can manage notifications
+    self._initNotificationsPanel();
+
+    // (re) connexion panel
+    self._initConnexionMenu();
+
+    // optionnal
+    // self.initMediaPanelMouseNavigation();
+
+    self.toggleBuddyFilter("buddies");
+
+    // display name in status bar
+    $(document).on('attached.jsxc', function() {
+      self.updateStatusBarUserName();
+    });
+    self.updateStatusBarUserName();
+
+    // hide etherpad control if needed
+    if (jsxc.options.etherpad.enabled !== true) {
+      $(".jsxc-action_new-etherpad-document").css({"display" : "none"});
+    }
+
+    // update header on presence and on notice received
+    $(document).on('presence.jsxc', self.updateChatSidebarHeader);
+    $(document).on('notice.jsxc', self.updateChatSidebarHeader);
+    $(document).on('attached.jsxc', self.updateChatSidebarHeader);
+    $(document).on('disconnected.jsxc', self.updateChatSidebarHeader.bind(self, true));
+    self.updateChatSidebarHeader();
+
+    // init multimedia stream gui
+    jsxc.mmstream.gui._initGui();
+  },
+
+  /**
+   * Utility to toggle a floating menu visible or hidden
+   * @param menuSelector
+   * @param buttonSelector
+   * @param attachment
+   * @param targetAttachment
+   * @param offset
+   * @private
+   */
+  _toggleFloatingMenu : function(menuSelector, buttonSelector, attachment, targetAttachment,
+      offset) {
+
+    var self = jsxc.newgui;
+    var menu = $(menuSelector);
+
+    if (menu.hasClass('jsxc-deploy') === false) {
+
+      menu.addClass("jsxc-deploy");
+
+      // show menu
+      menu.css({
+        'opacity' : '0', 'display' : 'block'
+      });
+
+      // pin menu to button
+      new Tether({
+        element : menuSelector,
+        target : buttonSelector,
+        attachment : attachment,
+        targetAttachment : targetAttachment,
+        offset : offset || '5px 5px'
+      });
+
+      // animate openning
+      menu.animate({
+        opacity : 1
+      }, self.FLOATING_MENU_ANIMATION_DURATION, function() {
+
+      });
+
+    }
+
+    else {
+
+      menu.removeClass("jsxc-deploy");
+
+      // animate closing
+      menu.animate({
+        opacity : 0
+      }, self.FLOATING_MENU_ANIMATION_DURATION, function() {
+
+        // hide menu
+        menu.css({
+          'display' : 'none'
+        });
+
+      });
+
+    }
+
+  },
+
+  /**
+   * Utility to hide one element and show a second one with animations
+   * @param toShow
+   * @param toHide
+   */
+  hideAndShow : function(toShow, toHide) {
+
+    var self = jsxc.newgui;
+
+    // hide old element
+    toHide.animate({
+      opacity : 0
+    }, self.OPACITY_ANIMATION_DURATION, function() {
+      toHide.css('display', 'none');
+
+      // show new one
+      toShow.css({
+        'display' : 'inline-block', 'opacity' : 0
+      });
+      toShow.animate({
+        'opacity' : '1'
+      }, self.OPACITY_ANIMATION_DURATION);
+    });
+
+  },
+
+  /**
+   * Create a state indicator informing user that something is turned on or off
+   */
+  createStateIndicator : function(selector) {
+
+    var self = jsxc.newgui;
+
+    if (!selector) {
+      throw new Error("Invalid argument: " + selector);
+    }
+
+    // root maybe containing other elements
+    var root = $(selector);
+
+    // indicator off / on
+    var indicator = $(
+        '&lt;span class="jsxc_stateIndicator">&amp;nbsp;&lt;span class="jsxc_stateIndicator_on">on&lt;/span> | ' +
+        '&lt;span class="jsxc_stateIndicator_off">off&lt;/span>&lt;/span>');
+
+    root.append(indicator);
+
+    var on = indicator.find('.jsxc_stateIndicator_on');
+    var off = indicator.find('.jsxc_stateIndicator_off');
+
+    var duration = self.STATE_INDICATOR_ANIMATION_DURATION;
+
+    /**
+     * State of indicator. True: on, false: off
+     * @type {boolean}
+     */
+    var indicatorState = false;
+
+    var ret = {
+
+      /**
+       * The root of the indicator
+       */
+      root : indicator,
+
+      getState : function() {
+        return indicatorState;
+      },
+
+      /**
+       * Toggle state on | off
+       */
+      toggleState : function(state) {
+
+        if (typeof state === 'undefined') {
+          state = !indicatorState;
+          indicatorState = state;
+        }
+
+        if (state === true) {
+
+          off.animate({
+                color : 'black', opacity : 0.3
+              }, duration,
+
+              function() {
+
+                on.animate({
+                  color : 'blue', opacity : 1
+                }, duration);
+
+              });
+        }
+
+        else {
+
+          on.animate({
+                color : 'black', opacity : 0.5
+              }, duration,
+
+              function() {
+
+                off.animate({
+                  color : 'blue', opacity : 1
+                }, duration);
+
+              });
+        }
+
+      }
+
+    };
+
+    return ret;
+  }
+
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_updateSelectedCount">_updateSelectedCount</a></li><li><a href="global.html#error">error</a></li><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#getCheckedBuddies">getCheckedBuddies</a></li><li><a href="global.html#getCheckedElements">getCheckedElements</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isConnexionMenuShown">isConnexionMenuShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#success">success</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleBuddyList">toggleBuddyList</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleConnexionMenu">toggleConnexionMenu</a></li><li><a href="global.html#toggleHelpMenu">toggleHelpMenu</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSelectionMode">toggleSelectionMode</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#unselectAllElements">unselectAllElements</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Fri Sep 16 2016 15:22:58 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

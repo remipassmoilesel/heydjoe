@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: jsxc.lib.xmpp.search.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: jsxc.lib.xmpp.search.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Implements user search (XEP 0055)
+ *
+ * @memberOf jsxc.xmpp
+ */
+jsxc.xmpp.search = {
+
+  /**
+   * Where connection is stored
+   *
+   */
+  conn : null,
+
+  /**
+   * Domain for search. If not set at init{xmpp:{...}} domain will be used
+   *
+   */
+  searchDomain : null,
+
+  /**
+   * True if user search is available, but will be set only after connection
+   */
+  userSearchAvailable : false,
+
+  /**
+   * Initialize search functionnalities
+   */
+  init : function() {
+
+    var self = jsxc.xmpp.search;
+
+    // shortcut
+    self.conn = jsxc.xmpp.conn;
+
+    // retrieve XMPP search domain
+    var xmppOpts = jsxc.options.get("xmpp");
+    self.searchDomain = xmppOpts.searchDomain;
+
+    if (typeof self.searchDomain === "undefined") {
+      self.searchDomain = xmppOpts.domain;
+      jsxc.warn('Search domain not found, domain will be used', xmppOpts.domain);
+    }
+
+    // first request to know if search is available
+    self.requestForSearchCapabilities()
+
+        .then(function() {
+          jsxc.debug("XMPP search available");
+        })
+        .fail(function() {
+          jsxc.warn("XMPP search unavailable");
+        });
+
+    // set user cache
+    self.getUserList();
+
+  },
+
+  /**
+   * Cache for searchs
+   */
+  _searchDefers : {},
+
+  /**
+   * Search terms to get all users
+   */
+  _allUserTerms : "*",
+
+  /**
+   * Check an array of users and add a field "_is_buddy" to each user.
+   *
+   * &lt;p>/!\ Work directly on the array
+   *
+   * @param userArr
+   * @returns {*}
+   */
+  _checkIfBuddies : function(userArr) {
+
+    // list of buddies to check
+    var buddies = jsxc.storage.getLocaleBuddyListBJID();
+
+    $.each(userArr, function(i, e) {
+      // check if is a buddy
+      e["_is_buddy"] = buddies.indexOf(jsxc.jidToBid(e.jid)) !== -1;
+    });
+
+    return userArr;
+  },
+
+  /**
+   * Return a promise containing all users in an array or an empty array
+   *
+   * &lt;p> Response is stored in cache
+   *
+   * &lt;p> Each entry of the array contains:
+   * mail, jid, name, username, _is_buddy
+   *
+   */
+  getUserList : function() {
+
+    var self = jsxc.xmpp.search;
+
+    // search users
+    return self.searchUsers(self._allUserTerms)
+
+        .then(function(result) {
+
+          // here buddies are checked by search function
+          return JSON.parse(JSON.stringify(result));
+
+        });
+
+  },
+
+  /**
+   * Get new user list
+   *
+   * @returns {*}
+   */
+  getFreshUserList : function() {
+
+    var self = jsxc.xmpp.search;
+
+    delete self._searchDefers[self._allUserTerms];
+
+    return self.getUserList();
+  },
+
+  /**
+   * Return a promise containing all users corresponding to "terms" in an array or an empty array
+   *
+   * &lt;p>Wildcards "*" are allowed
+   *
+   * &lt;p>Each entry of the array contains:
+   * mail, jid, name, username, _is_buddy
+   *
+   */
+  searchUsers : function(terms) {
+
+    var self = jsxc.xmpp.search;
+
+    jsxc.stats.addEvent('jsxc.search.users');
+
+    if (!self.conn || self.conn.connected !== true) {
+      jsxc.warn("Search not available: not connected");
+      return $.Deferred().promise().fail("Not connected");
+    }
+
+    // request have already done
+    if (self._searchDefers[terms]) {
+      jsxc.debug("Search: return cached request");
+      return self._searchDefers[terms].promise();
+    }
+
+    // send XMPP request to get all users
+    var iq = $iq({
+      type : 'set', to : self.searchDomain
+    })
+        .c('query', {xmlns : 'jabber:iq:search'})
+        .c('x', {xmlns : 'jabber:x:data', type : 'submit'})
+        .c('field', {type : 'hidden', var : 'FORM_TYPE'})
+        .c('value', 'jabber:iq:search').up().up()
+        .c('field', {var : 'search', type : "text-single"})
+        .c('value', terms).up().up()
+        .c('field', {var : 'Username', type : "boolean"})
+        .c('value', '1').up().up()
+        .c('field', {var : 'Name', type : "boolean"})
+        .c('value', '1').up().up();
+
+    // response in a promise
+    self._searchDefers[terms] = $.Deferred();
+    var defer = self._searchDefers[terms];
+
+    // send request after regitered handler
+    self.conn.sendIQ(iq,
+
+        // successful request
+        function(stanza) {
+
+          jsxc.debug("Search: return fresh request");
+
+          // error while retieving users
+          if ($(stanza).find("error").length > 0) {
+
+            defer.reject(stanza);
+
+            // remove handler when finished
+            return false;
+          }
+
+          // browse items and create result list
+          var result = [];
+          $(stanza).find("item").each(function() {
+
+            var r = {};
+
+            // browse fields and get values
+            $(this).find("field").each(function() {
+              r[$(this).attr("var").toLowerCase()] = $(this).text();
+            });
+
+            result.push(r);
+
+          });
+
+          // add buddy field
+          self._checkIfBuddies(result);
+
+          // send list of item
+          defer.resolve(result);
+
+        },
+
+        // error
+        function() {
+          defer.reject(arguments);
+        });
+
+    // return a promise
+    return defer.promise();
+  },
+
+  /**
+   * Send request to know if search is available.
+   *
+   * &lt;p>Designed to be called only one time at init.
+   *
+   * &lt;p>If need more, need to be improved with promises
+   *
+   */
+  requestForSearchCapabilities : function() {
+
+    var self = jsxc.xmpp.search;
+
+    // id of the XMPP request for filtering
+    var capabilityRequestId;
+
+    // request
+    var iq = $iq({
+      type : 'get', to : self.searchDomain
+    }).c('query', {
+      xmlns : 'jabber:iq:search'
+    });
+
+    // response in a promise
+    var defer = $.Deferred();
+
+    // send request
+    capabilityRequestId = self.conn.sendIQ(iq,
+
+        // success
+        function(stanza) {
+          self.userSearchAvailable = $(stanza).find("error").length === 0;
+
+          defer.resolve(self.userSearchAvailable);
+        },
+
+        // error
+        function() {
+          self.userSearchAvailable = false;
+
+          defer.reject(self.userSearchAvailable);
+        });
+
+    // return a promise
+    return defer.promise();
+  }
+
+};
+
+/**
+ * Initialize user search module. Executed at each connexion.
+ */
+$(function() {
+  $(document).on('attached.jsxc', jsxc.xmpp.search.init);
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="jsxc.Message.html">Message</a></li></ul><h3>Namespaces</h3><ul><li><a href="jsxc.html">jsxc</a></li><li><a href="jsxc.gui.html">gui</a></li><li><a href="jsxc.gui.dialog.html">dialog</a></li><li><a href="jsxc.gui.queryActions.html">queryActions</a></li><li><a href="jsxc.gui.roster.html">roster</a></li><li><a href="jsxc.gui.window.html">window</a></li><li><a href="jsxc.muc.html">muc</a></li><li><a href="jsxc.notification.html">notification</a></li><li><a href="jsxc.options.html">options</a></li><li><a href="jsxc.otr.html">otr</a></li><li><a href="jsxc.storage.html">storage</a></li><li><a href="jsxc.xmpp.html">xmpp</a></li><li><a href="jsxc.xmpp.bookmarks.html">bookmarks</a></li><li><a href="jsxc.xmpp.carbons.html">carbons</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_updateSelectedCount">_updateSelectedCount</a></li><li><a href="global.html#error">error</a></li><li><a href="global.html#getAllDisplayedMediaRessource">getAllDisplayedMediaRessource</a></li><li><a href="global.html#getCheckedBuddies">getCheckedBuddies</a></li><li><a href="global.html#getCheckedElements">getCheckedElements</a></li><li><a href="global.html#initMediaPanelMouseNavigation">initMediaPanelMouseNavigation</a></li><li><a href="global.html#isChatSidebarShown">isChatSidebarShown</a></li><li><a href="global.html#isConnexionMenuShown">isConnexionMenuShown</a></li><li><a href="global.html#isMediapanelShown">isMediapanelShown</a></li><li><a href="global.html#openMediaRessource">openMediaRessource</a></li><li><a href="global.html#removeMediaRessource">removeMediaRessource</a></li><li><a href="global.html#root">root</a></li><li><a href="global.html#success">success</a></li><li><a href="global.html#toggleActionsMenu">toggleActionsMenu</a></li><li><a href="global.html#toggleBuddyFilter">toggleBuddyFilter</a></li><li><a href="global.html#toggleBuddyList">toggleBuddyList</a></li><li><a href="global.html#toggleChatSidebar">toggleChatSidebar</a></li><li><a href="global.html#toggleConnexionMenu">toggleConnexionMenu</a></li><li><a href="global.html#toggleHelpMenu">toggleHelpMenu</a></li><li><a href="global.html#toggleMediapanel">toggleMediapanel</a></li><li><a href="global.html#toggleNotificationsMenu">toggleNotificationsMenu</a></li><li><a href="global.html#toggleSearchPanel">toggleSearchPanel</a></li><li><a href="global.html#toggleSelectionMode">toggleSelectionMode</a></li><li><a href="global.html#toggleSettingsMenu">toggleSettingsMenu</a></li><li><a href="global.html#unselectAllElements">unselectAllElements</a></li><li><a href="global.html#updateBuddyList">updateBuddyList</a></li><li><a href="global.html#updateChatSidebarHeader">updateChatSidebarHeader</a></li><li><a href="global.html#updateConversationList">updateConversationList</a></li><li><a href="global.html#updateOwnPresenceIndicator">updateOwnPresenceIndicator</a></li><li><a href="global.html#updateStatusBarUserName">updateStatusBarUserName</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Fri Sep 16 2016 15:22:58 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
