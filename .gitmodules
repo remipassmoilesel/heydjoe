@@ -7,3 +7,6 @@
 [submodule "var/www/djoe/jquery.xmppinspector"]
 	path = var/www/djoe/jquery.xmppinspector
 	url = https://github.com/remipassmoilesel/jquery.xmppinspector
+[submodule "var/www/djoe/jsxc/lib/web-stats"]
+	path = var/www/djoe/jsxc/lib/web-stats
+	url = https://github.com/remipassmoilesel/web-stats

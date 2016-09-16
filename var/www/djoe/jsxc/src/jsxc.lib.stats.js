@@ -48,7 +48,7 @@ jsxc.stats = {
     self._statsOptions = jsxc.options.get("stats");
     if (self._statsOptions && self._statsOptions.enabled) {
 
-      self._statsManager = require("../lib/stats-module/scripts/Stats-embed.js")({
+      self._statsManager = require("../lib/web-stats/public/dist/scripts/Stats-embed.js")({
 
         debug : false,
 
