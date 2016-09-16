@@ -65,7 +65,7 @@ jsxc.etherpad = {
    */
   _getEmbeddedCode : function(padId) {
     return '<iframe class="jsxc-etherpad-frame" name="embed_readwrite" src="' +
-        jsxc.etherpad.getEtherpadLinkFor(padId) + '" style="width: 100%; height: 85%"></iframe>';
+        jsxc.etherpad.getEtherpadLinkFor(padId) + '" style="width: 750px; height: 85%"></iframe>';
   },
 
   /**
@@ -90,11 +90,19 @@ jsxc.etherpad = {
     // get etherpad iframe
     var embedded = self._getEmbeddedCode(padId);
 
-    // add link below
-    var link = '<a href="' + self.getEtherpadLinkFor(padId) + '" target="_blank"' +
-        ' class="jsxc-etherpad-new-window-link">Ouvrir dans une nouvelle fenêtre...</a>';
+    // add link to open pad in a new window
+    var link = $('<a class="jsxc-etherpad-new-window-link">Ouvrir dans une nouvelle fenêtre...</a>');
+    link.click(function(){
 
-    newgui.addMediaRessource(embedded + link, 'Etherpad: ' + padId);
+      // open pad in a new window
+      window.open(self.getEtherpadLinkFor(padId), '_blank');
+
+      // close existing pad, to avoid connection problems
+      jsxc.newgui.removeMediaRessource($(this).parents(".jsxc-media-ressource"));
+
+    });
+
+    newgui.addMediaRessource(embedded + link.toString(), 'Etherpad: ' + padId);
 
     // toggle media panel if necessary
     newgui.toggleMediapanel(true);
