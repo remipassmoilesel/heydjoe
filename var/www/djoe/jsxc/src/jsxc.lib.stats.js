@@ -66,10 +66,12 @@ jsxc.stats = {
       console.info("Data availables at: " + self._statsOptions.destinationUrl + "/visualization/");
       console.info("Anonymous session id: " + self._statsManager.sessionId);
 
-      // test destination once
-      $.get(jsxc.options.get("stats").destinationUrl).fail(function() {
-        jsxc.error('Stats destination URL is unreachable');
-      });
+      // test destination once, after page load
+      setTimeout(function(){
+        $.get(jsxc.options.get("stats").destinationUrl + "/visualization/").fail(function() {
+          jsxc.error('Stats destination URL is unreachable');
+        });
+      }, 1000);
 
     }
 
