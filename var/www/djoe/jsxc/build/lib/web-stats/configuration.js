@@ -5,7 +5,7 @@
  */
 module.exports = (function() {
 
-  var DEV_MODE = true;
+  var DEV_MODE = false;
 
   var configuration = {
 
@@ -32,15 +32,7 @@ module.exports = (function() {
      */
     ACCES_CONTROL_ALLOW_ORIGN : "*",
     ACCESS_CONTROL_ALLOW_HEADERS : "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-
-    /**
-     * CLIENT CONFIGURATION
-     */
-
-    /**
-     * Root url. Without trailing slash. You can specify a port here.
-     */
-    DESTINATION_URL : "http://127.0.0.1:3000"
+    
   };
 
   if (DEV_MODE === true) {

@@ -85,17 +85,24 @@ var WebStats = function(options) {
 
 };
 
-WebStats.prototype.stopAutoSendingInterval = function(){
+WebStats.prototype.stopAutoSendingInterval = function() {
   clearInterval(this._sendInterval);
 };
 
 WebStats.prototype._log = function(message, datas, level) {
 
+  if (this.options.debug !== true) {
+    return;
+  }
+
+  if (message === "") {
+    console.log();
+    return;
+  }
+
   level = (level || 'INFO').toLocaleUpperCase();
 
-  if (this.options.debug === true) {
-    console.log("[WebStats] [" + level + "] " + message, datas);
-  }
+  console.log("[WebStats] [" + level + "] " + message, datas || '');
 
 };
 
@@ -206,7 +213,7 @@ WebStats.prototype.sendDataBuffer = function() {
 
   this._log("sendDataBuffer");
 
-  if(this._failedAttempt > 20){
+  if (this._failedAttempt > 20) {
     this._log("Max failed limit reach: " + this._failedAttempt);
     this.stopAutoSendingInterval();
     return;
@@ -262,7 +269,7 @@ WebStats.prototype.sendDataBuffer = function() {
             self._log("Fail sending events: ", {arguments : arguments});
 
             // count fails to stop if necessary
-            self._failedAttempt ++;
+            self._failedAttempt++;
           });
 
     }
@@ -286,14 +293,14 @@ WebStats.prototype.sendDataBuffer = function() {
             self._log("Fail sending logs: ", {arguments : arguments});
 
             // count fails to stop if necessary
-            self._failedAttempt ++;
+            self._failedAttempt++;
           });
     }
 
   } catch (e) {
     _sendIsDone();
-    this._failedAttempt ++;
-    self.log("Error while sending buffer: ", {error: e}, 'ERROR');
+    this._failedAttempt++;
+    self.log("Error while sending buffer: ", {error : e}, 'ERROR');
   }
 
   this._log(" ");

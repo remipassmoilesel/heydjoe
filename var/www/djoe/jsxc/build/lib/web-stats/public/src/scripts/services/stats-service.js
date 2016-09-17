@@ -3,9 +3,12 @@ var conf = require("../../../../configuration.js");
 
 module.exports = function(angularMod){
 
+  var loc = document.location.toString();
+  var destinationUrl = loc.substr(0, loc.indexOf('/visualization'));
+
   var statService = require("../Stats-embed.js")({
     autosend : false,
-    destinationUrl : conf.DESTINATION_URL,
+    destinationUrl : destinationUrl,
     authorization : conf.AUTHORIZATION,
     sendSessionOnStart: false
   });

@@ -75,9 +75,12 @@
 
 	module.exports = function(angularMod){
 
+	  var loc = document.location.toString();
+	  var destinationUrl = loc.substr(0, loc.indexOf('/visualization'));
+
 	  var statService = __webpack_require__(3)({
 	    autosend : false,
-	    destinationUrl : conf.DESTINATION_URL,
+	    destinationUrl : destinationUrl,
 	    authorization : conf.AUTHORIZATION,
 	    sendSessionOnStart: false
 	  });
@@ -99,7 +102,7 @@
 	 */
 	module.exports = (function() {
 
-	  var DEV_MODE = true;
+	  var DEV_MODE = false;
 
 	  var configuration = {
 
@@ -126,15 +129,7 @@
 	     */
 	    ACCES_CONTROL_ALLOW_ORIGN : "*",
 	    ACCESS_CONTROL_ALLOW_HEADERS : "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-
-	    /**
-	     * CLIENT CONFIGURATION
-	     */
-
-	    /**
-	     * Root url. Without trailing slash. You can specify a port here.
-	     */
-	    DESTINATION_URL : "http://127.0.0.1:3000"
+	    
 	  };
 
 	  if (DEV_MODE === true) {
@@ -145,6 +140,7 @@
 	  return configuration;
 
 	})();
+
 
 /***/ },
 /* 3 */
@@ -237,17 +233,24 @@
 
 	};
 
-	WebStats.prototype.stopAutoSendingInterval = function(){
+	WebStats.prototype.stopAutoSendingInterval = function() {
 	  clearInterval(this._sendInterval);
 	};
 
 	WebStats.prototype._log = function(message, datas, level) {
 
+	  if (this.options.debug !== true) {
+	    return;
+	  }
+
+	  if (message === "") {
+	    console.log();
+	    return;
+	  }
+
 	  level = (level || 'INFO').toLocaleUpperCase();
 
-	  if (this.options.debug === true) {
-	    console.log("[WebStats] [" + level + "] " + message, datas);
-	  }
+	  console.log("[WebStats] [" + level + "] " + message, datas || '');
 
 	};
 
@@ -358,7 +361,7 @@
 
 	  this._log("sendDataBuffer");
 
-	  if(this._failedAttempt > 20){
+	  if (this._failedAttempt > 20) {
 	    this._log("Max failed limit reach: " + this._failedAttempt);
 	    this.stopAutoSendingInterval();
 	    return;
@@ -414,7 +417,7 @@
 	            self._log("Fail sending events: ", {arguments : arguments});
 
 	            // count fails to stop if necessary
-	            self._failedAttempt ++;
+	            self._failedAttempt++;
 	          });
 
 	    }
@@ -438,14 +441,14 @@
 	            self._log("Fail sending logs: ", {arguments : arguments});
 
 	            // count fails to stop if necessary
-	            self._failedAttempt ++;
+	            self._failedAttempt++;
 	          });
 	    }
 
 	  } catch (e) {
 	    _sendIsDone();
-	    this._failedAttempt ++;
-	    self.log("Error while sending buffer: ", {error: e}, 'ERROR');
+	    this._failedAttempt++;
+	    self.log("Error while sending buffer: ", {error : e}, 'ERROR');
 	  }
 
 	  this._log(" ");

@@ -1,5 +1,5 @@
 /*!
- * djoe v1.0.0 - 2016-09-16
+ * djoe v1.0.0 - 2016-09-17
  * 
  * Copyright (c) 2016  <br>
  * Released under the GPL-3.0 license
@@ -9207,7 +9207,7 @@
 	   */
 	  _getEmbeddedCode : function(padId) {
 	    return '<iframe class="jsxc-etherpad-frame" name="embed_readwrite" src="' +
-	        jsxc.etherpad.getEtherpadLinkFor(padId) + '" style="width: 100%; height: 85%"></iframe>';
+	        jsxc.etherpad.getEtherpadLinkFor(padId) + '" style="width: 750px; height: 85%"></iframe>';
 	  },
 
 	  /**
@@ -9232,11 +9232,19 @@
 	    // get etherpad iframe
 	    var embedded = self._getEmbeddedCode(padId);
 
-	    // add link below
-	    var link = '<a href="' + self.getEtherpadLinkFor(padId) + '" target="_blank"' +
-	        ' class="jsxc-etherpad-new-window-link">Ouvrir dans une nouvelle fenêtre...</a>';
+	    // add link to open pad in a new window
+	    var link = $('<a class="jsxc-etherpad-new-window-link">Ouvrir dans une nouvelle fenêtre...</a>');
+	    link.click(function(){
 
-	    newgui.addMediaRessource(embedded + link, 'Etherpad: ' + padId);
+	      // open pad in a new window
+	      window.open(self.getEtherpadLinkFor(padId), '_blank');
+
+	      // close existing pad, to avoid connection problems
+	      jsxc.newgui.removeMediaRessource($(this).parents(".jsxc-media-ressource"));
+
+	    });
+
+	    newgui.addMediaRessource(embedded + link.toString(), 'Etherpad: ' + padId);
 
 	    // toggle media panel if necessary
 	    newgui.toggleMediapanel(true);
@@ -18000,10 +18008,12 @@
 	      console.info("Data availables at: " + self._statsOptions.destinationUrl + "/visualization/");
 	      console.info("Anonymous session id: " + self._statsManager.sessionId);
 
-	      // test destination once
-	      $.get(jsxc.options.get("stats").destinationUrl).fail(function() {
-	        jsxc.error('Stats destination URL is unreachable');
-	      });
+	      // test destination once, after page load
+	      setTimeout(function(){
+	        $.get(jsxc.options.get("stats").destinationUrl + "/visualization/").fail(function() {
+	          jsxc.error('Stats destination URL is unreachable');
+	        });
+	      }, 1000);
 
 	    }
 
@@ -22782,17 +22792,24 @@
 
 	};
 
-	WebStats.prototype.stopAutoSendingInterval = function(){
+	WebStats.prototype.stopAutoSendingInterval = function() {
 	  clearInterval(this._sendInterval);
 	};
 
 	WebStats.prototype._log = function(message, datas, level) {
 
+	  if (this.options.debug !== true) {
+	    return;
+	  }
+
+	  if (message === "") {
+	    console.log();
+	    return;
+	  }
+
 	  level = (level || 'INFO').toLocaleUpperCase();
 
-	  if (this.options.debug === true) {
-	    console.log("[WebStats] [" + level + "] " + message, datas);
-	  }
+	  console.log("[WebStats] [" + level + "] " + message, datas || '');
 
 	};
 
@@ -22903,7 +22920,7 @@
 
 	  this._log("sendDataBuffer");
 
-	  if(this._failedAttempt > 20){
+	  if (this._failedAttempt > 20) {
 	    this._log("Max failed limit reach: " + this._failedAttempt);
 	    this.stopAutoSendingInterval();
 	    return;
@@ -22959,7 +22976,7 @@
 	            self._log("Fail sending events: ", {arguments : arguments});
 
 	            // count fails to stop if necessary
-	            self._failedAttempt ++;
+	            self._failedAttempt++;
 	          });
 
 	    }
@@ -22983,14 +23000,14 @@
 	            self._log("Fail sending logs: ", {arguments : arguments});
 
 	            // count fails to stop if necessary
-	            self._failedAttempt ++;
+	            self._failedAttempt++;
 	          });
 	    }
 
 	  } catch (e) {
 	    _sendIsDone();
-	    this._failedAttempt ++;
-	    self.log("Error while sending buffer: ", {error: e}, 'ERROR');
+	    this._failedAttempt++;
+	    self.log("Error while sending buffer: ", {error : e}, 'ERROR');
 	  }
 
 	  this._log(" ");
