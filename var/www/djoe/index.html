@@ -33,9 +33,11 @@
   <meta property="og:description" content="Hey Djoe ! All you need for instant messaging."/>
   <meta property="og:site_name" content="Hey Djoe"/>
 
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+  <link href="jquery.xmppinspector/jquery.xmppinspector.css" media="all" rel="stylesheet" type="text/css"/>
   <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
   <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/github-light.css">
-  <link rel="stylesheet" href="stylesheets/override.css">
+  <link rel="stylesheet" href="stylesheets/index.css">
 
   <!-- XMPP client dependencies -->
 
@@ -54,7 +56,10 @@
 
   <!-- end XMPP client -->
 
-  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+  <script type="text/javascript" src="bower_components/chance/chance.js"></script>
+  <script type="text/javascript" src="jquery.eventconsole/jquery.eventconsole.js"></script>
+  <script type="text/javascript" src="jquery.xmppinspector/jquery.xmppinspector.js"></script>
+  <script type="text/javascript" src="jquery.storageconsole/jquery.storageconsole.js"></script>
 
   <script type="text/javascript" src="bower_components/chance/chance.js"></script>
   <script type="text/javascript" src="javascripts/main.js"></script>
@@ -82,6 +87,7 @@
 
 <!-- MAIN CONTENT -->
 <div id="main_content_wrap" class="outer">
+
   <section id="main_content" class="inner">
 
     <h3>
@@ -132,12 +138,56 @@
     </pre>
 
     <h3>
-      <a id="onlyfrench" class="anchor" href="#install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>
-      Only in French ?
-    </h3>
+      <a id="integration" class="anchor" href="#install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>
+      Integration</h3>
 
-    Unfortunately Djoe is only available in French for now.
-    Djoe is an internship project and will require time to be improved.
+    Once the server is installed , you can integrate the client into your web page with a few lines
+    of code :
+
+    <!-- HTML generated using hilite.me -->
+    <pre style="line-height: 125%; margin-top: 1em;background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;">
+
+<span style="color: #888888">&lt;!-- XMPP client dependencies --&gt;</span>
+
+<span style="color: #007700">&lt;link</span> <span style="color: #0000CC">href=</span><span style="background-color: #fff0f0">&quot;bower_components/jquery-ui/themes/base/jquery-ui.css&quot;</span> <span style="color: #0000CC">media=</span><span style="background-color: #fff0f0">&quot;all&quot;</span> <span style="color: #0000CC">rel=</span><span style="background-color: #fff0f0">&quot;stylesheet&quot;</span> <span style="color: #0000CC">type=</span><span style="background-color: #fff0f0">&quot;text/css&quot;</span><span style="color: #007700">/&gt;</span>
+<span style="color: #007700">&lt;script </span><span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot;bower_components/jquery/dist/jquery.js&quot;</span><span style="color: #007700">&gt;&lt;/script&gt;</span>
+<span style="color: #007700">&lt;script </span><span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot;bower_components/jquery-ui/jquery-ui.js&quot;</span><span style="color: #007700">&gt;&lt;/script&gt;</span>
+
+<span style="color: #888888">&lt;!-- end XMPP client dependencies --&gt;</span>
+
+<span style="color: #888888">&lt;!-- XMPP client --&gt;</span>
+
+<span style="color: #007700">&lt;link</span> <span style="color: #0000CC">href=</span><span style="background-color: #fff0f0">&quot;jsxc/build/css/jsxc.css&quot;</span> <span style="color: #0000CC">media=</span><span style="background-color: #fff0f0">&quot;all&quot;</span> <span style="color: #0000CC">rel=</span><span style="background-color: #fff0f0">&quot;stylesheet&quot;</span> <span style="color: #0000CC">type=</span><span style="background-color: #fff0f0">&quot;text/css&quot;</span><span style="color: #007700">/&gt;</span>
+<span style="color: #007700">&lt;script </span><span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot;jsxc/build/lib/jsxc.dep.js&quot;</span><span style="color: #007700">&gt;&lt;/script&gt;</span>
+<span style="color: #007700">&lt;script </span><span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot;jsxc/build/jsxc.js&quot;</span><span style="color: #007700">&gt;&lt;/script&gt;</span>
+<span style="color: #007700">&lt;script </span><span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot;jsxc/build/jsxc_init.js&quot;</span><span style="color: #007700">&gt;&lt;/script&gt;</span>
+
+<span style="color: #888888">&lt;!-- end XMPP client --&gt;</span>
+
+    </pre>
+
+    <h3>
+      <a id="devInf" class="anchor" href="#install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>
+      Informations for developers</h3>
+
+    <div>
+      <button id="deployDevInf">Display informations</button>
+
+      <div id="developperInformations">
+
+        <div id="links"></div>
+
+        <!-- XMPP Inspector -->
+        <div id="xmppInspector"></div>
+
+        <!-- Jquery event console -->
+        <div id="eventsConsole"></div>
+
+        <!-- Storage console-->
+        <div id="storageConsole"></div>
+
+      </div>
+    </div>
 
 
   </section>

@@ -7,6 +7,25 @@ $(function() {
   var defaultPassword = "azerty";
 
   /**
+   * Developpers informations
+   */
+
+  var devBlock = $("#developperInformations");
+  $("#deployDevInf").click(function() {
+    if (devBlock.is(':visible') === false) {
+      devBlock.css({'display' : 'block', 'opacity' : '0'}).animate({opacity : '1'}, 1000);
+    }
+  });
+
+  // Initialize consoles
+  $("#eventsConsole").eventConsole();
+  $("#storageConsole").storageConsole();
+
+  $(document).on("attached.jsxc", function() {
+    $("#xmppInspector").xmppInspector(jsxc.xmpp.conn);
+  });
+
+  /**
    * Connection feedbacks
    *
    */
@@ -103,7 +122,7 @@ $(function() {
 
         });
 
-    setTimeout(function(){
+    setTimeout(function() {
       jsxc.newgui.toggleChatSidebar(true);
     }, 3000);
 
