@@ -1,23 +1,10 @@
-/*!
- * djoe v1.0.0 - 2016-09-17
- * 
- * Copyright (c) 2016  <br>
- * Released under the GPL-3.0 license
- * 
- * Please see 
- * 
- * @author 
- * @version 1.0.0
- * @license MIT
- */
-
 $(function() {
 
   "use strict";
 
   jsxc.debug("Initializing instant messaging");
 
-  var httpDomain = "heydjoe.ddns.net";
+  var httpDomain = "hey-djoe.fr";
   var xmppDomain = "heydjoe.xmpp";
 
   // etherpad resource
@@ -80,7 +67,7 @@ $(function() {
     },
 
     // if lot of 404 errors precise jsxc root
-    root : 'jsxc/dev',
+    root : 'jsxc/build',
 
     // stat module. save and monitor events
     stats : {

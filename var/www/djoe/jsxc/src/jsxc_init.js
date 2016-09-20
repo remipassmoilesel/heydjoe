@@ -4,7 +4,7 @@ $(function() {
 
   jsxc.debug("Initializing instant messaging");
 
-  var httpDomain = "heydjoe.ddns.net";
+  var httpDomain = "hey-djoe.fr";
   var xmppDomain = "heydjoe.xmpp";
 
   // etherpad resource
