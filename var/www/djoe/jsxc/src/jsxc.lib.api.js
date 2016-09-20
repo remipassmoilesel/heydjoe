@@ -270,7 +270,8 @@ jsxc.api = {
 
       // append canvas and script tags
       template.append("<canvas id='alienInvasionCanvas' width='320' height='480'></canvas>");
-      template.append("<div><a href='https://github.com/cykod/AlienInvasion/' target='_blank'>" +
+      template.append(
+          "<div><a href='https://github.com/cykod/AlienInvasion/' target='_blank' style='font-size: 0.7em'>" +
           "Thanks to https://github.com/cykod/AlienInvasion/</a></div>");
       template.append("<script src='" + root + "engine.js'></script><script src='" + root +
           "game.js'></script>");
@@ -302,7 +303,7 @@ jsxc.api = {
 
       width : 353,
 
-      height : 550,
+      height : 600,
 
       resizable : false
     });
