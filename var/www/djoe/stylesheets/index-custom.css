@@ -6,3 +6,9 @@
   font-size: 12px;
   line-height: normal;
 }
+
+#feedbackArea{
+  color: #333333;
+  font-style: italic;
+  text-align: right;
+}
