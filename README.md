@@ -82,8 +82,12 @@ Djoe is an internship project, the final report is available here: https://githu
 
 To know more check the `var/www/documentation/` folder. Project is in progress, so documentation too.
 
+## What is the status of this project?
+
+Djoe is an internship project currently in beta version. In its current state it is usable but it 
+requires a bit of work to be improved and fully operational. 
+
 ## Only in French ?
 
-Unfortunately Djoe is only available in French for now. 
-Djoe is an internship project and will require time to be improved.
+Translation is in progress :)
 
