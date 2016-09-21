@@ -494,10 +494,12 @@ $.extend(jsxc.newgui, {
       var login = $('#jsxc-connexion-login').val();
       var password = $('#jsxc-connexion-password').val();
 
-      if (!login) {
+      if (!login || login.indexOf('@') !== -1) {
         jsxc.gui.feedback('Identifiant incorrect');
         return;
       }
+
+      login = login + "@" + jsxc.options.xmpp.domain;
 
       if (!password) {
         jsxc.gui.feedback('Mot de passe incorrect');
