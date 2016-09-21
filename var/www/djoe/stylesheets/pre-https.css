@@ -4,19 +4,18 @@ body {
   font-size: 13px;
 }
 
-
 .header {
   clear: both;
   margin-bottom: 2em;
   color: #31bc2b;
 }
 
-table{
+table {
   margin: 1em;
   width: 35%;
 }
 
-td{
+td {
   padding: 0.4em;
   border-bottom: solid 1px silver;
   width: 50%;
@@ -34,11 +33,11 @@ td{
 
 }
 
-#content a{
+#content a {
   text-decoration: none;
 }
 
-#content a:hover{
+#content a:hover {
   text-decoration: underline;
 }
 
@@ -48,69 +47,8 @@ td{
   color: #1c94d4;
 }
 
-.mainLogo {
-  float: right;
-  height: 120px;
-  width: 120px;
-  background-repeat: no-repeat;
-  background-position: -50px 0px;
-  background-size: 200px;
-  background-image: url('../images/cosse-chantier.png');
-}
-
-.usageWarning {
-  color: #5b1c5d;
+.jsxc_noscript_warning {
+  background: black;
+  color: white;
   font-weight: bolder;
 }
-
-#links {
-  margin: 15px;
-}
-
-#links .name {
-  width: 40%;
-  display: inline-block;
-}
-
-#developperInformations {
-  display: none;
-  overflow: auto;
-  margin-top: 1em;
-}
-
-#storageConsole {
-  margin: 15px;
-}
-
-#xmppInspector {
-  margin: 15px;
-}
-
-#eventsConsole {
-  margin: 15px;
-}
-
-#connexionForm ul {
-  margin-bottom: 1em;
-}
-
-#connexionForm ul {
-  list-style: none;
-}
-
-#connexionForm li {
-  margin: 1em;
-}
-
-#connexionForm .fieldDescription {
-  width: 60%;
-  display: inline-block;
-}
-
-#feedbackArea {
-  color: darkGray;
-  font-weight: bolder;
-  font-style: italic;
-  text-align: right;
-}
-

@@ -21,19 +21,38 @@
 <!-- Warning for non javascript users -->
 
 <noscript>
-  <div id="jsxc_noscript_warning">Vous devez activer Javascript pour utiliser la messagerie</div>
+  <div class="jsxc_noscript_warning">Vous devez activer Javascript pour utiliser la messagerie</div>
+  <div class="jsxc_noscript_warning">You must enable Javascript to use this website</div>
 </noscript>
 
 <!-- Main content -->
 
 <div id="content">
 
+  <h1>Redirect to the secured area</h1>
+
+  <p>
+    You will soon be redirected to the secure area . This platform uses
+    uncertified certificates, meaning that <b> communication between you and this platform are
+    encrypted</b>, but no one certifies the identity of the owner of this platform.
+  </p>
+
+  <p>Therefore your browser will warn you of danger. If you want to use
+    platform , skip this warning ( eg using "Advanced" > " Add an exception
+    Security" > "Confirm Security Exception")</p>
+
+  <p>
+    <a class="go-to-https" href="#">Continue to the secured area</a>
+  </p>
+
+  <div>&nbsp;</div>
+
   <h1>Redirection vers l'espace sécurisé</h1>
 
   <p>
     Vous allez bientôt être redirigé vers l'espace sécurisé. Cette plateforme utilise des
-    certificats non certifiés, ce qui signifie que <b>les communications entre vous et cette plateforme sont cryptées</b>, mais
-    que personne ne certifie l'identité du propriétaire de cette plateforme.
+    certificats non certifiés, ce qui signifie que <b>les communications entre vous et cette plateforme
+    sont cryptées</b>, mais que personne ne certifie l'identité du propriétaire de cette plateforme.
   </p>
 
   <p>Par conséquent votre navigateur va vous prévenir d'un danger. Si vous souhaitez utiliser la
@@ -41,24 +60,25 @@
     sécurité" > "Confirmer l'exception de sécurité")</p>
 
   <p>
-    <a id="go-to-https" href="#">Continuer vers l'espace sécurisé</a>
+    <a class="go-to-https" href="#">Continuer vers l'espace sécurisé</a>
   </p>
 
-  <script>
-    $(function() {
+</div>
 
-      $("#go-to-https").click(function() {
 
-        // change dynamically location to secure space
-        var loc = String(document.location).replace('pre-https.html', '').replace('http', 'https');
-        window.location.href = loc;
+<script>
+  $(function() {
 
-      });
+    $(".go-to-https").click(function() {
+
+      // change dynamically location to secure space
+      var loc = String(document.location).replace('pre-https.html', '').replace('http', 'https');
+      window.location.href = loc;
 
     });
-  </script>
 
-</div>
+  });
+</script>
 
 </body>
 
