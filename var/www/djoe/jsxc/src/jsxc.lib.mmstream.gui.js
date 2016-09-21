@@ -250,7 +250,7 @@ jsxc.mmstream.gui = {
       'noClose' : true
     });
 
-    $("#jsxc-chrome-extension-url").click(function(){
+    $("#jsxc-chrome-extension-link").click(function(){
       window.open(jsxc.options.get('chromeExtensionURL'));
     });
     
@@ -553,7 +553,7 @@ jsxc.mmstream.gui = {
 
     bid = jsxc.jidToBid(bid);
 
-    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('reinviteUser_' + mode, bid), {
+    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('reinviteUser_' + mode, Strophe.getNodeFromJid(bid)), {
       noClose : true, name : 'reinvite_user'
     });
 

@@ -35,10 +35,11 @@
     -->
     <div id="jsxc-action-bar">
 
-      <a id="jsxc-new-gui-filter-users">Utilisateurs</a>
-      <a id="jsxc-new-gui-filter-conversations">Discussions</a>
+      <a id="jsxc-new-gui-filter-users" data-i18n="users"></a>
+      <a id="jsxc-new-gui-filter-conversations" data-i18n="conversations"></a>
 
-      <a id="jsxc-select-buddies">Sélectionner <span class="jsxc-selected-number"></span></a>
+      <a id="jsxc-select-buddies">
+        <span data-i18n="select"></span> <span class="jsxc-selected-number"></span></a>
 
       <span id="jsxc-toggle-actions"></span>
 
@@ -61,24 +62,22 @@
 
       <div id="jsxc-settings-menu" class="jsxc-viewport-content">
 
-        <div class="jsxc-title">Paramètres</div>
+        <div class="jsxc-title" data-i18n="parameters"></div>
 
-        <a class="jsxc-action jsxc-action_toggleMuteMode">Jouer les sons</a>
-        <a class="jsxc-action jsxc-action_toggleNotifications">Afficher les notifications</a>
-        <a class="jsxc-action jsxc-action_disableVideoCalls">Interdire les appels vidéo</a>
-
-        <div class="jsxc-content-separator"></div>
-
-        <a class="jsxc-action jsxc-action_clearLocalHistory">Effacer l'historique local des
-          conversations</a>
-        <a class="jsxc-action jsxc-action_installScreenSharingExtension">Extension de capture
-          d'écran</a>
+        <a class="jsxc-action jsxc-action_toggleMuteMode" data-i18n="play_sounds"></a>
+        <a class="jsxc-action jsxc-action_toggleNotifications" data-i18n="display_notifications"></a>
+        <a class="jsxc-action jsxc-action_disableVideoCalls" data-i18n="disable_video_calls"></a>
 
         <div class="jsxc-content-separator"></div>
 
-        <a class="jsxc-action jsxc-action_showCollectedDatas">Données collectées</a>
+        <a class="jsxc-action jsxc-action_clearLocalHistory" data-i18n="clear_local_conversations_history"></a>
+        <a class="jsxc-action jsxc-action_installScreenSharingExtension" data-i18n="screensharing_extension"></a>
 
-        <a class="jsxc-action jsxc-show-about-dialog">A propos</a>
+        <div class="jsxc-content-separator"></div>
+
+        <a class="jsxc-action jsxc-action_showCollectedDatas" data-i18n="collected_datas"></a>
+
+        <a class="jsxc-action jsxc-show-about-dialog" data-i18n="About"></a>
 
       </div>
 
@@ -91,7 +90,7 @@
 
       <div id="jsxc-help-menu" class="jsxc-viewport-content">
 
-        <div class="jsxc-title">Aide</div>
+        <div class="jsxc-title" data-i18n="help"></div>
 
         <ul id="jsxc-help-tutorial-list"></ul>
 
@@ -106,27 +105,27 @@
 
       <div id="jsxc-main-menu" class="jsxc-viewport-content">
 
-        <div class="jsxc-title">Menu</div>
+        <div class="jsxc-title" data-i18n="menu"></div>
 
-        <a class="jsxc-action jsxc-action_search-user">Rechercher un utilisateur</a>
-        <a class="jsxc-action jsxc-action_manage-notifications">Notifications
+        <a class="jsxc-action jsxc-action_search-user" data-i18n="search_user"></a>
+        <a class="jsxc-action jsxc-action_manage-notifications" data-i18n="notifications">
           &nbsp;<span class="jsxc_menu_notif_number"></span></a>
 
         <div class="jsxc-content-separator"></div>
 
-        <a class="jsxc-action jsxc-action_new-conversation">Nouvelle conversation</a>
-        <a class="jsxc-action jsxc-action_invite-in-conversation">Inviter dans une conversation</a>
-        <a class="jsxc-action jsxc-action_new-etherpad-document">Ouvrir un document Etherpad</a>
+        <a class="jsxc-action jsxc-action_new-conversation" data-i18n="new_conversation"></a>
+        <a class="jsxc-action jsxc-action_invite-in-conversation" data-i18n="invite_in_conversation"></a>
+        <a class="jsxc-action jsxc-action_new-etherpad-document" data-i18n="open_etherpad"></a>
 
         <div class="jsxc-content-separator"></div>
 
-        <a class="jsxc-action jsxc-action jsxc-action_video-call">Appel vidéo</a>
-        <a class="jsxc-action jsxc-action_videoconference">Vidéoconférence</a>
-        <a class="jsxc-action jsxc-action_screensharing">Partager mon écran</a>
+        <a class="jsxc-action jsxc-action jsxc-action_video-call" data-i18n="video_call"></a>
+        <a class="jsxc-action jsxc-action_videoconference" data-i18n="videoconference"></a>
+        <a class="jsxc-action jsxc-action_screensharing" data-i18n="share_screen"></a>
 
         <div class="jsxc-content-separator"></div>
 
-        <a class="jsxc-action jsxc-action_delete-buddies">Supprimer</a>
+        <a class="jsxc-action jsxc-action_delete-buddies" data-i18n="delete"></a>
 
       </div>
 
@@ -138,11 +137,12 @@
 
       <div id="jsxc-search-users" class="jsxc-viewport-content">
 
-        <div class="jsxc-title">Rechercher</div>
+        <div class="jsxc-title" data-i18n="search"></div>
 
-        <input id="jsxc-chat-sidebar-search" placeholder="Rechercher ..." type="text"/>
-        <input id="jsxc-chat-sidebar-search-invite" class="btn btn-default" value="Inviter" type="button"/>
-        <input id="jsxc-chat-sidebar-search-chat" class="btn btn-primary" value="Discuter" type="button"/>
+        <input id="jsxc-chat-sidebar-search" placeholder="..." type="text"/>
+
+        <button id="jsxc-chat-sidebar-search-chat" class="btn btn-default" data-i18n="discuss"/>
+        <button id="jsxc-chat-sidebar-search-invite" class="btn btn-primary" data-i18n="invite"/>
 
         <div class="jsxc-search-users-results">
 
@@ -157,10 +157,12 @@
       -->
       <div id="jsxc-manage-notifications" class="jsxc-viewport-content">
 
-        <div class="jsxc-title">Notifications <span class="jsxc_menu_notif_number"></span></div>
+        <div class="jsxc-title">
+          <span data-i18n="notifications"></span>&nbsp;
+          <span class="jsxc_menu_notif_number"></span></div>
 
-        <a class="jsxc-action jsxc-action_rejectAllNotifications">Tout rejeter</a>
-        <a class="jsxc-action jsxc-action_notificationsParameters">Paramètres</a>
+        <a class="jsxc-action jsxc-action_rejectAllNotifications" data-i18n="reject_all"></a>
+        <a class="jsxc-action jsxc-action_notificationsParameters" data-i18n="parameters"></a>
 
         <div id="jsxc-notifications">
           <ul></ul>
@@ -175,23 +177,21 @@
       -->
       <div id="jsxc-connexion-menu" class="jsxc-viewport-content">
 
-        <div class="jsxc-title">Connexion</div>
+        <div class="jsxc-title" data-i18n="connection"></div>
 
-        <p>Identifiant: </p>
+        <p data-i18n="login"></p>
         <input type="text" id="jsxc-connexion-login"/>
 
-        <p>Mot de passe: </p>
+        <p data-i18n="password"></p>
         <input type="password" id="jsxc-connexion-password"/>
 
-        <input type="button" id="jsxc-connexion-submit" class="btn btn-primary" value="Connexion"/>
+        <button id="jsxc-connexion-submit" class="btn btn-primary" data-i18n="connect_me">
+        </button>
 
-        <div id="jsxc-login-standby">
-          Veuillez patienter ....
+        <div id="jsxc-login-standby" data-i18n="please_stand_by">
         </div>
 
-        <div id="jsxc-login-warning">
-          Echec de la connexion. Si ce problème persiste, rafraichissez la
-          page et essayez à nouveau.
+        <div id="jsxc-login-warning" data-i18n="connection_if_problem_persist">
         </div>
 
       </div>
@@ -231,8 +231,8 @@
         <option value="dnd" class="jsxc_dnd" data-i18n="dnd"></option>
       </select>
 
-      <span class="jsxc-login-button" title="Connexion"></span>
-      <span class="jsxc-logout-button" title="Déconnexion"></span>
+      <span class="jsxc-login-button"></span>
+      <span class="jsxc-logout-button"></span>
 
     </div>
 
