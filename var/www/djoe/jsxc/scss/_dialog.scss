@@ -1,5 +1,8 @@
 
 #jsxc_dialog {
+
+  font-size: 1em !important;
+
   padding: 20px;
   min-width: 320px;
   max-width: 100%;
@@ -139,5 +142,9 @@
   .btn-primary {
     background: #337ab7 !important;
     color: #fff !important
+  }
+
+  #jsxc-chrome-extension-link {
+    cursor: pointer
   }
 }
