@@ -81,7 +81,7 @@ jsxc.etherpad = {
 
     if (self.isEtherpadEnabled() === false) {
       jsxc.warn('Etherpad not enabled');
-      jsxc.gui.feedback("Etherpad n'est pas activé.");
+      jsxc.gui.feedback("__i18nid_:etherpad_not_enabled", null, "warn");
       return;
     }
 
@@ -91,7 +91,7 @@ jsxc.etherpad = {
     var embedded = self._getEmbeddedCode(padId);
 
     // add link to open pad in a new window
-    var link = $('<a class="jsxc-etherpad-new-window-link">Ouvrir dans une nouvelle fenêtre...</a>');
+    var link = $('<a class="jsxc-etherpad-new-window-link">' + jsxc.t('open_pad_in_new_window') + '</a>');
     link.click(function(){
 
       // open pad in a new window
@@ -227,14 +227,14 @@ jsxc.etherpad = {
       // we have been just invited
       if (self.XMPP_INVITATIONS.STATUS_INVITATION === status) {
 
-        jsxc.notice.add(node + " vous invite à partager un document Etherpad", "",
+        jsxc.notice.add(node + " " + jsxc.t('invite_you_to_share_etherpad'), "",
             'gui.showIncomingEtherpadDialog', [from, padId, invitationId]);
 
       }
 
       // someone refused a pad
       else if (self.XMPP_INVITATIONS.STATUS_REFUSED === status) {
-        jsxc.gui.feedback("<b>" + node + "</b> a refusé le document");
+        jsxc.gui.feedback("__i18nid_:has_refused_pad", {user: node});
       }
 
     }
