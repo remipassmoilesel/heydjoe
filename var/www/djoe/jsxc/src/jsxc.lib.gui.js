@@ -925,21 +925,33 @@ jsxc.gui = {
 
   },
 
+  _feedbackI18nMark : '__i18nid_:',
+
   /**
-   * Show a feedback message. Type can be 'info' or 'warn'
+   * Show a feedback message. Type can be 'info' or 'warn'.
+   *
+   * If message is prefixed with: '__i18nid_:' it will be used as an i18n id.
    *
    * @param selector
    * @returns {JQuery|jQuery|HTMLElement}
    */
-  feedback : function(message, type, timeout) {
+  feedback : function(message, subst, type, timeout) {
+
+    var self = jsxc.gui;
 
     var defaultType = "info";
 
+    // message is an i18n id
+    if (message.indexOf(self._feedbackI18nMark) === 0) {
+      var i18nid = message.substring(self._feedbackI18nMark.length, message.length);
+      message = jsxc.t(i18nid, subst);
+    }
+
     var bgColors = {
-      info : '#1a1a1a', warn : '#520400',
+      info : '#1a1a1a', warn : '#320400'
     };
     var icons = {
-      info : 'info', warn : 'warning',
+      info : 'info', warn : 'warning'
     };
 
     // show the toast
@@ -1086,8 +1098,7 @@ jsxc.gui = {
     var defer = $.Deferred();
 
     // show dialog
-    jsxc.gui.dialog.open(
-        jsxc.gui.template.get('incomingEtherpad', Strophe.getNodeFromJid(from)));
+    jsxc.gui.dialog.open(jsxc.gui.template.get('incomingEtherpad', Strophe.getNodeFromJid(from)));
 
     $('#jsxc_dialog .jsxc_confirm').click(function(ev) {
       ev.stopPropagation();
