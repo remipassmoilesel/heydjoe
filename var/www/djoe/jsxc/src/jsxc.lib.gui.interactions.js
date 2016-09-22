@@ -98,7 +98,7 @@ jsxc.gui.interactions = {
 
       jsxc.xmpp.changeOwnPresence(statusSelect.val());
 
-      jsxc.gui.feedback('Statut mis à jour');
+      jsxc.gui.feedback("__i18nid_:status_updated");
 
     });
 
@@ -131,7 +131,7 @@ jsxc.gui.interactions = {
             jsxc.api.createNewConversationWith(selected);
           })
           .fail(function() {
-            jsxc.gui.feedback('Opération annulée');
+            jsxc.gui.feedback("__i18nid_:operation_canceled");
           });
 
     });
@@ -149,7 +149,7 @@ jsxc.gui.interactions = {
 
             // check if buddies are checked
             if (buddies.length < 1) {
-              jsxc.gui.feedback("Vous devez sélectionner un élément au moins");
+              jsxc.gui.feedback("__i18nid_:you_must_select_at_least_one_element");
               return;
             }
 
@@ -165,7 +165,7 @@ jsxc.gui.interactions = {
           })
 
           .fail(function() {
-            jsxc.gui.feedback("Opération annulée");
+            jsxc.gui.feedback("__i18nid_:operation_canceled");
           });
 
     });
@@ -180,7 +180,7 @@ jsxc.gui.interactions = {
           .then(function(buddies) {
 
             if (buddies.length < 1) {
-              jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+              jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
               return;
             }
 
@@ -196,7 +196,7 @@ jsxc.gui.interactions = {
                 .done(function(conversations) {
 
                   if (conversations.length < 1) {
-                    jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+                    jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
                     return;
                   }
 
@@ -204,16 +204,21 @@ jsxc.gui.interactions = {
                     jsxc.muc.inviteParticipants(cjid, toInvite);
                   });
 
-                  jsxc.gui.feedback("Les utilisateurs ont été invités");
+                  if(toInvite.length > 1){
+                    jsxc.gui.feedback("__i18nid_:users_have_been_invited", {users: toInvite.join(', ')});
+                  }
+                  else {
+                    jsxc.gui.feedback("__i18nid_:user_have_been_invited", {user: toInvite[0]});
+                  }
 
                 })
 
                 .fail(function() {
-                  jsxc.gui.feedback("Opération annulée");
+                  jsxc.gui.feedback("__i18nid_:operation_canceled");
                 });
           })
           .fail(function() {
-            jsxc.gui.feedback('Opération annulée');
+            jsxc.gui.feedback("__i18nid_:operation_canceled");
           });
 
     });
@@ -232,7 +237,7 @@ jsxc.gui.interactions = {
 
           .then(function(res) {
 
-            jsxc.gui.feedback("Le document va être ouvert");
+            jsxc.gui.feedback("__i18nid_:document_will_be_opened");
 
             jsxc.etherpad.openpad(res.name);
 
@@ -242,7 +247,7 @@ jsxc.gui.interactions = {
           })
 
           .fail(function() {
-            jsxc.gui.feedback("Opération annulée");
+            jsxc.gui.feedback("__i18nid_:operation_canceled");
           });
 
     });
@@ -260,7 +265,7 @@ jsxc.gui.interactions = {
           .then(function(buddies) {
 
             if (buddies.length < 1) {
-              jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+              jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
               return;
             }
 
@@ -281,12 +286,12 @@ jsxc.gui.interactions = {
 
             // check how many participants are unavailable
             if (unavailables.length === 1) {
-              jsxc.gui.feedback("<b>" + unavailables[0] + "</b> n'est pas disponible");
+              jsxc.gui.feedback("_i18nid:is_not_available", {user : unavailables[0]});
               return;
             }
 
             else if (unavailables.length > 1) {
-              jsxc.gui.feedback("<b>" + unavailables.join(", ") + "</b> ne sont pas disponibles");
+              jsxc.gui.feedback("_i18nid:are_not_available", {users : unavailables.join(", ")});
               return;
             }
 
@@ -297,7 +302,7 @@ jsxc.gui.interactions = {
 
           })
           .fail(function() {
-            jsxc.gui.feedback('Opération annulée');
+            jsxc.gui.feedback("__i18nid_:operation_canceled");
           });
 
     });
@@ -315,12 +320,12 @@ jsxc.gui.interactions = {
           .then(function(buddies) {
 
             if (buddies.length < 1) {
-              jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+              jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
               return;
             }
 
             if (buddies.length > mmstream.VIDEOCONFERENCE_MAX_PARTICIPANTS) {
-              jsxc.gui.feedback("La vidéoconférence est limitée à 6 participants");
+              jsxc.gui.feedback("__i18nid_:videoconference_is_limited_to_6");
               return;
             }
 
@@ -341,12 +346,12 @@ jsxc.gui.interactions = {
 
             // check how many participants are unavailable
             if (unavailables.length === 1) {
-              jsxc.gui.feedback("<b>" + unavailables[0] + "</b> n'est pas disponible");
+              jsxc.gui.feedback("_i18nid:is_not_available", {user : unavailables[0]});
               return;
             }
 
             else if (unavailables.length > 1) {
-              jsxc.gui.feedback("<b>" + unavailables.join(", ") + "</b> ne sont pas disponibles");
+              jsxc.gui.feedback("_i18nid:are_not_available", {users : unavailables.join(", ")});
               return;
             }
 
@@ -355,7 +360,7 @@ jsxc.gui.interactions = {
 
           })
           .fail(function() {
-            jsxc.gui.feedback('Opération annulée');
+            jsxc.gui.feedback("__i18nid_:operation_canceled");
           });
 
     });
@@ -373,7 +378,7 @@ jsxc.gui.interactions = {
           .then(function(buddies) {
 
             if (buddies.length < 1) {
-              jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+              jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
               return;
             }
 
@@ -405,13 +410,13 @@ jsxc.gui.interactions = {
 
                   // check how many participants are unavailable
                   if (unavailables.length === 1) {
-                    jsxc.gui.feedback("<b>" + unavailables[0] + "</b> n'est pas disponible");
+                    jsxc.gui.feedback("_i18nid:is_not_available", {user : unavailables[0]});
                     return;
                   }
 
                   else if (unavailables.length > 1) {
-                    jsxc.gui.feedback(
-                        "<b>" + unavailables.join(", ") + "</b> ne sont pas disponibles");
+                    jsxc.gui.feedback("_i18nid:are_not_available",
+                        {users : unavailables.join(", ")});
                     return;
                   }
 
@@ -503,7 +508,7 @@ jsxc.gui.interactions = {
         jsxc.gui.window.clear(jid);
       });
 
-      jsxc.gui.feedback("L'historique a été éffacé avec succès");
+      jsxc.gui.feedback("_i18nid:local_history_clean_success");
 
     });
 
@@ -608,7 +613,7 @@ jsxc.gui.interactions = {
       var checkedElements = self._getCheckedSearchUsers();
 
       if (checkedElements.length < 1) {
-        jsxc.gui.feedback("Vous devez choisir au moins un contact");
+        jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
         return false;
       }
 
@@ -625,10 +630,11 @@ jsxc.gui.interactions = {
 
       });
 
-      if (invited.length < 2) {
-        jsxc.gui.feedback("<b>" + invited[0] + "</b> a été invité");
-      } else {
-        jsxc.gui.feedback("Ces utilisateurs ont été invité: <b>" + invited.join(", ") + "</b>");
+      if(invited.length > 1){
+        jsxc.gui.feedback("__i18nid_:users_have_been_invited", {users: invited.join(', ')});
+      }
+      else {
+        jsxc.gui.feedback("__i18nid_:user_have_been_invited", {user: invited[0]});
       }
 
       var entries = $(".jsxc-search-users-results .jsxc-search-user-entry");
@@ -651,7 +657,7 @@ jsxc.gui.interactions = {
       var checkedElements = self._getCheckedSearchUsers();
 
       if (checkedElements.length < 1) {
-        jsxc.gui.feedback("Vous devez choisir au moins un contact");
+        jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
         return false;
       }
 
@@ -687,11 +693,11 @@ jsxc.gui.interactions = {
     $('#jsxc-manage-notifications .jsxc-action_rejectAllNotifications').click(function() {
 
       if ($('#jsxc-notifications ul li[data-nid]').length < 1) {
-        jsxc.gui.feedback("Aucune notification à rejeter");
+        jsxc.gui.feedback("__i18nid_:no_notifications_to_reject");
         return;
       }
 
-      jsxc.gui.showConfirmDialog("Etes vous sur de vouloir rejeter toutes les notifications ?",
+      jsxc.gui.showConfirmDialog(jsxc.t("are_you_sure_to_clean_all_notifications"),
 
           function() {
 
@@ -701,11 +707,11 @@ jsxc.gui.interactions = {
               jsxc.notice.remove($(this).data('nid'));
             });
 
-            jsxc.gui.feedback("Notifications rejetées");
+            jsxc.gui.feedback('__i18nid_:notifications_rejected');
           },
 
           function() {
-            jsxc.gui.feedback("Opération annulée");
+            jsxc.gui.feedback('__i18nid_:operation_canceled');
           });
 
     });
