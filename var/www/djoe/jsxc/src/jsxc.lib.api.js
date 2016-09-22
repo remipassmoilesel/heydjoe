@@ -130,8 +130,8 @@ jsxc.api = {
    * @param type
    * @param timeout
    */
-  feedback : function(message, type, timeout) {
-    jsxc.gui.feedback(message, type, timeout);
+  feedback : function(message, subst, type, timeout) {
+    jsxc.gui.feedback(message, subst, type, timeout);
   },
 
   /**
@@ -144,7 +144,8 @@ jsxc.api = {
   openChatWindow : function(jid) {
 
     if (!jid) {
-      jsxc.gui.feedback("Utilisateur invalide: " + jid);
+      jsxc.gui.feedback("__i18nid_:not_a_valid_user", {user : jid}, 'warn');
+      return;
     }
 
     var self = jsxc.api;
@@ -152,7 +153,8 @@ jsxc.api = {
     var node = Strophe.getNodeFromJid(jid);
 
     if (!node) {
-      jsxc.gui.feedback("Utilisateur invalide: " + jid);
+      jsxc.gui.feedback("__i18nid_:not_a_valid_user", {user : jid}, 'warn');
+      return;
     }
 
     self.checkIfConnectedOrThrow();
@@ -197,18 +199,14 @@ jsxc.api = {
 
     var createAndInvite = true;
 
-    if (!jidArray || typeof jidArray.length === "undefined") {
-      throw new Error("Invalid argument: " + jidArray);
-    }
-
-    if (jidArray.length < 1) {
-      jsxc.gui.feedback("Vous devez sélectionner au moins un interlocuteur");
+    if (!jidArray || jidArray.constructor !== Array || jidArray.length < 1) {
+      jsxc.gui.feedback("__i18nid_:you_must_select_one_person", null, 'warn');
       return;
     }
 
     $.each(jidArray, function(index, element) {
       if (element.match(/.+@.+\..+/i) === null) {
-        jsxc.gui.feedback("Impossible de joindre: " + element);
+        jsxc.gui.feedback("__i18nid_:not_a_valid_user", {user : element}, 'warn');
         createAndInvite = false;
       }
     });
@@ -241,9 +239,9 @@ jsxc.api = {
 
     if (self.isConnected() !== true) {
 
-      self.feedback("Vous n'êtes pas connecté au client de messagerie");
+      self.feedback("__i18nid_:you_are_not_connected", null, 'warn');
 
-      throw new Error("Not connected to JSXC client");
+      throw new Error("Not connected");
     }
   },
 
@@ -314,7 +312,7 @@ jsxc.api = {
    * Show a toast and disconnect user
    */
   disconnect : function() {
-    jsxc.gui.feedback("Déconnexion en cours");
+    jsxc.gui.feedback("__i18nid_:disconnecting");
     jsxc.xmpp.logout(false);
   },
 
@@ -338,28 +336,37 @@ jsxc.api = {
     }
   },
 
+  /**
+   * Start a simple video call with given JID
+   * @param bid
+   */
   startSimpleVideoCall : function(bid) {
+
+    if (!bid) {
+      jsxc.gui.feedback("__i18nid_:you_must_select_one_person", null, 'warn');
+      return;
+    }
 
     var node = Strophe.getNodeFromJid(bid);
     var buddy = jsxc.storage.getUserItem('buddy', bid);
 
     if (!buddy) {
-      jsxc.gui.feedback("<b>" + node + "</b> n'est pas un utilisateur valide");
+      jsxc.gui.feedback("__i18nid_:not_a_valid_user", {user : node}, 'warn');
       return;
     }
 
     if (buddy.status === jsxc.CONST.STATUS.indexOf("offline")) {
-      jsxc.gui.feedback("<b>" + node + "</b> n'est pas connecté");
+      jsxc.gui.feedback("_i18nid:is_not_connected", {user : node});
       return;
     }
 
     var jid = jsxc.getCurrentActiveJidForBid(bid);
     if (jid === null) {
-      jsxc.gui.feedback("<b>" + node + "</b> n'est pas disponible");
+      jsxc.gui.feedback("_i18nid:is_not_available", {user : node});
       return;
     }
 
-    jsxc.gui.feedback("Appel vidéo en cours");
+    jsxc.gui.feedback("_i18nid:videocall_in_progress");
 
     jsxc.mmstream.startSimpleVideoCall(jid);
 
