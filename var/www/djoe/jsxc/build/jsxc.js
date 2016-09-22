@@ -1,5 +1,5 @@
 /*!
- * djoe v1.0.0 - 2016-09-17
+ * djoe v1.0.0 - 2016-09-22
  * 
  * Copyright (c) 2016  <br>
  * Released under the GPL-3.0 license
@@ -6125,7 +6125,7 @@
 	      'noClose' : true
 	    });
 
-	    $("#jsxc-chrome-extension-url").click(function(){
+	    $("#jsxc-chrome-extension-link").click(function(){
 	      window.open(jsxc.options.get('chromeExtensionURL'));
 	    });
 	    
@@ -6428,7 +6428,7 @@
 
 	    bid = jsxc.jidToBid(bid);
 
-	    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('reinviteUser_' + mode, bid), {
+	    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('reinviteUser_' + mode, Strophe.getNodeFromJid(bid)), {
 	      noClose : true, name : 'reinvite_user'
 	    });
 
@@ -9045,7 +9045,8 @@
 
 	      // append canvas and script tags
 	      template.append("<canvas id='alienInvasionCanvas' width='320' height='480'></canvas>");
-	      template.append("<div><a href='https://github.com/cykod/AlienInvasion/' target='_blank'>" +
+	      template.append(
+	          "<div><a href='https://github.com/cykod/AlienInvasion/' target='_blank' style='font-size: 0.7em'>" +
 	          "Thanks to https://github.com/cykod/AlienInvasion/</a></div>");
 	      template.append("<script src='" + root + "engine.js'></script><script src='" + root +
 	          "game.js'></script>");
@@ -9077,7 +9078,7 @@
 
 	      width : 353,
 
-	      height : 550,
+	      height : 600,
 
 	      resizable : false
 	    });
@@ -11170,10 +11171,12 @@
 	      var login = $('#jsxc-connexion-login').val();
 	      var password = $('#jsxc-connexion-password').val();
 
-	      if (!login) {
+	      if (!login || login.indexOf('@') !== -1) {
 	        jsxc.gui.feedback('Identifiant incorrect');
 	        return;
 	      }
+
+	      login = login + "@" + jsxc.options.xmpp.domain;
 
 	      if (!password) {
 	        jsxc.gui.feedback('Mot de passe incorrect');
@@ -19153,7 +19156,7 @@
 	        });
 
 	    // set user cache
-	    self.getUserList();
+	    // self.getUserList();
 
 	  },
 
@@ -19377,17 +19380,17 @@
 	});
 
 
-	jsxc.gui.template['aboutDialog'] = '<h3>Hey Djoe !</h3>\n' +
+	jsxc.gui.template['aboutDialog'] = '<h3 data-i18n="hey_djoe"></h3>\n' +
 	'\n' +
 	'<p>\n' +
-	'  <b>Version: 1</b>\n' +
+	'  <b data-i18n="[html]heydjoe_description"></b>\n' +
 	'</p>\n' +
+	'\n' +
+	'<p data-i18n="about_free_description"></p>\n' +
 	'\n' +
 	'<p>\n' +
-	'  <i>Disponible sous licence GPLv3.</i>\n' +
+	'  <span data-i18n="[html]more_information_on"></span><a href=\'http://hey-djoe.fr\' target="_blank">http://hey-djoe.fr</a>\n' +
 	'</p>\n' +
-	'\n' +
-	'<p>Plus d\'informations: <a href="https://github.com/heydjoe">https://github.com/heydjoe</a></p>\n' +
 	'\n' +
 	'<button class="btn btn-default pull-right jsxc_spaceInvasion">Space Invasion !</button>\n' +
 	'\n' +
@@ -19403,9 +19406,9 @@
 	jsxc.gui.template['allowMediaAccess'] = '<p data-i18n="Please_allow_access_to_microphone_and_camera"></p>\n' +
 	'';
 
-	jsxc.gui.template['approveDialog'] = '<h3>Demande de contact</h3>\n' +
+	jsxc.gui.template['approveDialog'] = '<h3 data-i18n="buddy_approve"></h3>\n' +
 	'<p>\n' +
-	'   <span><b class="jsxc_their_jid"></b> souhaite devenir un de vos contacts.</span>\n' +
+	'   <b class="jsxc_their_jid"></b> <span data-i18n="want_to_be_your_buddy"></span>\n' +
 	'</p>\n' +
 	'\n' +
 	'<button class="btn btn-primary jsxc_approve pull-right" data-i18n="Approve"></button>\n' +
@@ -19604,38 +19607,26 @@
 	'</form>\n' +
 	'';
 
-	jsxc.gui.template['etherpadCreation'] = '<h3>Document Etherpad</h3>\n' +
+	jsxc.gui.template['etherpadCreation'] = '<h3 data-i18n="etherpad_document"></h3>\n' +
+	'\n' +
+	'<p data-i18n="[html]etherpad_description"></p>\n' +
+	'\n' +
+	'<p data-i18n="[html]etherpad_wikipedia_link"></p>\n' +
 	'\n' +
 	'<p>\n' +
-	'  Un document Etherpad, souvent raccourci en "pad", est un document texte éditable <br> par\n' +
-	'  plusieurs\n' +
-	'  personnes en temps réel sur plusieurs postes de travail distants.\n' +
-	'\n' +
-	'  <p>\n' +
-	'    <a href="https://fr.wikipedia.org/wiki/Etherpad" target="_blank">Wikipedia</a></li>\n' +
-	'  </p>\n' +
-	'\n' +
-	'</p>\n' +
-	'\n' +
-	'<p>\n' +
-	'\n' +
-	'  <b>Nom du document à ouvrir ou à créer:</b>\n' +
-	'\n' +
+	'  <b data-i18n="etherpad_document_name"></b>\n' +
 	'  <input type="text" class="jsxc-etherpad-name"/>\n' +
-	'\n' +
 	'</p>\n' +
 	'\n' +
 	'\n' +
 	'<p>\n' +
-	'  <b>Inviter des utilisateurs (optionnel):</b>\n' +
-	'\n' +
-	'<div id="jsxc-etherpad-dialog-buddylist"></div>\n' +
+	'  <b data-i18n="etherpad_invite_users"></b>\n' +
+	'  <div id="jsxc-etherpad-dialog-buddylist"></div>\n' +
 	'</p>\n' +
 	'\n' +
-	'\n' +
-	'<button class="btn btn-primary jsxc_confirm pull-right">Confirmer</button>\n' +
-	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right">Annuler</button>\n' +
-	'<button class="btn btn-default jsxc_refresh pull-right">Rafraichir</button>';
+	'<button class="btn btn-primary jsxc_confirm pull-right" data-i18n="Confirm"></button>\n' +
+	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right" data-i18n="Cancel"></button>\n' +
+	'<button class="btn btn-default jsxc_refresh pull-right" data-i18n="refresh"></button>';
 
 	jsxc.gui.template['fingerprintsDialog'] = '<div>\n' +
 	'   <p class="jsxc_maxWidth" data-i18n="A_fingerprint_"></p>\n' +
@@ -19659,72 +19650,55 @@
 	'<button class="btn btn-default jsxc_reject pull-right" data-i18n="Reject"></button>\n' +
 	'';
 
-	jsxc.gui.template['incomingEtherpad'] = '<h3>Invitation Etherpad</h3>\n' +
-	'<p><b>{{bid_name}}</b> vous invite à partager un document Etherpad.</p>\n' +
+	jsxc.gui.template['incomingEtherpad'] = '<h3 data-i18n="etherpad_invitation"></h3>\n' +
+	'<p><b>{{bid_name}}</b> <span data-i18n="invite_you_to_share_pad"></span></p>\n' +
 	'\n' +
-	'<button class="btn btn-primary jsxc_confirm pull-right">Accepter</button>\n' +
-	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right">Refuser</button>\n' +
+	'<button class="btn btn-primary jsxc_confirm pull-right" data-i18n="Accept"></button>\n' +
+	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right" data-i18n="Reject"></button>\n' +
 	'';
 
-	jsxc.gui.template['incomingScreensharing'] = '<h3>Partage d\'écran</h3>\n' +
+	jsxc.gui.template['incomingScreensharing'] = '<h3 data-i18n="screen_sharing"></h3>\n' +
 	'<p>\n' +
-	'  Acceptez de visualiser l\'écran de <b>{{bid_name}}</b>?\n' +
+	'  <span data-i18n="[html]do_you_want_to_view_screen_of"></span>\n' +
+	'   <b>{{bid_name}}</b>?\n' +
 	'</p>\n' +
 	'\n' +
 	'<button class="btn btn-primary jsxc_accept pull-right" data-i18n="Accept"></button>\n' +
 	'<button class="btn btn-default jsxc_reject pull-right" data-i18n="Reject"></button>\n' +
 	'';
 
-	jsxc.gui.template['incomingVideoconference'] = '<h3>Vidéo conférence</h3>\n' +
+	jsxc.gui.template['incomingVideoconference'] = '<h3 data-i18n="videconference"></h3>\n' +
 	'<p>\n' +
-	'  <span><b>{{bid_name}}</b> vous invite à participer à une vidéo conférence.</span>\n' +
+	'  <b>{{bid_name}}</b> <span data-i18n="want_to_invite_you_in_videoconference"></span>\n' +
 	'</p>\n' +
 	'\n' +
 	'<button class="btn btn-primary jsxc_accept pull-right" data-i18n="Accept"></button>\n' +
 	'<button class="btn btn-default jsxc_reject pull-right" data-i18n="Reject"></button>\n' +
 	'';
 
-	jsxc.gui.template['installChromeExtension'] = '<h3>Installer l\'extension Chrome de capture d\'écran</h3>\n' +
+	jsxc.gui.template['installChromeExtension'] = '<h3 data-i18n="install_chrome_screen_sharing_extension"></h3>\n' +
 	'\n' +
 	'<img id="jsxc_installationIllustration"/>\n' +
 	'\n' +
-	'<p>Pour pouvoir capturer et partager votre écran suivez attentivement les étapes suivantes.\n' +
-	'  <b>Ces opérations ne sont pas nécéssaires pour recevoir le flux d\'un autre écran.</b></p>\n' +
+	'<p data-i18n="install_chrome_extension_intro"></p>\n' +
 	'\n' +
 	'<ol>\n' +
+	'  <li data-i18n="open_dialog_in_chrome"></li>\n' +
 	'  <li>\n' +
-	'    Ouvrez cette boite de dialogue dans le navigateur Chrome\n' +
+	'    <a id="jsxc-chrome-extension-link" data-i18n="click_here_to_download_extension"></a>\n' +
+	'     <span data-i18n="then_save_it_in_your_system"></span>\n' +
 	'  </li>\n' +
 	'  <li>\n' +
-	'    <a id="jsxc-chrome-extension-url">\n' +
-	'      Cliquez ici pour télécharger l\'extension\n' +
-	'    </a>\n' +
-	'    puis enregistrez là dans le dossier "Téléchargement" de votre système\n' +
+	'    <a href="about:blank" target="_blank" data-i18n="open_a_new_tab"></a>\n' +
 	'  </li>\n' +
-	'  <li>\n' +
-	'    <a href="about:blank" target="_blank">\n' +
-	'      Cliquez ici pour ouvrir un nouvel onglet\n' +
-	'    </a>\n' +
-	'  </li>\n' +
-	'  <li>\n' +
-	'    Puis saisissez dans la barre d\'adresse: <b>chrome://extensions</b>\n' +
-	'  </li>\n' +
-	'  <li>\n' +
-	'    Puis glissez-déposez le fichier "#######.crx" que vous avez téléchargé sur la page de\n' +
-	'    paramétrage\n' +
-	'  </li>\n' +
-	'  <li>\n' +
-	'    Acceptez l\'installation de l\'extension. Une fois l\'extension installée, vous pouvez supprimer le\n' +
-	'    fichier téléchargé.\n' +
-	'  </li>\n' +
-	'  <li>\n' +
-	'    Enfin rechargez la page en cliquant ci-dessous\n' +
-	'  </li>\n' +
+	'  <li data-i18n="[html]then_go_to_settings"></li>\n' +
+	'  <li data-i18n="[html]drop_extension_on_page"></li>\n' +
+	'  <li data-i18n="[html]confirm_extension_installation"></li>\n' +
+	'  <li data-i18n="[html]then_refresh_page"></li>\n' +
 	'</ol>\n' +
 	'\n' +
-	'<button class="btn btn-default pull-right jsxc_closeInstallChromeExtension">Fermer</button>\n' +
-	'<button class="btn btn-default pull-right jsxc_reloadInstallChromeExtension">Recharger la page\n' +
-	'</button>\n' +
+	'<button class="btn btn-default pull-right jsxc_closeInstallChromeExtension" data-i18n="Close"></button>\n' +
+	'<button class="btn btn-primary pull-right jsxc_reloadInstallChromeExtension" data-i18n="reload_page"></button>\n' +
 	'';
 
 	jsxc.gui.template['joinChat'] = '<h3 data-i18n="Join_chat"></h3>\n' +
@@ -19794,9 +19768,9 @@
 	'</div>\n' +
 	'';
 
-	jsxc.gui.template['joinConversationDialog'] = '<h3>Invitation</h3>\n' +
+	jsxc.gui.template['joinConversationDialog'] = '<h3 data-i18n="conversation_invitation"></h3>\n' +
 	'<p>\n' +
-	'   <b class="jsxc_buddyName"></b> vous invite à participer à une conversation.\n' +
+	'   <b class="jsxc_buddyName"></b> <span data-i18n="invite_you_in_conversation"></span>\n' +
 	'</p>\n' +
 	'\n' +
 	'<button class="btn btn-primary jsxc_approve pull-right" data-i18n="Approve"></button>\n' +
@@ -19864,10 +19838,11 @@
 	'    -->\n' +
 	'    <div id="jsxc-action-bar">\n' +
 	'\n' +
-	'      <a id="jsxc-new-gui-filter-users">Utilisateurs</a>\n' +
-	'      <a id="jsxc-new-gui-filter-conversations">Discussions</a>\n' +
+	'      <a id="jsxc-new-gui-filter-users" data-i18n="users"></a>\n' +
+	'      <a id="jsxc-new-gui-filter-conversations" data-i18n="conversations"></a>\n' +
 	'\n' +
-	'      <a id="jsxc-select-buddies">Sélectionner <span class="jsxc-selected-number"></span></a>\n' +
+	'      <a id="jsxc-select-buddies">\n' +
+	'        <span data-i18n="select"></span> <span class="jsxc-selected-number"></span></a>\n' +
 	'\n' +
 	'      <span id="jsxc-toggle-actions"></span>\n' +
 	'\n' +
@@ -19890,24 +19865,22 @@
 	'\n' +
 	'      <div id="jsxc-settings-menu" class="jsxc-viewport-content">\n' +
 	'\n' +
-	'        <div class="jsxc-title">Paramètres</div>\n' +
+	'        <div class="jsxc-title" data-i18n="parameters"></div>\n' +
 	'\n' +
-	'        <a class="jsxc-action jsxc-action_toggleMuteMode">Jouer les sons</a>\n' +
-	'        <a class="jsxc-action jsxc-action_toggleNotifications">Afficher les notifications</a>\n' +
-	'        <a class="jsxc-action jsxc-action_disableVideoCalls">Interdire les appels vidéo</a>\n' +
-	'\n' +
-	'        <div class="jsxc-content-separator"></div>\n' +
-	'\n' +
-	'        <a class="jsxc-action jsxc-action_clearLocalHistory">Effacer l\'historique local des\n' +
-	'          conversations</a>\n' +
-	'        <a class="jsxc-action jsxc-action_installScreenSharingExtension">Extension de capture\n' +
-	'          d\'écran</a>\n' +
+	'        <a class="jsxc-action jsxc-action_toggleMuteMode" data-i18n="play_sounds"></a>\n' +
+	'        <a class="jsxc-action jsxc-action_toggleNotifications" data-i18n="display_notifications"></a>\n' +
+	'        <a class="jsxc-action jsxc-action_disableVideoCalls" data-i18n="disable_video_calls"></a>\n' +
 	'\n' +
 	'        <div class="jsxc-content-separator"></div>\n' +
 	'\n' +
-	'        <a class="jsxc-action jsxc-action_showCollectedDatas">Données collectées</a>\n' +
+	'        <a class="jsxc-action jsxc-action_clearLocalHistory" data-i18n="clear_local_conversations_history"></a>\n' +
+	'        <a class="jsxc-action jsxc-action_installScreenSharingExtension" data-i18n="screensharing_extension"></a>\n' +
 	'\n' +
-	'        <a class="jsxc-action jsxc-show-about-dialog">A propos</a>\n' +
+	'        <div class="jsxc-content-separator"></div>\n' +
+	'\n' +
+	'        <a class="jsxc-action jsxc-action_showCollectedDatas" data-i18n="collected_datas"></a>\n' +
+	'\n' +
+	'        <a class="jsxc-action jsxc-show-about-dialog" data-i18n="About"></a>\n' +
 	'\n' +
 	'      </div>\n' +
 	'\n' +
@@ -19920,7 +19893,7 @@
 	'\n' +
 	'      <div id="jsxc-help-menu" class="jsxc-viewport-content">\n' +
 	'\n' +
-	'        <div class="jsxc-title">Aide</div>\n' +
+	'        <div class="jsxc-title" data-i18n="help"></div>\n' +
 	'\n' +
 	'        <ul id="jsxc-help-tutorial-list"></ul>\n' +
 	'\n' +
@@ -19935,27 +19908,27 @@
 	'\n' +
 	'      <div id="jsxc-main-menu" class="jsxc-viewport-content">\n' +
 	'\n' +
-	'        <div class="jsxc-title">Menu</div>\n' +
+	'        <div class="jsxc-title" data-i18n="menu"></div>\n' +
 	'\n' +
-	'        <a class="jsxc-action jsxc-action_search-user">Rechercher un utilisateur</a>\n' +
-	'        <a class="jsxc-action jsxc-action_manage-notifications">Notifications\n' +
+	'        <a class="jsxc-action jsxc-action_search-user" data-i18n="search_user"></a>\n' +
+	'        <a class="jsxc-action jsxc-action_manage-notifications" data-i18n="notifications">\n' +
 	'          &nbsp;<span class="jsxc_menu_notif_number"></span></a>\n' +
 	'\n' +
 	'        <div class="jsxc-content-separator"></div>\n' +
 	'\n' +
-	'        <a class="jsxc-action jsxc-action_new-conversation">Nouvelle conversation</a>\n' +
-	'        <a class="jsxc-action jsxc-action_invite-in-conversation">Inviter dans une conversation</a>\n' +
-	'        <a class="jsxc-action jsxc-action_new-etherpad-document">Ouvrir un document Etherpad</a>\n' +
+	'        <a class="jsxc-action jsxc-action_new-conversation" data-i18n="new_conversation"></a>\n' +
+	'        <a class="jsxc-action jsxc-action_invite-in-conversation" data-i18n="invite_in_conversation"></a>\n' +
+	'        <a class="jsxc-action jsxc-action_new-etherpad-document" data-i18n="open_etherpad"></a>\n' +
 	'\n' +
 	'        <div class="jsxc-content-separator"></div>\n' +
 	'\n' +
-	'        <a class="jsxc-action jsxc-action jsxc-action_video-call">Appel vidéo</a>\n' +
-	'        <a class="jsxc-action jsxc-action_videoconference">Vidéoconférence</a>\n' +
-	'        <a class="jsxc-action jsxc-action_screensharing">Partager mon écran</a>\n' +
+	'        <a class="jsxc-action jsxc-action jsxc-action_video-call" data-i18n="video_call"></a>\n' +
+	'        <a class="jsxc-action jsxc-action_videoconference" data-i18n="videoconference"></a>\n' +
+	'        <a class="jsxc-action jsxc-action_screensharing" data-i18n="share_screen"></a>\n' +
 	'\n' +
 	'        <div class="jsxc-content-separator"></div>\n' +
 	'\n' +
-	'        <a class="jsxc-action jsxc-action_delete-buddies">Supprimer</a>\n' +
+	'        <a class="jsxc-action jsxc-action_delete-buddies" data-i18n="delete"></a>\n' +
 	'\n' +
 	'      </div>\n' +
 	'\n' +
@@ -19967,11 +19940,12 @@
 	'\n' +
 	'      <div id="jsxc-search-users" class="jsxc-viewport-content">\n' +
 	'\n' +
-	'        <div class="jsxc-title">Rechercher</div>\n' +
+	'        <div class="jsxc-title" data-i18n="search"></div>\n' +
 	'\n' +
-	'        <input id="jsxc-chat-sidebar-search" placeholder="Rechercher ..." type="text"/>\n' +
-	'        <input id="jsxc-chat-sidebar-search-invite" class="btn btn-default" value="Inviter" type="button"/>\n' +
-	'        <input id="jsxc-chat-sidebar-search-chat" class="btn btn-primary" value="Discuter" type="button"/>\n' +
+	'        <input id="jsxc-chat-sidebar-search" placeholder="..." type="text"/>\n' +
+	'\n' +
+	'        <button id="jsxc-chat-sidebar-search-chat" class="btn btn-default" data-i18n="discuss"/>\n' +
+	'        <button id="jsxc-chat-sidebar-search-invite" class="btn btn-primary" data-i18n="invite"/>\n' +
 	'\n' +
 	'        <div class="jsxc-search-users-results">\n' +
 	'\n' +
@@ -19986,10 +19960,12 @@
 	'      -->\n' +
 	'      <div id="jsxc-manage-notifications" class="jsxc-viewport-content">\n' +
 	'\n' +
-	'        <div class="jsxc-title">Notifications <span class="jsxc_menu_notif_number"></span></div>\n' +
+	'        <div class="jsxc-title">\n' +
+	'          <span data-i18n="notifications"></span>&nbsp;\n' +
+	'          <span class="jsxc_menu_notif_number"></span></div>\n' +
 	'\n' +
-	'        <a class="jsxc-action jsxc-action_rejectAllNotifications">Tout rejeter</a>\n' +
-	'        <a class="jsxc-action jsxc-action_notificationsParameters">Paramètres</a>\n' +
+	'        <a class="jsxc-action jsxc-action_rejectAllNotifications" data-i18n="reject_all"></a>\n' +
+	'        <a class="jsxc-action jsxc-action_notificationsParameters" data-i18n="parameters"></a>\n' +
 	'\n' +
 	'        <div id="jsxc-notifications">\n' +
 	'          <ul></ul>\n' +
@@ -20004,23 +19980,21 @@
 	'      -->\n' +
 	'      <div id="jsxc-connexion-menu" class="jsxc-viewport-content">\n' +
 	'\n' +
-	'        <div class="jsxc-title">Connexion</div>\n' +
+	'        <div class="jsxc-title" data-i18n="connection"></div>\n' +
 	'\n' +
-	'        <p>Identifiant: </p>\n' +
+	'        <p data-i18n="login"></p>\n' +
 	'        <input type="text" id="jsxc-connexion-login"/>\n' +
 	'\n' +
-	'        <p>Mot de passe: </p>\n' +
+	'        <p data-i18n="password"></p>\n' +
 	'        <input type="password" id="jsxc-connexion-password"/>\n' +
 	'\n' +
-	'        <input type="button" id="jsxc-connexion-submit" class="btn btn-primary" value="Connexion"/>\n' +
+	'        <button id="jsxc-connexion-submit" class="btn btn-primary" data-i18n="connect_me">\n' +
+	'        </button>\n' +
 	'\n' +
-	'        <div id="jsxc-login-standby">\n' +
-	'          Veuillez patienter ....\n' +
+	'        <div id="jsxc-login-standby" data-i18n="please_stand_by">\n' +
 	'        </div>\n' +
 	'\n' +
-	'        <div id="jsxc-login-warning">\n' +
-	'          Echec de la connexion. Si ce problème persiste, rafraichissez la\n' +
-	'          page et essayez à nouveau.\n' +
+	'        <div id="jsxc-login-warning" data-i18n="connection_if_problem_persist">\n' +
 	'        </div>\n' +
 	'\n' +
 	'      </div>\n' +
@@ -20060,8 +20034,8 @@
 	'        <option value="dnd" class="jsxc_dnd" data-i18n="dnd"></option>\n' +
 	'      </select>\n' +
 	'\n' +
-	'      <span class="jsxc-login-button" title="Connexion"></span>\n' +
-	'      <span class="jsxc-logout-button" title="Déconnexion"></span>\n' +
+	'      <span class="jsxc-login-button"></span>\n' +
+	'      <span class="jsxc-logout-button"></span>\n' +
 	'\n' +
 	'    </div>\n' +
 	'\n' +
@@ -20076,23 +20050,20 @@
 	'\n' +
 	'  <div id="jsxc-mediapanel-left">\n' +
 	'\n' +
-	'    <div class="jsxc-header">\n' +
-	'      Multimédia\n' +
-	'    </div>\n' +
+	'    <div class="jsxc-header" data-i18n="multimedia_panel"></div>\n' +
 	'\n' +
 	'    <div>\n' +
-	'      <p>Vidéo locale:</p>\n' +
+	'      <p data-i18n="local_video"></p>\n' +
 	'      <video id="jsxc-local-video"/>\n' +
 	'    </div>\n' +
 	'\n' +
 	'    <div>\n' +
-	'      <p>Participants:</p>\n' +
-	'      <ul class="jsxc_videoconferenceUsers">\n' +
-	'      </ul>\n' +
+	'      <p data-i18n="participants"></p>\n' +
+	'      <ul class="jsxc_videoconferenceUsers"></ul>\n' +
 	'    </div>\n' +
 	'\n' +
 	'    <p>\n' +
-	'      <a class="jsxc_mmstreamTerminateAll">Terminer tous les appels et réinitialiser le système multimédia</a>\n' +
+	'      <a class="jsxc_mmstreamTerminateAll" data-i18n="terminate_all_and_reset_multimedia"></a>\n' +
 	'    </p>\n' +
 	'\n' +
 	'  </div>\n' +
@@ -20106,22 +20077,22 @@
 	jsxc.gui.template['pleaseAccept'] = '<p data-i18n="Please_accept_"></p>\n' +
 	'';
 
-	jsxc.gui.template['reinviteUser_emit'] = '<h3>Ré-invitation</h3>\n' +
+	jsxc.gui.template['reinviteUser_emit'] = '<h3 data-i18n="reinvitation"></h3>\n' +
 	'<p>\n' +
-	'   <span>Voulez-vous ré-inviter {{bid_name}} </span> ?\n' +
+	'   <span data-i18n="do_you_want_reinvite"></span> <b>{{bid_name}}</b> ?\n' +
 	'</p>\n' +
 	'\n' +
-	'<button class="btn btn-primary jsxc_accept pull-right">Ré-inviter</button>\n' +
-	'<button class="btn btn-default jsxc_reject pull-right">Annuler</button>\n' +
+	'<button class="btn btn-primary jsxc_accept pull-right" data-i18n="reinvite"></button>\n' +
+	'<button class="btn btn-default jsxc_reject pull-right" data-i18n="Cancel"></button>\n' +
 	'';
 
-	jsxc.gui.template['reinviteUser_received'] = '<h3>Ré-invitation</h3>\n' +
+	jsxc.gui.template['reinviteUser_received'] = '<h3 data-i18n="reinvitation"></h3>\n' +
 	'<p>\n' +
-	'   <span><b>{{bid_name}}</b> souhaite vous réinviter.</span>\n' +
+	'  <b>{{bid_name}}</b> <span data-i18n="want_to_invite_you_again"></span>\n' +
 	'</p>\n' +
 	'\n' +
-	'<button class="btn btn-primary jsxc_accept pull-right">Accepter</button>\n' +
-	'<button class="btn btn-default jsxc_reject pull-right">Annuler</button>\n' +
+	'<button class="btn btn-primary jsxc_accept pull-right" data-i18n="Accept"></button>\n' +
+	'<button class="btn btn-default jsxc_reject pull-right" data-i18n="Reject"></button>\n' +
 	'';
 
 	jsxc.gui.template['removeDialog'] = '<h3 data-i18n="Remove_buddy"></h3>\n' +
@@ -20131,10 +20102,9 @@
 	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right" data-i18n="Cancel"></button>\n' +
 	'';
 
-	jsxc.gui.template['removeManyDialog'] = '<h3>Suppression</h3>\n' +
+	jsxc.gui.template['removeManyDialog'] = '<h3 data-i18n="delete_many"></h3>\n' +
 	'\n' +
-	'<p class="jsxc_maxWidth">Vous allez retirer ces éléments de votre liste de contacts. Cette action est irréversible.\n' +
-	'  Toutes les fenêtres de discussion liées seront fermées.</p>\n' +
+	'<p class="jsxc_maxWidth" data-i18n="delete_many_description"></p>\n' +
 	'\n' +
 	'<ol class="jsxc_elementsToRemove"></ol>\n' +
 	'\n' +
@@ -20159,72 +20129,22 @@
 	'</li>\n' +
 	'';
 
-	jsxc.gui.template['rosterMenu'] = '<!-- en cours -->\n' +
-	'<h3>Section 1</h3>\n' +
-	'<div>\n' +
-	'    <p>\n' +
-	'        Mauris mauris ante, blandit et, ultrices a, suscipit eget, quam. Integer\n' +
-	'        ut neque. Vivamus nisi metus, molestie vel, gravida in, condimentum sit\n' +
-	'        amet, nunc. Nam a nibh. Donec suscipit eros. Nam mi. Proin viverra leo ut\n' +
-	'        odio. Curabitur malesuada. Vestibulum a velit eu ante scelerisque vulputate.\n' +
-	'    </p>\n' +
-	'</div>\n' +
-	'<h3>Section 2</h3>\n' +
-	'<div>\n' +
-	'    <p>\n' +
-	'        Sed non urna. Donec et ante. Phasellus eu ligula. Vestibulum sit amet\n' +
-	'        purus. Vivamus hendrerit, dolor at aliquet laoreet, mauris turpis porttitor\n' +
-	'        velit, faucibus interdum tellus libero ac justo. Vivamus non quam. In\n' +
-	'        suscipit faucibus urna.\n' +
-	'    </p>\n' +
-	'</div>\n' +
-	'<h3>Section 3</h3>\n' +
-	'<div>\n' +
-	'    <p>\n' +
-	'        Nam enim risus, molestie et, porta ac, aliquam ac, risus. Quisque lobortis.\n' +
-	'        Phasellus pellentesque purus in massa. Aenean in pede. Phasellus ac libero\n' +
-	'        ac tellus pellentesque semper. Sed ac felis. Sed commodo, magna quis\n' +
-	'        lacinia ornare, quam ante aliquam nisi, eu iaculis leo purus venenatis dui.\n' +
-	'    </p>\n' +
-	'    <ul>\n' +
-	'        <li>List item one</li>\n' +
-	'        <li>List item two</li>\n' +
-	'        <li>List item three</li>\n' +
-	'    </ul>\n' +
-	'</div>\n' +
-	'<h3>Section 4</h3>\n' +
-	'<div>\n' +
-	'    <p>\n' +
-	'        Cras dictum. Pellentesque habitant morbi tristique senectus et netus\n' +
-	'        et malesuada fames ac turpis egestas. Vestibulum ante ipsum primis in\n' +
-	'        faucibus orci luctus et ultrices posuere cubilia Curae; Aenean lacinia\n' +
-	'        mauris vel est.\n' +
-	'    </p>\n' +
-	'    <p>\n' +
-	'        Suspendisse eu nisl. Nullam ut libero. Integer dignissim consequat lectus.\n' +
-	'        Class aptent taciti sociosqu ad litora torquent per conubia nostra, per\n' +
-	'        inceptos himenaeos.\n' +
-	'    </p>\n' +
-	'</div>\n' +
-	'</div>\n' +
-	'';
-
-	jsxc.gui.template['selectContacts'] = '<h3>Sélectionner des contacts</h3>\n' +
+	jsxc.gui.template['selectContacts'] = '<h3 data-i18n="select_buddies"></h3>\n' +
 	'\n' +
 	'<div id="jsxc-invite-dialog-buddylist"></div>\n' +
 	'<div id="jsxc-invite-dialog-refresh"></div>\n' +
 	'\n' +
-	'<button class="btn btn-primary jsxc_confirm pull-right">Sélectionner</button>\n' +
-	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right">Annuler</button>\n' +
-	'<button class="btn btn-default jsxc_refresh pull-right">Rafraichir</button>';
+	'<button class="btn btn-primary jsxc_confirm pull-right" data-i18n="select"></button>\n' +
+	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right" data-i18n="Cancel"></button>\n' +
+	'<button class="btn btn-default jsxc_refresh pull-right" data-i18n="refresh"></button>';
 
-	jsxc.gui.template['selectConversations'] = '<h3>Sélection de conversation</h3>\n' +
+	jsxc.gui.template['selectConversations'] = '<h3 data-i18n="select_conversations"></h3>\n' +
 	'\n' +
 	'<div id="jsxc_dialogConversationList"></div>\n' +
 	'\n' +
-	'<button class="btn btn-primary jsxc_confirm pull-right" data-i18n="Confirm"></button>\n' +
+	'<button class="btn btn-primary jsxc_confirm pull-right" data-i18n="select"></button>\n' +
 	'<button class="btn btn-default jsxc_cancel jsxc_close pull-right" data-i18n="Cancel"></button>\n' +
-	'<button class="btn btn-default jsxc_refresh pull-right">Rafraichir</button>';
+	'<button class="btn btn-default jsxc_refresh pull-right" data-i18n="refresh"></button>';
 
 	jsxc.gui.template['settings'] = '<form class="form-horizontal col-sm-6">\n' +
 	'   <fieldset class="jsxc_fieldsetXmpp jsxc_fieldset">\n' +
@@ -20363,8 +20283,8 @@
 	'</div>\n' +
 	'\n' +
 	'<div>\n' +
-	'  <button class="btn btn-default pull-right jsxc_hangUpCall">Terminer l\'appel</button>\n' +
-	'  <button class="btn btn-default pull-right jsxc_closeVideoDialog">Fermer la fenêtre</button>\n' +
+	'  <button class="btn btn-default pull-right jsxc_hangUpCall" data-i18n="hang_up_call"></button>\n' +
+	'  <button class="btn btn-default pull-right jsxc_closeVideoDialog" data-i18n="close_dialog"></button>\n' +
 	'</div>';
 
 	jsxc.gui.template['videoWindow'] = '<div id="jsxc_webrtc">\n' +

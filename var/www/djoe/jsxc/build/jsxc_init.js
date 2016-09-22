@@ -1,3 +1,16 @@
+/*!
+ * djoe v1.0.0 - 2016-09-22
+ * 
+ * Copyright (c) 2016  <br>
+ * Released under the GPL-3.0 license
+ * 
+ * Please see 
+ * 
+ * @author 
+ * @version 1.0.0
+ * @license MIT
+ */
+
 $(function() {
 
   "use strict";
@@ -67,7 +80,7 @@ $(function() {
     },
 
     // if lot of 404 errors precise jsxc root
-    root : 'jsxc/build',
+    root : 'jsxc/dev',
 
     // stat module. save and monitor events
     stats : {

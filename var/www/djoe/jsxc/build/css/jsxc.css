@@ -4714,6 +4714,7 @@ li[data-type="groupchat"] .jsxc_video {
   display: none; }
 
 #jsxc_dialog {
+  font-size: 1em !important;
   padding: 20px;
   min-width: 320px;
   max-width: 100%;
@@ -4804,6 +4805,8 @@ li[data-type="groupchat"] .jsxc_video {
   #jsxc_dialog .btn-primary {
     background: #337ab7 !important;
     color: #fff !important; }
+  #jsxc_dialog #jsxc-chrome-extension-link {
+    cursor: pointer; }
 
 .jsxc_conversation-list-container {
   overflow: auto;
@@ -5223,7 +5226,7 @@ TODO: Set up variables:
   #jsxc-chat-sidebar #jsxc-connexion-menu input[type=password] {
     margin-left: 1.5em;
     width: 170px; }
-  #jsxc-chat-sidebar #jsxc-connexion-menu input[type=button] {
+  #jsxc-chat-sidebar #jsxc-connexion-menu button {
     margin: 1.5em; }
   #jsxc-chat-sidebar #jsxc-connexion-menu #jsxc-login-warning {
     font-style: italic;
@@ -5458,7 +5461,7 @@ TODO: Set up variables:
       opacity: 1;
       text-decoration: underline; }
 
-#jsxc-root, #jsxc_windowList {
+#jsxc-root, #jsxc_windowList, #jsxc_dialog {
   font-family: Calibri, "PT Sans", "Trebuchet MS", 'Helvetica Neue', Arial;
   font-size: 13px !important;
   /**
@@ -5467,15 +5470,19 @@ TODO: Set up variables:
   /**
     Buttons
   */ }
-  #jsxc-root .ui-accordion-content, #jsxc_windowList .ui-accordion-content {
+  #jsxc-root b, #jsxc_windowList b, #jsxc_dialog b {
+    font-weight: bolder; }
+  #jsxc-root i, #jsxc_windowList i, #jsxc_dialog i {
+    font-style: italic; }
+  #jsxc-root .ui-accordion-content, #jsxc_windowList .ui-accordion-content, #jsxc_dialog .ui-accordion-content {
     background: white; }
-  #jsxc-root .ps-container > .ps-scrollbar-y-rail, #jsxc_windowList .ps-container > .ps-scrollbar-y-rail {
+  #jsxc-root .ps-container > .ps-scrollbar-y-rail, #jsxc_windowList .ps-container > .ps-scrollbar-y-rail, #jsxc_dialog .ps-container > .ps-scrollbar-y-rail {
     opacity: 0.6; }
-  #jsxc-root .btn, #jsxc_windowList .btn {
+  #jsxc-root .btn, #jsxc_windowList .btn, #jsxc_dialog .btn {
     margin: 0.2em; }
-  #jsxc-root .btn-default, #jsxc_windowList .btn-default {
+  #jsxc-root .btn-default, #jsxc_windowList .btn-default, #jsxc_dialog .btn-default {
     background: #ffffff !important;
-    color: darkGray !important; }
-  #jsxc-root .btn-primary, #jsxc_windowList .btn-primary {
+    color: #373737 !important; }
+  #jsxc-root .btn-primary, #jsxc_windowList .btn-primary, #jsxc_dialog .btn-primary {
     background: #337ab7 !important;
     color: #fff !important; }
