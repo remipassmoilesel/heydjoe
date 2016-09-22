@@ -52,7 +52,7 @@ jsxc.xmpp.search = {
         });
 
     // set user cache
-    self.getUserList();
+    // self.getUserList();
 
   },
 
