@@ -361,6 +361,11 @@ jsxc.help = {
 
   },
 
+  /**
+   * Make element blink to show it to user
+   * @param selector
+   * @private
+   */
   _highlightElement : function(selector) {
 
     var jq = $(selector);
@@ -371,7 +376,7 @@ jsxc.help = {
 
     var previous = jq.css('opacity');
 
-    var howManyTimes = 6;
+    var howManyTimes = 4;
 
     var i = 0;
 
@@ -381,14 +386,14 @@ jsxc.help = {
         clearInterval(interval);
 
         jq.css({
-          'opacity' : previous || ''
+          'opacity' : previous || '1'
         });
 
         return;
       }
 
       jq.animate({
-        'opacity' : i % 2 === 0 ? 0.1 : 1
+        'opacity' : i % 2 === 0 ? 0.2 : 1
       }, 400);
 
       i++;
