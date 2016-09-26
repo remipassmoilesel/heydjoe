@@ -286,12 +286,12 @@ jsxc.gui.interactions = {
 
             // check how many participants are unavailable
             if (unavailables.length === 1) {
-              jsxc.gui.feedback("_i18nid:is_not_available", {user : unavailables[0]});
+              jsxc.gui.feedback("__i18nid_:is_not_available", {user : unavailables[0]});
               return;
             }
 
             else if (unavailables.length > 1) {
-              jsxc.gui.feedback("_i18nid:are_not_available", {users : unavailables.join(", ")});
+              jsxc.gui.feedback("__i18nid_:are_not_available", {users : unavailables.join(", ")});
               return;
             }
 
@@ -346,12 +346,12 @@ jsxc.gui.interactions = {
 
             // check how many participants are unavailable
             if (unavailables.length === 1) {
-              jsxc.gui.feedback("_i18nid:is_not_available", {user : unavailables[0]});
+              jsxc.gui.feedback("__i18nid_:is_not_available", {user : unavailables[0]});
               return;
             }
 
             else if (unavailables.length > 1) {
-              jsxc.gui.feedback("_i18nid:are_not_available", {users : unavailables.join(", ")});
+              jsxc.gui.feedback("__i18nid_:are_not_available", {users : unavailables.join(", ")});
               return;
             }
 
@@ -410,12 +410,12 @@ jsxc.gui.interactions = {
 
                   // check how many participants are unavailable
                   if (unavailables.length === 1) {
-                    jsxc.gui.feedback("_i18nid:is_not_available", {user : unavailables[0]});
+                    jsxc.gui.feedback("__i18nid_:is_not_available", {user : unavailables[0]});
                     return;
                   }
 
                   else if (unavailables.length > 1) {
-                    jsxc.gui.feedback("_i18nid:are_not_available",
+                    jsxc.gui.feedback("__i18nid_:are_not_available",
                         {users : unavailables.join(", ")});
                     return;
                   }
@@ -508,7 +508,7 @@ jsxc.gui.interactions = {
         jsxc.gui.window.clear(jid);
       });
 
-      jsxc.gui.feedback("_i18nid:local_history_clean_success");
+      jsxc.gui.feedback("__i18nid_:local_history_clean_success");
 
     });
 
