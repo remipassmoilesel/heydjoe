@@ -58,7 +58,7 @@ jsxc.gui.widgets = {
       if (conversNumber < 1) {
         // create list element
         var li = $("<li></li>")
-            .text("Aucune conversation")
+            .text(jsxc.t("no_conversation"))
             .data('conversjid', null);
 
         list.append(li);
@@ -149,7 +149,7 @@ jsxc.gui.widgets = {
       if (buddyNumber < 1) {
         // create list element
         var li = $("<li></li>")
-            .text("Aucun contact")
+            .text(jsxc.t("no_contact"))
             .data('bid', null);
 
         list.append(li);
