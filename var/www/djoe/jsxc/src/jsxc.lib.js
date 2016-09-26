@@ -362,8 +362,7 @@ jsxc = {
 
         if ($('jsxc_noStorageWarning').length < 1) {
 
-          var header = '<div id="jsxc_noStorageWarning">Le stockage local de votre navigateur est indisponible. Utilisez un navigateur compatible ' +
-              '(Firefox, Brave, Opera, Chrome) et utilisez une connexion sécurisée (https://...).</div>';
+          var header = '<div id="jsxc_noStorageWarning">' + jsxc.t('local_storage_warning') + '</div>';
           $("body").prepend(header);
 
           jsxc.error("No local storage available.");
