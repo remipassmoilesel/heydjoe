@@ -940,8 +940,9 @@ jsxc.gui = {
 
       // throw error if id is invalid
       if (message.indexOf(i18nid) !== -1) {
+        var err = new Error("Invalid i18n id: " + message);
         setTimeout(function() {
-          throw new Error("Invalid i18n id: " + message);
+          throw err;
         }, 0);
       }
     }

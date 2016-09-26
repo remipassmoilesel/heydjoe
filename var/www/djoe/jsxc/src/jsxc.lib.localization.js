@@ -49,8 +49,9 @@ jsxc.localization = {
 
       // throw an error if id is invalid
       if (res.indexOf(id) !== -1) {
+        var err = new Error('Invalid i18n id: ' + id);
         setTimeout(function() {
-          throw new Error('Invalid i18n id: ' + id);
+          throw err;
         }, 0);
       }
 
