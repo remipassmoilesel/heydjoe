@@ -255,16 +255,6 @@ jsxc.gui = {
       status : jsxc.t(jsxc.CONST.STATUS[data.status])
     }));
 
-    // if(window.location.protocol === "https:"){
-    //     we.find('.jsxc_transfer').addClass('jsxc_enc').attr('title',
-    // jsxc.t('your_connection_is_encrypted')); we.find('.jsxc_settings
-    // .jsxc_verification').removeClass('jsxc_disabled'); we.find('.jsxc_settings
-    // .jsxc_transfer').text(jsxc.t('close_private')); }  else {
-    // we.find('.jsxc_transfer').removeClass('jsxc_enc jsxc_fin').attr('title',
-    // jsxc.t('your_connection_is_unencrypted')); we.find('.jsxc_settings
-    // .jsxc_verification').addClass('jsxc_disabled'); we.find('.jsxc_settings
-    // .jsxc_transfer').text(jsxc.t('start_private')); }
-
     // Update gui according to encryption state
     switch (data.msgstate) {
       case 0:
@@ -755,7 +745,7 @@ jsxc.gui = {
     $('#jsxc_dialog .jsxc_deny').click(function(ev) {
       ev.stopPropagation();
 
-      jsxc.gui.feedback("Invitation refusée");
+      jsxc.gui.feedback("__i18nid_:invitation_refused");
 
       jsxc.gui.dialog.close();
     });
@@ -915,12 +905,14 @@ jsxc.gui = {
       // close dialog
       jsxc.gui.dialog.close();
 
-      jsxc.gui.feedback(bidArray.length + " éléments ont été supprimés");
+      jsxc.gui.feedback('__i18nid_:elements_have_been_deleted', {
+        nbr : bidArray.length
+      });
     });
 
     $('#jsxc_dialog .jsxc_cancel').click(function() {
       jsxc.gui.dialog.close();
-      jsxc.gui.feedback("Opération annulée");
+      jsxc.gui.feedback("__i18nid_:operation_canceled");
     });
 
   },
@@ -945,6 +937,13 @@ jsxc.gui = {
     if (message.indexOf(self._feedbackI18nMark) === 0) {
       var i18nid = message.substring(self._feedbackI18nMark.length, message.length);
       message = jsxc.t(i18nid, subst);
+
+      // throw error if id is invalid
+      if (message.indexOf(i18nid) !== -1) {
+        setTimeout(function() {
+          throw new Error("Invalid i18n id: " + message);
+        }, 0);
+      }
     }
 
     var bgColors = {
@@ -1023,7 +1022,7 @@ jsxc.gui = {
     $('#jsxc_dialog .jsxc_refresh').click(function(ev) {
       ev.stopPropagation();
 
-      jsxc.gui.feedback('Mise à jour en cours ...');
+      jsxc.gui.feedback('__i18nid_:update_in_progress');
 
       buddyList.updateBuddyList();
     });
@@ -1075,7 +1074,7 @@ jsxc.gui = {
     $('#jsxc_dialog .jsxc_refresh').click(function(ev) {
       ev.stopPropagation();
 
-      jsxc.gui.feedback('Mise à jour en cours ...');
+      jsxc.gui.feedback('__i18nid_:update_in_progress');
 
       buddyList.updateBuddyList();
     });
@@ -1105,7 +1104,7 @@ jsxc.gui = {
 
       jsxc.gui.dialog.close();
 
-      jsxc.gui.feedback("Le document va être ouvert");
+      jsxc.gui.feedback("__i18nid_:etherpad_openning_in_progress");
       jsxc.etherpad.openpad(padId);
 
       defer.resolve("accepted");
@@ -1119,7 +1118,7 @@ jsxc.gui = {
 
       jsxc.etherpad._sendEtherpadRefusedMessage(from, padId, invitationId);
 
-      jsxc.gui.feedback("Le document a été refusé");
+      jsxc.gui.feedback("__i18nid_:etherpad_refused");
 
     });
 
@@ -1168,7 +1167,7 @@ jsxc.gui = {
     $('#jsxc_dialog .jsxc_refresh').click(function(ev) {
       ev.stopPropagation();
 
-      jsxc.gui.feedback('Mise à jour en cours ...');
+      jsxc.gui.feedback('__i18nid_:update_in_progress');
 
       conversList.updateConversationList();
     });
@@ -1561,10 +1560,9 @@ jsxc.gui = {
    */
   showUnknownSender : function(bid) {
 
-    var confirmationText = "Vous avez reçu un message d'un expéditeur inconnu: <b>" + bid + "</b>" +
-        "<br/> Voulez vous l'afficher ?";
+    var node = Strophe.getNodeFromJid(bid);
 
-    jsxc.gui.showConfirmDialog(confirmationText,
+    jsxc.gui.showConfirmDialog(jsxc.t('unknown_sender_confirmation', {user: node}),
 
         /**
          * User accept to see messages
