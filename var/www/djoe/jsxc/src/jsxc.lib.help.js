@@ -115,20 +115,20 @@ jsxc.help = {
 
       return {
 
-        description : "Visite de l'interface",
+        description : jsxc.t('interface_visit'),
 
         steps : [
 
           {
-            text : "<p>Vous allez découvrir les principaux élements de l'interface de la messagerie.</p>",
+            text : jsxc.t('you_will_discover_interface'),
             beforeShowPromise : self._setAllGuiVisible.bind(self, false)
           },
 
           {
             attachTo : {element : '#jsxc-chat-sidebar-content', on : 'left'},
 
-            text : ["<p>Le <b>panneau de conversation</b> est disponible en bas de l'écran. Cliquez sur le bandeau bleu ou sur la croix pour le masquer.</p>",
-              "<p>A partir de cet élément, vous pouvez voir vos contacts, commencer une discussion ou une vidéoconférence.</p>"],
+            text : [jsxc.t('conversation_panel_description'),
+              jsxc.t('conversation_panel_description_2'),],
 
             beforeShowPromise : self._setAllGuiVisible.bind(self, true)
 
@@ -137,9 +137,8 @@ jsxc.help = {
           {
             attachTo : {element : '.jsxc-toggle-mediapanel', on : 'top'},
 
-            text : ["<p>Le <b>panneau multimédia</b> est disponible en haut de l'écran. Cliquez sur son icone pour le faire apparaitre " +
-            "ou le masquer.</p>",
-              "<p>Sur ce panneau vous pouvez visualiser les flux vidéos de vos contacts ainsi que d'autres médias.</p>"],
+            text : [jsxc.t('multimedia_panel_description'),
+              jsxc.t('multimedia_panel_description_2')],
 
             beforeShowPromise : self._setAllGuiVisible.bind(self, true),
 
@@ -154,7 +153,7 @@ jsxc.help = {
           {
             attachTo : {element : '#jsxc-new-gui-filter-conversations', on : 'left'},
 
-            text : ["<p>Les <b>filtres</b> permettent d'afficher ou de masquer les utilisateurs et les discussions</p>"],
+            text : [jsxc.t('sidebar_filters_description')],
 
             beforeShowPromise : self._setAllGuiVisible.bind(self, true),
 
@@ -169,8 +168,7 @@ jsxc.help = {
           {
             attachTo : {element : '#jsxc-sidebar-content-viewport', on : 'left'},
 
-            text : ["<p>La <b>liste de contact</b> vous montre quels utilisateurs sont liés à vous.</p>",
-              "<p>Ces utilisateurs sont informés de votre présence, et sont notifiés lorsque vous leur envoyez un message.</p>"],
+            text : [jsxc.t('roster_description'), jsxc.t('roster_description_2')],
 
             when : {
 
@@ -191,8 +189,7 @@ jsxc.help = {
           {
             attachTo : {element : '#jsxc-toggle-actions', on : 'top'},
 
-            text : ["<p>Le <b>menu principal</b> vous permet d'intéragir avec vos contacts.</p>",
-              "<p>Vous pouvez créer des conversations, appeler vos contacts ou visualiser vos notifications.</p>"],
+            text : [jsxc.t('main_menu_description'), jsxc.t('main_menu_description_2')],
 
             when : {
               'before-show' : function() {
@@ -217,8 +214,8 @@ jsxc.help = {
           {
             attachTo : {element : '#jsxc-select-buddies', on : 'left'},
 
-            text : ["<p>Le <b>bouton de sélection</b> vous permet de sélectionner des contacts avec lesquels intéragir.</p>",
-              "<p>Le mode sélection vous permet de sélectionner plusieurs contacts.</p>"],
+            text : [jsxc.t('selection_button_description'),
+              jsxc.t('selection_button_description_2')],
 
             when : {
               'before-show' : function() {
@@ -242,8 +239,7 @@ jsxc.help = {
           {
             attachTo : {element : '#jsxc-chat-sidebar .jsxc-toggle-settings', on : 'top'},
 
-            text : ["<p>Le <b>menu de réglages</b> vous permet de modifier le comportement de la messagerie.</p>",
-              "<p>Vous pouvez couper le son de la messagerie, masquer les notifications ou bloquer les appels vidéo.</p>"],
+            text : [jsxc.t('settings_description'), jsxc.t('settings_description_2')],
 
             when : {
               'before-show' : function() {
@@ -263,8 +259,9 @@ jsxc.help = {
           {
             attachTo : {element : '#jsxc-status-bar', on : 'left'},
 
-            text : ["<p>Le <b>panneau de statut</b> vous permet de modifier la manière dont les autres utilisateurs vous perçoivent.</p>",
-              "<p>A partir de ce panneau vous pouvez également vous déconnecter.</p>"],
+            text : [
+              jsxc.t('status_panel_description'),
+              jsxc.t('status_panel_description_2')],
 
             beforeShowPromise : self._setAllGuiVisible.bind(self, true),
 
@@ -278,7 +275,7 @@ jsxc.help = {
 
           {
 
-            text : ["<p>C'est la fin de cette visite !</p>"],
+            text : [jsxc.t('end_of_interface_visit')],
 
             beforeShowPromise : self._setAllGuiVisible.bind(self, true)
 
