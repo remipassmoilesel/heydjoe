@@ -3906,6 +3906,8 @@ img.jsxc_vCard {
 
 .jsxc-help-tutorial-message {
   z-index: 9999; }
+  .jsxc-help-tutorial-message .shepherd-text * {
+    font-size: 14px !important; }
   .jsxc-help-tutorial-message b {
     color: #2a2a50; }
   .jsxc-help-tutorial-message .shepherd-button {
@@ -4956,7 +4958,7 @@ TODO: Set up variables:
     background: rgba(255, 255, 255, 0.5) !important;
     color: #1c94d4 !important; }
   #jsxc-chat-sidebar #jsxc-sidebar-content-viewport {
-    height: 68%;
+    height: 320px;
     overflow-x: hidden;
     overflow-y: scroll;
     margin: 3px;
@@ -4980,7 +4982,9 @@ TODO: Set up variables:
     height: 0px;
     overflow: hidden; }
   #jsxc-chat-sidebar #jsxc-status-bar {
-    padding: 0.6em; }
+    height: 58px;
+    padding-top: 0.6em;
+    padding-left: 0.6em; }
     #jsxc-chat-sidebar #jsxc-status-bar .jsxc-user-name {
       display: block;
       font-weight: bolder;

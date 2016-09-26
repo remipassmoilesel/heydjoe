@@ -110,20 +110,6 @@ jsxc.localization = {
 
     });
 
-    // return jsxc.i18n.translate($(str));
-
-    //
-    // return this.each(function () {
-    //     // localize element itself
-    //     jsxc.i18n.localize($(this), options);
-    //
-    //     // localize childs
-    //     var elements = $(this).find('[' + o.selectorAttr + ']');
-    //     elements.each(function () {
-    //         jsxc.i18n.localize($(this), options);
-    //     });
-    // });
-
   },
 
   _parse : function(ele, key, options) {
