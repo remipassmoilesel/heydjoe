@@ -93,7 +93,7 @@ $.extend(jsxc.newgui, {
   },
 
   /**
-   * Open a media ressource in the media panel
+   * Open a ressource in media panel
    * @param ressource
    */
   openMediaRessource : function(ressource) {
@@ -117,7 +117,7 @@ $.extend(jsxc.newgui, {
 
     // add ressource only if needed
     if (embedded) {
-      self.addMediaRessource(embedded, "Vidéo: " + ressourceOnly);
+      self.addMediaRessource(embedded, ressourceOnly);
     }
 
   },
@@ -196,6 +196,6 @@ $.extend(jsxc.newgui, {
     // append ressource
     $("#jsxc-mediapanel-right").append(container);
 
-  },
+  }
 
 });
