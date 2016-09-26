@@ -798,17 +798,23 @@ img.jsxc_vCard {
 
   z-index: 9999;
 
+  .shepherd-text {
+    * {
+      font-size: 14px !important;
+    }
+  }
+
   b {
     color: #2a2a50;
   }
 
-  .shepherd-button{
+  .shepherd-button {
     background: #0081ff !important;
     opacity: 0.6 !important;
     color: white !important;
     font-weight: bolder;
 
-    &:hover{
+    &:hover {
       opacity: 1 !important;
     }
   }

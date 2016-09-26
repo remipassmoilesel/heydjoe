@@ -109,7 +109,7 @@ TODO: Set up variables:
     Center of sidebar, where content can shift between multiple panels
   */
   #jsxc-sidebar-content-viewport {
-    height: 68%;
+    height: 320px;
     overflow-x: hidden;
     overflow-y: scroll;
     margin: 3px;
@@ -153,7 +153,9 @@ TODO: Set up variables:
   */
   #jsxc-status-bar {
 
-    padding: 0.6em;
+    height: 58px;
+    padding-top: 0.6em;
+    padding-left: 0.6em;
 
     .jsxc-user-name {
       display: block;
