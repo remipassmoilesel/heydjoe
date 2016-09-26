@@ -101,7 +101,7 @@ $.extend(jsxc.newgui, {
     }
 
     else {
-      $("#jsxc-status-bar .jsxc-user-name").text("Déconnecté");
+      $("#jsxc-status-bar .jsxc-user-name").text(jsxc.t('disconnected'));
     }
 
   },
@@ -141,7 +141,8 @@ $.extend(jsxc.newgui, {
     else if (jsxc.notice.getNotificationsNumber() > 0) {
 
       headerContent.append(
-          '<span><span class="jsxc_menu_notif_number"></span> notification(s)</span>');
+          '<span><span class="jsxc_menu_notif_number"></span> ' + jsxc.t('notification_s') +
+          '</span>');
 
       // open notifications on click
       headerContent.click(function(event) {
@@ -163,15 +164,15 @@ $.extend(jsxc.newgui, {
 
       var message;
       if (online === 0) {
-        message = "Aucune activité";
+        message = jsxc.t('no_activity');
       }
 
       else if (online === 1) {
-        message = "1 personne en ligne";
+        message = jsxc.t('one_person_online');
       }
 
       else {
-        message = online + " personnes en ligne";
+        message = jsxc.t('persons_online', {nbr : online});
       }
 
       headerContent.append('<span>' + message + '</span>');
@@ -250,7 +251,7 @@ $.extend(jsxc.newgui, {
       clearTimeout(self._searchTimer);
       self._searchTimer = setTimeout(function() {
 
-        console.info("Search: " + terms);
+        jsxc.debug("Search: " + terms);
 
         jsxc.xmpp.search.searchUsers(terms).then(function(results) {
           self._displayUserSearchResults(results);
@@ -295,7 +296,7 @@ $.extend(jsxc.newgui, {
       // element to show is a buddy, an special icon is displayed and switched with checked icon on
       // selection
       if (element._is_buddy === true) {
-        res.attr('title', element.username + ' est dans vos contacts');
+        res.attr('title', element.username + ' ' + jsxc.t('is_in_your_roster'));
         res.addClass('jsxc-search-result-buddie');
         res.click(function() {
 
@@ -312,7 +313,7 @@ $.extend(jsxc.newgui, {
 
       // element to show is not a buddy
       else {
-        res.attr('title', element.username + ' n\'est pas dans vos contacts');
+        res.attr('title', element.username + ' ' + jsxc.t('is_not_in_your_roster'));
         res.click(function() {
           res.toggleClass('jsxc-checked');
         });
@@ -328,7 +329,7 @@ $.extend(jsxc.newgui, {
     });
 
     if (displayed < 1) {
-      list.append("<div class='jsxc-search-user-entry'>Aucun résultat</div>");
+      list.append("<div class='jsxc-search-user-entry'>" + jsxc.t('no_result') + "</div>");
       return;
     }
 
@@ -346,7 +347,7 @@ $.extend(jsxc.newgui, {
 
     list.empty();
 
-    list.append("<div>Erreur lors de la recherche: " + error + "</div>");
+    list.append("<div>" + jsxc.t('error_while_searching', {err : error}) + "</div>");
 
   },
 
@@ -414,7 +415,7 @@ $.extend(jsxc.newgui, {
       showStandBy(false);
       showWarning(true);
 
-      jsxc.gui.feedback('Echec de la connexion');
+      jsxc.gui.feedback('__i18nid_:connection_fail', null, 'warn');
 
       // reset jsxc
       jsxc.xmpp.logout();
@@ -429,7 +430,7 @@ $.extend(jsxc.newgui, {
 
       clearTimeout(connexionTimerId);
 
-      jsxc.gui.feedback('Identifiants incorrects');
+      jsxc.gui.feedback('__i18nid_:bad_credentials', null, 'warn');
 
       showStandBy(false);
 
@@ -446,7 +447,7 @@ $.extend(jsxc.newgui, {
 
       clearTimeout(connexionTimerId);
 
-      jsxc.gui.feedback('Echec de la connexion');
+      jsxc.gui.feedback('__i18nid_:connection_fail', null, 'warn');
 
       showStandBy(false);
 
@@ -472,7 +473,7 @@ $.extend(jsxc.newgui, {
       $(document).off('disconnected.jsxc', connFail);
       $(document).off('connected.jsxc', connSuccess);
 
-      jsxc.gui.feedback('Connexion réussie');
+      jsxc.gui.feedback('__i18nid_:connection_success');
 
       showStandBy(false);
 
@@ -486,7 +487,7 @@ $.extend(jsxc.newgui, {
     $('#jsxc-connexion-menu #jsxc-connexion-submit').click(function() {
 
       if (jsxc.xmpp.conn) {
-        jsxc.gui.feedback("Vous êtes déjà connecté");
+        jsxc.gui.feedback('__i18nid_:you_are_already_connected');
         return;
       }
 
@@ -495,14 +496,14 @@ $.extend(jsxc.newgui, {
       var password = $('#jsxc-connexion-password').val();
 
       if (!login || login.indexOf('@') !== -1) {
-        jsxc.gui.feedback('Identifiant incorrect');
+        jsxc.gui.feedback('__i18nid_:bad_id', null, 'warn');
         return;
       }
 
       login = login + "@" + jsxc.options.xmpp.domain;
 
       if (!password) {
-        jsxc.gui.feedback('Mot de passe incorrect');
+        jsxc.gui.feedback('__i18nid_:bad_password', null, 'warn');
         return;
       }
 
@@ -529,8 +530,8 @@ $.extend(jsxc.newgui, {
         jsxc.xmpp.login(login, password);
 
       } catch (e) {
-        console.error(e);
-        jsxc.gui.feedback('Erreur lors de la connexion: ' + e);
+        jsxc.error(e);
+        jsxc.gui.feedback('__i18nid_:error_while_connecting', null, 'warn');
 
         showStandBy(false);
       }
@@ -609,13 +610,6 @@ $.extend(jsxc.newgui, {
       lastMove = event.pageX;
 
     });
-
-    // // Optionnal: create fake ressources
-    // for (var i = 0; i < 10; i++) {
-    //   self.addMediaRessource(
-    //       "<div style='background: red; margin: 20px; width: 400px; height: 400px'></div>",
-    //       'Title ' + i);
-    // }
 
   },
 
@@ -731,7 +725,7 @@ $.extend(jsxc.newgui, {
     self._selectionMode = enabled;
 
     // show main content if necessary
-    if(self.chatSidebarContent.isMainContentVisible() !== true){
+    if (self.chatSidebarContent.isMainContentVisible() !== true) {
       self.chatSidebarContent.showMainContent();
     }
 
@@ -803,7 +797,7 @@ $.extend(jsxc.newgui, {
    */
   _getBuddyList : function() {
 
-    // TODO check how was selected buddies in original JSXC
+    // TODO check selection method
     return $("#jsxc_buddylist li.jsxc_rosteritem");
 
   },
@@ -952,12 +946,12 @@ $.extend(jsxc.newgui, {
     var self = jsxc.newgui;
 
     // if state not specified, invert it
-    if(typeof state === 'undefined' || state === null){
+    if (typeof state === 'undefined' || state === null) {
       state = !self.isChatSidebarShown();
     }
 
     // nothing to do, return
-    if(state === self.isChatSidebarShown()){
+    if (state === self.isChatSidebarShown()) {
       if (callbackWhenFinished) {
         callbackWhenFinished();
       }
