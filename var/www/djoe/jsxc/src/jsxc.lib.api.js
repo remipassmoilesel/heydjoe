@@ -356,17 +356,17 @@ jsxc.api = {
     }
 
     if (buddy.status === jsxc.CONST.STATUS.indexOf("offline")) {
-      jsxc.gui.feedback("_i18nid:is_not_connected", {user : node});
+      jsxc.gui.feedback("__i18nid_:is_not_connected", {user : node});
       return;
     }
 
     var jid = jsxc.getCurrentActiveJidForBid(bid);
     if (jid === null) {
-      jsxc.gui.feedback("_i18nid:is_not_available", {user : node});
+      jsxc.gui.feedback("__i18nid_:is_not_available", {user : node});
       return;
     }
 
-    jsxc.gui.feedback("_i18nid:videocall_in_progress");
+    jsxc.gui.feedback("__i18nid_:videocall_in_progress");
 
     jsxc.mmstream.startSimpleVideoCall(jid);
 
