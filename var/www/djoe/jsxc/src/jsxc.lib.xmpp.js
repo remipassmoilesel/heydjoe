@@ -1141,8 +1141,8 @@ jsxc.xmpp = {
 
       // show notice if necessary
       if (unknownHistory.length < 1) {
-        jsxc.notice.add("Utilisateur inconnu",
-            "Vous avez reçu un message d'un utilisateur inconnu: " + Strophe.getNodeFromJid(bid),
+        jsxc.notice.add(jsxc.t('unknown_user'),
+            jsxc.t('you_receive_message_from_unknown_user') + Strophe.getNodeFromJid(bid),
             'gui.showUnknownSender', [bid]);
       }
 

@@ -1809,6 +1809,7 @@ jsxc.mmstream = {
     // check if user connected
     if (self._isBuddyConnectingOrConnected(fulljid) === true) {
       jsxc.gui.feedback("__i18nid_:user_already_connected_or_connecting", {user : node}, 'warn');
+      return;
     }
 
     // ask confirmation

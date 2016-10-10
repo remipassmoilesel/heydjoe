@@ -693,7 +693,7 @@ jsxc.muc = {
     var settingsList = win.find('.jsxc_settings ul');
 
     // add invitation
-    var inviteLink = $('<a class="jsxc_inviteUsers"><span>Inviter des utilisateurs</span></a>');
+    var inviteLink = $('<a class="jsxc_inviteUsers"><span>'+jsxc.t('invite_in_conversation')+'</span></a>');
     inviteLink.click(function() {
 
       jsxc.gui.showSelectContactsDialog()
@@ -703,7 +703,7 @@ jsxc.muc = {
 
             // check if enought users to invite
             if (jids.length < 1) {
-              jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+              jsxc.gui.feedback("_i18nid_:you_must_select_one_person");
             }
 
             // invite users
@@ -715,30 +715,28 @@ jsxc.muc = {
             });
 
             // report
-            if (invited.length < 2) {
-              jsxc.gui.feedback("<b>" + invited[0] + "</b> à été invité");
+            if(invited.length > 1){
+              jsxc.gui.feedback("__i18nid_:users_have_been_invited", {users: invited.join(', ')});
             }
-
             else {
-              jsxc.gui.feedback(
-                  "Les utilisateurs suivant ont été invités: <b>" + invited.join(", ") + "</b>");
+              jsxc.gui.feedback("__i18nid_:user_have_been_invited", {user: invited[0]});
             }
 
           })
 
           // operation was canceled
           .fail(function() {
-            jsxc.gui.feedback("Opération annulée");
+            jsxc.gui.feedback('__i18nid_:operation_canceled');
           });
 
     });
     settingsList.prepend($('<li>').append(inviteLink));
 
     // add pad link
-    var padLink = $('<a class="jsxc_openpad"><span>Ouvrir un pad</span></a>');
+    var padLink = $('<a class="jsxc_openpad"><span>' + jsxc.t('open_shared_pad') + '</span></a>');
     padLink.click(function() {
 
-      jsxc.gui.feedback("Pad en cours d'ouverture ...");
+      jsxc.gui.feedback('__i18nid_:etherpad_openning_in_progress');
 
       var padId = bid.substr(0, 26).replace(/[^a-z0-9]+/gi, "") + "_" +
           jsxc.sha1.hash(bid).substr(0, 22);
@@ -1156,8 +1154,7 @@ jsxc.muc = {
       "muc#roomconfig_whois" : "anyone",
       "muc#roomconfig_enablelogging" : "1",
       "x-muc#roomconfig_canchangenick" : "0",
-      "x-muc#roomconfig_registration" : "0",
-      // "muc#roomconfig_roomadmins": "",
+      "x-muc#roomconfig_registration" : "0", // "muc#roomconfig_roomadmins": "",
       // "muc#roomconfig_roomowners": "",
     };
 
@@ -1185,16 +1182,16 @@ jsxc.muc = {
 
           // save configuration
           jsxc.storage.updateUserItem('buddy', room, 'config', form);
-      
+
         },
 
         // configuration fail
         function(response) {
 
           jsxc.warn("Error while configuring room", response);
-          
+
           jsxc.gui.feedback("__i18nid_:error_while_openning_conversation", null, 'warn');
-          
+
         });
   },
 

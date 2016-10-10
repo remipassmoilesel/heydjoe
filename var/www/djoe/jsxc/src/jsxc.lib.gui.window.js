@@ -49,8 +49,8 @@ jsxc.gui.window = {
         jsxc.gui.window.scrollDown(winBid);
 
         // change text
-        var msg = usersComposing.length > 1 ? " sont en train d'écrire ..." :
-            " est en train d'écrire ...";
+        var msg = usersComposing.length > 1 ? jsxc.t('are_writing') :
+            jsxc.t('is_writing');
 
         // notification not present, add it
         if (composingNotif.length < 1) {

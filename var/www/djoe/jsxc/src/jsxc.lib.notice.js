@@ -97,7 +97,7 @@ jsxc.notice = {
       return false;
     });
 
-    notice.text(msg + " " + description);
+    notice.html("<b>" + msg + "</b><br/>" + description);
     notice.attr('title', description || '');
     notice.attr('data-nid', nid);
     list.append(notice);

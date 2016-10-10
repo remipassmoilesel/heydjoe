@@ -231,7 +231,7 @@ jsxc.mmstream.gui = {
     });
 
     // append video
-    jsxc.newgui.addMediaRessource(videoCtr, "Votre écran", {titleControls : [hangup]});
+    jsxc.newgui.addMediaRessource(videoCtr, jsxc.t('my_screen'), {titleControls : [hangup]});
 
     // attach video after append elements
     mmstream.attachMediaStream(video, mmstream.multimediacache.screenStream);
@@ -342,7 +342,7 @@ jsxc.mmstream.gui = {
         });
 
     // append video
-    jsxc.newgui.addMediaRessource(videoCtr, " Vidéo de " + node,
+    jsxc.newgui.addMediaRessource(videoCtr, node,
         {titleControls : [hangup, fullscreen]});
 
     // attach video after append elements

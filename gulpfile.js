@@ -8,7 +8,7 @@
 var gulp = require('gulp');
 var shell = require('gulp-shell');
 
-var server = "vps303506.ovh.net";
+var server = "hey-djoe.fr";
 
 gulp.task('get-configuration',
     shell.task(['rsync -av --files-from=opt/djoe/configuration.list ' + server + ':/ .']));
@@ -26,5 +26,5 @@ gulp.task('jsxc-grunt',
     shell.task(['export PATH=$PATH:/opt/nodejs4/bin && cd var/www/djoe/jsxc/ && grunt']));
 
 gulp.task('deploy-demo',
-    shell.task(['rsync -avz "var/www/djoe/" ' + server + ':"/var/www/djoe/"']));
+    shell.task(['rsync -avz "var/www/djoe" admin@' + server + ':"/opt/djoe-project/var/www"']));
 
