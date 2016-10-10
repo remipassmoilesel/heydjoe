@@ -5,7 +5,7 @@
 jsxc.mmstream.gui = {
 
   mediapanel : null,
-  
+
   /**
    * Special logging with prefix
    * @param message
@@ -45,7 +45,7 @@ jsxc.mmstream.gui = {
 
         mmstream._clearMultimediacache();
 
-        jsxc.gui.feedback('Appels terminés, système réinitialisé');
+        jsxc.gui.feedback("__i18nid_:call_finished_system_reseted")
 
       }, 800);
 
@@ -96,7 +96,7 @@ jsxc.mmstream.gui = {
 
           // let dialog get closed
           setTimeout(function() {
-            jsxc.gui.feedback("Connexion interrompue avec " + node);
+            jsxc.gui.feedback("__i18nid_:connection_closed_with", {user : node}, 'warn');
           }, 700);
 
         }
@@ -150,7 +150,7 @@ jsxc.mmstream.gui = {
     if (Object.keys(mmstream.multimediacache.users) < 1) {
 
       var it = $("<li>");
-      it.text("Aucune connexion en cours");
+      it.text(jsxc.t('no_connections_now'));
       list.append(it);
 
       return;
@@ -250,10 +250,10 @@ jsxc.mmstream.gui = {
       'noClose' : true
     });
 
-    $("#jsxc-chrome-extension-link").click(function(){
+    $("#jsxc-chrome-extension-link").click(function() {
       window.open(jsxc.options.get('chromeExtensionURL'));
     });
-    
+
     $("#jsxc_dialog .jsxc_closeInstallChromeExtension").click(function() {
       jsxc.gui.dialog.close();
     });
@@ -326,7 +326,8 @@ jsxc.mmstream.gui = {
     videoCtr.append(video);
 
     // waiting message
-    videoCtr.append('<div class="jsxc_connectionInProgress">Connexion en cours ...</div>');
+    videoCtr.append(
+        '<div class="jsxc_connectionInProgress">' + jsxc.t('connection_in_progress') + '</div>');
 
     // create hangup button
     var hangup = $("<div>").addClass('jsxc_hangUpControl jsxc_videoControl').click(function() {
@@ -390,7 +391,7 @@ jsxc.mmstream.gui = {
           mmstream.attachMediaStream($("#jsxc-local-video"), localStream);
         })
         .fail(function(error) {
-          jsxc.gui.feedback("Erreur lors de l'accès à la caméra et au micro: " + error);
+          jsxc.gui.feedback("__i18nid_:error_while_accessing_camera_and_micro", null, 'warn');
           jsxc.error("Error while using audio/video", error);
         });
 
@@ -553,9 +554,10 @@ jsxc.mmstream.gui = {
 
     bid = jsxc.jidToBid(bid);
 
-    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('reinviteUser_' + mode, Strophe.getNodeFromJid(bid)), {
-      noClose : true, name : 'reinvite_user'
-    });
+    var dialog = jsxc.gui.dialog.open(
+        jsxc.gui.template.get('reinviteUser_' + mode, Strophe.getNodeFromJid(bid)), {
+          noClose : true, name : 'reinvite_user'
+        });
 
     dialog.find('.jsxc_accept').click(function() {
 
@@ -663,7 +665,7 @@ jsxc.mmstream.gui = {
     }
 
     else {
-      $("#jsxc_dialog h3").text("Vidéo indisponible");
+      $("#jsxc_dialog h3").text(jsxc.t('video_unavailable'));
 
       self._log("Stream is null", {
         fulljid : fulljid, stream : stream
