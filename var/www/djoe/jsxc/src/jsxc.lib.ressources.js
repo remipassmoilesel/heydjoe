@@ -325,7 +325,7 @@ jsxc.ressources = {
     // format ressource to show it
     var ressourceLabel = etherpadId.length < 50 ? etherpadId : etherpadId.substr(0, 17) + "...";
 
-    var title = "Ouvrir un pas: " + etherpadId;
+    var title = jsxc.t('open_a_pad') + etherpadId;
 
     return '<a class="jsxc-media-ressource-link" title="' + title +
         '" onclick="jsxc.etherpad.openpad(\'' + etherpadId + '\')">' + ressourceLabel + '</a>';
@@ -336,7 +336,7 @@ jsxc.ressources = {
     // format ressource to show it
     var ressourceLabel = href.length < 50 ? href : href.substr(0, 17) + "...";
 
-    var title = "Ouvrir dans une nouvelle fenêtre: " + href;
+    var title = jsxc.t('open_in_a_new_window') + href;
 
     return '<a class="jsxc-media-ressource-link" title="' + title + '" target="_blank" href="' +
         href + '">' + ressourceLabel + '</a>';
