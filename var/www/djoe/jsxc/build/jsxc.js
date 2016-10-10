@@ -1,5 +1,5 @@
 /*!
- * djoe v1.0.0 - 2016-09-26
+ * djoe v1.0.0 - 2016-10-10
  * 
  * Copyright (c) 2016  <br>
  * Released under the GPL-3.0 license
@@ -817,7 +817,7 @@
 
 	    // show warning
 	    if ($('#jsxc_slaveClientWarning').length < 1) {
-	      var header = '<div id="jsxc_slaveClientWarning">La messagerie est disponible dans un autre onglet</div>';
+	      var header = '<div id="jsxc_slaveClientWarning">' + jsxc.t('client_slave_warning') + '</div>';
 	      $("body").prepend(header);
 	    }
 
@@ -3636,19 +3636,15 @@
 	    };
 
 	    if (self._isNavigatorChrome() === false) {
-	      jsxc.gui.feedback('<b>' + node +
-	          '</b> a éssayé de vous inviter à partager son écran, mais cette option n\'est disponible que sur Chromium' +
-	          ' ou Chrome.');
-
+	      jsxc.gui.feedback("__i18nid_:user_try_to_share_screen_but_only_chromium_is_supported",
+	          {user : node}, 'warn');
 	      decline();
 	      return;
 	    }
 
 	    if (self.isVideoCallsDisabled() === true) {
-
-	      jsxc.gui.feedback('<b>' + node +
-	          '</b> a éssayé de vous inviter à partager son écran, mais les appels multimédia sont désactivés.');
-
+	      jsxc.gui.feedback("__i18nid_:user_try_to_share_screen_but_media_disabled", {user : node},
+	          'warn');
 	      decline();
 	      return;
 	    }
@@ -3660,14 +3656,14 @@
 	    }
 
 	    if (now - datetime > self.SCREENSHARING_INVITATION_EXPIRATION) {
-	      jsxc.gui.feedback("Vous avez reçu une invitation de partage d'écran, mais elle est périmée");
+	      jsxc.gui.feedback("__i18nid_:received_screensharing_invitation_but_outdated");
 	      decline();
 	      return;
 	    }
 
 	    self.gui._showIncomingScreensharingDialog(from)
 	        .then(function() {
-	          jsxc.gui.feedback("Partage d'écran accepté");
+	          jsxc.gui.feedback("__i18nid_:screen_sharing_accepted");
 
 	          self._setUserType(from, self.USER_TYPE.SCREENSHARING_INITITATOR);
 
@@ -3675,7 +3671,7 @@
 	              datetime, from);
 	        })
 	        .fail(function() {
-	          jsxc.gui.feedback("Partage d'écran refusé");
+	          jsxc.gui.feedback("__i18nid_:screen_sharing_refused");
 	          decline();
 	        });
 
@@ -3731,10 +3727,11 @@
 
 	    var self = jsxc.mmstream;
 	    var from = $(stanza).attr('from');
+	    var node = Strophe.getNodeFromJid(from);
 
 	    self._setUserStatus(from, self.USER_STATUS.HAS_REJECT_CALL);
 
-	    jsxc.gui.feedback("Partage d'écran refusé par <b>" + Strophe.getNodeFromJid(from) + "</b>");
+	    jsxc.gui.feedback("__i18nid_:screensharing_refused_by", {user : node}, 'warn');
 
 	  },
 
@@ -3814,22 +3811,26 @@
 	                })
 
 	                // user cannot access to camera
-	                .fail(function(error) {
-	                  jsxc.gui.feedback("Accès à la caméra refusé" + (error ? ": " + error : ""));
+	                .fail(function() {
+	                  jsxc.gui.feedback("__i18nid_:error_while_accessing_camera_and_micro", null,
+	                      'warn');
 	                  self.multimediacache.occupied = false;
 	                });
 
 	          })
 	          .fail(function() {
-	            jsxc.gui.feedback("Invitation refusée");
+	            jsxc.gui.feedback("__i18nid_:invitation_refused", null, 'warn');
 	            self.multimediacache.occupied = false;
 	          });
 	    }
 
 	    // case 2: Maybe I have to call people was disconnected
 	    else {
-	      jsxc.gui.feedback(target_node + " à été ré-invité dans la vidéoconférence par " +
-	          Strophe.getNodeFromJid(from));
+
+	      jsxc.gui.feedback("__i18nid_:user_have_been_reinvited_by", {
+	        user : target_node, from : Strophe.getNodeFromJid(from)
+	      });
+
 	    }
 
 	  },
@@ -3854,10 +3855,10 @@
 	    // check if calls are disabled
 	    if (self.isVideoCallsDisabled() === true) {
 
-	      jsxc.gui.feedback('<b>' + initiator_node +
-	          '</b> a éssayé de vous inviter à une vidéoconférence, mais les appels multimédia sont désactivés.');
+	      jsxc.gui.feedback("__i18nid_:user_tried_to_invite_you_in_videoconference_but_media_disabled",
+	          {user : initiator_node}, 'warn');
 
-	      self._declineVideconference(initiator, participants, invitationId, "Occupé !");
+	      self._declineVideconference(initiator, participants, invitationId, "Occupied");
 
 	      return;
 	    }
@@ -3865,16 +3866,15 @@
 	    // check if another multimedia session is currently running
 	    // AFTER disable calls
 	    if (self._isClientOccupied(initiator) !== false) {
-	      self._declineVideconference(initiator, participants, invitationId, "Occupé !");
+	      self._declineVideconference(initiator, participants, invitationId, "Occupied");
 	      return;
 	    }
 
 	    // check how many participants
 	    if (participants.length < 1) {
 	      self._log('Too few participants', {stanza : stanza, participants : participants}, 'ERROR');
-	      jsxc.gui.feedback(
-	          'Vous avez reçu une invitation à une vidéoconférence de <b>' + initiator_node +
-	          '</b>, mais elle est invalide.');
+	      jsxc.gui.feedback("__i18nid_:you_received_videoconference_invitation_but_invalid",
+	          {user : initiator_node}, 'warn');
 	      return;
 	    }
 
@@ -3916,14 +3916,14 @@
 
 	              // user cannot access to camera
 	              .fail(function(error) {
-	                decline("Accès à la caméra refusé", error);
+	                decline(jsxc.t('access_camera_micro_refused'), error);
 	              });
 
 	        })
 
 	        // video conference is rejected
 	        .fail(function(error) {
-	          decline("Vidéo conférence rejetée", error);
+	          decline(jsxc.t('invitation_refused'), error);
 	        });
 
 	  },
@@ -3942,21 +3942,21 @@
 
 	    // first checks to avoid not needed re invitations
 	    var node = Strophe.getNodeFromJid(fulljid);
-	    var error = "";
+	    var error = [];
 
 	    // check if a participant to videoconference
 	    if (self.multimediacache.userList.indexOf(fulljid) < 0 &&
 	        self.multimediacache.initiator !== fulljid) {
-	      error = "'" + node + "' ne participe pas à la vidéo conférence en cours.";
+	      error = ['__i18nid_:user_do_not_participate_videoconference', {user : node}];
 	    }
 
 	    // check if user connected
 	    if (self._isBuddyConnectingOrConnected(fulljid) === true) {
-	      error = node + " est déjà connecté ou en cours de connexion";
+	      error = ['__i18nid_:user_already_connected_or_connecting', {user : node}];
 	    }
 
-	    if (error !== "") {
-	      jsxc.gui.feedback(error);
+	    if (error.length > 0) {
+	      jsxc.gui.feedback(error[0], error[1], 'warn');
 	      return;
 	    }
 
@@ -3974,10 +3974,10 @@
 	          var node = Strophe.getNodeFromJid(self.conn.jid);
 
 	          self._sendVideoconferenceInvitations(participants,
-	              node + " vous invite à revenir dans la vidéoconférence", initiator,
+	              node + " invite you again in videoconference", initiator,
 	              self.XMPP_VIDEOCONFERENCE.STATUS.REINVITATION, fulljid);
 
-	          jsxc.gui.feedback("L'invitation à été envoyée.");
+	          jsxc.gui.feedback("__i18nid_:invitation_sent");
 
 	        })
 	        .fail(function(error) {
@@ -4185,7 +4185,8 @@
 	    jsxc.gui.dialog.close('video_conference_incoming');
 
 	    // show toast
-	    jsxc.gui.feedback("La videoconférence à été annulée par " + Strophe.getNodeFromJid(from));
+	    jsxc.gui.feedback("__i18nid_:videoconference_have_been_canceled_by",
+	        {user : Strophe.getNodeFromJid(from)}, 'warn');
 
 	    setTimeout(function() {
 	      self._clearMultimediacache();
@@ -4220,7 +4221,7 @@
 	    video[self.XMPP_VIDEOCONFERENCE.DATETIME_ATTR] =
 	        new Date().toISOString().slice(0, 19).replace('T', ' ');
 	    video[self.XMPP_VIDEOCONFERENCE.MESSAGE_ATTR] =
-	        "Vidéoconférence acceptée par " + Strophe.getNodeFromJid(self.conn.jid);
+	        "Videoconference accepted by " + Strophe.getNodeFromJid(self.conn.jid);
 
 	    // XMPP message stanza
 	    var msg = $msg({
@@ -4274,7 +4275,7 @@
 	    video[self.XMPP_VIDEOCONFERENCE.DATETIME_ATTR] =
 	        new Date().toISOString().slice(0, 19).replace('T', ' ');
 	    video[self.XMPP_VIDEOCONFERENCE.MESSAGE_ATTR] =
-	        "Vidéoconférence rejetée par " + Strophe.getNodeFromJid(self.conn.jid);
+	        "Videoconference rejected by " + Strophe.getNodeFromJid(self.conn.jid);
 
 	    // XMPP message stanza
 	    var msg = $msg({
@@ -4344,7 +4345,7 @@
 	    video[self.XMPP_VIDEOCONFERENCE.INITIATOR_ATTR] = initiator;
 	    video[self.XMPP_VIDEOCONFERENCE.DATETIME_ATTR] = datetime;
 	    video[self.XMPP_VIDEOCONFERENCE.MESSAGE_ATTR] =
-	        messageTxt || "Vidéoconférence organisée par " + Strophe.getNodeFromJid(initiator);
+	        messageTxt || "Videoconference initated by " + Strophe.getNodeFromJid(initiator);
 
 	    if (reinvitationTarget) {
 	      video[self.XMPP_VIDEOCONFERENCE.REINVITE_ATTR] = reinvitationTarget;
@@ -4401,7 +4402,7 @@
 	    jsxc.stats.addEvent("jsxc.mmstream.multimediacache.start");
 
 	    if (self.isVideoCallsDisabled() === true) {
-	      jsxc.gui.feedback('Les appels multimédia sont désactivés.');
+	      jsxc.gui.feedback("__i18nid_:multimedia_calls_are_disabled");
 	      self._log('Calls are disabled');
 	      return;
 	    }
@@ -4459,21 +4460,21 @@
 	            var ret = self._sendVideoconferenceInvitations(fulljidArray, message);
 	            self.multimediacache.lastLaunch = ret.datetime;
 
-	            jsxc.gui.feedback("La vidéoconférence va bientôt commencer ...");
+	            jsxc.gui.feedback("__i18nid_:videconference_will_start_soon");
 
 	          } catch (error) {
 
 	            self._log("Error while starting videoconference: ", error, "ERROR");
 
-	            jsxc.gui.feedback("Erreur lors de l'envoi des invitations.");
+	            jsxc.gui.feedback("__i18nid_:error_while_sending_invitations", null, 'warn');
 
 	            self.multimediacache.occupied = false;
 	          }
 	        })
 
 	        // user cannot access to camera
-	        .fail(function(error) {
-	          jsxc.gui.feedback("Accès à la caméra refusé" + (error ? ": " + error : ""));
+	        .fail(function() {
+	          jsxc.gui.feedback("__i18nid_:access_camera_micro_refused");
 
 	          self.multimediacache.occupied = false;
 	        });
@@ -4542,7 +4543,7 @@
 	    }
 
 	    if (self.isVideoCallsDisabled() === true) {
-	      jsxc.gui.feedback('Les appels multimédia sont désactivés.');
+	      jsxc.gui.feedback("__i18nid_:multimedia_calls_are_disabled");
 	      self._log('Calls are disabled');
 	      return;
 	    }
@@ -4559,7 +4560,7 @@
 	      return;
 	    }
 
-	    jsxc.gui.feedback("Le partage d'écran va bientôt commencer ...");
+	    jsxc.gui.feedback("__i18nid_:screen_sharing_will_soon_begin");
 
 	    // ice configuration
 	    self.conn.jingle.setICEServers(self.iceServers);
@@ -4595,12 +4596,9 @@
 	        })
 
 	        .fail(function() {
-
-	          jsxc.gui.feedback(
-	              "Impossible d'accéder à votre écran, veuillez autoriser l'accès, installer l'extension si nécéssaire et réessayer.");
-
+	          jsxc.gui.feedback("__i18nid_:unable_to_catch_screen_please_allow_or_install_extension",
+	              null, 'warn');
 	          self.multimediacache.occupied = false;
-
 	        });
 
 	  },
@@ -4616,7 +4614,7 @@
 
 	    // check if user connected
 	    if (self._isBuddyConnectingOrConnected(fulljid) === true) {
-	      jsxc.gui.feedback(node + " est déjà connecté ou en cours de connexion");
+	      jsxc.gui.feedback("__i18nid_:user_already_connected_or_connecting", {user : node}, 'warn');
 	    }
 
 	    // ask confirmation
@@ -4624,7 +4622,7 @@
 
 	        .then(function() {
 
-	          jsxc.gui.feedback('Invitation envoyée');
+	          jsxc.gui.feedback("__i18nid_:invitation_sent");
 
 	          // invite all participants
 	          self._sendScreensharingInvitations([fulljid], true);
@@ -4633,7 +4631,7 @@
 
 	        .fail(function() {
 
-	          jsxc.gui.feedback('Opération annulée');
+	          jsxc.gui.feedback("__i18nid_:operation_canceled");
 
 	        });
 
@@ -4734,15 +4732,13 @@
 
 	    if (task === "videoconference") {
 	      if (self._isNavigatorInternetExplorer() === true) {
-	        message =
-	            "La vidéo conférence n'est pas disponible avec Internet Explorer. Utilisez Firefox, Brave, Opera ou Chrome.";
+	        message = "__i18nid_:internet_explorer_videoconference_warning";
 	      }
 	    }
 
 	    else if (task === "screensharing") {
 	      if (self._isNavigatorChrome() !== true) {
-	        message =
-	            "Le partage d'écran n'est pas disponible avec votre navigateur. Utilisez Chromium ou Chrome.";
+	        message = "__i18nid_:screensharing_use_chromium_or_chrome";
 	      }
 	    }
 
@@ -4752,7 +4748,7 @@
 
 	    if (message !== "") {
 	      jsxc.gui.feedback(message);
-	      throw new Error(message);
+	      throw new Error(jsxc.t('message'));
 	    }
 
 	  },
@@ -4900,8 +4896,8 @@
 	    if (self.isVideoCallsDisabled() === true) {
 
 	      var node = Strophe.getNodeFromJid(session.peerID);
-	      jsxc.gui.feedback('<b>' + node +
-	          '</b> a éssayé de vous contacter, mais les appels multimédia sont désactivés.');
+	      jsxc.gui.feedback("__i18nid_:user_tried_to_contact_you_but_media_disabled", {user : node},
+	          'warn');
 
 	      session.end("decline", false);
 
@@ -4928,8 +4924,7 @@
 	   */
 	  _onIncomingFileTransfer : function() {
 
-	    jsxc.gui.feedback(
-	        "Transfert de fichier à l'arrivée. Cette fonctionnalité n'est pas encore disponible.");
+	    jsxc.gui.feedback("__i18nid_:file_transfert_incoming_but_not_implemented_yet", null, 'warn');
 
 	    throw new Error("Not implemented yet");
 
@@ -4982,7 +4977,7 @@
 	    };
 
 	    var errorWhileAccessingLocalStream = function(error) {
-	      jsxc.gui.feedback("Erreur lors de l'accès à la caméra et au micro: " + error);
+	      jsxc.gui.feedback("__i18nid_:error_while_accessing_camera_and_micro", null, 'warn');
 	      self._log("Error while using audio/video", error);
 	    };
 
@@ -4995,7 +4990,7 @@
 	        self._log("Auto accept call - debug mode");
 	      }
 
-	      jsxc.notification.notify("Appel vidéo", "L'appel a été accepté automatiquement: " + bid);
+	      jsxc.notification.notify("Appel vidéo", "Call accepted automatically: " + bid);
 
 	      // require permission on devices if needed
 	      self._requireLocalStream()
@@ -5090,7 +5085,7 @@
 	          })
 
 	          .fail(function() {
-	            jsxc.gui.feedback("Appel rejeté");
+	            jsxc.gui.feedback("__i18nid_:call_refused", null, 'warn');
 	            declineRemoteSession();
 	          });
 	    }
@@ -5320,7 +5315,7 @@
 	    var node = Strophe.getNodeFromJid(fulljid);
 
 	    if (self.isVideoCallsDisabled() === true) {
-	      jsxc.gui.feedback('Les appels multimédia sont désactivés.');
+	      jsxc.gui.feedback("__i18nid_:multimedia_calls_are_disabled", null, 'warn');
 	      self._log('Calls are disabled');
 	      return;
 	    }
@@ -5329,7 +5324,7 @@
 
 	    // check if user connected
 	    if (self._isBuddyConnectingOrConnected(fulljid) === true) {
-	      jsxc.gui.feedback(node + ' est déjà connecté ou en cours de connexion');
+	      jsxc.gui.feedback("__i18nid_:user_already_connected_or_connecting", {user : node}, 'warn');
 	      return;
 	    }
 
@@ -5393,9 +5388,7 @@
 
 	          self._log('Failed to get access to local media.', error, 'ERROR');
 
-	          jsxc.gui.feedback(
-	              "Impossible d'accéder à votre webcam, veuillez autoriser l'accès et réessayer." +
-	              (error ? "Message: " + error : ""));
+	          jsxc.gui.feedback("__i18nid_:access_camera_micro_refused", null, 'warn');
 
 	        });
 
@@ -5440,8 +5433,9 @@
 	      // hangup and feedback
 	      self.hangupCall(fulljid);
 
-	      jsxc.gui.feedback("Pas de réponse de " + Strophe.getNodeFromJid(fulljid) + " au bout de " +
-	          (self.HANGUP_IF_NO_RESPONSE / 1000) + " s., l'appel est abandonné.");
+	      jsxc.gui.feedback("__i18nid_:no_response_after_n_seconds_cancel_call", {
+	        user : Strophe.getNodeFromJid(fulljid), time : (self.HANGUP_IF_NO_RESPONSE / 1000)
+	      }, 'warn');
 
 	    }, self.HANGUP_IF_NO_RESPONSE);
 
@@ -5476,8 +5470,8 @@
 
 	    if (state === "interrupted") {
 
-	      // inform user of problem
-	      jsxc.gui.feedback("Problème de connexion avec " + Strophe.getNodeFromJid(fulljid));
+	      jsxc.gui.feedback("__i18nid_:connection_problem_with",
+	          {user : Strophe.getNodeFromJid(fulljid)}, 'warn');
 
 	      status = self.USER_STATUS.CONNEXION_DISTURBED;
 	    }
@@ -5541,20 +5535,19 @@
 
 	    var self = jsxc.mmstream;
 	    var node = fulljid ? Strophe.getNodeFromJid(fulljid) : '';
-
 	    var message;
+
 	    if (isInitiator === true) {
-	      message =
-	          "Vous ne pouvez pas effectuer cette action avant d'avoir terminé tous vos appels multimédia";
+	      message = ["__i18nid_:cannot_perform_action_before_end_multimedia_call", null];
 	    }
 
 	    else {
-	      message = "<b>" + node + "</b> a éssayé de vous contacter mais vous êtes occupé.";
+	      message = ["__i18nid_:tried_to_contact_you_but_you_are_occupied", {user : node}];
 	    }
 
 	    // check if another multimedia session is currently running
 	    if (self.multimediacache.occupied !== false) {
-	      jsxc.gui.feedback(message);
+	      jsxc.gui.feedback(message[0], message[1], 'warn');
 	      return true;
 	    }
 
@@ -5879,7 +5872,7 @@
 	jsxc.mmstream.gui = {
 
 	  mediapanel : null,
-	  
+
 	  /**
 	   * Special logging with prefix
 	   * @param message
@@ -5919,7 +5912,7 @@
 
 	        mmstream._clearMultimediacache();
 
-	        jsxc.gui.feedback('Appels terminés, système réinitialisé');
+	        jsxc.gui.feedback("__i18nid_:call_finished_system_reseted");
 
 	      }, 800);
 
@@ -5970,7 +5963,7 @@
 
 	          // let dialog get closed
 	          setTimeout(function() {
-	            jsxc.gui.feedback("Connexion interrompue avec " + node);
+	            jsxc.gui.feedback("__i18nid_:connection_closed_with", {user : node}, 'warn');
 	          }, 700);
 
 	        }
@@ -6024,7 +6017,7 @@
 	    if (Object.keys(mmstream.multimediacache.users) < 1) {
 
 	      var it = $("<li>");
-	      it.text("Aucune connexion en cours");
+	      it.text(jsxc.t('no_connections_now'));
 	      list.append(it);
 
 	      return;
@@ -6124,10 +6117,10 @@
 	      'noClose' : true
 	    });
 
-	    $("#jsxc-chrome-extension-link").click(function(){
+	    $("#jsxc-chrome-extension-link").click(function() {
 	      window.open(jsxc.options.get('chromeExtensionURL'));
 	    });
-	    
+
 	    $("#jsxc_dialog .jsxc_closeInstallChromeExtension").click(function() {
 	      jsxc.gui.dialog.close();
 	    });
@@ -6200,7 +6193,8 @@
 	    videoCtr.append(video);
 
 	    // waiting message
-	    videoCtr.append('<div class="jsxc_connectionInProgress">Connexion en cours ...</div>');
+	    videoCtr.append(
+	        '<div class="jsxc_connectionInProgress">' + jsxc.t('connection_in_progress') + '</div>');
 
 	    // create hangup button
 	    var hangup = $("<div>").addClass('jsxc_hangUpControl jsxc_videoControl').click(function() {
@@ -6264,7 +6258,7 @@
 	          mmstream.attachMediaStream($("#jsxc-local-video"), localStream);
 	        })
 	        .fail(function(error) {
-	          jsxc.gui.feedback("Erreur lors de l'accès à la caméra et au micro: " + error);
+	          jsxc.gui.feedback("__i18nid_:error_while_accessing_camera_and_micro", null, 'warn');
 	          jsxc.error("Error while using audio/video", error);
 	        });
 
@@ -6427,9 +6421,10 @@
 
 	    bid = jsxc.jidToBid(bid);
 
-	    var dialog = jsxc.gui.dialog.open(jsxc.gui.template.get('reinviteUser_' + mode, Strophe.getNodeFromJid(bid)), {
-	      noClose : true, name : 'reinvite_user'
-	    });
+	    var dialog = jsxc.gui.dialog.open(
+	        jsxc.gui.template.get('reinviteUser_' + mode, Strophe.getNodeFromJid(bid)), {
+	          noClose : true, name : 'reinvite_user'
+	        });
 
 	    dialog.find('.jsxc_accept').click(function() {
 
@@ -6537,7 +6532,7 @@
 	    }
 
 	    else {
-	      $("#jsxc_dialog h3").text("Vidéo indisponible");
+	      $("#jsxc_dialog h3").text(jsxc.t('video_unavailable'));
 
 	      self._log("Stream is null", {
 	        fulljid : fulljid, stream : stream
@@ -9140,17 +9135,17 @@
 	    }
 
 	    if (buddy.status === jsxc.CONST.STATUS.indexOf("offline")) {
-	      jsxc.gui.feedback("_i18nid:is_not_connected", {user : node});
+	      jsxc.gui.feedback("__i18nid_:is_not_connected", {user : node});
 	      return;
 	    }
 
 	    var jid = jsxc.getCurrentActiveJidForBid(bid);
 	    if (jid === null) {
-	      jsxc.gui.feedback("_i18nid:is_not_available", {user : node});
+	      jsxc.gui.feedback("__i18nid_:is_not_available", {user : node});
 	      return;
 	    }
 
-	    jsxc.gui.feedback("_i18nid:videocall_in_progress");
+	    jsxc.gui.feedback("__i18nid_:videocall_in_progress");
 
 	    jsxc.mmstream.startSimpleVideoCall(jid);
 
@@ -12089,7 +12084,7 @@
 	  empty : function() {
 
 	    var text = $(
-	        '<p class="jsxc_rosterIsEmptyMessage">Votre liste est vide, invitez de nouveaux contacts !</p>');
+	        '<p class="jsxc_rosterIsEmptyMessage">' + jsxc.t('empty_roster_message') + '</p>');
 
 	    text.click(function() {
 	      jsxc.newgui.toggleSearchPanel();
@@ -12692,8 +12687,7 @@
 	    // show warning if user is not a buddy
 	    if (data.sub !== "both") {
 	      win.find('.jsxc_textarea').prepend("<div class='jsxc-warning-notbuddy'><i>" + node +
-	          "</i> n'est pas dans vos contacts. Votre interlocuteur est peut être déconnecté ou peut refuser " +
-	          "de voir vos messages.</div>");
+	          "</i> " + jsxc.t('not_a_contact_chat_warning') + "</div>");
 	    }
 
 	    else {
@@ -13973,6 +13967,12 @@
 	};
 	jsxc.localization = {
 
+	  /**
+	   * If set to true, will translation will throw an error if an i18n id is not found.
+	   * Sometimes when id and translation are the same false positive errors ae thrown.
+	   */
+	  debug : true,
+
 	  init : function() {
 
 	    // detect language
@@ -14021,11 +14021,15 @@
 	      var id = arguments[0];
 
 	      // throw an error if id is invalid
-	      if (res.indexOf(id) !== -1) {
-	        var err = new Error('Invalid i18n id: ' + id);
-	        setTimeout(function() {
-	          throw err;
-	        }, 0);
+	      if (jsxc.localization.debug === true) {
+
+	        if (res.indexOf(id) !== -1) {
+	          var err = new Error('Invalid i18n id: ' + id);
+	          setTimeout(function() {
+	            throw err;
+	          }, 0);
+	        }
+
 	      }
 
 	      return res;
@@ -15387,7 +15391,7 @@
 
 	              jsxc.warn("Error while loading room configuration", response);
 
-	              jsxc.gui.feedback("Erreur lors de la configuration de la discussion");
+	              jsxc.gui.feedback("__i18nid_:error_while_openning_conversation", null, 'warn');
 
 	            });
 
@@ -15508,7 +15512,8 @@
 	      "muc#roomconfig_whois" : "anyone",
 	      "muc#roomconfig_enablelogging" : "1",
 	      "x-muc#roomconfig_canchangenick" : "0",
-	      "x-muc#roomconfig_registration" : "0", // "muc#roomconfig_roomadmins": "",
+	      "x-muc#roomconfig_registration" : "0",
+	      // "muc#roomconfig_roomadmins": "",
 	      // "muc#roomconfig_roomowners": "",
 	    };
 
@@ -15543,9 +15548,9 @@
 	        function(response) {
 
 	          jsxc.warn("Error while configuring room", response);
-
-	          jsxc.gui.feedback("Erreur lors de la création de la discussion");
-
+	          
+	          jsxc.gui.feedback("__i18nid_:error_while_openning_conversation", null, 'warn');
+	          
 	        });
 	  },
 
@@ -15563,7 +15568,7 @@
 
 	      jsxc.stats.addEvent("jsxc.muc.invitation.sent");
 
-	      self.conn.muc.directInvite(room, jid, "Vous êtes invité à rejoindre une conversation");
+	      self.conn.muc.directInvite(room, jid, "You are invited in a conversation");
 	    });
 
 	  },
@@ -16151,7 +16156,8 @@
 	   */
 	  _showNoNoticeContent : function() {
 	    if ($('#jsxc-notifications ul li').length < 1) {
-	      $('#jsxc-notifications ul').append("<li class='jsxc_noNotice'>Aucune notification</li>");
+	      $('#jsxc-notifications ul').append(
+	          "<li class='jsxc_noNotice'>" + jsxc.t('no_notifications') + "</li>");
 	    }
 
 	    else {
@@ -16263,7 +16269,7 @@
 	    jsxc.storage.setUserItem('notices', s);
 
 	    self.updateNotificationNumbers();
-	    
+
 	    self._showNoNoticeContent();
 	  },
 
@@ -17810,7 +17816,7 @@
 	    // format ressource to show it
 	    var ressourceLabel = etherpadId.length < 50 ? etherpadId : etherpadId.substr(0, 17) + "...";
 
-	    var title = "Ouvrir un pas: " + etherpadId;
+	    var title = jsxc.t('open_a_pad') + etherpadId;
 
 	    return '<a class="jsxc-media-ressource-link" title="' + title +
 	        '" onclick="jsxc.etherpad.openpad(\'' + etherpadId + '\')">' + ressourceLabel + '</a>';
@@ -17821,7 +17827,7 @@
 	    // format ressource to show it
 	    var ressourceLabel = href.length < 50 ? href : href.substr(0, 17) + "...";
 
-	    var title = "Ouvrir dans une nouvelle fenêtre: " + href;
+	    var title = jsxc.t('open_in_a_new_window') + href;
 
 	    return '<a class="jsxc-media-ressource-link" title="' + title + '" target="_blank" href="' +
 	        href + '">' + ressourceLabel + '</a>';
@@ -19411,7 +19417,12 @@
 	'<p data-i18n="about_free_description"></p>\n' +
 	'\n' +
 	'<p>\n' +
-	'  <span data-i18n="[html]more_information_on"></span><a href=\'http://hey-djoe.fr\' target="_blank">http://hey-djoe.fr</a>\n' +
+	'  <span data-i18n="[html]more_information_on"></span>\n' +
+	'<ul>\n' +
+	'  <li><a href=\'http://hey-djoe.fr\' target="_blank">http://hey-djoe.fr</a></li>\n' +
+	'  <li><a href=\'https://github.com/remipassmoilesel/heydjoe\' target="_blank">https://github.com/remipassmoilesel/heydjoe</a>\n' +
+	'  </li>\n' +
+	'</ul>\n' +
 	'</p>\n' +
 	'\n' +
 	'<button class="btn btn-default pull-right jsxc_spaceInvasion">Space Invasion !</button>\n' +

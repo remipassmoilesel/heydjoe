@@ -1,5 +1,5 @@
 /*!
- * djoe v1.0.0 - 2016-09-26
+ * djoe v1.0.0 - 2016-10-10
  * 
  * Copyright (c) 2016  <br>
  * Released under the GPL-3.0 license
@@ -37,10 +37,9 @@ $(function() {
    */
   var options = {
 
-    // in french
-    defaultLang : 'fr',
+    defaultLang : 'en',
 
-    autoLang : false,
+    autoLang : true,
 
     // REST support
     rest : {
@@ -80,7 +79,7 @@ $(function() {
     },
 
     // if lot of 404 errors precise jsxc root
-    root : 'jsxc/dev',
+    root : 'jsxc/build',
 
     // stat module. save and monitor events
     stats : {
