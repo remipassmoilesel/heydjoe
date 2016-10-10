@@ -1035,7 +1035,7 @@ jsxc.muc = {
 
               jsxc.warn("Error while loading room configuration", response);
 
-              jsxc.gui.feedback("Erreur lors de la configuration de la discussion");
+              jsxc.gui.feedback("__i18nid_:error_while_openning_conversation", null, 'warn');
 
             });
 
@@ -1156,7 +1156,8 @@ jsxc.muc = {
       "muc#roomconfig_whois" : "anyone",
       "muc#roomconfig_enablelogging" : "1",
       "x-muc#roomconfig_canchangenick" : "0",
-      "x-muc#roomconfig_registration" : "0", // "muc#roomconfig_roomadmins": "",
+      "x-muc#roomconfig_registration" : "0",
+      // "muc#roomconfig_roomadmins": "",
       // "muc#roomconfig_roomowners": "",
     };
 
@@ -1191,9 +1192,9 @@ jsxc.muc = {
         function(response) {
 
           jsxc.warn("Error while configuring room", response);
-
-          jsxc.gui.feedback("Erreur lors de la création de la discussion");
-
+          
+          jsxc.gui.feedback("__i18nid_:error_while_openning_conversation", null, 'warn');
+          
         });
   },
 
@@ -1211,7 +1212,7 @@ jsxc.muc = {
 
       jsxc.stats.addEvent("jsxc.muc.invitation.sent");
 
-      self.conn.muc.directInvite(room, jid, "Vous êtes invité à rejoindre une conversation");
+      self.conn.muc.directInvite(room, jid, "You are invited in a conversation");
     });
 
   },

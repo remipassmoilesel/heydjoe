@@ -47,7 +47,8 @@ jsxc.notice = {
    */
   _showNoNoticeContent : function() {
     if ($('#jsxc-notifications ul li').length < 1) {
-      $('#jsxc-notifications ul').append("<li class='jsxc_noNotice'>Aucune notification</li>");
+      $('#jsxc-notifications ul').append(
+          "<li class='jsxc_noNotice'>" + jsxc.t('no_notifications') + "</li>");
     }
 
     else {
@@ -159,7 +160,7 @@ jsxc.notice = {
     jsxc.storage.setUserItem('notices', s);
 
     self.updateNotificationNumbers();
-    
+
     self._showNoNoticeContent();
   },
 
