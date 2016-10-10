@@ -1,5 +1,11 @@
 jsxc.localization = {
 
+  /**
+   * If set to true, will translation will throw an error if an i18n id is not found.
+   * Sometimes when id and translation are the same false positive errors ae thrown.
+   */
+  debug : true,
+
   init : function() {
 
     // detect language
@@ -48,11 +54,15 @@ jsxc.localization = {
       var id = arguments[0];
 
       // throw an error if id is invalid
-      if (res.indexOf(id) !== -1) {
-        var err = new Error('Invalid i18n id: ' + id);
-        setTimeout(function() {
-          throw err;
-        }, 0);
+      if (jsxc.localization.debug === true) {
+
+        if (res.indexOf(id) !== -1) {
+          var err = new Error('Invalid i18n id: ' + id);
+          setTimeout(function() {
+            throw err;
+          }, 0);
+        }
+
       }
 
       return res;
