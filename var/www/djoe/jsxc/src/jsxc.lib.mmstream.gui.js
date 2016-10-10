@@ -45,7 +45,7 @@ jsxc.mmstream.gui = {
 
         mmstream._clearMultimediacache();
 
-        jsxc.gui.feedback("__i18nid_:call_finished_system_reseted")
+        jsxc.gui.feedback("__i18nid_:call_finished_system_reseted");
 
       }, 800);
 
