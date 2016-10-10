@@ -748,7 +748,7 @@ jsxc = {
 
     // show warning
     if ($('#jsxc_slaveClientWarning').length < 1) {
-      var header = '<div id="jsxc_slaveClientWarning">La messagerie est disponible dans un autre onglet</div>';
+      var header = '<div id="jsxc_slaveClientWarning">' + jsxc.t('client_slave_warning') + '</div>';
       $("body").prepend(header);
     }
 
