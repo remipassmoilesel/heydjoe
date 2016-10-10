@@ -53,11 +53,60 @@ You can launch (almost)all with a few commands thanks to GNU/Linux and Docker:
 
 This produce an *example* installation with:
 
-* Apache HTTP with a simple TLS configuration
+* Apache HTTP server
 * XMPP server
 * Etherpad 
 * Postgres database
 * Statistics server
+
+After you need to setup a TLS proxy, for example with Apache:
+
+```
+    Listen 80
+    Listen 443
+    ServerSignature Off
+    ServerTokens Prod
+    
+    <VirtualHost *:443>
+    
+      ServerName heydjoe.ddns.net
+    
+      LogLevel alert
+    
+      ErrorLog ${APACHE_LOG_DIR}/error.log
+      CustomLog ${APACHE_LOG_DIR}/access.log combined
+    
+      SSLEngine on
+      SSLCertificateFile      /etc/ssl/vps.crt
+      SSLCertificateKeyFile   /etc/ssl/vps.key
+    
+      RewriteEngine on
+    
+      ProxyVia On
+      ProxyRequests Off
+      ProxyPreserveHost On
+    
+      ProxyPass /etherpad/p/ http://localhost:29001/p/
+      ProxyPassReverse /etherpad/p/ http://localhost:29001/p/
+    
+      ProxyPass /etherpad/ http://localhost:29001/
+      ProxyPassReverse /etherpad/ http://localhost:29001/
+    
+      RewriteRule ^/openfire-rest/(.*) http://localhost:29090/plugins/restapi/v1/$1 [P,L]
+      ProxyPassReverse /openfire-rest/  http://localhost:29090/plugins/restapi/v1/
+    
+      ProxyPass /stats http://localhost:23000
+      ProxyPassReverse /stats http://localhost:23000
+    
+      ProxyPass /stats/visualization http://localhost:23000/visualization
+      ProxyPassReverse /stats/visualization http://localhost:23000/visualization
+    
+      ProxyPass / http://localhost:20080/
+      ProxyPassReverse / http://localhost:20080/
+    
+    </VirtualHost>
+    
+```
 
 Need an external TURN server, credentials can be modified in Docker image configuration.
 
