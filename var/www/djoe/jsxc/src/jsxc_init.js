@@ -24,10 +24,9 @@ $(function() {
    */
   var options = {
 
-    // in french
-    defaultLang : 'fr',
+    defaultLang : 'en',
 
-    autoLang : false,
+    autoLang : true,
 
     // REST support
     rest : {

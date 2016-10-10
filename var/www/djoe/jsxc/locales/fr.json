@@ -181,6 +181,8 @@
     "no_notifications": "Aucune notification",
     "open_a_pad": "Ouvrir un pad: ",
     "open_in_a_new_window": "Ouvrir dans une nouvelle fenêtre: ",
+    "empty_roster_message": "Votre liste est vide, invitez de nouveaux contacts !",
+    "not_a_contact_chat_warning": "n'est pas dans vos contacts. Votre interlocuteur est peut être déconnecté ou peut refuser de voir vos messages.",
     "": "",
     "Confirm": "Valider",
     "Cancel": "Annuler",

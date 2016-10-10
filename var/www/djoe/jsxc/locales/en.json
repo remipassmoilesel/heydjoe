@@ -1,6 +1,5 @@
 {
   "translation": {
-
     "hey_djoe": "Hey Djoe !",
     "heydjoe_description": "<i>Hey Djoe !</i> is a multimedia messaging system available under a free license (GPLv3)",
     "about_free_description": "You are free to use, copy, study and to modify this system.",
@@ -182,11 +181,11 @@
     "no_notifications": "No notification",
     "open_a_pad": "Open a pad: ",
     "open_in_a_new_window": "Open in a new window: ",
-
+    "empty_roster_message": "Your contact list is blank, invite new contacts !",
+    "not_a_contact_chat_warning": "is not in your contacts. Your contact may be disconnected or may refuse to see your messages.",
     "": "",
     "TODO_TODO_TODO": "Check if all messages below are ncessary",
     "": "",
-
     "Logging_in": "Logging in…",
     "your_connection_is_unencrypted": "Your connection is unencrypted.",
     "your_connection_is_encrypted": "Your connection is encrypted.",

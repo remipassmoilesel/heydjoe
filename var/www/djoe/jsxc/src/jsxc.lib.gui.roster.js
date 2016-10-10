@@ -337,7 +337,7 @@ jsxc.gui.roster = {
   empty : function() {
 
     var text = $(
-        '<p class="jsxc_rosterIsEmptyMessage">Votre liste est vide, invitez de nouveaux contacts !</p>');
+        '<p class="jsxc_rosterIsEmptyMessage">' + jsxc.t('empty_roster_message') + '</p>');
 
     text.click(function() {
       jsxc.newgui.toggleSearchPanel();
