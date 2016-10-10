@@ -182,7 +182,7 @@
     "open_a_pad": "Open a pad: ",
     "open_in_a_new_window": "Open in a new window: ",
     "empty_roster_message": "Your contact list is blank, invite new contacts !",
-    "not_a_contact_chat_warning": "is not in your contacts. Your contact may be disconnected or may refuse to see your messages.",
+    "not_a_contact_chat_warning": "is not in your contacts. This user may be disconnected or may refuse to see your messages.",
     "": "",
     "TODO_TODO_TODO": "Check if all messages below are ncessary",
     "": "",
