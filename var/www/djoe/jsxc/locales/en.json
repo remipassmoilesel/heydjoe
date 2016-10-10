@@ -9,7 +9,7 @@
     "etherpad_document": "Etherpad document",
     "etherpad_description": "A document Etherpad, often shortened to 'pad', is an text document editable<br/> by several people in real time on multiple remote workstations.",
     "etherpad_wikipedia_link": "<a href='https://en.wikipedia.org/wiki/Etherpad' target='_blank'>Wikipedia</a>",
-    "etherpad_document_name": "Name of the document to open or create:",
+    "etherpad_document_name": "Name of the document to open or create (3 chars min.) :",
     "etherpad_invite_users": "Invite users (optionnal):",
     "refresh": "Refresh",
     "etherpad_invitation": "Etherpad invitation",

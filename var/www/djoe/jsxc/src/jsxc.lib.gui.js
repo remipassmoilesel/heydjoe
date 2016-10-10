@@ -994,7 +994,12 @@ jsxc.gui = {
       ev.stopPropagation();
 
       // get name of pad
-      var name = $("#jsxc_dialog .jsxc-etherpad-name").val();
+      var name = $("#jsxc_dialog .jsxc-etherpad-name").val() || "";
+
+      if(name.length < 3){
+        // TODO show error
+        return;
+      }
 
       // get selected items
       var jids = [];
