@@ -4,7 +4,7 @@ Instant communication system all-in-one destined to be integrated on any web pag
 
 ## Presentation
 
-A small video is available on Youtube: https://youtu.be/dMTQm9NEYTs
+A small video is available on Youtube: https://youtu.be/AhwIXTTs5ao
 
 ## Functionnalities:
 * Text chat between two or multiple users
