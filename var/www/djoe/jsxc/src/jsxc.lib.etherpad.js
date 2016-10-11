@@ -91,8 +91,9 @@ jsxc.etherpad = {
     var embedded = self._getEmbeddedCode(padId);
 
     // add link to open pad in a new window
-    var link = $('<a class="jsxc-etherpad-new-window-link">' + jsxc.t('open_pad_in_new_window') + '</a>');
-    link.click(function(){
+    var link = $(
+        '<a class="jsxc-etherpad-new-window-link">' + jsxc.t('open_pad_in_new_window') + '</a>');
+    link.click(function() {
 
       // open pad in a new window
       window.open(self.getEtherpadLinkFor(padId), '_blank');
@@ -227,14 +228,15 @@ jsxc.etherpad = {
       // we have been just invited
       if (self.XMPP_INVITATIONS.STATUS_INVITATION === status) {
 
-        jsxc.notice.add(node + " " + jsxc.t('invite_you_to_share_etherpad'), "",
-            'gui.showIncomingEtherpadDialog', [from, padId, invitationId]);
+        jsxc.notice.add(jsxc.t('etherpad_invitation'),
+            node + " " + jsxc.t('invite_you_to_share_etherpad'), 'gui.showIncomingEtherpadDialog',
+            [from, padId, invitationId]);
 
       }
 
       // someone refused a pad
       else if (self.XMPP_INVITATIONS.STATUS_REFUSED === status) {
-        jsxc.gui.feedback("__i18nid_:has_refused_pad", {user: node});
+        jsxc.gui.feedback("__i18nid_:has_refused_pad", {user : node});
       }
 
     }

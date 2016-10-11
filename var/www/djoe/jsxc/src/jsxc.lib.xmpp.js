@@ -1142,7 +1142,7 @@ jsxc.xmpp = {
       // show notice if necessary
       if (unknownHistory.length < 1) {
         jsxc.notice.add(jsxc.t('unknown_user'),
-            jsxc.t('you_receive_message_from_unknown_user') + Strophe.getNodeFromJid(bid),
+            jsxc.t('you_receive_message_from_unknown_user') + " " + Strophe.getNodeFromJid(bid),
             'gui.showUnknownSender', [bid]);
       }
 
@@ -1340,9 +1340,10 @@ jsxc.xmpp = {
 
       var reason = invitation.attr("reason");
       reason = reason ? "Motif: " + reason : "";
-
-      jsxc.notice.add(buddyName + " vous invite à participer à une conversation", "",
-          'gui.showJoinConversationDialog', [roomjid, buddyName]);
+      
+      jsxc.notice.add(jsxc.t('conversation_invitation'),
+          buddyName + " " + jsxc.t('invite_you_in_conversation'), 'gui.showJoinConversationDialog',
+          [roomjid, buddyName]);
 
       // stop but keep handler
       return true;
