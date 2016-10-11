@@ -1610,6 +1610,10 @@ jsxc.mmstream = {
           self.VIDEOCONFERENCE_MAX_PARTICIPANTS);
     }
 
+    if (fulljidArray.length < 2) {
+      throw new Error("Too few participants. Number: " + fulljidArray.length);
+    }
+
     // check if navigator is compatible
     self.checkNavigatorCompatibility("videoconference");
 

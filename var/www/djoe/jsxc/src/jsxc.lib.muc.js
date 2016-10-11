@@ -703,7 +703,7 @@ jsxc.muc = {
 
             // check if enought users to invite
             if (jids.length < 1) {
-              jsxc.gui.feedback("_i18nid_:you_must_select_one_person");
+              jsxc.gui.feedback("_i18nid_:you_must_select_one_person", null, 'warn');
             }
 
             // invite users

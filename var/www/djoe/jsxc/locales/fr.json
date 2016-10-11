@@ -77,6 +77,7 @@
     "hang_up_call": "Terminer l'appel",
     "close_dialog": "Fermer la fenêtre",
     "you_must_select_one_person": "Vous devez sélectionner au moins un interlocuteur",
+    "you_must_select_two_persons": "Vous devez sélectionner au moins deux interlocuteurs",
     "you_are_not_connected": "Vous n'êtes pas connecté à la messagerie",
     "disconnecting": "Déconnexion en cours...",
     "not_a_valid_user": "<b>__user__</b> n'est pas un utilisateur valide",

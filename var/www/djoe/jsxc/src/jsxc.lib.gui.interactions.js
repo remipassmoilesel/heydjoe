@@ -149,7 +149,7 @@ jsxc.gui.interactions = {
 
             // check if buddies are checked
             if (buddies.length < 1) {
-              jsxc.gui.feedback("__i18nid_:you_must_select_at_least_one_element");
+              jsxc.gui.feedback("__i18nid_:you_must_select_at_least_one_element", null, 'warn');
               return;
             }
 
@@ -180,7 +180,7 @@ jsxc.gui.interactions = {
           .then(function(buddies) {
 
             if (buddies.length < 1) {
-              jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
+              jsxc.gui.feedback("__i18nid_:you_must_select_one_person", null, 'warn');
               return;
             }
 
@@ -196,7 +196,7 @@ jsxc.gui.interactions = {
                 .done(function(conversations) {
 
                   if (conversations.length < 1) {
-                    jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
+                    jsxc.gui.feedback("__i18nid_:you_must_select_one_person", null, 'warn');
                     return;
                   }
 
@@ -265,7 +265,7 @@ jsxc.gui.interactions = {
           .then(function(buddies) {
 
             if (buddies.length < 1) {
-              jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
+              jsxc.gui.feedback("__i18nid_:you_must_select_one_person", null, 'warn');
               return;
             }
 
@@ -319,8 +319,8 @@ jsxc.gui.interactions = {
 
           .then(function(buddies) {
 
-            if (buddies.length < 1) {
-              jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
+            if (buddies.length < 2) {
+              jsxc.gui.feedback("__i18nid_:you_must_select_two_persons", null, 'warn');
               return;
             }
 
@@ -378,7 +378,7 @@ jsxc.gui.interactions = {
           .then(function(buddies) {
 
             if (buddies.length < 1) {
-              jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
+              jsxc.gui.feedback("__i18nid_:you_must_select_one_person", null, 'warn');
               return;
             }
 
@@ -613,7 +613,7 @@ jsxc.gui.interactions = {
       var checkedElements = self._getCheckedSearchUsers();
 
       if (checkedElements.length < 1) {
-        jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
+        jsxc.gui.feedback("__i18nid_:you_must_select_one_person", null, 'warn');
         return false;
       }
 
@@ -657,7 +657,7 @@ jsxc.gui.interactions = {
       var checkedElements = self._getCheckedSearchUsers();
 
       if (checkedElements.length < 1) {
-        jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
+        jsxc.gui.feedback("__i18nid_:you_must_select_one_person", null, 'warn');
         return false;
       }
 
