@@ -8,7 +8,7 @@ A small video is available on Youtube: https://youtu.be/dMTQm9NEYTs
 
 ## Functionnalities:
 * Text chat between two or multiple users
-* Collaborative editing between multiple users
+* Collaborative text editing between multiple users
 * Videoconference between two or multiple users
 * Screen sharing from one to another user, or to multiple users
 
@@ -133,10 +133,7 @@ To know more check the `var/www/documentation/` folder. Project is in progress, 
 
 ## What is the status of this project?
 
-Djoe is an internship project currently in beta version. In its current state it is usable but it 
+Djoe is an internship project writted in few months, currently in alpha version. In its current state it is usable but it 
 requires a bit of work to be improved and fully operational. 
 
-## Only in French ?
-
-Translation is in progress :)
 
