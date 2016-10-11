@@ -4,7 +4,7 @@ jsxc.localization = {
    * If set to true, will translation will throw an error if an i18n id is not found.
    * Sometimes when id and translation are the same false positive errors ae thrown.
    */
-  debug : true,
+  debug : false,
 
   init : function() {
 

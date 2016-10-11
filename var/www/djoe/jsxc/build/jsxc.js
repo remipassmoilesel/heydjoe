@@ -1,5 +1,5 @@
 /*!
- * djoe v1.0.0 - 2016-10-10
+ * djoe v1.0.0 - 2016-10-11
  * 
  * Copyright (c) 2016  <br>
  * Released under the GPL-3.0 license
@@ -2349,8 +2349,8 @@
 
 	      // show notice if necessary
 	      if (unknownHistory.length < 1) {
-	        jsxc.notice.add("Utilisateur inconnu",
-	            "Vous avez reçu un message d'un utilisateur inconnu: " + Strophe.getNodeFromJid(bid),
+	        jsxc.notice.add(jsxc.t('unknown_user'),
+	            jsxc.t('you_receive_message_from_unknown_user') + " " + Strophe.getNodeFromJid(bid),
 	            'gui.showUnknownSender', [bid]);
 	      }
 
@@ -2548,9 +2548,10 @@
 
 	      var reason = invitation.attr("reason");
 	      reason = reason ? "Motif: " + reason : "";
-
-	      jsxc.notice.add(buddyName + " vous invite à participer à une conversation", "",
-	          'gui.showJoinConversationDialog', [roomjid, buddyName]);
+	      
+	      jsxc.notice.add(jsxc.t('conversation_invitation'),
+	          buddyName + " " + jsxc.t('invite_you_in_conversation'), 'gui.showJoinConversationDialog',
+	          [roomjid, buddyName]);
 
 	      // stop but keep handler
 	      return true;
@@ -4416,6 +4417,10 @@
 	          self.VIDEOCONFERENCE_MAX_PARTICIPANTS);
 	    }
 
+	    if (fulljidArray.length < 2) {
+	      throw new Error("Too few participants. Number: " + fulljidArray.length);
+	    }
+
 	    // check if navigator is compatible
 	    self.checkNavigatorCompatibility("videoconference");
 
@@ -4615,6 +4620,7 @@
 	    // check if user connected
 	    if (self._isBuddyConnectingOrConnected(fulljid) === true) {
 	      jsxc.gui.feedback("__i18nid_:user_already_connected_or_connecting", {user : node}, 'warn');
+	      return;
 	    }
 
 	    // ask confirmation
@@ -6098,7 +6104,7 @@
 	    });
 
 	    // append video
-	    jsxc.newgui.addMediaRessource(videoCtr, "Votre écran", {titleControls : [hangup]});
+	    jsxc.newgui.addMediaRessource(videoCtr, jsxc.t('my_screen'), {titleControls : [hangup]});
 
 	    // attach video after append elements
 	    mmstream.attachMediaStream(video, mmstream.multimediacache.screenStream);
@@ -6209,7 +6215,7 @@
 	        });
 
 	    // append video
-	    jsxc.newgui.addMediaRessource(videoCtr, " Vidéo de " + node,
+	    jsxc.newgui.addMediaRessource(videoCtr, node,
 	        {titleControls : [hangup, fullscreen]});
 
 	    // attach video after append elements
@@ -7540,7 +7546,12 @@
 	      ev.stopPropagation();
 
 	      // get name of pad
-	      var name = $("#jsxc_dialog .jsxc-etherpad-name").val();
+	      var name = $("#jsxc_dialog .jsxc-etherpad-name").val() || "";
+
+	      if(name.length < 3){
+	        // TODO show error
+	        return;
+	      }
 
 	      // get selected items
 	      var jids = [];
@@ -9245,8 +9256,9 @@
 	    var embedded = self._getEmbeddedCode(padId);
 
 	    // add link to open pad in a new window
-	    var link = $('<a class="jsxc-etherpad-new-window-link">' + jsxc.t('open_pad_in_new_window') + '</a>');
-	    link.click(function(){
+	    var link = $(
+	        '<a class="jsxc-etherpad-new-window-link">' + jsxc.t('open_pad_in_new_window') + '</a>');
+	    link.click(function() {
 
 	      // open pad in a new window
 	      window.open(self.getEtherpadLinkFor(padId), '_blank');
@@ -9381,14 +9393,15 @@
 	      // we have been just invited
 	      if (self.XMPP_INVITATIONS.STATUS_INVITATION === status) {
 
-	        jsxc.notice.add(node + " " + jsxc.t('invite_you_to_share_etherpad'), "",
-	            'gui.showIncomingEtherpadDialog', [from, padId, invitationId]);
+	        jsxc.notice.add(jsxc.t('etherpad_invitation'),
+	            node + " " + jsxc.t('invite_you_to_share_etherpad'), 'gui.showIncomingEtherpadDialog',
+	            [from, padId, invitationId]);
 
 	      }
 
 	      // someone refused a pad
 	      else if (self.XMPP_INVITATIONS.STATUS_REFUSED === status) {
-	        jsxc.gui.feedback("__i18nid_:has_refused_pad", {user: node});
+	        jsxc.gui.feedback("__i18nid_:has_refused_pad", {user : node});
 	      }
 
 	    }
@@ -9575,7 +9588,7 @@
 
 	            // check if buddies are checked
 	            if (buddies.length < 1) {
-	              jsxc.gui.feedback("__i18nid_:you_must_select_at_least_one_element");
+	              jsxc.gui.feedback("__i18nid_:you_must_select_at_least_one_element", null, 'warn');
 	              return;
 	            }
 
@@ -9606,7 +9619,7 @@
 	          .then(function(buddies) {
 
 	            if (buddies.length < 1) {
-	              jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
+	              jsxc.gui.feedback("__i18nid_:you_must_select_one_person", null, 'warn');
 	              return;
 	            }
 
@@ -9622,7 +9635,7 @@
 	                .done(function(conversations) {
 
 	                  if (conversations.length < 1) {
-	                    jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
+	                    jsxc.gui.feedback("__i18nid_:you_must_select_one_person", null, 'warn');
 	                    return;
 	                  }
 
@@ -9691,7 +9704,7 @@
 	          .then(function(buddies) {
 
 	            if (buddies.length < 1) {
-	              jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
+	              jsxc.gui.feedback("__i18nid_:you_must_select_one_person", null, 'warn');
 	              return;
 	            }
 
@@ -9745,8 +9758,8 @@
 
 	          .then(function(buddies) {
 
-	            if (buddies.length < 1) {
-	              jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
+	            if (buddies.length < 2) {
+	              jsxc.gui.feedback("__i18nid_:you_must_select_two_persons", null, 'warn');
 	              return;
 	            }
 
@@ -9804,7 +9817,7 @@
 	          .then(function(buddies) {
 
 	            if (buddies.length < 1) {
-	              jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
+	              jsxc.gui.feedback("__i18nid_:you_must_select_one_person", null, 'warn');
 	              return;
 	            }
 
@@ -10039,7 +10052,7 @@
 	      var checkedElements = self._getCheckedSearchUsers();
 
 	      if (checkedElements.length < 1) {
-	        jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
+	        jsxc.gui.feedback("__i18nid_:you_must_select_one_person", null, 'warn');
 	        return false;
 	      }
 
@@ -10083,7 +10096,7 @@
 	      var checkedElements = self._getCheckedSearchUsers();
 
 	      if (checkedElements.length < 1) {
-	        jsxc.gui.feedback("__i18nid_:you_must_select_one_person");
+	        jsxc.gui.feedback("__i18nid_:you_must_select_one_person", null, 'warn');
 	        return false;
 	      }
 
@@ -12398,8 +12411,8 @@
 	        jsxc.gui.window.scrollDown(winBid);
 
 	        // change text
-	        var msg = usersComposing.length > 1 ? " sont en train d'écrire ..." :
-	            " est en train d'écrire ...";
+	        var msg = usersComposing.length > 1 ? jsxc.t('are_writing') :
+	            jsxc.t('is_writing');
 
 	        // notification not present, add it
 	        if (composingNotif.length < 1) {
@@ -13971,7 +13984,7 @@
 	   * If set to true, will translation will throw an error if an i18n id is not found.
 	   * Sometimes when id and translation are the same false positive errors ae thrown.
 	   */
-	  debug : true,
+	  debug : false,
 
 	  init : function() {
 
@@ -15049,7 +15062,7 @@
 	    var settingsList = win.find('.jsxc_settings ul');
 
 	    // add invitation
-	    var inviteLink = $('<a class="jsxc_inviteUsers"><span>Inviter des utilisateurs</span></a>');
+	    var inviteLink = $('<a class="jsxc_inviteUsers"><span>'+jsxc.t('invite_in_conversation')+'</span></a>');
 	    inviteLink.click(function() {
 
 	      jsxc.gui.showSelectContactsDialog()
@@ -15059,7 +15072,7 @@
 
 	            // check if enought users to invite
 	            if (jids.length < 1) {
-	              jsxc.gui.feedback("Vous devez sélectionner au moins un contact");
+	              jsxc.gui.feedback("_i18nid_:you_must_select_one_person", null, 'warn');
 	            }
 
 	            // invite users
@@ -15071,30 +15084,28 @@
 	            });
 
 	            // report
-	            if (invited.length < 2) {
-	              jsxc.gui.feedback("<b>" + invited[0] + "</b> à été invité");
+	            if(invited.length > 1){
+	              jsxc.gui.feedback("__i18nid_:users_have_been_invited", {users: invited.join(', ')});
 	            }
-
 	            else {
-	              jsxc.gui.feedback(
-	                  "Les utilisateurs suivant ont été invités: <b>" + invited.join(", ") + "</b>");
+	              jsxc.gui.feedback("__i18nid_:user_have_been_invited", {user: invited[0]});
 	            }
 
 	          })
 
 	          // operation was canceled
 	          .fail(function() {
-	            jsxc.gui.feedback("Opération annulée");
+	            jsxc.gui.feedback('__i18nid_:operation_canceled');
 	          });
 
 	    });
 	    settingsList.prepend($('<li>').append(inviteLink));
 
 	    // add pad link
-	    var padLink = $('<a class="jsxc_openpad"><span>Ouvrir un pad</span></a>');
+	    var padLink = $('<a class="jsxc_openpad"><span>' + jsxc.t('open_shared_pad') + '</span></a>');
 	    padLink.click(function() {
 
-	      jsxc.gui.feedback("Pad en cours d'ouverture ...");
+	      jsxc.gui.feedback('__i18nid_:etherpad_openning_in_progress');
 
 	      var padId = bid.substr(0, 26).replace(/[^a-z0-9]+/gi, "") + "_" +
 	          jsxc.sha1.hash(bid).substr(0, 22);
@@ -15512,8 +15523,7 @@
 	      "muc#roomconfig_whois" : "anyone",
 	      "muc#roomconfig_enablelogging" : "1",
 	      "x-muc#roomconfig_canchangenick" : "0",
-	      "x-muc#roomconfig_registration" : "0",
-	      // "muc#roomconfig_roomadmins": "",
+	      "x-muc#roomconfig_registration" : "0", // "muc#roomconfig_roomadmins": "",
 	      // "muc#roomconfig_roomowners": "",
 	    };
 
@@ -15541,16 +15551,16 @@
 
 	          // save configuration
 	          jsxc.storage.updateUserItem('buddy', room, 'config', form);
-	      
+
 	        },
 
 	        // configuration fail
 	        function(response) {
 
 	          jsxc.warn("Error while configuring room", response);
-	          
+
 	          jsxc.gui.feedback("__i18nid_:error_while_openning_conversation", null, 'warn');
-	          
+
 	        });
 	  },
 
@@ -16206,7 +16216,7 @@
 	      return false;
 	    });
 
-	    notice.text(msg + " " + description);
+	    notice.html("<b>" + msg + "</b><br/>" + description);
 	    notice.attr('title', description || '');
 	    notice.attr('data-nid', nid);
 	    list.append(notice);
