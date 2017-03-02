@@ -127,7 +127,7 @@ And of course so many more: GNU/Linux Ubuntu, Apache HTTP, Postgres, ...
 
 ## Documentation
 
-Djoe is an internship project, the final report is available here: https://github.com/remipassmoilesel/djoe/raw/master/var/www/djoe/documentation/internship-report_final.pdf
+Djoe is an internship project, the final report is available [here](https://github.com/remipassmoilesel/heydjoe/tree/master/var/www/djoe/documentation)
 
 To know more check the `var/www/documentation/` folder. Project is in progress, so documentation too.
 
