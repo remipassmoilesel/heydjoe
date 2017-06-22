@@ -50,22 +50,22 @@
       <requestFrequency>5</requestFrequency> 
     </management> 
   </stream>  
-  <connectionProvider> 
-    <className>org.jivesoftware.database.DefaultConnectionProvider</className> 
-  </connectionProvider>  
-  <database> 
-    <defaultProvider> 
-      <driver>org.postgresql.Driver</driver>  
-      <serverURL>jdbc:postgresql://localhost:5432/openfire</serverURL>  
-      <username encrypted="true">b257dfdb248a9e962dd8db39a9e1dfd9ac17ece625525c813ed4c777d77d6c26</username>  
-      <password encrypted="true">f0e939d9a8c578546c73e17c359d754d1fad5f0a1000c6d7cab8ae297f7bc73f</password>  
-      <testSQL>select 1</testSQL>  
-      <testBeforeUse>false</testBeforeUse>  
-      <testAfterUse>false</testAfterUse>  
-      <minConnections>5</minConnections>  
-      <maxConnections>25</maxConnections>  
-      <connectionTimeout>1.0</connectionTimeout> 
-    </defaultProvider> 
-  </database>  
-  <setup>true</setup> 
+  <connectionProvider>
+    <className>org.jivesoftware.database.DefaultConnectionProvider</className>
+  </connectionProvider> 
+  <database>
+    <defaultProvider>
+      <driver>org.postgresql.Driver</driver> 
+      <serverURL>jdbc:postgresql://localhost:5432/openfire</serverURL> 
+      <username encrypted="true">602f85e0b752b85dd0b06176a0b997c526d99ab7b844bdf1c8bab57c9eaa243a</username> 
+      <password encrypted="true">6c9082fefed9a4d04b1f9968228a982816dd8c19bdb26bcb6811300e6a40bb82</password> 
+      <testSQL>select 1</testSQL> 
+      <testBeforeUse>false</testBeforeUse> 
+      <testAfterUse>false</testAfterUse> 
+      <minConnections>5</minConnections> 
+      <maxConnections>25</maxConnections> 
+      <connectionTimeout>1.0</connectionTimeout>
+    </defaultProvider>
+  </database> 
+  <setup>true</setup>
 </jive>
